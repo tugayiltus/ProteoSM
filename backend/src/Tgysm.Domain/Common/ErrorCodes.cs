@@ -118,6 +118,7 @@ public static class ErrorCodes
     public const string ProblemKnownErrorIncomplete = "problems.known_error_incomplete";
     public const string ProblemResolutionRequired = "problems.resolution_required";
     public const string ProblemCancelReasonRequired = "problems.cancel_reason_required";
+    public const string ProblemTransferSameTeam = "problems.transfer_same_team";
 
     public const string SearchQueryInvalid = "search.query_invalid";
 

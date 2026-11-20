@@ -89,6 +89,11 @@ public static class AuditActions
     public const string TaskAssigned = "tasks.assigned";
     public const string TaskTransferred = "tasks.transferred";
     public const string TaskStatusChanged = "tasks.status_changed";
+    public const string ProblemCreated = "problems.created";
+    public const string ProblemUpdated = "problems.updated";
+    public const string ProblemStatusChanged = "problems.status_changed";
+    public const string ProblemTransferred = "problems.transferred";
+    public const string ProblemOwnerChanged = "problems.owner_changed";
     public const string ChangeCreated = "changes.created";
     public const string ChangeUpdated = "changes.updated";
     public const string ChangeStatusChanged = "changes.status_changed";

@@ -162,7 +162,8 @@
     "brand": "Marka",
     "asset_model": "Model",
     "task": "Görev",
-    "change": "Değişiklik"
+    "change": "Değişiklik",
+    "problem": "Problem"
   },
   "auditActions": {
     "setup": {
@@ -310,6 +311,13 @@
       "closed": "Değişiklik kapatıldı",
       "ticket_linked": "Değişikliğe kayıt bağlandı",
       "ticket_unlinked": "Değişiklikten kayıt ayrıldı"
+    },
+    "problems": {
+      "created": "Problem oluşturuldu",
+      "updated": "Problem güncellendi",
+      "status_changed": "Problem durumu değişti",
+      "transferred": "Problem aktarıldı",
+      "owner_changed": "Problem sahibi değişti"
     }
   },
   "emailEvents": {

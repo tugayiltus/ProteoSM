@@ -51,6 +51,9 @@ internal sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) :
             case DomainException { Code: ErrorCodes.ChangeCalendarRange } calendarRange:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status400BadRequest, calendarRange.Code);
                 break;
+            case DomainException { Code: ErrorCodes.ProblemResolutionRequired or ErrorCodes.ProblemCancelReasonRequired } required:
+                await ApiProblem.WriteAsync(context, StatusCodes.Status400BadRequest, required.Code);
+                break;
             case DomainException domain:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status409Conflict, domain.Code);
                 break;
