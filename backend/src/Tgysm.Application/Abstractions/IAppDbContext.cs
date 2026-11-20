@@ -4,6 +4,7 @@ using Tgysm.Domain.Auth;
 using Tgysm.Domain.Catalog;
 using Tgysm.Domain.Knowledge;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Audit;
@@ -47,6 +48,10 @@ public interface IAppDbContext
     DbSet<ChangePlanEditor> ChangePlanEditors { get; }
     DbSet<ChangeAsset> ChangeAssets { get; }
     DbSet<ChangeTicketLink> ChangeTicketLinks { get; }
+    DbSet<Problem> Problems { get; }
+    DbSet<ProblemEvent> ProblemEvents { get; }
+    DbSet<ProblemTicketLink> ProblemTicketLinks { get; }
+    DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
     DbSet<TicketRelation> TicketRelations { get; }
     DbSet<TicketAsset> TicketAssets { get; }
     DbSet<TicketArticle> TicketArticles { get; }

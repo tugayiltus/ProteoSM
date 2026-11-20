@@ -7,6 +7,7 @@ using Tgysm.Domain.Auth;
 using Tgysm.Domain.Catalog;
 using Tgysm.Domain.Knowledge;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Audit;
@@ -49,6 +50,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ChangePlanEditor> ChangePlanEditors => Set<ChangePlanEditor>();
     public DbSet<ChangeAsset> ChangeAssets => Set<ChangeAsset>();
     public DbSet<ChangeTicketLink> ChangeTicketLinks => Set<ChangeTicketLink>();
+    public DbSet<Problem> Problems => Set<Problem>();
+    public DbSet<ProblemEvent> ProblemEvents => Set<ProblemEvent>();
+    public DbSet<ProblemTicketLink> ProblemTicketLinks => Set<ProblemTicketLink>();
+    public DbSet<ProblemChangeLink> ProblemChangeLinks => Set<ProblemChangeLink>();
     public DbSet<TicketRelation> TicketRelations => Set<TicketRelation>();
     public DbSet<TicketAsset> TicketAssets => Set<TicketAsset>();
     public DbSet<TicketArticle> TicketArticles => Set<TicketArticle>();

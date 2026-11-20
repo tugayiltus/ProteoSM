@@ -1701,6 +1701,269 @@ namespace Tgysm.Infrastructure.Persistence.Migrations
                     b.ToTable("team_memberships", (string)null);
                 });
 
+            modelBuilder.Entity("Tgysm.Domain.Problems.Problem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("ArticleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("article_id");
+
+                    b.Property<string>("CancelReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("cancel_reason");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("closed_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Impact")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("impact");
+
+                    b.Property<DateTimeOffset?>("KnownErrorAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("known_error_at");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("number");
+
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
+                    b.Property<Guid>("OwnerTeamId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_team_id");
+
+                    b.Property<string>("Resolution")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("resolution");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("resolved_at");
+
+                    b.Property<string>("RootCause")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("root_cause");
+
+                    b.Property<string>("SearchText")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("search_text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<string>("Workaround")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("workaround");
+
+                    b.HasKey("Id")
+                        .HasName("pk_problems");
+
+                    b.HasIndex("ArticleId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_problems_article_id")
+                        .HasFilter("article_id IS NOT NULL");
+
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_problems_created_by_id");
+
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_problems_number");
+
+                    b.HasIndex("OwnerId", "Status")
+                        .HasDatabaseName("ix_problems_owner_id_status");
+
+                    b.HasIndex("OwnerTeamId", "Status")
+                        .HasDatabaseName("ix_problems_owner_team_id_status");
+
+                    b.HasIndex(new[] { "SearchText" }, "ix_problems_search_text_trgm")
+                        .HasDatabaseName("ix_problems_search_text");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex(new[] { "SearchText" }, "ix_problems_search_text_trgm"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex(new[] { "SearchText" }, "ix_problems_search_text_trgm"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex(new[] { "UpdatedAt", "Id" }, "ix_problems_updated_at_id")
+                        .IsDescending()
+                        .HasDatabaseName("ix_problems_updated_at_id");
+
+                    b.ToTable("problems", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_problems_impact", "impact IN ('high', 'medium', 'low')");
+
+                            t.HasCheckConstraint("ck_problems_status", "status IN ('open', 'investigating', 'known_error', 'resolved', 'cancelled')");
+                        });
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemChangeLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ChangeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("change_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<Guid>("ProblemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("problem_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_problem_changes");
+
+                    b.HasIndex("ChangeId")
+                        .HasDatabaseName("ix_problem_changes_change_id");
+
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_problem_changes_created_by_id");
+
+                    b.HasIndex("ProblemId", "ChangeId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_problem_changes_problem_change");
+
+                    b.ToTable("problem_changes", (string)null);
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("ActorUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("actor_user_id");
+
+                    b.Property<string>("DataJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("data");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("kind");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<Guid>("ProblemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("problem_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_problem_events");
+
+                    b.HasIndex("ActorUserId")
+                        .HasDatabaseName("ix_problem_events_actor_user_id");
+
+                    b.HasIndex("ProblemId", "OccurredAt")
+                        .HasDatabaseName("ix_problem_events_problem_id_occurred_at");
+
+                    b.ToTable("problem_events", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_problem_events_kind", "kind IN ('created', 'updated', 'started', 'known_error', 'resolved', 'cancelled', 'commented', 'transferred', 'owner_changed', 'ticket_linked', 'ticket_unlinked', 'change_linked', 'change_unlinked', 'article_created')");
+                        });
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemTicketLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<Guid>("ProblemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("problem_id");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ticket_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_problem_tickets");
+
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_problem_tickets_created_by_id");
+
+                    b.HasIndex("ProblemId")
+                        .HasDatabaseName("ix_problem_tickets_problem_id");
+
+                    b.HasIndex("TicketId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_problem_tickets_ticket_id");
+
+                    b.ToTable("problem_tickets", (string)null);
+                });
+
             modelBuilder.Entity("Tgysm.Domain.Reports.ExportJob", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3662,6 +3925,99 @@ namespace Tgysm.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_team_memberships_users_user_id");
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.Problem", b =>
+                {
+                    b.HasOne("Tgysm.Domain.Knowledge.KnowledgeArticle", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_problems_knowledge_articles_article_id");
+
+                    b.HasOne("Tgysm.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problems_users_created_by_id");
+
+                    b.HasOne("Tgysm.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_problems_users_owner_id");
+
+                    b.HasOne("Tgysm.Domain.Organization.Team", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerTeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problems_teams_owner_team_id");
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemChangeLink", b =>
+                {
+                    b.HasOne("Tgysm.Domain.Changes.ChangeRequest", null)
+                        .WithMany()
+                        .HasForeignKey("ChangeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_changes_change_requests_change_id");
+
+                    b.HasOne("Tgysm.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_changes_users_created_by_id");
+
+                    b.HasOne("Tgysm.Domain.Problems.Problem", null)
+                        .WithMany()
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_changes_problems_problem_id");
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemEvent", b =>
+                {
+                    b.HasOne("Tgysm.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_problem_events_users_actor_user_id");
+
+                    b.HasOne("Tgysm.Domain.Problems.Problem", null)
+                        .WithMany()
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_events_problems_problem_id");
+                });
+
+            modelBuilder.Entity("Tgysm.Domain.Problems.ProblemTicketLink", b =>
+                {
+                    b.HasOne("Tgysm.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_tickets_users_created_by_id");
+
+                    b.HasOne("Tgysm.Domain.Problems.Problem", null)
+                        .WithMany()
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_tickets_problems_problem_id");
+
+                    b.HasOne("Tgysm.Domain.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_problem_tickets_tickets_ticket_id");
                 });
 
             modelBuilder.Entity("Tgysm.Domain.Reports.ExportJob", b =>

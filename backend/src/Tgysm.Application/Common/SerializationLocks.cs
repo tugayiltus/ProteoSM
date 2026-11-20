@@ -36,4 +36,7 @@ public static class SerializationLocks
 
     /// <summary>Adding a ticket link to a change: two adds of one pair never reach the unique index together.</summary>
     public const long ChangeTicketLink = 7_010;
+
+    /// <summary>Linking an incident or a change to a problem: two adds never reach the unique indexes together (ADR-0034).</summary>
+    public const long ProblemLink = 7_011;
 }

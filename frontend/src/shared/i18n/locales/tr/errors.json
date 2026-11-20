@@ -171,6 +171,19 @@
     "ticket_link_kind_invalid": "Talep kayıtları yalnızca \"Değişikliğe yol açtı\" türüyle bağlanabilir.",
     "ticket_link_cancelled": "İptal edilmiş değişikliğe bağlantı eklenemez."
   },
+  "problems": {
+    "invalid_transition": "Bu işlem problemin mevcut durumunda yapılamaz.",
+    "closed": "Kapatılmış problem değiştirilemez.",
+    "owner_team_not_allowed": "Problem yalnızca IT operasyon ekiplerine verilebilir.",
+    "owner_not_in_team": "Problem sahibi, sahip ekibin aktif bir üyesi olmalı.",
+    "ticket_not_incident": "Probleme yalnızca arızalar bağlanabilir, talepler bağlanamaz.",
+    "ticket_already_linked": "Bu arıza zaten bir probleme bağlı.",
+    "change_link_exists": "Bu değişiklik zaten probleme bağlı.",
+    "article_not_allowed": "Makale yalnızca bilinen hata veya çözülmüş ve makalesi olmayan problem için oluşturulur.",
+    "known_error_incomplete": "Bilinen hata için kök neden ve geçici çözüm yazın.",
+    "resolution_required": "Problemi çözmek için kalıcı çözümü yazın.",
+    "cancel_reason_required": "Problemi iptal etmek için neden yazın."
+  },
   "search": {
     "query_invalid": "Arama metni 2 ile 100 karakter arasında olmalı."
   }

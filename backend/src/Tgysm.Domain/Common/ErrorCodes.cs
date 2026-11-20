@@ -107,6 +107,18 @@ public static class ErrorCodes
     public const string ChangeTicketLinkKindInvalid = "changes.ticket_link_kind_invalid";
     public const string ChangeTicketLinkCancelled = "changes.ticket_link_cancelled";
 
+    public const string ProblemInvalidTransition = "problems.invalid_transition";
+    public const string ProblemClosed = "problems.closed";
+    public const string ProblemOwnerTeamNotAllowed = "problems.owner_team_not_allowed";
+    public const string ProblemOwnerNotInTeam = "problems.owner_not_in_team";
+    public const string ProblemTicketNotIncident = "problems.ticket_not_incident";
+    public const string ProblemTicketAlreadyLinked = "problems.ticket_already_linked";
+    public const string ProblemChangeLinkExists = "problems.change_link_exists";
+    public const string ProblemArticleNotAllowed = "problems.article_not_allowed";
+    public const string ProblemKnownErrorIncomplete = "problems.known_error_incomplete";
+    public const string ProblemResolutionRequired = "problems.resolution_required";
+    public const string ProblemCancelReasonRequired = "problems.cancel_reason_required";
+
     public const string SearchQueryInvalid = "search.query_invalid";
 
     public const string ApprovalNotApprover = "approvals.not_approver";
