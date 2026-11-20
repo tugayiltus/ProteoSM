@@ -1,6 +1,6 @@
 # Light Problem Management — design
 
-Date: 2026-11-20. Owner: Tugay İLTUŞ. Status: draft, waits for owner approval. Owner choices so far: approach A, four-step lifecycle, "Makale oluştur" as internal draft, incident links by any IT staff who works the incident.
+Date: 2026-11-20. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11-20. Owner choices so far: approach A, four-step lifecycle, "Makale oluştur" as internal draft, incident links by any IT staff who works the incident.
 
 Context: second light-ITIL module (owner brief 2026-11-18: related records → Problem → service catalogue + light CMDB → software/licence assets → light Release → monitoring webhook). Phase 10 (ADR-0033) added ticket ↔ change links and central search. `tgysm.md` §2 still lists "Full Problem Management" as out of scope; this module adds a light version and updates §2/§19 with it.
 
