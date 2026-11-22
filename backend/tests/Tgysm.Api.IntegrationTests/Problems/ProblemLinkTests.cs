@@ -26,6 +26,8 @@ public sealed class ProblemLinkTests(ApiFactory factory) : IAsyncLifetime
     private const string ServiceDeskName = "Servis Masası";
     private const string FieldTeamName = "Saha Destek";
     private const int ParallelProblems = 4;
+    private const int RaceRounds = 5;
+    private const int RacingIncidents = 4;
 
     public async ValueTask InitializeAsync() => await factory.ResetAsync();
 
@@ -240,6 +242,50 @@ public sealed class ProblemLinkTests(ApiFactory factory) : IAsyncLifetime
         Assert.All(conflictCodes, code => Assert.Equal(AlreadyLinkedCode, code));
         await using var db = factory.Database.CreateDbContext();
         Assert.Equal(1, await db.ProblemTicketLinks.CountAsync(Ct));
+    }
+
+    [Fact]
+    public async Task Link_adds_racing_a_resolve_never_land_after_the_problem_closed()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        for (var round = 0; round < RaceRounds; round++)
+        {
+            var problem = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, $"Yarış {round}");
+            var incidents = new List<JsonElement>();
+            for (var i = 0; i < RacingIncidents; i++)
+            {
+                incidents.Add(await TicketWorld.CreateIncidentAsync(world.Employee, $"Arıza {round}-{i}"));
+            }
+
+            var change = await ChangeWorld.CreateAsync(world.Desk, world);
+            var resolve = world.Desk.PostAsync(
+                ProblemWorld.PathOf(problem, "resolve"), new { version = ProblemWorld.VersionOf(problem), resolution = "Sürücü güncellendi" });
+            var adds = incidents.Select(incident => AddTicketAsync(world.Desk, problem, incident)).Append(AddChangeAsync(world.Desk, problem, change)).ToList();
+            var responses = await Task.WhenAll(adds.Prepend(resolve));
+
+            Assert.Equal(HttpStatusCode.OK, responses[0].StatusCode);
+            foreach (var add in responses.Skip(1))
+            {
+                Assert.True(add.StatusCode is HttpStatusCode.Created or HttpStatusCode.Conflict, $"Unexpected {add.StatusCode}");
+                if (add.StatusCode == HttpStatusCode.Conflict)
+                {
+                    Assert.Equal(ClosedCode, await CodeOfAsync(add));
+                }
+            }
+
+            foreach (var response in responses)
+            {
+                response.Dispose();
+            }
+
+            // Serialized, a link that got in was written before the resolve loaded the problem, so before it closed.
+            var problemId = problem.GetProperty("id").GetGuid();
+            await using var db = factory.Database.CreateDbContext();
+            var resolvedAt = await db.Problems.Where(p => p.Id == problemId).Select(p => p.ResolvedAt).SingleAsync(Ct);
+            var ticketLinks = await db.ProblemTicketLinks.Where(l => l.ProblemId == problemId).Select(l => l.CreatedAt).ToListAsync(Ct);
+            var changeLinks = await db.ProblemChangeLinks.Where(l => l.ProblemId == problemId).Select(l => l.CreatedAt).ToListAsync(Ct);
+            Assert.All(ticketLinks.Concat(changeLinks), linkedAt => Assert.True(linkedAt <= resolvedAt, $"Link at {linkedAt:O} after resolve at {resolvedAt:O}"));
+        }
     }
 
     [Fact]

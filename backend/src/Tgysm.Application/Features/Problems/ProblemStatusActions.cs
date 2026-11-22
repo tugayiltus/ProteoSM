@@ -36,7 +36,7 @@ internal static class ProblemStatusChange
 public sealed class StartProblemHandler(IAppDbContext db, ProblemWork work, IAuditLog audit)
 {
     public Task<ProblemDetail> HandleAsync(StartProblemCommand command, CancellationToken cancellationToken) =>
-        work.RunAsync(command.Number, command.Version, (problem, viewer, now) =>
+        work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.Start(now);
@@ -49,7 +49,7 @@ public sealed class StartProblemHandler(IAppDbContext db, ProblemWork work, IAud
 public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, IAuditLog audit)
 {
     public Task<ProblemDetail> HandleAsync(MarkKnownErrorCommand command, CancellationToken cancellationToken) =>
-        work.RunAsync(command.Number, command.Version, (problem, viewer, now) =>
+        work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.MarkKnownError(now);
@@ -63,7 +63,7 @@ public sealed class ResolveProblemHandler(IAppDbContext db, IValidator<ResolvePr
     public async Task<ProblemDetail> HandleAsync(ResolveProblemCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        return await work.RunAsync(command.Number, command.Version, (problem, viewer, now) =>
+        return await work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.Resolve(command.Resolution, now);
@@ -78,7 +78,7 @@ public sealed class CancelProblemHandler(IAppDbContext db, IValidator<CancelProb
     public async Task<ProblemDetail> HandleAsync(CancelProblemCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        return await work.RunAsync(command.Number, command.Version, (problem, viewer, now) =>
+        return await work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.Cancel(command.Reason, now);
