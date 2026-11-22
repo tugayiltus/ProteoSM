@@ -24,6 +24,15 @@ internal static class PilotSeedChangeData
     public const string BackoutPlan = "Önceki sürüm yedeğinden geri dönülür.";
     public const string ImplementationTaskTitle = "Güncellemeyi uygula";
     public const string VerificationTaskTitle = "Servisi doğrula";
+    public const string BackoutTaskTitle = "Önceki sürüme geri dön";
+
+    public const string VerificationNote = "Servis erişimi ve temel işlemler kontrol edildi, sorun yok.";
+    public const string FaultFoundNote = "Doğrulamada kullanıcılar servise erişemedi.";
+    public const string BackoutNote = "Önceki sürüm yedeğinden geri dönüldü, servis eski haliyle çalışıyor.";
+    public const string ClosingNote = "Değişiklik planlandığı gibi uygulandı.";
+    public const string FailureClosingNote = "Güncelleme uygulanamadı; üretici desteğiyle yeniden planlanacak.";
+    public const string VerificationCancelReason = "Geri dönüş başladı, doğrulama yapılmayacak.";
+    public const string ChangeCancelReason = "Üretici güncellemeyi geri çekti, değişiklik gerekmiyor.";
 
     public static readonly string[] TaskTitles =
     [

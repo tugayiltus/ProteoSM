@@ -35,6 +35,13 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
     private const double ChangeScaleFactor = 0.1;
     private const string TransferScale = "0.4";
     private const string ScaleOption = "--scale";
+
+    // At 0.4 the seed writes 24 changes: two passes over its plan block, which close changes in every end state.
+    private const int ClosedSuccessfulAtTransferScale = 6;
+    private const int ClosedRolledBackAtTransferScale = 2;
+    private const int ClosedFailedAtTransferScale = 1;
+    private const int CancelledAtTransferScale = 1;
+    private const int TeamCount = 2;
     private const string PasswordMarker = "(shown once): ";
     private const int TicketsBeforeFailure = 1;
 
@@ -147,7 +154,7 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
     [Fact]
     public async Task Seeds_changes_with_overlapping_windows_on_shared_assets_and_work_tasks()
     {
-        // 0.1 gives six changes and fifteen tasks: every change status the seed plans and an overlap by index.
+        // 0.1 gives six changes and fifteen tasks: every open change status the seed plans, a closed one and an overlap by index.
         var exit = await SeedPilotCommand.RunAsync(ServicesIn(SeedPilotCommand.PilotEnvironment), [ScaleOption, ChangeScale], TextWriter.Null, TextWriter.Null);
 
         Assert.Equal(CliSuccess, exit);
@@ -155,7 +162,7 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         var changes = await db.ChangeRequests.AsNoTracking().ToListAsync(Ct);
         Assert.Equal(PilotSeedVolumes.Scaled(PilotSeedVolumes.Changes, ChangeScaleFactor), changes.Count);
         Assert.Equal(
-            new[] { ChangeStatus.Draft, ChangeStatus.PendingApproval, ChangeStatus.Scheduled }.ToHashSet(), changes.Select(c => c.Status).ToHashSet());
+            new[] { ChangeStatus.Draft, ChangeStatus.PendingApproval, ChangeStatus.Scheduled, ChangeStatus.Closed }.ToHashSet(), changes.Select(c => c.Status).ToHashSet());
         Assert.All(changes, c => Assert.True(c.WindowStart < c.WindowEnd));
         var links = await db.ChangeAssets.AsNoTracking().ToListAsync(Ct);
         var overlapping = from first in changes
@@ -212,6 +219,37 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         Assert.True(await db.ChangeRequests.AnyAsync(c => c.OwnerTeamId != intake.Id, Ct));
         var changeTeams = await db.ProblemChangeLinks.Join(db.ChangeRequests, l => l.ChangeId, c => c.Id, (_, c) => c.OwnerTeamId).Distinct().ToListAsync(Ct);
         Assert.Equal([intake.Id], changeTeams);
+    }
+
+    // Closed changes walk the whole flow (tasks, implementation, backout) as their owner, in the intake and the field
+    // team, so the change report has an outcome mix, a success rate and changes that caused incidents.
+    [Fact]
+    public async Task Closes_changes_in_every_end_state_and_ties_backed_out_ones_to_the_incidents_they_caused()
+    {
+        var error = new StringWriter();
+        var exit = await SeedPilotCommand.RunAsync(ServicesIn(SeedPilotCommand.PilotEnvironment), [ScaleOption, TransferScale], TextWriter.Null, error);
+
+        Assert.True(exit == CliSuccess, error.ToString());
+        await using var db = factory.Database.CreateDbContext();
+        var changes = await db.ChangeRequests.AsNoTracking().ToListAsync(Ct);
+        var closed = changes.Where(c => c.Status == ChangeStatus.Closed).ToList();
+        Assert.Equal(ClosedSuccessfulAtTransferScale, closed.Count(c => c.Outcome == ChangeOutcome.Successful));
+        Assert.Equal(ClosedRolledBackAtTransferScale, closed.Count(c => c.Outcome == ChangeOutcome.RolledBack));
+        Assert.Equal(ClosedFailedAtTransferScale, closed.Count(c => c.Outcome == ChangeOutcome.Failed));
+        Assert.Equal(CancelledAtTransferScale, changes.Count(c => c.Status == ChangeStatus.Cancelled));
+        Assert.Equal(TeamCount, closed.Select(c => c.OwnerTeamId).Distinct().Count());
+        Assert.All(closed, c => Assert.True(c.ActualStart >= c.WindowStart && c.ClosedAt >= c.ActualStart && c.ActualEnd >= c.ActualStart));
+
+        var causing = await db.ChangeTicketLinks
+            .Where(l => l.Kind == ChangeTicketLinkKind.Caused)
+            .Join(db.Tickets, l => l.TicketId, t => t.Id, (l, t) => new { l.ChangeId, t.Kind })
+            .ToListAsync(Ct);
+        Assert.All(causing, l => Assert.Equal(TicketKind.Incident, l.Kind));
+        Assert.All(closed.Where(c => c.Outcome != ChangeOutcome.Successful), c => Assert.Contains(causing, l => l.ChangeId == c.Id));
+        var closedIds = closed.Select(c => c.Id).ToList();
+        var closedTasks = await db.WorkTasks.AsNoTracking().Where(t => t.ChangeId != null && closedIds.Contains(t.ChangeId.Value)).ToListAsync(Ct);
+        Assert.NotEmpty(closedTasks);
+        Assert.All(closedTasks, t => Assert.False(t.IsOpen));
     }
 
     [Fact]
