@@ -1,6 +1,7 @@
 using Tgysm.Application.Abstractions;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Reports;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
@@ -134,4 +135,24 @@ public abstract class TaskReportMetric : IReportMetric
     public virtual IQueryable<WorkTask>? DenominatorRows(IQueryable<WorkTask> filtered, TaskReportContext context) => null;
 
     public abstract Task<ReportFigure> ComputeAsync(IQueryable<WorkTask> filtered, TaskReportContext context, CancellationToken cancellationToken);
+}
+
+/// <summary>A metric over problems; same shape as <see cref="ChangeReportMetric"/>, with the viewer's filtered problems as the base rows.</summary>
+public abstract class ProblemReportMetric : IReportMetric
+{
+    public abstract string Key { get; }
+
+    public abstract ReportName Report { get; }
+
+    public abstract ReportDateBasis DateBasis { get; }
+
+    public abstract MetricShape Shape { get; }
+
+    public abstract IQueryable<Problem> Rows(IQueryable<Problem> filtered, ReportContext context);
+
+    /// <summary>The <see cref="Rows"/> of one bucket of a distribution; its count equals the bucket's count. Only distributions have buckets.</summary>
+    public virtual IQueryable<Problem> BucketRows(IQueryable<Problem> filtered, ReportContext context, string bucket) =>
+        throw new NotSupportedException($"Metric '{Key}' has no buckets.");
+
+    public abstract Task<ReportFigure> ComputeAsync(IQueryable<Problem> filtered, ReportContext context, CancellationToken cancellationToken);
 }

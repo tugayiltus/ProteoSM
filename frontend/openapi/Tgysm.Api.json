@@ -13472,8 +13472,49 @@
           "tickets",
           "assets",
           "changes",
-          "tasks"
+          "tasks",
+          "problems"
         ]
+      },
+      "DrilldownProblemRow": {
+        "required": [
+          "number",
+          "title",
+          "status",
+          "impact",
+          "ownerTeamName",
+          "createdAt",
+          "resolvedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProblemStatus"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Level"
+          },
+          "ownerTeamName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resolvedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
       },
       "DrilldownResult": {
         "required": [
@@ -13481,7 +13522,8 @@
           "tickets",
           "assets",
           "changes",
-          "tasks"
+          "tasks",
+          "problems"
         ],
         "type": "object",
         "properties": {
@@ -13525,6 +13567,16 @@
               },
               {
                 "$ref": "#/components/schemas/PagedResultOfDrilldownTaskRow"
+              }
+            ]
+          },
+          "problems": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PagedResultOfDrilldownProblemRow"
               }
             ]
           }
@@ -14730,6 +14782,35 @@
           }
         }
       },
+      "PagedResultOfDrilldownProblemRow": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrilldownProblemRow"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "PagedResultOfDrilldownTaskRow": {
         "required": [
           "items",
@@ -15902,7 +15983,8 @@
           "assets",
           "warranty",
           "changes",
-          "tasks"
+          "tasks",
+          "problems"
         ]
       },
       "ReportResult": {

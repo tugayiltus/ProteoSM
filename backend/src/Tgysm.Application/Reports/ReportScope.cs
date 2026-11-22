@@ -3,6 +3,7 @@ using Tgysm.Application.Abstractions;
 using Tgysm.Application.Common;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Users;
@@ -72,6 +73,10 @@ public sealed class ReportScope(IAppDbContext db, ICurrentActor actor)
             _ => throw new ForbiddenException(),
         };
     }
+
+    /// <summary>Problems are visible to every active IT staff member and admin, whatever their team; employees are forbidden.</summary>
+    public IQueryable<Problem> ProblemsFor(ReportViewer viewer) =>
+        viewer.Role == UserRole.Employee ? throw new ForbiddenException() : db.Problems;
 
     public IQueryable<Asset> AssetsFor(ReportViewer viewer) =>
         viewer.Role == UserRole.Employee ? throw new ForbiddenException() : db.Assets;

@@ -19,7 +19,8 @@
     "assets": "Envanter",
     "warranty": "Garanti",
     "changes": "Değişiklikler",
-    "tasks": "Görevler"
+    "tasks": "Görevler",
+    "problems": "Problemler"
   },
   "scope": {
     "all": "Kapsam: tüm kayıtlar",

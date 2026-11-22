@@ -2,6 +2,7 @@ using Tgysm.Application.Abstractions;
 using Tgysm.Application.Common;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Reports;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
@@ -16,6 +17,9 @@ public sealed record AssetPipeline(IQueryable<Asset> Filtered, AssetReportContex
 
 /// <summary>The scoped, filtered changes of one change metric with the context it computes in.</summary>
 public sealed record ChangePipeline(IQueryable<ChangeRequest> Filtered, ReportContext Context);
+
+/// <summary>The scoped, filtered problems of one problem metric with the context it computes in.</summary>
+public sealed record ProblemPipeline(IQueryable<Problem> Filtered, ReportContext Context);
 
 /// <summary>The scoped, filtered tasks of one task metric with the context it computes in.</summary>
 public sealed record TaskPipeline(IQueryable<WorkTask> Filtered, TaskReportContext Context);
@@ -47,6 +51,13 @@ public static class ReportPipeline
         var window = filter.Window(companyClock.Zone);
         var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(now, companyClock.Zone).DateTime);
         return new TaskPipeline(TaskReportSource.Apply(scope.TasksFor(viewer), filter, basis, window), new TaskReportContext(db, now, window, today));
+    }
+
+    public static ProblemPipeline Problems(
+        ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
+    {
+        var window = filter.Window(companyClock.Zone);
+        return new ProblemPipeline(ProblemReportSource.Apply(scope.ProblemsFor(viewer), filter, basis, window), new ReportContext(db, now, window));
     }
 
     public static AssetPipeline Assets(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now) =>

@@ -28,6 +28,8 @@ public static class ExportColumns
     public const string WindowStart = "window_start";
     public const string ActualEnd = "actual_end";
     public const string DueDate = "due_date";
+    public const string Impact = "impact";
+    public const string ResolvedAt = "resolved_at";
 
     public static readonly IReadOnlyList<string> Tickets =
         [Number, Kind, Subject, Status, Priority, Team, Assignee, CreatedAt, CompletedAt];
@@ -41,6 +43,9 @@ public static class ExportColumns
     /// <summary><c>completed_at</c> is the task's closing time, shared with the ticket column and its header.</summary>
     public static readonly IReadOnlyList<string> Tasks =
         [Number, Title, Status, Priority, Team, Assignee, DueDate, CreatedAt, CompletedAt];
+
+    public static readonly IReadOnlyList<string> Problems =
+        [Number, Title, Status, Impact, Team, CreatedAt, ResolvedAt];
 }
 
 /// <summary>Turns the ordered drill-down rows into export cells, so an export lists exactly the rows the drill-down pages through.</summary>
@@ -51,6 +56,7 @@ public static class ReportExportRows
         DrilldownKind.Assets => ExportColumns.Assets,
         DrilldownKind.Changes => ExportColumns.Changes,
         DrilldownKind.Tasks => ExportColumns.Tasks,
+        DrilldownKind.Problems => ExportColumns.Problems,
         _ => ExportColumns.Tickets,
     };
 
@@ -71,6 +77,7 @@ public static class ReportExportRows
         DrilldownKind.Assets => rows.Assets!.CountAsync(cancellationToken),
         DrilldownKind.Changes => rows.Changes!.CountAsync(cancellationToken),
         DrilldownKind.Tasks => rows.Tasks!.CountAsync(cancellationToken),
+        DrilldownKind.Problems => rows.Problems!.CountAsync(cancellationToken),
         _ => rows.Tickets!.CountAsync(cancellationToken),
     };
 
@@ -101,6 +108,16 @@ public static class ReportExportRows
             await foreach (var k in rows.Tasks!.AsAsyncEnumerable())
             {
                 yield return [k.Number, k.Title, k.Status, k.Priority, k.TeamName, k.AssigneeName, k.DueDate, k.CreatedAt, k.ClosedAt];
+            }
+
+            yield break;
+        }
+
+        if (rows.Kind == DrilldownKind.Problems)
+        {
+            await foreach (var p in rows.Problems!.AsAsyncEnumerable())
+            {
+                yield return [p.Number, p.Title, p.Status, p.Impact, p.OwnerTeamName, p.CreatedAt, p.ResolvedAt];
             }
 
             yield break;

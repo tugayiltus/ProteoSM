@@ -4,6 +4,7 @@ using Tgysm.Application.Reports;
 using Tgysm.Application.Reports.Metrics;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Reports;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
@@ -22,7 +23,7 @@ public sealed class ExportHeadersCoverageTests
     /// <summary>Bucket keys that are not ids: ageing bands, the "no value" keys, excluded outcomes and the enum-named buckets.</summary>
     private static IEnumerable<string> FixedBucketKeys() =>
         ReportBuckets.AgeingDays.Select(b => b.Key)
-            .Concat([OperationsMetrics.None, OperationsMetrics.Unassigned, MetricKeys.Cancelled, MetricKeys.Median, IncidentMetrics.ServiceRequestRequired, RequestMetrics.ApprovalRejected])
+            .Concat([OperationsMetrics.None, OperationsMetrics.Unassigned, MetricKeys.Cancelled, MetricKeys.Median, ProblemMetrics.OneIncident, ProblemMetrics.TwoToFiveIncidents, ProblemMetrics.SixPlusIncidents, IncidentMetrics.ServiceRequestRequired, RequestMetrics.ApprovalRejected])
             .Concat(new[] { typeof(HoldReason), typeof(AssetType), typeof(AssetStatus), typeof(ChangeOutcome), typeof(Level), typeof(WorkTaskStatus) }.SelectMany(t => Enum.GetNames(t)).Select(JsonNamingPolicy.SnakeCaseLower.ConvertName))
             .Distinct();
 
@@ -45,7 +46,7 @@ public sealed class ExportHeadersCoverageTests
     [Fact]
     public void Every_column_key_has_a_header_and_covers_its_row_record()
     {
-        foreach (var key in ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks))
+        foreach (var key in ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems))
         {
             Assert.False(string.IsNullOrWhiteSpace(ExportHeaders.Column(key)), key);
         }
@@ -54,6 +55,7 @@ public sealed class ExportHeadersCoverageTests
         Assert.Equal(typeof(DrilldownAssetRow).GetProperties().Length - 1, ExportColumns.Assets.Count); // the asset id is not a column
         Assert.Equal(typeof(DrilldownChangeRow).GetProperties().Length, ExportColumns.Changes.Count);
         Assert.Equal(typeof(DrilldownTaskRow).GetProperties().Length, ExportColumns.Tasks.Count);
+        Assert.Equal(typeof(DrilldownProblemRow).GetProperties().Length, ExportColumns.Problems.Count);
     }
 
     [Fact]
@@ -72,7 +74,7 @@ public sealed class ExportHeadersCoverageTests
     [Fact]
     public void Every_enum_a_row_record_carries_is_translatable()
     {
-        var rowEnums = new[] { typeof(DrilldownTicketRow), typeof(DrilldownAssetRow), typeof(DrilldownChangeRow), typeof(DrilldownTaskRow) }
+        var rowEnums = new[] { typeof(DrilldownTicketRow), typeof(DrilldownAssetRow), typeof(DrilldownChangeRow), typeof(DrilldownTaskRow), typeof(DrilldownProblemRow) }
             .SelectMany(t => t.GetProperties())
             .Select(p => Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType)
             .Where(t => t.IsEnum)
@@ -101,7 +103,7 @@ public sealed class ExportHeadersCoverageTests
         Assert.Contains($"scope.{GetReportHandler.TeamsScope}", Keys);
 
         var expected = filterKeys.Select(k => $"filters.{k}")
-            .Concat(ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Select(c => $"columns.{c}"))
+            .Concat(ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems).Select(c => $"columns.{c}"))
             .Concat(typeof(ExportHeaders.Labels).GetFields(BindingFlags.Public | BindingFlags.Static).Select(f => $"labels.{f.GetRawConstantValue()}"))
             .Concat([$"scope.{GetReportHandler.AllScope}", $"scope.{GetReportHandler.TeamsScope}"])
             .Concat(MetricKeysOfAllReports().Select(k => $"metrics.{k}"))

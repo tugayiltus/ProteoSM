@@ -11239,13 +11239,25 @@ export interface components {
             actualEnd: null | string;
         };
         /** @enum {unknown} */
-        DrilldownKind: "tickets" | "assets" | "changes" | "tasks";
+        DrilldownKind: "tickets" | "assets" | "changes" | "tasks" | "problems";
+        DrilldownProblemRow: {
+            number: string;
+            title: string;
+            status: components["schemas"]["ProblemStatus"];
+            impact: components["schemas"]["Level"];
+            ownerTeamName: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            resolvedAt: null | string;
+        };
         DrilldownResult: {
             kind: components["schemas"]["DrilldownKind"];
             tickets: null | components["schemas"]["PagedResultOfDrilldownTicketRow"];
             assets: null | components["schemas"]["PagedResultOfDrilldownAssetRow"];
             changes: null | components["schemas"]["PagedResultOfDrilldownChangeRow"];
             tasks: null | components["schemas"]["PagedResultOfDrilldownTaskRow"];
+            problems: null | components["schemas"]["PagedResultOfDrilldownProblemRow"];
         };
         DrilldownTaskRow: {
             number: string;
@@ -11570,6 +11582,15 @@ export interface components {
             /** Format: int32 */
             totalCount: number;
         };
+        PagedResultOfDrilldownProblemRow: {
+            items: components["schemas"]["DrilldownProblemRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+        };
         PagedResultOfDrilldownTaskRow: {
             items: components["schemas"]["DrilldownTaskRow"][];
             /** Format: int32 */
@@ -11883,7 +11904,7 @@ export interface components {
             assetStatus?: null | components["schemas"]["AssetStatus"];
         };
         /** @enum {unknown} */
-        ReportName: "incidents" | "requests" | "operations" | "transfers" | "assets" | "warranty" | "changes" | "tasks";
+        ReportName: "incidents" | "requests" | "operations" | "transfers" | "assets" | "warranty" | "changes" | "tasks" | "problems";
         ReportResult: {
             report: components["schemas"]["ReportName"];
             filter: components["schemas"]["ReportFilter"];

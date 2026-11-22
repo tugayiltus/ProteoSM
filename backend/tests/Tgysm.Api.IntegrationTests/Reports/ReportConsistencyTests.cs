@@ -96,10 +96,18 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         await tasks.TaskAsync(TaskEnding.Completed, T0.AddDays(4), null, TimeSpan.FromHours(8));
         await tasks.TaskAsync(TaskEnding.Cancelled, T0.AddDays(5));
         await tasks.TaskAsync(TaskEnding.Open, T0.AddDays(6), new DateOnly(2026, 3, 8), teamId: world.FieldTeam.Id);
+
+        var problems = new ProblemReportFixture(world);
+        await problems.ProblemAsync(ProblemEnding.Open, T0, Level.Low);
+        await problems.ProblemAsync(ProblemEnding.Investigating, T0.AddDays(1), Level.Medium, linkedIncidents: 1);
+        await problems.ProblemAsync(ProblemEnding.KnownError, T0.AddDays(2), Level.High, linkedIncidents: 3);
+        await problems.ProblemAsync(ProblemEnding.Resolved, T0.AddDays(3), Level.High, TimeSpan.FromHours(4), linkedIncidents: 6);
+        await problems.ProblemAsync(ProblemEnding.Cancelled, T0.AddDays(4), Level.Low);
+        await problems.ProblemAsync(ProblemEnding.KnownError, T0.AddDays(5), Level.Medium, teamId: world.FieldTeam.Id);
         return (fx, assets);
     }
 
-    private static long TotalOf(DrilldownResult result) => (result.Tickets?.TotalCount ?? result.Assets?.TotalCount ?? result.Changes?.TotalCount ?? result.Tasks?.TotalCount)!.Value;
+    private static long TotalOf(DrilldownResult result) => (result.Tickets?.TotalCount ?? result.Assets?.TotalCount ?? result.Changes?.TotalCount ?? result.Tasks?.TotalCount ?? result.Problems?.TotalCount)!.Value;
 
     [Fact]
     public async Task Every_figure_equals_its_drilldown_total_for_admin_and_it_staff()
@@ -243,6 +251,10 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.ByTeam, "not-a-guid"), "bucket", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.Overdue, "open"), "bucket", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.Overdue, part: ReportDrillPart.Denominator), "part", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.ByImpact, "nope"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.IncidentsPerProblem, "0"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.Resolved, "open"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.KnownErrorsOpen, part: ReportDrillPart.Denominator), "part", ErrorCodes.ReportsInvalidFilter);
     }
 
     [Fact]

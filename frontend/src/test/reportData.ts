@@ -79,6 +79,7 @@ export const ticketDrilldown = (page: number, count: number, totalCount: number)
   assets: null,
   changes: null,
   tasks: null,
+  problems: null,
 });
 
 export const ASSET_DRILLDOWN: DrilldownResult = {
@@ -86,6 +87,7 @@ export const ASSET_DRILLDOWN: DrilldownResult = {
   tickets: null,
   changes: null,
   tasks: null,
+  problems: null,
   assets: {
     items: [
       {
@@ -159,6 +161,7 @@ export const CHANGE_DRILLDOWN: DrilldownResult = {
   tickets: null,
   assets: null,
   tasks: null,
+  problems: null,
   changes: {
     items: [
       { number: 'CHG-000001', title: 'Güvenlik duvarı güncellemesi', status: 'closed', outcome: 'rolled_back', risk: 'high', ownerTeamName: 'Ağ Ekibi', windowStart: '2026-09-10T20:00:00Z', actualEnd: '2026-09-10T22:00:00Z' },
@@ -174,6 +177,7 @@ export const TASK_DRILLDOWN: DrilldownResult = {
   tickets: null,
   assets: null,
   changes: null,
+  problems: null,
   tasks: {
     items: [
       { number: 'TSK-000001', title: 'Kablo çek', status: 'in_progress', priority: 'p2', teamName: 'Ağ Ekibi', assigneeName: 'Can Demir', dueDate: '2026-09-12', createdAt: '2026-09-01T08:00:00Z', closedAt: null },

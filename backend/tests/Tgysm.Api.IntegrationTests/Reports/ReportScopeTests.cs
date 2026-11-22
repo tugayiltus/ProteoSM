@@ -104,4 +104,20 @@ public sealed class ReportScopeTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal([own.Id], await ScopeFor(db, world.Desk.Id).TasksFor(staff).Select(t => t.Id).ToListAsync(Ct));
         Assert.Throws<ForbiddenException>(() => ScopeFor(db, world.Desk.Id).TasksFor(new ReportViewer(world.Employee.Id, Tgysm.Domain.Users.UserRole.Employee, [])));
     }
+
+    [Fact]
+    public async Task Problems_are_visible_to_all_staff_whatever_their_team_and_employees_are_forbidden()
+    {
+        var world = await ReportWorld.CreateAsync(factory);
+        var fx = new ProblemReportFixture(world);
+        await fx.ProblemAsync(ProblemEnding.Open, ReportFixture.T0);
+        await fx.ProblemAsync(ProblemEnding.Open, ReportFixture.T0, teamId: world.FieldTeam.Id);
+
+        await using var db = world.Db();
+        var admin = await ScopeFor(db, world.Admin.Id).ViewerAsync(Ct);
+        var staff = await ScopeFor(db, world.Desk.Id).ViewerAsync(Ct);
+        Assert.Equal(2, await ScopeFor(db, world.Admin.Id).ProblemsFor(admin).CountAsync(Ct));
+        Assert.Equal(2, await ScopeFor(db, world.Desk.Id).ProblemsFor(staff).CountAsync(Ct));
+        Assert.Throws<ForbiddenException>(() => ScopeFor(db, world.Desk.Id).ProblemsFor(new ReportViewer(world.Employee.Id, Tgysm.Domain.Users.UserRole.Employee, [])));
+    }
 }
