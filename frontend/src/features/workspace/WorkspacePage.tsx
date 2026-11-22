@@ -1,6 +1,6 @@
 /**
  * @input `queue` query parameter on the queue page.
- * @output The IT workspace (ticket, task and change queue cards, then all work assigned to me) and the queue page (its ticket list).
+ * @output The IT workspace (ticket, task, change and problem queue cards, then all work assigned to me) and the queue page (its ticket list).
  * @position `/workspace` and `/workspace/queue`, inside the app shell.
  */
 import { Grid } from '@astryxdesign/core/Grid';
@@ -11,6 +11,7 @@ import { useSearchParams } from 'react-router';
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { ChangeQueueCard } from '../changes/ChangeQueueCard';
+import { ProblemQueueCard } from '../problems/ProblemQueueCard';
 import type { TaskQueue } from '../tasks/api';
 import { TaskQueueCard } from '../tasks/TaskQueueCard';
 import { WorkItemList } from '../tasks/WorkItemList';
@@ -40,6 +41,7 @@ export function WorkspacePage() {
         ))}
         <ChangeQueueCard queue="mine" />
         <ChangeQueueCard queue="this_week" />
+        <ProblemQueueCard />
       </Grid>
       <WorkItemList />
     </VStack>

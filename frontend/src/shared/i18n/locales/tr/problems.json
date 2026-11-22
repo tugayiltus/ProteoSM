@@ -1,0 +1,138 @@
+{
+  "statuses": {
+    "open": "Açık",
+    "investigating": "İnceleniyor",
+    "known_error": "Bilinen hata",
+    "resolved": "Çözüldü",
+    "cancelled": "İptal edildi"
+  },
+  "levels": {
+    "low": "Düşük",
+    "medium": "Orta",
+    "high": "Yüksek"
+  },
+  "queues": {
+    "mine": "Problemlerim",
+    "team": "Ekibimin problemleri",
+    "open": "Açık problemler",
+    "known_errors": "Bilinen hatalar"
+  },
+  "list": {
+    "title": "Problemler",
+    "caption": "Problem listesi",
+    "search": "Numara veya başlıkta ara",
+    "queueFilter": "Kuyruk",
+    "statusFilter": "Durum",
+    "impactFilter": "Etki",
+    "all": "Tümü",
+    "new": "Yeni problem",
+    "empty": "Bu filtreyle problem yok.",
+    "open": "Aç",
+    "incidentCount": "{{count}} arıza",
+    "cardCount": "{{count}} problem",
+    "columns": {
+      "number": "Numara",
+      "title": "Başlık",
+      "status": "Durum",
+      "impact": "Etki",
+      "team": "Sahip ekip",
+      "owner": "Sahip",
+      "incidents": "Arıza",
+      "updated": "Güncellendi"
+    }
+  },
+  "detail": {
+    "back": "Listeye dön",
+    "contentSection": "Problem",
+    "sideSection": "Bilgiler",
+    "impact": "Etki",
+    "team": "Sahip ekip",
+    "owner": "Sahip",
+    "createdAt": "Oluşturulma",
+    "knownErrorAt": "Bilinen hata tarihi",
+    "resolvedAt": "Çözülme",
+    "description": "Belirti",
+    "rootCause": "Kök neden",
+    "workaround": "Geçici çözüm",
+    "resolution": "Kalıcı çözüm",
+    "cancelReason": "İptal nedeni"
+  },
+  "actions": {
+    "title": "İşlemler",
+    "start": "İncelemeye al",
+    "known-error": "Bilinen hata olarak işaretle",
+    "resolve": "Çözüldü olarak kapat",
+    "cancel": "İptal et",
+    "transfer": "Aktar",
+    "owner": "Sahip ata",
+    "edit": "Düzenle",
+    "knownErrorHint": "Bilinen hata için önce kök nedeni ve geçici çözümü yazın (Düzenle)."
+  },
+  "fields": {
+    "resolution": "Kalıcı çözüm",
+    "reason": "Neden",
+    "team": "Yeni ekip",
+    "owner": "Sahip",
+    "select": "Seçin",
+    "nobody": "Sahip yok"
+  },
+  "form": {
+    "createTitle": "Yeni problem",
+    "editTitle": "Problemi düzenle",
+    "submitCreate": "Oluştur",
+    "submitEdit": "Kaydet",
+    "problemTitle": "Başlık",
+    "description": "Belirti",
+    "impact": "Etki",
+    "team": "Sahip ekip",
+    "owner": "Sahip",
+    "select": "Seçin",
+    "nobody": "Sahip yok",
+    "rootCause": "Kök neden",
+    "workaround": "Geçici çözüm"
+  },
+  "links": {
+    "incidents": "İlgili arızalar",
+    "changes": "Düzelten değişiklikler",
+    "addIncident": "Arıza bağla",
+    "addChange": "Değişiklik bağla",
+    "incidentNumber": "Arıza numarası",
+    "changeNumber": "Değişiklik numarası",
+    "confirmAdd": "Bağla",
+    "remove": "Kaldır",
+    "removeIncidentMessage": "Bu arıza problemden ayrılsın mı?",
+    "removeChangeMessage": "Bu değişiklik problemden ayrılsın mı?",
+    "noIncidents": "Bağlı arıza yok.",
+    "noChanges": "Bağlı değişiklik yok.",
+    "notOpenable": "Açma yetkiniz yok"
+  },
+  "article": {
+    "title": "Bilinen hata makalesi",
+    "create": "Makale oluştur",
+    "none": "Henüz makale yok.",
+    "hint": "Makale, problem bilinen hata veya çözüldü durumundayken oluşturulur."
+  },
+  "timeline": {
+    "title": "Geçmiş ve notlar",
+    "empty": "Henüz kayıt yok.",
+    "noteForm": "Not ekle",
+    "note": "Not",
+    "send": "Not ekle",
+    "events": {
+      "created": "Problem açıldı",
+      "updated": "Problem güncellendi",
+      "started": "İncelemeye alındı",
+      "known_error": "Bilinen hata olarak işaretlendi",
+      "resolved": "Çözüldü olarak kapatıldı",
+      "cancelled": "İptal edildi",
+      "commented": "Not eklendi",
+      "transferred": "Başka ekibe aktarıldı",
+      "owner_changed": "Sahip değişti",
+      "ticket_linked": "Arıza bağlandı",
+      "ticket_unlinked": "Arıza ayrıldı",
+      "change_linked": "Değişiklik bağlandı",
+      "change_unlinked": "Değişiklik ayrıldı",
+      "article_created": "Bilinen hata makalesi oluşturuldu"
+    }
+  }
+}

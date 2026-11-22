@@ -1,0 +1,222 @@
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { api, unwrap } from '../../shared/api/client';
+import type { components } from '../../shared/api/schema';
+import { ROUTES } from '../../shared/routes';
+import { changeKeys } from '../changes/api';
+import { ticketKeys } from '../tickets/api';
+
+type Schemas = components['schemas'];
+export type ProblemDetail = Schemas['ProblemDetail'];
+export type ProblemListItem = Schemas['ProblemListItem'];
+export type ProblemStatus = Schemas['ProblemStatus'];
+export type ProblemTimelineItem = Schemas['ProblemTimelineItem'];
+export type ProblemTicketItem = Schemas['ProblemTicketItem'];
+export type ProblemChangeItem = Schemas['ProblemChangeItem'];
+export type Level = Schemas['Level'];
+export type ProblemQueue = 'mine' | 'team' | 'open' | 'known_errors';
+
+export const PROBLEM_QUEUES: readonly ProblemQueue[] = ['mine', 'team', 'open', 'known_errors'];
+export const PROBLEM_STATUSES: readonly ProblemStatus[] = ['open', 'investigating', 'known_error', 'resolved', 'cancelled'];
+export const LEVELS: readonly Level[] = ['low', 'medium', 'high'];
+/** A resolved or cancelled problem is read-only: no edits, state changes or new links. */
+export const CLOSED_STATUSES: readonly ProblemStatus[] = ['resolved', 'cancelled'];
+const QUEUE_PARAM = 'queue';
+
+export const isClosed = (status: ProblemStatus) => CLOSED_STATUSES.includes(status);
+
+/** The problem list opened on one queue, as the İş listem card links to it. */
+export const problemQueuePath = (queue: ProblemQueue) => `${ROUTES.problems}?${new URLSearchParams({ [QUEUE_PARAM]: queue }).toString()}`;
+
+export const problemKeys = {
+  all: ['problems'],
+  list: (params: ProblemListParams) => ['problems', 'list', params],
+  detail: (number: string) => ['problems', 'detail', number],
+  timeline: (number: string) => ['problems', 'timeline', number],
+  tickets: (number: string) => ['problems', 'tickets', number],
+  changes: (number: string) => ['problems', 'changes', number],
+} as const;
+
+export interface ProblemListParams {
+  queue: ProblemQueue | undefined;
+  status: ProblemStatus | undefined;
+  impact: Level | undefined;
+  search: string;
+  page: number;
+  pageSize: number;
+}
+
+export function useProblems(params: ProblemListParams) {
+  return useQuery({
+    queryKey: problemKeys.list(params),
+    queryFn: () =>
+      unwrap(
+        api.GET('/api/v1/problems', {
+          params: {
+            query: {
+              queue: params.queue,
+              status: params.status,
+              impact: params.impact,
+              search: params.search === '' ? undefined : params.search,
+              page: params.page,
+              pageSize: params.pageSize,
+            },
+          },
+        }),
+      ),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useProblem(number: string) {
+  return useQuery({ queryKey: problemKeys.detail(number), queryFn: () => unwrap(api.GET('/api/v1/problems/{number}', { params: { path: { number } } })) });
+}
+
+export function useProblemTimeline(number: string) {
+  return useQuery({
+    queryKey: problemKeys.timeline(number),
+    queryFn: () => unwrap(api.GET('/api/v1/problems/{number}/timeline', { params: { path: { number } } })),
+  });
+}
+
+export function useProblemTickets(number: string) {
+  return useQuery({
+    queryKey: problemKeys.tickets(number),
+    queryFn: () => unwrap(api.GET('/api/v1/problems/{number}/tickets', { params: { path: { number } } })),
+  });
+}
+
+export function useProblemChanges(number: string) {
+  return useQuery({
+    queryKey: problemKeys.changes(number),
+    queryFn: () => unwrap(api.GET('/api/v1/problems/{number}/changes', { params: { path: { number } } })),
+  });
+}
+
+/** Problem writes show on ticket and change pages too (problem card, history), so all three caches refresh. */
+function useInvalidateProblems() {
+  const queryClient = useQueryClient();
+  return async () => {
+    await queryClient.invalidateQueries({ queryKey: problemKeys.all });
+    await queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+    await queryClient.invalidateQueries({ queryKey: changeKeys.all });
+  };
+}
+
+/** Stores the answer at once, so the next action sends the new version instead of the old one and gets 409. */
+function useStoreProblem() {
+  const queryClient = useQueryClient();
+  const invalidate = useInvalidateProblems();
+  return async (updated: ProblemDetail) => {
+    queryClient.setQueryData(problemKeys.detail(updated.number), updated);
+    await invalidate();
+  };
+}
+
+export interface NewProblemInput {
+  title: string;
+  description: string;
+  impact: Level;
+  ownerTeamId: string;
+  ownerId: string | null;
+  incidentNumber: string | null;
+}
+
+export function useCreateProblem() {
+  const invalidate = useInvalidateProblems();
+  return useMutation({ mutationFn: (body: NewProblemInput) => unwrap(api.POST('/api/v1/problems', { body })), onSuccess: invalidate });
+}
+
+export interface ProblemEdit {
+  title: string;
+  description: string;
+  impact: Level;
+  rootCause: string | null;
+  workaround: string | null;
+}
+
+/** `version` is the one the dialog opened with, so a background refetch does not skip the conflict check. */
+export function useEditProblem(number: string, version: number) {
+  const store = useStoreProblem();
+  return useMutation({
+    mutationFn: (edit: ProblemEdit) => unwrap(api.PUT('/api/v1/problems/{number}', { params: { path: { number } }, body: { version, ...edit } })),
+    onSuccess: store,
+  });
+}
+
+/** One problem action. Every body carries the problem's version (optimistic concurrency). */
+export type ProblemAction =
+  | { kind: 'start' }
+  | { kind: 'known-error' }
+  | { kind: 'resolve'; resolution: string }
+  | { kind: 'cancel'; reason: string }
+  | { kind: 'transfer'; teamId: string; reason: string }
+  | { kind: 'owner'; ownerId: string | null }
+  | { kind: 'article' };
+export type ProblemActionKind = ProblemAction['kind'];
+
+function runAction(problem: Pick<ProblemDetail, 'number' | 'version'>, action: ProblemAction) {
+  const path = { params: { path: { number: problem.number } } };
+  const version = problem.version;
+  switch (action.kind) {
+    case 'start':
+      return api.POST('/api/v1/problems/{number}/start', { ...path, body: { version } });
+    case 'known-error':
+      return api.POST('/api/v1/problems/{number}/known-error', { ...path, body: { version } });
+    case 'resolve':
+      return api.POST('/api/v1/problems/{number}/resolve', { ...path, body: { version, resolution: action.resolution } });
+    case 'cancel':
+      return api.POST('/api/v1/problems/{number}/cancel', { ...path, body: { version, reason: action.reason } });
+    case 'transfer':
+      return api.POST('/api/v1/problems/{number}/transfer', { ...path, body: { version, teamId: action.teamId, reason: action.reason } });
+    case 'owner':
+      return api.POST('/api/v1/problems/{number}/owner', { ...path, body: { version, ownerId: action.ownerId } });
+    case 'article':
+      return api.POST('/api/v1/problems/{number}/article', { ...path, body: { version } });
+  }
+}
+
+export function useProblemAction(problem: Pick<ProblemDetail, 'number' | 'version'>) {
+  const store = useStoreProblem();
+  return useMutation({ mutationFn: (action: ProblemAction) => unwrap(runAction(problem, action)), onSuccess: store });
+}
+
+export function useAddProblemNote(number: string) {
+  const invalidate = useInvalidateProblems();
+  return useMutation({
+    mutationFn: (text: string) => unwrap(api.POST('/api/v1/problems/{number}/notes', { params: { path: { number } }, body: { text } })),
+    onSuccess: invalidate,
+  });
+}
+
+export function useLinkProblemTicket(number: string) {
+  const invalidate = useInvalidateProblems();
+  return useMutation({
+    mutationFn: (ticketNumber: string) => unwrap(api.POST('/api/v1/problems/{number}/tickets', { params: { path: { number } }, body: { ticketNumber } })),
+    onSuccess: invalidate,
+  });
+}
+
+export function useUnlinkProblemTicket(number: string) {
+  const invalidate = useInvalidateProblems();
+  return useMutation({
+    mutationFn: (ticketNumber: string) => unwrap(api.DELETE('/api/v1/problems/{number}/tickets/{ticketNumber}', { params: { path: { number, ticketNumber } } })),
+    onSuccess: invalidate,
+  });
+}
+
+export function useLinkProblemChange(number: string) {
+  const invalidate = useInvalidateProblems();
+  return useMutation({
+    mutationFn: (changeNumber: string) => unwrap(api.POST('/api/v1/problems/{number}/changes', { params: { path: { number } }, body: { changeNumber } })),
+    onSuccess: invalidate,
+  });
+}
+
+export function useUnlinkProblemChange(number: string) {
+  const invalidate = useInvalidateProblems();
+  return useMutation({
+    mutationFn: (changeNumber: string) => unwrap(api.DELETE('/api/v1/problems/{number}/changes/{changeNumber}', { params: { path: { number, changeNumber } } })),
+    onSuccess: invalidate,
+  });
+}

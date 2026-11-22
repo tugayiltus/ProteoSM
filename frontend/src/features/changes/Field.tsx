@@ -1,7 +1,7 @@
 /**
  * @input A label and a text value (or null).
  * @output A metadata row; each typed line is its own text line, so the author's line breaks stay.
- * @position Change detail and summary pages.
+ * @position Change detail and summary pages, problem detail page.
  */
 import { MetadataListItem } from '@astryxdesign/core/MetadataList';
 import { Text } from '@astryxdesign/core/Text';

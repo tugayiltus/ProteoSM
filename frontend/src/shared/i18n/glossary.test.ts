@@ -7,6 +7,7 @@ import changes from './locales/tr/changes.json';
 import common from './locales/tr/common.json';
 import errors from './locales/tr/errors.json';
 import kb from './locales/tr/kb.json';
+import problems from './locales/tr/problems.json';
 import reports from './locales/tr/reports.json';
 import tasks from './locales/tr/tasks.json';
 import tickets from './locales/tr/tickets.json';
@@ -32,7 +33,7 @@ function texts(namespace: string, value: unknown, path = namespace): [string, st
   return [];
 }
 
-const ALL = Object.entries({ admin, assets, auth, changes, common, errors, kb, reports, tasks, tickets }).flatMap(([name, value]) => texts(name, value));
+const ALL = Object.entries({ admin, assets, auth, changes, common, errors, kb, problems, reports, tasks, tickets }).flatMap(([name, value]) => texts(name, value));
 
 describe('UI glossary', () => {
   it('uses one word per thing', () => {

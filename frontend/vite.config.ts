@@ -69,6 +69,7 @@ export default defineConfig({
             { name: 'feature-reports', test: /[\\/]src[\\/]features[\\/]reports[\\/](?!DistributionChart)/, priority: 40 },
             { name: 'feature-tickets', test: /[\\/]src[\\/]features[\\/](tickets|workspace|approvals)[\\/]/, priority: 40 },
             { name: 'feature-changes', test: /[\\/]src[\\/]features[\\/]changes[\\/]/, priority: 40 },
+            { name: 'feature-problems', test: /[\\/]src[\\/]features[\\/]problems[\\/]/, priority: 40 },
             { name: 'feature-tasks', test: /[\\/]src[\\/]features[\\/]tasks[\\/]/, priority: 40 },
             { name: 'feature-search', test: /[\\/]src[\\/]features[\\/]search[\\/]/, priority: 40 },
           ],

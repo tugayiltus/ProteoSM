@@ -41,6 +41,19 @@ describe('WorkspacePage', () => {
     expect(card).toHaveAttribute('href', '/changes?queue=this_week');
   });
 
+  it('shows the team problems card with its total and links to the queue', async () => {
+    const api = mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: IT_ME },
+      'GET /api/v1/tickets': { status: 200, body: { items: [], page: 1, pageSize: 1, totalCount: 0 } },
+      'GET /api/v1/problems': { status: 200, body: { items: [], page: 1, pageSize: 1, totalCount: 4 } },
+    });
+    renderRoute('/workspace');
+
+    const card = await screen.findByRole('link', { name: 'Ekibimin problemleri 4 problem' });
+    expect(card).toHaveAttribute('href', '/problems?queue=team');
+    expect(api.calls.some((c) => c.url.includes('/api/v1/problems') && new URL(c.url).searchParams.get('queue') === 'team')).toBe(true);
+  });
+
   it('opens the SLA risk queue from its card', async () => {
     mockApi({
       'GET /api/v1/auth/me': { status: 200, body: IT_ME },
