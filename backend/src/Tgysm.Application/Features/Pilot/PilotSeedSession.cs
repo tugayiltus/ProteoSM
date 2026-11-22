@@ -126,6 +126,8 @@ internal sealed partial class PilotSeedSession(
     private Guid _intakeTeamId;
     private readonly List<Guid> _assetIds = [];
     private readonly List<Guid> _ticketIds = [];
+    private readonly List<string> _incidentNumbers = [];
+    private readonly List<string> _changeNumbers = [];
 
     /// <summary>Every ticket this run opened; their notifications are closed once the run ends.</summary>
     public IReadOnlyList<Guid> TicketIds => _ticketIds;
@@ -144,6 +146,7 @@ internal sealed partial class PilotSeedSession(
         await SeedTicketsAsync();
         await SeedChangesAsync();
         await SeedTasksAsync();
+        await SeedProblemsAsync();
         return admin;
     }
 
@@ -374,6 +377,11 @@ internal sealed partial class PilotSeedSession(
         }
 
         _ticketIds.Add(ticket.Id);
+        if (ticket.Kind == TicketKind.Incident)
+        {
+            _incidentNumbers.Add(ticket.Number);
+        }
+
         if (ticket.Approval is { Status: ApprovalStatus.Pending, ApproverId: { } approver } approval)
         {
             if (plan == PilotTicketPlan.OnHold && _random.Next(Hundred) < PendingApprovalPercent)

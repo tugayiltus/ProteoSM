@@ -37,3 +37,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0031](0031-tasks-and-changes-as-separate-records.md) | Tasks and Changes as Separate Records with One Combined Work List | accepted | 2026-11-13 |
 | [0032](0032-change-approval.md) | Change Approval in Its Own Table with a Plan Fingerprint | accepted | 2026-11-13 |
 | [0033](0033-ticket-change-links-and-central-search.md) | Ticket-Change Links and Central Search | accepted | 2026-11-19 |
+| [0034](0034-light-problem-management.md) | Light Problem Management | accepted | 2026-11-22 |

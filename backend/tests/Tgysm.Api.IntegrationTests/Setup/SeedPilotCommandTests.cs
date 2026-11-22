@@ -12,6 +12,7 @@ using Tgysm.Application.Features.Pilot;
 using Tgysm.Domain.Audit;
 using Tgysm.Domain.Catalog;
 using Tgysm.Domain.Changes;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Notifications;
 using Tgysm.Domain.Tickets;
@@ -171,6 +172,24 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
             tasks.Where(t => t.ChangeId == null).Select(t => t.Status).ToHashSet());
         Assert.Contains(tasks, t => t.ChangeId != null);
         Assert.False(await db.OutboxEvents.AnyAsync(e => e.Status == OutboxStatus.Pending, Ct));
+    }
+
+    [Fact]
+    public async Task Seeds_problems_in_every_state_with_linked_incidents_a_fixing_change_and_an_article()
+    {
+        var exit = await SeedPilotCommand.RunAsync(ServicesIn(SeedPilotCommand.PilotEnvironment), [ScaleOption, ChangeScale], TextWriter.Null, TextWriter.Null);
+
+        Assert.Equal(CliSuccess, exit);
+        await using var db = factory.Database.CreateDbContext();
+        var problems = await db.Problems.AsNoTracking().ToListAsync(Ct);
+        Assert.Equal(PilotSeedVolumes.Scaled(PilotSeedVolumes.Problems, ChangeScaleFactor), problems.Count);
+        Assert.Equal(Enum.GetValues<ProblemStatus>().ToHashSet(), problems.Select(p => p.Status).ToHashSet());
+        Assert.All(problems, p => Assert.Matches(@"^PRB-\d{4}-\d{6}$", p.Number));
+        Assert.True(await db.ProblemTicketLinks.AnyAsync(Ct));
+        Assert.True(await db.ProblemChangeLinks.AnyAsync(Ct));
+        var withArticle = problems.Where(p => p.ArticleId != null).ToList();
+        Assert.NotEmpty(withArticle);
+        Assert.All(withArticle, p => Assert.Contains(p.Status, new[] { ProblemStatus.KnownError, ProblemStatus.Resolved }));
     }
 
     [Fact]

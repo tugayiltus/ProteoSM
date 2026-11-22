@@ -23,6 +23,7 @@ public static class PilotSeedVolumes
     public const int Articles = 20;
     public const int Changes = 60;
     public const int StandaloneTasks = 150;
+    public const int Problems = 50;
 
     /// <summary>A scaled volume, never below one so every kind of data exists at any scale.</summary>
     public static int Scaled(int volume, double scale) =>

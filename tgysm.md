@@ -128,7 +128,7 @@ Envanter, cihazın ne olduğunu ve nerede bulunduğunu gösterir. Asset Manageme
 - Otomatik cihaz keşfi, Intune, ağ taraması, cihaz ajanı.
 - Tam CMDB ve servis bağımlılık haritası.
 - Satın alma, sözleşme, yazılım lisansı ve amortisman muhasebesi.
-- Full Problem Management, CAB, standart/acil değişiklik ve Release Management. Görevler ve normal değişiklik (onay, bakım penceresi, geri dönüş) Faz 7–9 ile kapsama alındı (ADR-0031). Kayıt ↔ değişiklik bağlantıları ("İlgili kayıtlar", "Sorun çıkaran değişiklikler") ve merkezi arama Faz 10 ile hafif ITIL kapsamına alındı (ADR-0033).
+- Tam Problem Management (SLA, e-posta, eğilim analizi, yeniden açma), CAB, standart/acil değişiklik ve Release Management. Görevler ve normal değişiklik (onay, bakım penceresi, geri dönüş) Faz 7–9 ile kapsama alındı (ADR-0031). Kayıt ↔ değişiklik bağlantıları ("İlgili kayıtlar", "Sorun çıkaran değişiklikler") ve merkezi arama Faz 10 ile hafif ITIL kapsamına alındı (ADR-0033). Hafif Problem Management (`PRB-` kaydı, arıza ve değişiklik bağlantıları, bilinen hata makalesi, problem raporu) Faz 11 ile kapsama alındı (ADR-0034).
 - Çok aşamalı onay, genel amaçlı BPM/otomasyon motoru.
 - Gelen e-postadan kayıt açma, SMS, WhatsApp, chatbot.
 - Native mobil uygulama, çevrimdışı işlem ve uzaktan masaüstü.
@@ -589,6 +589,7 @@ Ekip büyüklüğü, çalışma kapasitesi ve yayın ortamı bilinmediğinden ta
 | 8 — Değişiklik | Normal değişiklik (`CHG-`), durum makinesi, faz görevleri, yönetici onayı, plan parmak izi, kapanış ve geri dönüş | Faz 7 | A4–A8 ve kayıt onayı gerilemesi yeşil |
 | 9 — Takvim/Rapor | Bakım takvimi, pencere çakışma uyarısı, "Bu hafta" kartı, değişiklik/görev raporları ve Excel | Faz 8 | A9 ve rapor gerilemeleri yeşil; performans sınırlar içinde |
 | 10 — İlgili kayıtlar/Arama | Arıza/talep ↔ değişiklik bağlantısı (`prompted`/`caused`), "Sorun çıkaran değişiklikler" raporu, üst çubukta merkezi arama (kayıt, değişiklik, görev, envanter, makale) | Faz 9 | Bağlantı ve arama kapsam testleri yeşil; bağlantı bilgisi çalışana görünmez; arama performans sınırlarında |
+| 11 — Problem | Hafif problem yönetimi (`PRB-`), durum akışı (açık, inceleniyor, bilinen hata, çözüldü, iptal), arıza ve değişiklik bağlantıları, bilinen hata makalesi, problem raporu, merkezi aramada problemler | Faz 10 | Kapsam ve bağlantı testleri yeşil; çalışan problem görmez; arızadan problem açma E2E |
 
 Bilgi bankası çalışması ekip kapasitesi uygunsa veri sözleşmeleri sabitlendikten sonra paralel yürütülebilir. Envanter, onay, SLA ve rapor veri modeli kritik bağımlılıklardır. Kapsam değişiminde etkilenen faz ve kabul ölçütleri güncellenir; özellikler sessizce sonraki sürüme taşınmaz.
 
