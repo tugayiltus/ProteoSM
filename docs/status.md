@@ -20,9 +20,9 @@ Güncel: 2026-11-23.
 
 | İş | Plan | ADR | Durum |
 |---|---|---|---|
-| CoreUI arayüz yenileme (sol menü, breadcrumb, cihaz kataloğu, üretilen etiket, Chart.js) | `docs/superpowers/plans/2026-10-09-coreui-ui-ux.md` (18 görev) | 0021–0023 | `master`; arayüz katmanı sonra Astryx ile değişti |
+| Arayüz yenileme (sol menü, breadcrumb, cihaz kataloğu, üretilen etiket, Chart.js) | `docs/superpowers/plans/2026-10-09-coreui-ui-ux.md` (18 görev) | 0021–0023 | `master`; arayüz katmanı Astryx'e geçti |
 | Arayüz bütünlüğü (renk modları, kart düzeni) | `docs/superpowers/plans/2026-10-09-ui-cohesion.md` (11 görev) | 0026 | `master`; Astryx ile yerini aldı |
-| Astryx geçişi (CoreUI ve Sass kaldırıldı) | `docs/superpowers/plans/2026-11-10-astryx-migration.md` (13 görev) | 0027 | `master` (`3ee50f7`) |
+| Astryx arayüzü (güncel tasarım sistemi) | `docs/superpowers/plans/2026-11-10-astryx-migration.md` (13 görev) | 0027 | `master` (`3ee50f7`) |
 | Rapor filtreleri, Tür → Marka → Model akışı, QR etiket (yazdırma, toplu, tarayarak arıza) | `docs/superpowers/plans/2026-11-11-reports-catalog-qr.md` (11 görev) | 0028 | `master` (`4d70063`) |
 | Model listesinde tür filtresi, Tür – Marka – Ad sırası | — | — | `master` (`6be4532`) |
 | Yıllık varlık etiketi `ASSET-YYYY-NNNN` | — | 0029 | `master` (`d43ad8c`) |
