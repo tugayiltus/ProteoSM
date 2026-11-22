@@ -56,7 +56,8 @@ Run through `tools/` scripts.
 - `users` has an application-managed `version` (bump only on admin-editable changes via `BumpVersion`); other tables use `xmin`.
 - Handlers: one class per use case in `Tgysm.Application/Features/<Area>/`, `HandleAsync(command, ct)`; validators `internal sealed`.
 - Git: stage named paths only — never `git add -A`/`.`; no dotfiles/dot-dirs unless told. No push or merge to `master` without owner approval.
-- Approvals batched at the end (owner rule, all work in this project): never stop mid-work to ask. Do everything that needs no approval (code, tests, local commits on a feature branch, requested docs); decide small open points yourself and record them. Collect push, merge, deploy, destructive steps and open decisions into one final `AskUserQuestion`.
+- Approvals batched at the end (owner rule, all work in this project): never stop mid-work to ask. Never wait for "devam et" either: when a task, review or fix round ends, start the next step at once. Do everything that needs no approval (code, tests, local commits on a feature branch, requested docs); decide small open points yourself and record them. Collect push, merge, deploy, destructive steps and open decisions into one final `AskUserQuestion`.
+- Short work first, long work last (owner rule, all work in this project). Start quick tests, reviews and implementations first. Per task: run focused tests and `tools/lint.sh`. Leave long runs for one pass at phase end, before the final review: full `tools/test.sh`, `tools/e2e.sh`, `tools/ui-qa.sh`, guide PDF, Docker and perf. A long run may go early only when it is the only check for a risk the current task adds; record that as a ruling.
 - Owner: Tugay İLTUŞ. Never add AI attribution to any file, commit, or PR.
 
 ## Architectural decisions

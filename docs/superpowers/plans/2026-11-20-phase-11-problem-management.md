@@ -145,3 +145,31 @@
 - [ ] **Step 2:** Pilot seed test (existing seed test class) asserts problem counts per state.
 - [ ] **Step 3:** `tools/test.sh`, `tools/e2e.sh` (stop dev services first, restart after), `tools/ui-qa.sh` — all pass; `tools/check-doc-paths.sh`.
 - [ ] **Step 4:** Commit `test(e2e): problem management; ADR-0034`. Docs (`capabilities.md`, `README.md`, `docs/status.md`, guide) follow at phase end as the last step (owner rule).
+
+### Task 10: Directory sign-in contract tests against local fake servers (SSO + LDAP)
+
+Added 2026-11-22 at the owner's request. It runs last, after Task 9 and its long gates, because it needs Docker (Colima) and runs for a long time. Docker starts only for this task and stops afterwards. The work is test and tooling only. Production auth code changes only if a test finds a real defect; that fix gets its own commit and test.
+
+**Files:**
+- Create `tools/directory-contract-test.sh`. It starts Colima, starts the containers, seeds the directory, exports `TGYSM_TEST_LDAP_*`, runs the contract tests, then stops the containers and Colima on every exit path (`trap`).
+- Create `deploy/test-directory/compose.yaml`: OpenLDAP with a self-signed test CA and test users, plus a local OIDC mock server (`mock-oauth2-server` or Keycloak, builder's call, documented). Test data stays fake: no real company names, accounts or secrets.
+- Create `deploy/test-directory/seed.ldif`.
+- Modify `backend/tests/Tgysm.Api.IntegrationTests/Auth/` to add an OIDC contract test class that is skipped unless `TGYSM_TEST_OIDC_*` is set. This follows the `NovellLdapDirectoryTests` pattern.
+
+- [ ] **Step 1 (LDAP):** Run `NovellLdapDirectoryTests` (all 4) against OpenLDAP. Run with LDAPS, then with StartTLS. Expected: none skipped, all pass. This includes the filter-injection test and the never-answering-directory timeout test.
+- [ ] **Step 2 (LDAP end to end):** On a throw-away database, through the API, run `POST /admin/auth-settings/test` with `method=ldap`. It passes. Switch the method to LDAP. Sign in with `POST /auth/login/ldap`, once by Windows user name and once by email. Then check these cases:
+  - a wrong password gives 401
+  - 5 wrong passwords lock the name
+  - with the container stopped, the API returns 503
+  - the local admin break-glass sign-in still works
+- [ ] **Step 3 (OIDC):** Against the mock server, run the full code flow with PKCE: `GET /auth/oidc/start` redirects, the callback signs the user in, and the session holds the TGYSM principal. Check these cases:
+  - another tenant is refused
+  - a disallowed email domain is refused
+  - a token with a bad signature is refused
+  - a wrong issuer is refused
+  - each refusal ends at `/login?error=sso`
+  - `EntraConnectionTester` (`POST /admin/auth-settings/test` with `method=entra`) passes against the mock and fails cleanly against a wrong authority
+
+  If the Entra-specific checks (the tenant claim) cannot be faked faithfully, record the gap in the task report. Do not weaken the check to make a test pass.
+- [ ] **Step 4:** Results go to `docs/release/directory-contract-test.md`: date, commit, container versions, pass, fail and skip counts, and the open gaps. A real Entra tenant and a real AD are still needed before go-live (`docs/status.md`).
+- [ ] **Step 5:** Commit `test(auth): directory contract tests against local LDAP and OIDC servers`. Adding the job to CI is an owner decision; add it to the final approval list.
