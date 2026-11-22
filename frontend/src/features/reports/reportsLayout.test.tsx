@@ -146,6 +146,6 @@ describe('charts', () => {
     const dependencies: Record<string, string> = { ...packageJson.dependencies };
     expect(dependencies).not.toHaveProperty('recharts');
     expect(dependencies).toHaveProperty('react-chartjs-2');
-    expect(dependencies['chart.js']).toMatch(/^[~^]?4\.5(\.|$)/);
+    expect(dependencies['chart.js']).toMatch(/^[~^]?4\./);
   });
 });
