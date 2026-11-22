@@ -69,6 +69,8 @@
     "asset_unlinked": "Cihaz ayrıldı",
     "change_linked": "Değişiklik bağlandı",
     "change_unlinked": "Değişiklik ayrıldı",
+    "problem_linked": "Probleme bağlandı",
+    "problem_unlinked": "Problemden ayrıldı",
     "completed": "Kayıt tamamlandı",
     "cancelled": "Kayıt iptal edildi"
   },

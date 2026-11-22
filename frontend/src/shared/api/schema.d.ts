@@ -4956,6 +4956,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tickets/{number}/problem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TicketProblemItem"];
+                    };
+                };
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tickets/{number}/comments": {
         parameters: {
             query?: never;
@@ -7869,6 +7922,332 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/problems/{number}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemTicketItem"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddProblemTicketRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemTicketItem"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{number}/tickets/{ticketNumber}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                    ticketNumber: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemTicketItem"][];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{number}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemChangeItem"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddProblemChangeRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemChangeItem"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{number}/changes/{changeNumber}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                    changeNumber: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemChangeItem"][];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/changes": {
         parameters: {
             query?: never;
@@ -8768,6 +9147,52 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changes/{number}/problems": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemChangeSideItem"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -9992,6 +10417,12 @@ export interface components {
             date: string;
             name: string;
         };
+        AddProblemChangeRequest: {
+            changeNumber: string;
+        };
+        AddProblemTicketRequest: {
+            ticketNumber: string;
+        };
         AddTeamMemberRequest: {
             /** Format: uuid */
             userId: string;
@@ -10438,7 +10869,7 @@ export interface components {
             backoutPlan: null | string;
         };
         /** @enum {unknown} */
-        ChangeEventKind: "created" | "updated" | "submitted" | "withdrawn" | "approved" | "rejected" | "returned" | "approval_voided" | "implementation_started" | "implementation_finished" | "backout_started" | "closed" | "cancelled" | "assets_changed" | "ticket_linked" | "ticket_unlinked";
+        ChangeEventKind: "created" | "updated" | "submitted" | "withdrawn" | "approved" | "rejected" | "returned" | "approval_voided" | "implementation_started" | "implementation_finished" | "backout_started" | "closed" | "cancelled" | "assets_changed" | "ticket_linked" | "ticket_unlinked" | "problem_linked" | "problem_unlinked";
         ChangeListItem: {
             /** Format: uuid */
             id: string;
@@ -11182,6 +11613,19 @@ export interface components {
         };
         /** @enum {unknown} */
         Priority: "p1" | "p2" | "p3" | "p4";
+        ProblemChangeItem: {
+            number: string;
+            title: string;
+            status: components["schemas"]["ChangeStatus"];
+            /** Format: date-time */
+            linkedAt: string;
+            canOpen: boolean;
+        };
+        ProblemChangeSideItem: {
+            number: string;
+            title: string;
+            status: components["schemas"]["ProblemStatus"];
+        };
         ProblemDetail: {
             /** Format: uuid */
             id: string;
@@ -11242,6 +11686,15 @@ export interface components {
         };
         /** @enum {unknown} */
         ProblemStatus: "open" | "investigating" | "known_error" | "resolved" | "cancelled";
+        ProblemTicketItem: {
+            number: string;
+            title: string;
+            status: components["schemas"]["TicketStatus"];
+            teamName: null | string;
+            /** Format: date-time */
+            linkedAt: string;
+            canOpen: boolean;
+        };
         ProblemTimelineItem: {
             /** Format: uuid */
             id: string;
@@ -11617,7 +12070,7 @@ export interface components {
             tasks: components["schemas"]["TicketTaskItem"][];
         };
         /** @enum {unknown} */
-        TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked";
+        TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked";
         /** @enum {unknown} */
         TicketKind: "incident" | "request";
         TicketListItem: {
@@ -11640,6 +12093,13 @@ export interface components {
         };
         /** @enum {unknown} */
         TicketOutcome: "resolved" | "service_request_required" | "fulfilled" | "approval_rejected" | null;
+        TicketProblemItem: {
+            number: string;
+            title: string;
+            status: components["schemas"]["ProblemStatus"];
+            workaround: null | string;
+            ownerTeamName: string;
+        };
         TicketReasonRequest: {
             /** Format: uint32 */
             version: number;

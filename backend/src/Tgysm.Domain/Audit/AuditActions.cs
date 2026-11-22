@@ -94,6 +94,14 @@ public static class AuditActions
     public const string ProblemStatusChanged = "problems.status_changed";
     public const string ProblemTransferred = "problems.transferred";
     public const string ProblemOwnerChanged = "problems.owner_changed";
+    public const string ProblemTicketLinked = "problems.ticket_linked";
+    public const string ProblemTicketUnlinked = "problems.ticket_unlinked";
+    public const string ProblemChangeLinked = "problems.change_linked";
+    public const string ProblemChangeUnlinked = "problems.change_unlinked";
+    public const string TicketProblemLinked = "tickets.problem_linked";
+    public const string TicketProblemUnlinked = "tickets.problem_unlinked";
+    public const string ChangeProblemLinked = "changes.problem_linked";
+    public const string ChangeProblemUnlinked = "changes.problem_unlinked";
     public const string ChangeCreated = "changes.created";
     public const string ChangeUpdated = "changes.updated";
     public const string ChangeStatusChanged = "changes.status_changed";

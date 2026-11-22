@@ -251,7 +251,9 @@
       "article_linked": "Kayda makale bağlandı",
       "article_unlinked": "Kayıttan makale ayrıldı",
       "change_linked": "Kayda değişiklik bağlandı",
-      "change_unlinked": "Kayıttan değişiklik ayrıldı"
+      "change_unlinked": "Kayıttan değişiklik ayrıldı",
+      "problem_linked": "Kayıt probleme bağlandı",
+      "problem_unlinked": "Kayıt problemden ayrıldı"
     },
     "approvals": {
       "approved": "Talep onaylandı",
@@ -310,14 +312,20 @@
       "approval_voided": "Değişiklik onayı geçersiz kılındı",
       "closed": "Değişiklik kapatıldı",
       "ticket_linked": "Değişikliğe kayıt bağlandı",
-      "ticket_unlinked": "Değişiklikten kayıt ayrıldı"
+      "ticket_unlinked": "Değişiklikten kayıt ayrıldı",
+      "problem_linked": "Değişiklik probleme bağlandı",
+      "problem_unlinked": "Değişiklik problemden ayrıldı"
     },
     "problems": {
       "created": "Problem oluşturuldu",
       "updated": "Problem güncellendi",
       "status_changed": "Problem durumu değişti",
       "transferred": "Problem aktarıldı",
-      "owner_changed": "Problem sahibi değişti"
+      "owner_changed": "Problem sahibi değişti",
+      "ticket_linked": "Probleme arıza bağlandı",
+      "ticket_unlinked": "Problemden arıza ayrıldı",
+      "change_linked": "Probleme değişiklik bağlandı",
+      "change_unlinked": "Problemden değişiklik ayrıldı"
     }
   },
   "emailEvents": {

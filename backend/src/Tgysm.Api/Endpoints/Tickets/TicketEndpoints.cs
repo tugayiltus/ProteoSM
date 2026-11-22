@@ -28,6 +28,12 @@ internal static partial class TicketEndpoints
 
         tickets.MapGet("/{number}/changes", async (string number, Application.Features.Changes.ListTicketChangesHandler handler, CancellationToken ct) =>
             TypedResults.Ok(await handler.HandleAsync(new Application.Features.Changes.ListTicketChangesQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
+        tickets.MapGet("/{number}/problem", async Task<Results<Ok<Application.Features.Problems.TicketProblemItem>, NoContent>> (
+                string number, Application.Features.Problems.GetTicketProblemHandler handler, CancellationToken ct) =>
+                await handler.HandleAsync(new Application.Features.Problems.GetTicketProblemQuery(number), ct) is { } problem
+                    ? TypedResults.Ok(problem)
+                    : TypedResults.NoContent())
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         tickets.MapTicketActionEndpoints();
         return tickets;

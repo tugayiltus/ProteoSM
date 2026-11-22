@@ -67,15 +67,15 @@ public sealed class ProblemApiTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Incident_number_on_create_is_rejected_until_links_are_wired()
+    public async Task Unknown_incident_number_on_create_is_404_and_saves_nothing()
     {
         var world = await TicketWorld.CreateAsync(factory);
 
         using var response = await world.Desk.PostAsync(
             ProblemWorld.ProblemsPath,
-            new { title = "X", description = "Y", impact = "low", ownerTeamId = world.ServiceDesk.Id, incidentNumber = "INC-2026-000001" });
+            new { title = "X", description = "Y", impact = "low", ownerTeamId = world.ServiceDesk.Id, incidentNumber = "INC-2026-999999" });
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         await using var db = factory.Database.CreateDbContext();
         Assert.Empty(await db.Problems.ToListAsync(Ct));
     }

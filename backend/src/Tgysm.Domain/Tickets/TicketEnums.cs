@@ -103,4 +103,6 @@ public enum TicketEventKind
     Cancelled,
     ChangeLinked,
     ChangeUnlinked,
+    ProblemLinked,
+    ProblemUnlinked,
 }

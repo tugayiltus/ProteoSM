@@ -22,6 +22,10 @@ public sealed record SetProblemOwnerRequest(uint Version, Guid? OwnerId);
 
 public sealed record ProblemNoteRequest(string Text);
 
+public sealed record AddProblemTicketRequest(string TicketNumber);
+
+public sealed record AddProblemChangeRequest(string ChangeNumber);
+
 internal static class ProblemEndpoints
 {
     private const string Tag = "Problems";
@@ -29,6 +33,10 @@ internal static class ProblemEndpoints
     private const string QueueParameter = "queue";
     private const string StatusParameter = "status";
     private const string ImpactParameter = "impact";
+    private const string TicketsSegment = "tickets";
+    private const string ChangesSegment = "changes";
+    private const string TicketNumberRoute = "{ticketNumber}";
+    private const string ChangeNumberRoute = "{changeNumber}";
 
     public static RouteGroupBuilder MapProblemEndpoints(this RouteGroupBuilder api)
     {
@@ -42,6 +50,7 @@ internal static class ProblemEndpoints
         problems.MapGet($"{NumberRoute}/timeline", async (string number, GetProblemTimelineHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new GetProblemTimelineQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
         MapActions(problems);
+        MapLinks(problems);
         return problems;
     }
 
@@ -80,6 +89,26 @@ internal static class ProblemEndpoints
                 return TypedResults.NoContent();
             })
             .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status403Forbidden).ProducesProblem(StatusCodes.Status404NotFound);
+    }
+
+    private static void MapLinks(RouteGroupBuilder problems)
+    {
+        problems.MapGet($"{NumberRoute}/{TicketsSegment}", async (string number, ListProblemTicketsHandler h, CancellationToken ct) =>
+            TypedResults.Ok(await h.HandleAsync(new ListProblemTicketsQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
+        Action(problems.MapPost($"{NumberRoute}/{TicketsSegment}", async (string number, AddProblemTicketRequest r, AddProblemTicketHandler h, CancellationToken ct) =>
+            TypedResults.Created(
+                $"{ApiRoutes.V1}{ApiRoutes.Problems}/{number}/{TicketsSegment}", await h.HandleAsync(new AddProblemTicketCommand(number, r.TicketNumber), ct))));
+        problems.MapDelete($"{NumberRoute}/{TicketsSegment}/{TicketNumberRoute}", async (string number, string ticketNumber, RemoveProblemTicketHandler h, CancellationToken ct) =>
+                TypedResults.Ok(await h.HandleAsync(new RemoveProblemTicketCommand(number, ticketNumber), ct)))
+            .ProducesProblem(StatusCodes.Status403Forbidden).ProducesProblem(StatusCodes.Status404NotFound);
+        problems.MapGet($"{NumberRoute}/{ChangesSegment}", async (string number, ListProblemChangesHandler h, CancellationToken ct) =>
+            TypedResults.Ok(await h.HandleAsync(new ListProblemChangesQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
+        Action(problems.MapPost($"{NumberRoute}/{ChangesSegment}", async (string number, AddProblemChangeRequest r, AddProblemChangeHandler h, CancellationToken ct) =>
+            TypedResults.Created(
+                $"{ApiRoutes.V1}{ApiRoutes.Problems}/{number}/{ChangesSegment}", await h.HandleAsync(new AddProblemChangeCommand(number, r.ChangeNumber), ct))));
+        problems.MapDelete($"{NumberRoute}/{ChangesSegment}/{ChangeNumberRoute}", async (string number, string changeNumber, RemoveProblemChangeHandler h, CancellationToken ct) =>
+                TypedResults.Ok(await h.HandleAsync(new RemoveProblemChangeCommand(number, changeNumber), ct)))
+            .ProducesProblem(StatusCodes.Status403Forbidden).ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     private static void Action(RouteHandlerBuilder route) =>

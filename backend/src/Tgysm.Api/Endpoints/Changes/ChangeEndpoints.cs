@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Tgysm.Api.Http;
 using Tgysm.Application.Common.Paging;
 using Tgysm.Application.Features.Changes;
+using Tgysm.Application.Features.Problems;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Tickets;
 
@@ -34,6 +35,7 @@ internal static class ChangeEndpoints
     private const string ReturnSegment = "return";
     private const string TicketsSegment = "tickets";
     private const string TicketNumberRoute = "{ticketNumber}";
+    private const string ProblemsSegment = "problems";
 
     public static RouteGroupBuilder MapChangeEndpoints(this RouteGroupBuilder api)
     {
@@ -79,6 +81,8 @@ internal static class ChangeEndpoints
         changes.MapDelete($"{NumberRoute}/{TicketsSegment}/{TicketNumberRoute}", async (string number, string ticketNumber, RemoveChangeTicketHandler handler, CancellationToken ct) =>
                 TypedResults.Ok(await handler.HandleAsync(new RemoveChangeTicketCommand(number, ticketNumber), ct)))
             .ProducesProblem(StatusCodes.Status404NotFound);
+        changes.MapGet($"{NumberRoute}/{ProblemsSegment}", async (string number, ListChangeProblemsHandler handler, CancellationToken ct) =>
+            TypedResults.Ok(await handler.HandleAsync(new ListChangeProblemsQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
         MapDecision(changes, ApproveSegment, ChangeApprovalDecision.Approve);
         MapDecision(changes, RejectSegment, ChangeApprovalDecision.Reject);
         MapDecision(changes, ReturnSegment, ChangeApprovalDecision.Return);

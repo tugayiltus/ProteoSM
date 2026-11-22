@@ -57,6 +57,8 @@ public enum ChangeEventKind
     AssetsChanged,
     TicketLinked,
     TicketUnlinked,
+    ProblemLinked,
+    ProblemUnlinked,
 }
 
 /// <summary>Why a ticket is tied to a change: the ticket led to the change, or the change led to the ticket.</summary>
