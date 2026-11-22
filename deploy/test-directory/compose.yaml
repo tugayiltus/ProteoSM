@@ -133,7 +133,7 @@ services:
       retries: 30
 
   ldap-tests:
-    image: mcr.microsoft.com/dotnet/sdk:10.0.401
+    image: mcr.microsoft.com/dotnet/sdk:11.0.100
     profiles: ["runner"]
     depends_on:
       openldap:

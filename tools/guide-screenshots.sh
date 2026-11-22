@@ -22,8 +22,8 @@ readonly API_URL="http://localhost:$API_PORT"
 readonly PREVIEW_URL="http://localhost:$PREVIEW_PORT"
 readonly READY_PATH="/api/v1/auth/csrf"
 readonly READY_TIMEOUT_SECONDS=60
-readonly API_BIN_DIR="backend/src/Tgysm.Api/bin/Release/net10.0"
-readonly WORKER_BIN_DIR="backend/src/Tgysm.Worker/bin/Release/net10.0"
+readonly API_BIN_DIR="backend/src/Tgysm.Api/bin/Release/net11.0"
+readonly WORKER_BIN_DIR="backend/src/Tgysm.Worker/bin/Release/net11.0"
 # Short job intervals, as in tools/e2e.sh, so every job has reported before the Sistem page is shot.
 readonly JOB_INTERVAL_SECONDS=2
 readonly WORKER_JOB_COUNT=5

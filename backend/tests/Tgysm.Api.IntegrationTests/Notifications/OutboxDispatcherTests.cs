@@ -341,7 +341,7 @@ public sealed class OutboxDispatcherTests(ApiFactory factory) : IAsyncLifetime
                 // Simulate the back-off having elapsed instead of waiting on it for real (same trick RowLeaseTests
                 // uses for an expired lease), so the next DispatchAsync() can reclaim it.
                 await using var db = factory.Database.CreateDbContext();
-                await db.Database.ExecuteSqlInterpolatedAsync(
+                await db.Database.ExecuteSqlAsync(
                     $"UPDATE notification_outbox SET locked_until = now() - interval '1 hour' WHERE id = {current.Id}", Ct);
             }
             else

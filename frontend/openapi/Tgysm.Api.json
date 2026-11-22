@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.1",
+  "openapi": "3.2.0",
   "info": {
     "title": "Tgysm.Api | v1",
     "version": "1.0.0"
@@ -18170,82 +18170,82 @@
   },
   "tags": [
     {
-      "name": "Auth"
-    },
-    {
-      "name": "Health"
-    },
-    {
-      "name": "Assets"
-    },
-    {
-      "name": "Admin: Users"
-    },
-    {
-      "name": "Admin: Departments"
-    },
-    {
-      "name": "Admin: Locations"
-    },
-    {
-      "name": "Admin: Teams"
+      "name": "Admin: Audit"
     },
     {
       "name": "Admin: Categories"
     },
     {
-      "name": "Admin: Request types"
+      "name": "Admin: Departments"
     },
     {
       "name": "Admin: Device catalog"
     },
     {
-      "name": "Admin: Audit"
+      "name": "Admin: Email deliveries"
     },
     {
       "name": "Admin: Email templates"
     },
     {
-      "name": "Admin: Email deliveries"
-    },
-    {
-      "name": "Admin: SLA"
+      "name": "Admin: Locations"
     },
     {
       "name": "Admin: Login method"
     },
     {
+      "name": "Admin: Request types"
+    },
+    {
+      "name": "Admin: SLA"
+    },
+    {
       "name": "Admin: System"
     },
     {
-      "name": "Asset import"
+      "name": "Admin: Teams"
     },
     {
-      "name": "Reference"
-    },
-    {
-      "name": "Tickets"
-    },
-    {
-      "name": "Tasks"
-    },
-    {
-      "name": "Problems"
-    },
-    {
-      "name": "Changes"
+      "name": "Admin: Users"
     },
     {
       "name": "Approvals"
     },
     {
+      "name": "Asset import"
+    },
+    {
+      "name": "Assets"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Changes"
+    },
+    {
+      "name": "Health"
+    },
+    {
       "name": "Knowledge"
+    },
+    {
+      "name": "Problems"
+    },
+    {
+      "name": "Reference"
+    },
+    {
+      "name": "Reports"
     },
     {
       "name": "Search"
     },
     {
-      "name": "Reports"
+      "name": "Tasks"
+    },
+    {
+      "name": "Tickets"
     }
   ]
 }

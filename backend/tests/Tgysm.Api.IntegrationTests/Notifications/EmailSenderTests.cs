@@ -60,7 +60,7 @@ public sealed class EmailSenderTests(ApiFactory factory) : IAsyncLifetime
     private static async Task ForceDueNowAsync(ApiFactory apiFactory, Guid deliveryId)
     {
         await using var db = apiFactory.Database.CreateDbContext();
-        await db.Database.ExecuteSqlInterpolatedAsync(
+        await db.Database.ExecuteSqlAsync(
             $"UPDATE email_deliveries SET next_attempt_at = now() - interval '1 hour' WHERE id = {deliveryId}", Ct);
     }
 
@@ -475,7 +475,7 @@ public sealed class EmailSenderTests(ApiFactory factory) : IAsyncLifetime
     private async Task SetSendingAsync(Guid deliveryId, int lockedUntilMinutesFromNow)
     {
         await using var db = factory.Database.CreateDbContext();
-        await db.Database.ExecuteSqlInterpolatedAsync(
+        await db.Database.ExecuteSqlAsync(
             $"UPDATE email_deliveries SET status = 'sending', locked_until = now() + ({lockedUntilMinutesFromNow} * interval '1 minute') WHERE id = {deliveryId}", Ct);
     }
 

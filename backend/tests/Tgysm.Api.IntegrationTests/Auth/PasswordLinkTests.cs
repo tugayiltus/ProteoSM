@@ -186,7 +186,7 @@ public sealed class PasswordLinkTests(ApiFactory factory) : IAsyncLifetime
         {
             await SendDueEmailsAsync();
             await using var db = factory.Database.CreateDbContext();
-            await db.Database.ExecuteSqlInterpolatedAsync(
+            await db.Database.ExecuteSqlAsync(
                 $"UPDATE email_deliveries SET next_attempt_at = now() - interval '1 hour' WHERE recipient_user_id = {userId}", Ct);
         }
 
@@ -284,7 +284,7 @@ public sealed class PasswordLinkTests(ApiFactory factory) : IAsyncLifetime
 
             // The window passes: the outstanding link is now older than the cooldown.
             var aged = DispatchOutboxHandler.PasswordResetCooldown + TimeSpan.FromMinutes(1);
-            await db.Database.ExecuteSqlInterpolatedAsync(
+            await db.Database.ExecuteSqlAsync(
                 $"UPDATE password_tokens SET created_at = created_at - {aged} WHERE user_id = {user.Id}", Ct);
         }
 
@@ -380,7 +380,7 @@ public sealed class PasswordLinkTests(ApiFactory factory) : IAsyncLifetime
         var token = await LatestTokenAsync(userId, NotificationEventTypes.AccountActivation);
         await using (var db = factory.Database.CreateDbContext())
         {
-            await db.Database.ExecuteSqlInterpolatedAsync(
+            await db.Database.ExecuteSqlAsync(
                 $"UPDATE password_tokens SET expires_at = now() - interval '1 second' WHERE user_id = {userId}", Ct);
         }
 
@@ -474,7 +474,7 @@ public sealed class PasswordLinkTests(ApiFactory factory) : IAsyncLifetime
         var inactive = await TestUsers.CreateAsync(factory, UserRole.Employee, "inactive@example.com");
         await using (var db = factory.Database.CreateDbContext())
         {
-            await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE users SET is_active = false WHERE id = {inactive.Id}", Ct);
+            await db.Database.ExecuteSqlAsync($"UPDATE users SET is_active = false WHERE id = {inactive.Id}", Ct);
         }
 
         var emails = new[] { "nobody@example.com", "inactive@example.com", "ACTIVE@example.com" };
@@ -608,7 +608,7 @@ public sealed class PasswordLinkTests(ApiFactory factory) : IAsyncLifetime
         await using (var aging = factory.Database.CreateDbContext())
         {
             var aged = DispatchOutboxHandler.PasswordResetCooldown + TimeSpan.FromMinutes(1);
-            await aging.Database.ExecuteSqlInterpolatedAsync(
+            await aging.Database.ExecuteSqlAsync(
                 $"UPDATE password_tokens SET created_at = created_at - {aged} WHERE user_id = {userId}", Ct);
         }
 

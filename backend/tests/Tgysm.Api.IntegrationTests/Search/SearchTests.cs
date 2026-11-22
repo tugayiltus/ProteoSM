@@ -176,8 +176,8 @@ public sealed class SearchTests(ApiFactory factory) : IAsyncLifetime
         {
             var firstTag = first.GetProperty("assetTag").GetString()!;
             var secondTag = second.GetProperty("assetTag").GetString()!;
-            await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE assets SET asset_tag = {ShortTag}, normalized_asset_tag = {ShortTag} WHERE asset_tag = {firstTag}", TestContext.Current.CancellationToken);
-            await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE assets SET asset_tag = {LongTag}, normalized_asset_tag = {LongTag} WHERE asset_tag = {secondTag}", TestContext.Current.CancellationToken);
+            await db.Database.ExecuteSqlAsync($"UPDATE assets SET asset_tag = {ShortTag}, normalized_asset_tag = {ShortTag} WHERE asset_tag = {firstTag}", TestContext.Current.CancellationToken);
+            await db.Database.ExecuteSqlAsync($"UPDATE assets SET asset_tag = {LongTag}, normalized_asset_tag = {LongTag} WHERE asset_tag = {secondTag}", TestContext.Current.CancellationToken);
         }
 
         var typing = await SearchAsync(world.Desk, ShortTag);
