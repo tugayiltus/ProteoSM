@@ -1,11 +1,14 @@
 using System.Net;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Tgysm.Api.Auth;
 using Tgysm.Api.IntegrationTests.Infrastructure;
 using Tgysm.Application.Abstractions;
+using Tgysm.Application.Features.Auth.Directory;
 using Tgysm.Domain.Auth;
 using Tgysm.Domain.Common;
 using Tgysm.Domain.Users;
@@ -37,6 +40,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
     private const string MemberEmail = "deniz.test@tgysm-test.example";
     private const string ForeignDomainEmail = "deniz.test@baska-alan.example";
     private const string AllowedDomain = "tgysm-test.example";
+    private const string ForeignDomain = "baska-alan.example";
     private const string ClientSecret = "test-client-secret";
     private const string AdminEmail = "yonetici@tgysm-test.example";
 
@@ -51,6 +55,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
         {
             await factory.ResetAsync();
             factory.Configuration.Tamper = OidcTamper.None;
+            factory.Outcome.Reset();
         }
     }
 
@@ -67,49 +72,69 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
         using var me = await client.GetAsync(ApiClient.MePath);
 
         Assert.Equal((HttpStatusCode.Redirect, AfterSignIn), (callback.StatusCode, callback.Headers.Location?.OriginalString));
+        Assert.Null(factory.Outcome.Failure);
         Assert.Equal(HttpStatusCode.OK, me.StatusCode);
         Assert.Equal(MemberEmail, (await client.ReadJsonAsync<JsonElement>(me)).GetProperty(EmailProperty).GetString());
     }
 
     [Fact]
-    public async Task A_token_of_another_tenant_is_refused()
+    public async Task A_token_of_another_tenant_is_refused_for_its_tenant()
     {
         var factory = Factory();
         await UseEntraAsync(factory, OtherTenantClient);
 
         await AssertRefusedAsync(factory);
+
+        var token = AssertValidTokenRefusedByTgysm(factory);
+        var tenant = token.FindFirst(EntraIdentityMapper.TenantClaim)?.Value;
+        Assert.NotNull(tenant);
+        Assert.NotEqual(factory.OidcServer.Tenant, tenant, StringComparer.OrdinalIgnoreCase);
+        // The tenant is the only fault: with its own tenant configured, the same token would be accepted.
+        Assert.Null(EntraIdentityMapper.Map(token, factory.OidcServer.Tenant, [AllowedDomain]));
+        Assert.NotNull(EntraIdentityMapper.Map(token, tenant, [AllowedDomain]));
         Assert.False(await UserExistsAsync(factory, MemberEmail));
     }
 
     [Fact]
-    public async Task A_sign_in_name_outside_the_allowed_domains_is_refused()
+    public async Task A_sign_in_name_outside_the_allowed_domains_is_refused_for_its_domain()
     {
         var factory = Factory();
         await UseEntraAsync(factory, ForeignDomainClient);
 
         await AssertRefusedAsync(factory);
+
+        var token = AssertValidTokenRefusedByTgysm(factory);
+        Assert.Equal(factory.OidcServer.Tenant, token.FindFirst(EntraIdentityMapper.TenantClaim)?.Value, StringComparer.OrdinalIgnoreCase);
+        // The domain is the only fault: with that domain allowed, the same token would be accepted.
+        Assert.Null(EntraIdentityMapper.Map(token, factory.OidcServer.Tenant, [AllowedDomain]));
+        Assert.NotNull(EntraIdentityMapper.Map(token, factory.OidcServer.Tenant, [ForeignDomain]));
         Assert.False(await UserExistsAsync(factory, ForeignDomainEmail));
     }
 
     [Fact]
-    public async Task A_token_with_a_bad_signature_is_refused()
+    public async Task A_token_with_a_bad_signature_is_refused_for_its_signature()
     {
         var factory = Factory();
         await UseEntraAsync(factory, MemberClient);
         factory.Configuration.Tamper = OidcTamper.ForeignSigningKey;
 
         await AssertRefusedAsync(factory);
+
+        // SecurityTokenSignatureKeyNotFoundException derives from this one, so both signature outcomes count.
+        AssertTokenRejectedFor<SecurityTokenInvalidSignatureException>(factory);
         Assert.False(await UserExistsAsync(factory, MemberEmail));
     }
 
     [Fact]
-    public async Task A_token_from_another_issuer_is_refused()
+    public async Task A_token_from_another_issuer_is_refused_for_its_issuer()
     {
         var factory = Factory();
         await UseEntraAsync(factory, MemberClient);
         factory.Configuration.Tamper = OidcTamper.ForeignIssuer;
 
         await AssertRefusedAsync(factory);
+
+        AssertTokenRejectedFor<SecurityTokenInvalidIssuerException>(factory);
         Assert.False(await UserExistsAsync(factory, MemberEmail));
     }
 
@@ -200,6 +225,40 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
 
         Assert.Equal((HttpStatusCode.Redirect, EntraAuthentication.ErrorRedirect), (callback.StatusCode, callback.Headers.Location?.OriginalString));
         Assert.Equal(HttpStatusCode.Unauthorized, me.StatusCode);
+    }
+
+    /// <summary>
+    /// The token passed the handler's validation (signature, issuer, audience, nonce, PKCE redemption) and TGYSM's own
+    /// checks refused it. Any earlier failure, such as a broken token exchange, fails here instead of passing as a refusal.
+    /// </summary>
+    private static ClaimsPrincipal AssertValidTokenRefusedByTgysm(OidcContractFactory factory)
+    {
+        Assert.Null(factory.Outcome.Failure);
+        return Assert.IsType<ClaimsPrincipal>(factory.Outcome.ValidatedPrincipal);
+    }
+
+    /// <summary>The handler rejected the token itself, for exactly this reason; TGYSM's checks never saw it.</summary>
+    private static void AssertTokenRejectedFor<TException>(OidcContractFactory factory)
+        where TException : Exception
+    {
+        Assert.Null(factory.Outcome.ValidatedPrincipal);
+        var failure = factory.Outcome.Failure;
+        Assert.True(Causes(failure).OfType<TException>().Any(), $"Expected {typeof(TException).Name}, got: {failure}");
+    }
+
+    private static IEnumerable<Exception> Causes(Exception? failure)
+    {
+        for (var current = failure; current is not null; current = current.InnerException)
+        {
+            yield return current;
+            if (current is AggregateException aggregate)
+            {
+                foreach (var inner in aggregate.InnerExceptions.SelectMany(Causes))
+                {
+                    yield return inner;
+                }
+            }
+        }
     }
 
     private static async Task<bool> UserExistsAsync(OidcContractFactory factory, string email)

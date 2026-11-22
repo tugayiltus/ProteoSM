@@ -101,9 +101,14 @@ wait_for "OIDC mock metadata" curl --silent --fail "$OIDC_URL/$OIDC_TENANT$OIDC_
 # The seed is loaded by the container on its first start (deploy/test-directory/openldap/entrypoint.sh); check
 # both test accounts are there before any test runs.
 echo "==> Checking the seed"
+# Captured first, then searched: `ldapsearch | grep -q` under pipefail can fail with SIGPIPE when grep exits early.
 for account in "(sAMAccountName=$LDAP_USER)" "(mail=ece.deneme@tgysm-test.example)"; do
-  compose exec -T "$LDAP_SERVICE" ldapsearch -x -LLL -H "ldaps://localhost:$LDAPS_PORT" -D "$LDAP_BIND_DN" \
-    -w "$LDAP_BIND_PASSWORD" -b "$LDAP_BASE_DN" "$account" dn | grep -q '^dn:'
+  found=$(compose exec -T "$LDAP_SERVICE" ldapsearch -x -LLL -H "ldaps://localhost:$LDAPS_PORT" -D "$LDAP_BIND_DN" \
+    -w "$LDAP_BIND_PASSWORD" -b "$LDAP_BASE_DN" "$account" dn)
+  if ! grep -q '^dn:' <<<"$found"; then
+    echo "error: seed entry $account missing" >&2
+    exit 1
+  fi
 done
 
 export TGYSM_TEST_LDAP_HOST="$LDAP_HOST_IN_COMPOSE"
