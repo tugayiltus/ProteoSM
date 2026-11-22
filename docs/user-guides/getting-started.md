@@ -71,7 +71,7 @@ IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümü
 Masaüstünde menü ekranın solunda her zaman açıktır. Menü rolünüze göre gruplanır:
 
 - **Kişisel**: **Ana sayfa**, **Kayıtlarım**, **Zimmetlerim**, **Bilgi bankası**.
-- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Envanter**; yöneticiler ayrıca **Onay yönetimi**.
+- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**; yöneticiler ayrıca **Onay yönetimi**.
 - **Analiz** (IT personeli ve yönetici): **Raporlar**, **Dışa aktarımlarım**.
 
 Menünün altındaki düğmeyle (**Menüyü daralt**) menüyü yalnızca simgelere indirebilirsiniz.
@@ -93,11 +93,11 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekran
 Üst çubuktaki **Ara** düğmesine basın veya klavyede `/` tuşuna basın. Arama penceresi açılır.
 
 1. Kayıt numarası, demirbaş etiketi veya bir kelime yazın. Arama en az 2 karakterle başlar.
-2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Envanter**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
+2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Problemler**, **Envanter**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
 3. Bir sonuca basarak açın. Tam bir numara yazdıysanız o kayıt en üstte gösterilir.
 4. Bir grupta daha fazla sonuç varsa **Tümünü gör** ile ilgili listeyi aynı arama metniyle açın.
 
-Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev ve envanter sonuçlarını IT personeli ve yöneticiler görür. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
+Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem ve envanter sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
 

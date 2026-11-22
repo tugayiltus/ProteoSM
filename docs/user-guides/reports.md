@@ -14,6 +14,7 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
    - **Garanti**: Garantisi bitmiş, bitecek ve garanti tarihi girilmemiş cihazlar.
    - **Değişiklikler**: Döneme göre kapanan değişikliklerin sonuç dağılımı, başarı oranı, riske göre değişiklikler ve iptal edilenler. **Sorun çıkaran değişiklikler** kartı, dönemde kapanan ve en az bir arızaya yol açtığı bağlanan değişiklikleri sayar; sayıya basınca bu değişikliklerin listesi açılır.
    - **Görevler**: Gecikmiş görevler, duruma ve ekibe göre görevler, görevlerin tamamlanma süresi.
+   - **Problemler**: Açık bilinen hatalar, dönemde çözülen problemler, çözüm süresi, etkiye göre problemler ve problem başına arıza sayısı.
 
 ![Olaylar raporu](images/reports-incidents-desktop.png)
 
@@ -30,12 +31,15 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 
 ![Olaylar raporu (telefon)](images/reports-incidents-mobile.png)
 
-**Değişiklikler** ve **Görevler** sekmelerinde yalnızca dönem ve **Ekip** filtresi vardır. IT personeli yalnızca ekiplerinin değişiklik ve görevlerini görür; yöneticiler hepsini görür.
+**Değişiklikler**, **Görevler** ve **Problemler** sekmelerinde yalnızca dönem ve **Ekip** filtresi vardır. IT personeli yalnızca ekiplerinin değişiklik ve görevlerini görür; yöneticiler hepsini görür. **Problemler** sekmesinde herkes bütün problemleri görür; **Ekip** filtresi problemin sahip ekibine göre daraltır.
 
 - **Başarı oranı**: Dönemde kapanan değişiklikler içinde **Başarılı** olanların oranı. **Geri alındı** ve **Başarısız** sonuçlar yalnızca paydaya girer. İptal edilen değişiklikler ayrı sayılır, orana girmez.
 - **Gecikmiş görevler**: Bitiş tarihi bugünden önce olan açık görevler. Bu rakam dönemden bağımsız, o anki durumu gösterir.
 - **Tamamlanma süresi**: Dönemde tamamlanan görevlerin açılıştan kapanışa ortalama ve medyan süresi. İptal edilen görevler sayılmaz.
 - **Duruma göre** ve **Ekibe göre** dağılımları ile **Riske göre** dağılımı dönemde açılan kayıtları sayar.
+- **Açık bilinen hatalar**: Şu anda **Bilinen hata** durumundaki problemler. Dönemden bağımsızdır.
+- **Çözülen problemler** ve problemlerin **Çözüm süresi**: Dönemde çözülen problemler ve açılıştan çözüme ortalama ve medyan süre. İptal edilen problemler sayılmaz.
+- **Etkiye göre problemler** ve **Problem başına arıza**: Dönemde açılan problemleri etkiye ve bağlı arıza sayısına (1, 2–5, 6 ve üzeri) göre sayar. Hiç arızası olmayan problem bu dağılıma girmez.
 
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
 

@@ -14,6 +14,7 @@ Menüden **İş listem** sayfasını açın. Her kart bir kuyruğu ve içindeki 
 | **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
 | **SLA Riski** | SLA hedefi yaklaşan veya geçmiş açık kayıtlar. Önce bunlara bakın. |
 | **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
+| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](problems.md). |
 
 ![İş listem](images/workspace-desktop.png)
 
@@ -81,6 +82,7 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 - **Bağlı cihazlar** kartında **Cihaz bağla** ile envanterden bir cihazı kayda bağlayın (**Demirbaş no ile ara**). **Ayır** bağlantıyı kaldırır.
 - **İlgili kayıtlar** kartında **İlgili talep oluştur**, bir arızadan yeni bir talep açar; örneğin onarılamayan bir bilgisayar için "Yeni bilgisayar" talebi. Yeni talep arızaya bağlı görünür.
 - **İlgili değişiklikler** kartı kayda bağlı değişiklikleri gösterir. Bağlantı değişiklik sayfasından kurulur (bkz. Görevler ve değişiklikler, İlgili kayıtlar).
+- **Problem** kartı yalnızca arızalarda görünür. Arıza bir probleme bağlıysa problemin numarasını, durumunu, sahip ekibini ve **Geçici çözüm** metnini gösterir; aynı hata tekrar ediyorsa önce bu geçici çözümü deneyin. Bağlı değilse **Probleme bağla** ile problem numarasını yazıp bağlayın veya **Problem oluştur** ile arızanın konusu ve açıklamasıyla dolu yeni bir problem açın. Bkz. [Problemler](problems.md).
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
 ## İpuçları

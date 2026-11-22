@@ -156,7 +156,11 @@ Değişiklik sayfasındaki **İlgili kayıtlar** kartı değişikliğe bağlı a
 
 Bir bağlantıyı kaldırmak için satırdaki **Kaldır** düğmesini kullanın. Bağlama ve kaldırma işlemini yöneticiler ve değişikliğin sahibi ekibin üyeleri yapar. İptal edilmiş bir değişikliğe yeni kayıt bağlanmaz, ama yanlış bir bağlantı kaldırılabilir.
 
-Açma yetkiniz olmayan bir kaydın numarası, başlığı, türü ve durumu görünür; satırda "... ekibinin kaydı" yazar ve kayıt açılmaz. Aynı bağlantı, arıza veya talep sayfasında **İlgili değişiklikler** kartında da görünür. Çalışanlar bu kartları görmez.
+Açma yetkiniz olmayan bir kaydın numarası, başlığı, türü ve durumu görünür; satırda "... ekibinin kaydı" yazar ve kayıt açılmaz. Aynı bağlantı, arıza veya talep sayfasında **İlgili değişiklikler** kartında da görünür; açma yetkiniz olmayan değişikliğin bakım penceresi orada gösterilmez. Çalışanlar bu kartları görmez.
+
+### İlgili problemler
+
+Değişiklik sayfasındaki **İlgili problemler** bölümü, bu değişikliğin düzelttiği problemleri numarası, başlığı ve durumuyla gösterir. Bu bölüm yalnızca gösterir; bağlantı problem sayfasındaki **Düzelten değişiklikler** bölümünden kurulur (bkz. [Problemler](problems.md)).
 
 ### Değişiklik listesi
 

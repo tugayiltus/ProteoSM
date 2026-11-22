@@ -71,7 +71,7 @@ IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümü
 Masaüstünde menü ekranın solunda her zaman açıktır. Menü rolünüze göre gruplanır:
 
 - **Kişisel**: **Ana sayfa**, **Kayıtlarım**, **Zimmetlerim**, **Bilgi bankası**.
-- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Envanter**; yöneticiler ayrıca **Onay yönetimi**.
+- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**; yöneticiler ayrıca **Onay yönetimi**.
 - **Analiz** (IT personeli ve yönetici): **Raporlar**, **Dışa aktarımlarım**.
 
 Menünün altındaki düğmeyle (**Menüyü daralt**) menüyü yalnızca simgelere indirebilirsiniz.
@@ -93,11 +93,11 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekran
 Üst çubuktaki **Ara** düğmesine basın veya klavyede `/` tuşuna basın. Arama penceresi açılır.
 
 1. Kayıt numarası, demirbaş etiketi veya bir kelime yazın. Arama en az 2 karakterle başlar.
-2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Envanter**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
+2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Problemler**, **Envanter**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
 3. Bir sonuca basarak açın. Tam bir numara yazdıysanız o kayıt en üstte gösterilir.
 4. Bir grupta daha fazla sonuç varsa **Tümünü gör** ile ilgili listeyi aynı arama metniyle açın.
 
-Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev ve envanter sonuçlarını IT personeli ve yöneticiler görür. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
+Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem ve envanter sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
 
@@ -395,6 +395,7 @@ Menüden **İş listem** sayfasını açın. Her kart bir kuyruğu ve içindeki 
 | **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
 | **SLA Riski** | SLA hedefi yaklaşan veya geçmiş açık kayıtlar. Önce bunlara bakın. |
 | **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
+| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](#problemler). |
 
 ![İş listem](images/workspace-desktop.png)
 
@@ -462,6 +463,7 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 - **Bağlı cihazlar** kartında **Cihaz bağla** ile envanterden bir cihazı kayda bağlayın (**Demirbaş no ile ara**). **Ayır** bağlantıyı kaldırır.
 - **İlgili kayıtlar** kartında **İlgili talep oluştur**, bir arızadan yeni bir talep açar; örneğin onarılamayan bir bilgisayar için "Yeni bilgisayar" talebi. Yeni talep arızaya bağlı görünür.
 - **İlgili değişiklikler** kartı kayda bağlı değişiklikleri gösterir. Bağlantı değişiklik sayfasından kurulur (bkz. Görevler ve değişiklikler, İlgili kayıtlar).
+- **Problem** kartı yalnızca arızalarda görünür. Arıza bir probleme bağlıysa problemin numarasını, durumunu, sahip ekibini ve **Geçici çözüm** metnini gösterir; aynı hata tekrar ediyorsa önce bu geçici çözümü deneyin. Bağlı değilse **Probleme bağla** ile problem numarasını yazıp bağlayın veya **Problem oluştur** ile arızanın konusu ve açıklamasıyla dolu yeni bir problem açın. Bkz. [Problemler](#problemler).
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
 ## İpuçları
@@ -628,7 +630,11 @@ Değişiklik sayfasındaki **İlgili kayıtlar** kartı değişikliğe bağlı a
 
 Bir bağlantıyı kaldırmak için satırdaki **Kaldır** düğmesini kullanın. Bağlama ve kaldırma işlemini yöneticiler ve değişikliğin sahibi ekibin üyeleri yapar. İptal edilmiş bir değişikliğe yeni kayıt bağlanmaz, ama yanlış bir bağlantı kaldırılabilir.
 
-Açma yetkiniz olmayan bir kaydın numarası, başlığı, türü ve durumu görünür; satırda "... ekibinin kaydı" yazar ve kayıt açılmaz. Aynı bağlantı, arıza veya talep sayfasında **İlgili değişiklikler** kartında da görünür. Çalışanlar bu kartları görmez.
+Açma yetkiniz olmayan bir kaydın numarası, başlığı, türü ve durumu görünür; satırda "... ekibinin kaydı" yazar ve kayıt açılmaz. Aynı bağlantı, arıza veya talep sayfasında **İlgili değişiklikler** kartında da görünür; açma yetkiniz olmayan değişikliğin bakım penceresi orada gösterilmez. Çalışanlar bu kartları görmez.
+
+### İlgili problemler
+
+Değişiklik sayfasındaki **İlgili problemler** bölümü, bu değişikliğin düzelttiği problemleri numarası, başlığı ve durumuyla gösterir. Bu bölüm yalnızca gösterir; bağlantı problem sayfasındaki **Düzelten değişiklikler** bölümünden kurulur (bkz. [Problemler](#problemler)).
 
 ### Değişiklik listesi
 
@@ -638,6 +644,106 @@ Açma yetkiniz olmayan bir kaydın numarası, başlığı, türü ve durumu gör
 
 - Bir pencere açıkken başka biri kaydı değiştirirse kaydetme sırasında uyarı çıkar ve pencere kapanır. Sayfa güncel bilgiyle yenilenir; işlemi yeniden açın.
 - Aynı değişikliği iki yönetici aynı anda karara bağlarsa yalnızca ilk karar geçerli olur.
+
+# Problemler
+
+Bu sayfa IT personeli ve yöneticiler içindir. Çalışanlar problemleri görmez; arıza kayıtlarında da problem bilgisi çıkmaz.
+
+Problem, birçok arızanın ortak nedenidir. Aynı hata tekrar tekrar geliyorsa (her pazartesi kopan VPN, hep aynı modelde sıkışan yazıcı) her arızayı ayrı ayrı çözmek yerine bir problem açın. Kök neden, geçici çözüm ve kalıcı çözüm problemde bir kez yazılır; tekrar eden arızalar probleme bağlanır. Problem numarası `PRB-` ile başlar (örneğin `PRB-2026-000004`). Problemlerin SLA süresi ve e-postası yoktur.
+
+## Problemin durumları
+
+| Durum | Anlamı |
+|---|---|
+| **Açık** | Problem açıldı, henüz incelenmiyor. |
+| **İnceleniyor** | Ekip nedeni arıyor. |
+| **Bilinen hata** | Kök neden ve geçici çözüm biliniyor; masa geçici çözümü uygulayabilir. |
+| **Çözüldü** | Kalıcı çözüm uygulandı. Problem kapandı. |
+| **İptal edildi** | Problem gereksiz çıktı (örneğin başka bir problemin tekrarı). |
+
+Kapanan bir problem yeniden açılmaz. Aynı hata sonra tekrar ederse yeni bir problem açın.
+
+## Problem açma
+
+1. Menüde **Problemler** sayfasını açın ve **Yeni problem** düğmesine basın.
+2. **Başlık** ve **Belirti** alanlarını doldurun. Belirti, kullanıcıların gördüğü hatadır.
+3. **Etki** seçin: **Düşük**, **Orta** veya **Yüksek**.
+4. **Sahip ekip** seçin. Yalnızca üyesi olduğunuz ekipler çıkar; yöneticiler her ekibi seçebilir. İsterseniz **Sahip** listesinden ekipten birini seçin.
+5. **Oluştur** düğmesine basın. Problem **Açık** durumunda açılır.
+
+Bir arıza üzerinde çalışırken de problem açabilirsiniz: arızanın **Problem** kartında **Problem oluştur** düğmesine basın. Form arızanın konusu ve açıklamasıyla dolu gelir; kaydedince arıza yeni probleme bağlanır.
+
+## Problem listesi
+
+**Kuyruk** filtresiyle listeyi seçin:
+
+| Kuyruk | İçindekiler |
+|---|---|
+| **Problemlerim** | Sahibi siz olan problemler. |
+| **Ekibimin problemleri** | Ekiplerinizin bütün problemleri, kapananlar da. |
+| **Ekibimin açık problemleri** | Ekiplerinizin **Açık**, **İnceleniyor** ve **Bilinen hata** durumundaki problemleri. |
+| **Açık problemler** | Bütün ekiplerin kapanmamış problemleri. |
+| **Bilinen hatalar** | **Bilinen hata** durumundaki problemler. |
+
+**Numara veya başlıkta ara**, **Durum** ve **Etki** ile listeyi daraltın. **Arıza** sütunu probleme bağlı arıza sayısını gösterir. **İş listem** sayfasındaki **Ekibimin problemleri** kartı, ekiplerinizin açık problem sayısını gösterir ve aynı listeyi açar.
+
+## Problem üzerinde çalışma
+
+Her IT personeli bütün problemleri okuyabilir. Problemi düzenlemek, durumunu değiştirmek, not eklemek ve değişiklik bağlamak için sahip ekibin üyesi veya yönetici olmalısınız.
+
+1. Problemi açın. **İşlemler** kartında o anki durumda yapılabilecek işlemler çıkar.
+2. İncelemeye başlayınca **İncelemeye al** düğmesine basın.
+3. Nedeni bulunca **Düzenle** ile **Kök neden** ve **Geçici çözüm** alanlarını doldurup **Kaydet** düğmesine basın.
+4. **Bilinen hata olarak işaretle** düğmesine basın. Bu düğme, kök neden ve geçici çözüm yazılmadan çalışmaz.
+5. Kalıcı çözüm uygulanınca **Çözüldü olarak kapat** düğmesine basın ve **Kalıcı çözüm** alanını doldurun.
+
+Diğer işlemler:
+
+| İşlem | Ne yapar |
+|---|---|
+| **Düzenle** | Başlığı, belirtiyi, etkiyi, kök nedeni ve geçici çözümü değiştirir. Problem kapanana kadar açıktır. |
+| **Aktar** | Problemi bir nedenle başka bir ekibe verir (**Yeni ekip**, **Neden**). Sahip boşalır. |
+| **Sahip ata** | Sahip ekipten birini problemin sahibi yapar. |
+| **İptal et** | Problemi bir **Neden** ile kapatır. |
+
+**Geçmiş ve notlar** bölümü problemde olan her şeyi sırayla gösterir. **Not ekle** ile iç not yazın.
+
+Siz problemi açtıktan sonra başka biri onu değiştirdiyse işleminiz reddedilir ve sayfa yenilenir. Güncel bilgiye bakıp işlemi tekrar yapın.
+
+## Arıza ve değişiklik bağlama
+
+**İlgili arızalar** bölümü probleme bağlı arızaları gösterir.
+
+1. **Arıza bağla** düğmesine basın.
+2. **Arıza numarası** alanına arızanın numarasını yazın (örneğin `INC-2026-000123`) ve **Bağla** düğmesine basın.
+
+Kurallar:
+
+- Yalnızca arızalar bağlanır; talepler bağlanmaz.
+- Bir arıza yalnızca bir probleme bağlanır. Başka bir probleme bağlıysa önce oradan **Kaldır** ile ayırın.
+- **Çözüldü** veya **İptal edildi** durumundaki probleme yeni arıza bağlanmaz.
+- Bağlantı arızanın durumunu ve SLA süresini değiştirmez. Arızanın geçmişinde bir iç kayıt olarak görünür.
+- Arızanın ekibindeyseniz, problemin sahip ekibinde olmasanız bile o arızayı probleme bağlayabilir ve ayırabilirsiniz. Arızanın **Problem** kartındaki **Probleme bağla** da bu işi yapar.
+
+**Düzelten değişiklikler** bölümü problemi gideren değişiklikleri gösterir. **Değişiklik bağla** ile **Değişiklik numarası** yazıp **Bağla** düğmesine basın; **Kaldır** bağlantıyı siler. Değişiklik sayfasındaki **İlgili problemler** bölümü bu bağlantıları yalnızca gösterir; bağlantı problem sayfasından kurulur.
+
+Açma yetkiniz olmayan bir arıza veya değişiklik listede numarası, başlığı ve durumuyla görünür, ama bağlantı olarak açılmaz (**Açma yetkiniz yok**).
+
+## Bilinen hata makalesi
+
+Problem **Bilinen hata** veya **Çözüldü** durumundayken **Bilinen hata makalesi** kutusunda **Makale oluştur** düğmesine basın. Bilgi bankasında "Bilinen hata: <problem başlığı>" adlı bir taslak açılır. Makalede belirti, kök neden, geçici çözüm (problem çözüldüyse kalıcı çözüm de) ve problem numarası yazar. Makale yalnızca IT personeline görünür ve taslaktır.
+
+- Her problem için bir makale oluşturulur. Sonra kutuda makalenin bağlantısı çıkar.
+- Problemi sonradan değiştirmek makaleyi değiştirmez; makaleyi bilgi bankasında düzenleyin.
+- Makaleyi çalışanlara açmak için bilgi bankasında görünürlüğünü değiştirip yayımlayın (bkz. [Bilgi bankası](#bilgi-bankası)).
+
+## İpuçları
+
+- Aynı hata üçüncü kez geldiyse problem açın. Masa, arızanın **Problem** kartında geçici çözümü hemen görür.
+- Geçici çözümü kısa ve adım adım yazın; masa onu doğrudan kullanıcıya anlatır.
+- Kalıcı çözüm bir değişiklik gerektiriyorsa değişikliği açın ve **Düzelten değişiklikler** bölümünden bağlayın.
+- Problemleri ana menüdeki **Ara** ile de bulabilirsiniz; tam `PRB-` numarası problemi doğrudan açar.
+- Problem sayıları ve çözüm süreleri **Raporlar** sayfasındaki **Problemler** sekmesindedir (bkz. [Raporlar](#raporlar)).
 
 # Envanter
 
@@ -743,6 +849,7 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
    - **Garanti**: Garantisi bitmiş, bitecek ve garanti tarihi girilmemiş cihazlar.
    - **Değişiklikler**: Döneme göre kapanan değişikliklerin sonuç dağılımı, başarı oranı, riske göre değişiklikler ve iptal edilenler. **Sorun çıkaran değişiklikler** kartı, dönemde kapanan ve en az bir arızaya yol açtığı bağlanan değişiklikleri sayar; sayıya basınca bu değişikliklerin listesi açılır.
    - **Görevler**: Gecikmiş görevler, duruma ve ekibe göre görevler, görevlerin tamamlanma süresi.
+   - **Problemler**: Açık bilinen hatalar, dönemde çözülen problemler, çözüm süresi, etkiye göre problemler ve problem başına arıza sayısı.
 
 ![Olaylar raporu](images/reports-incidents-desktop.png)
 
@@ -759,12 +866,15 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 
 ![Olaylar raporu (telefon)](images/reports-incidents-mobile.png)
 
-**Değişiklikler** ve **Görevler** sekmelerinde yalnızca dönem ve **Ekip** filtresi vardır. IT personeli yalnızca ekiplerinin değişiklik ve görevlerini görür; yöneticiler hepsini görür.
+**Değişiklikler**, **Görevler** ve **Problemler** sekmelerinde yalnızca dönem ve **Ekip** filtresi vardır. IT personeli yalnızca ekiplerinin değişiklik ve görevlerini görür; yöneticiler hepsini görür. **Problemler** sekmesinde herkes bütün problemleri görür; **Ekip** filtresi problemin sahip ekibine göre daraltır.
 
 - **Başarı oranı**: Dönemde kapanan değişiklikler içinde **Başarılı** olanların oranı. **Geri alındı** ve **Başarısız** sonuçlar yalnızca paydaya girer. İptal edilen değişiklikler ayrı sayılır, orana girmez.
 - **Gecikmiş görevler**: Bitiş tarihi bugünden önce olan açık görevler. Bu rakam dönemden bağımsız, o anki durumu gösterir.
 - **Tamamlanma süresi**: Dönemde tamamlanan görevlerin açılıştan kapanışa ortalama ve medyan süresi. İptal edilen görevler sayılmaz.
 - **Duruma göre** ve **Ekibe göre** dağılımları ile **Riske göre** dağılımı dönemde açılan kayıtları sayar.
+- **Açık bilinen hatalar**: Şu anda **Bilinen hata** durumundaki problemler. Dönemden bağımsızdır.
+- **Çözülen problemler** ve problemlerin **Çözüm süresi**: Dönemde çözülen problemler ve açılıştan çözüme ortalama ve medyan süre. İptal edilen problemler sayılmaz.
+- **Etkiye göre problemler** ve **Problem başına arıza**: Dönemde açılan problemleri etkiye ve bağlı arıza sayısına (1, 2–5, 6 ve üzeri) göre sayar. Hiç arızası olmayan problem bu dağılıma girmez.
 
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
 
