@@ -40,6 +40,8 @@ Bir arıza üzerinde çalışırken de problem açabilirsiniz: arızanın **Prob
 
 **Numara veya başlıkta ara**, **Durum** ve **Etki** ile listeyi daraltın. **Arıza** sütunu probleme bağlı arıza sayısını gösterir. **İş listem** sayfasındaki **Ekibimin problemleri** kartı, ekiplerinizin açık problem sayısını gösterir ve aynı listeyi açar.
 
+![Açık problemler listesi](images/problems-list-desktop.png)
+
 ## Problem üzerinde çalışma
 
 Her IT personeli bütün problemleri okuyabilir. Problemi düzenlemek, durumunu değiştirmek, not eklemek ve değişiklik bağlamak için sahip ekibin üyesi veya yönetici olmalısınız.
@@ -49,6 +51,12 @@ Her IT personeli bütün problemleri okuyabilir. Problemi düzenlemek, durumunu 
 3. Nedeni bulunca **Düzenle** ile **Kök neden** ve **Geçici çözüm** alanlarını doldurup **Kaydet** düğmesine basın.
 4. **Bilinen hata olarak işaretle** düğmesine basın. Bu düğme, kök neden ve geçici çözüm yazılmadan çalışmaz.
 5. Kalıcı çözüm uygulanınca **Çözüldü olarak kapat** düğmesine basın ve **Kalıcı çözüm** alanını doldurun.
+
+![Bilinen hata durumundaki problem](images/problem-detail-desktop.png)
+
+Telefonda **İşlemler** kartı en üstte, problem bilgileri altında görünür.
+
+![Telefonda problem](images/problem-detail-mobile.png)
 
 Diğer işlemler:
 
@@ -77,6 +85,10 @@ Kurallar:
 - **Çözüldü** veya **İptal edildi** durumundaki probleme yeni arıza bağlanmaz.
 - Bağlantı arızanın durumunu ve SLA süresini değiştirmez. Arızanın geçmişinde bir iç kayıt olarak görünür.
 - Arızanın ekibindeyseniz, problemin sahip ekibinde olmasanız bile o arızayı probleme bağlayabilir ve ayırabilirsiniz. Arızanın **Problem** kartındaki **Probleme bağla** da bu işi yapar.
+
+Bağlı bir arızayı açınca **Problem** kartı problemi ve geçici çözümünü gösterir:
+
+![Arızadaki Problem kartı](images/ticket-problem-desktop.png)
 
 **Düzelten değişiklikler** bölümü problemi gideren değişiklikleri gösterir. **Değişiklik bağla** ile **Değişiklik numarası** yazıp **Bağla** düğmesine basın; **Kaldır** bağlantıyı siler. Değişiklik sayfasındaki **İlgili problemler** bölümü bu bağlantıları yalnızca gösterir; bağlantı problem sayfasından kurulur.
 

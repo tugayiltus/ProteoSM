@@ -41,6 +41,9 @@ const OPEN_LINK = /^Aç /;
 /** Article links of the knowledge base list (not the "Yeni makale" link). */
 const ARTICLE_LINK = 'main a[href^="/kb/"]:not([href="/kb/new"])';
 
+/** Incident links in the "İlgili arızalar" panel of a problem; their name starts with the incident number. */
+const INCIDENT_LINK = /^INC-/;
+
 /** Clicks the first visible match and waits until the page it leads to is open. */
 const openFirst =
   (find: (page: Page) => Locator) =>
@@ -53,6 +56,8 @@ const openFirst =
 /** Opens the first record of the list on the page. */
 const openFirstRecord = openFirst((page) => page.getByRole('link', { name: OPEN_LINK }));
 const openFirstArticle = openFirst((page) => page.locator(ARTICLE_LINK));
+/** Opens the first linked incident on a problem page ("İlgili arızalar"). */
+const openFirstIncident = openFirst((page) => page.getByRole('link', { name: INCIDENT_LINK }));
 
 const clickButton =
   (name: string) =>
@@ -126,6 +131,20 @@ export const MANIFEST: readonly GuideShot[] = [
     setup: async (page) => {
       await openFirstRecord(page);
       await clickButton('Tamamla')(page);
+    },
+    views: DESKTOP,
+  },
+  // problems
+  { id: 'problems-list', role: 'it', path: '/problems?queue=open', views: DESKTOP },
+  { id: 'problem-detail', role: 'it', path: '/problems?status=known_error', setup: openFirstRecord, views: ALL_VIEWS },
+  {
+    id: 'ticket-problem',
+    role: 'it',
+    path: '/problems?status=known_error',
+    setup: async (page) => {
+      await openFirstRecord(page);
+      await openFirstIncident(page);
+      await page.getByRole('heading', { name: 'Problem', exact: true }).scrollIntoViewIfNeeded();
     },
     views: DESKTOP,
   },

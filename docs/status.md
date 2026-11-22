@@ -42,8 +42,7 @@ Güncel: 2026-11-22.
 
 - Dizin sözleşme testi yerelde tamam: `tools/directory-contract-test.sh` (OpenLDAP + sahte OIDC, LDAPS ve StartTLS, kesinti), sonuç `docs/release/directory-contract-test.md`. SSO canlıya almadan önce hâlâ gerekli: gerçek Entra kiracısı ve gerçek AD ile `TGYSM_TEST_LDAP_*` sözleşme testi ve elle giriş. Testi CI'a eklemek sahibin kararı.
 - `SECURITY.md` QR, `ASSET-` etiketi, SSO, görevler ve değişiklikler için eski; sahibin isteğiyle güncellenir. `README.md` ve `capabilities.md` `8866fdd` itibarıyla güncel.
-- Kullanıcı rehberinde görev ve değişiklik sayfası, Faz 9 anlatımı (takvim, çakışma uyarısı, değişiklik/görev raporları), Faz 10 anlatımı (ilgili kayıtlar, merkezi arama) ve Faz 11 Problemler sayfası ekran görüntüsüz; görüntüler `tools/guide-screenshots.sh` ile eklenecek.
-- Pilot veri hatası: `tools/seed-pilot.sh --fresh` problem adımında düşüyor (`AddProblemTicketHandler`, `ticket was not found`); olası neden: problemi giriş ekibinden biri bağlıyor, ama arızaların yaklaşık %15'i saha ekibine aktarılmış ve ona görünmüyor. Düzelince rehber görüntüleri alınabilir.
+- Kullanıcı rehberinde görev ve değişiklik sayfası, Faz 9 anlatımı (takvim, çakışma uyarısı, değişiklik/görev raporları), Faz 10 anlatımı (ilgili kayıtlar, merkezi arama) ekran görüntüsüz (Faz 11 Problemler sayfasının görüntüleri var); görüntüler `tools/guide-screenshots.sh` ile eklenecek. Eski 40 görüntü Astryx öncesine ait; tam yeniden çekim `tickets-new-request` adımında duruyor, manifest adımları güncellenmeli.
 - Bekleyen Dependabot PR'ları.
 - Faz 11 dalının (`feature/problem-management`) `master`'a birleştirilmesi: sahibin onayı gerekir (CI yeşil olmalı).
 - Performans ölçümünde Problemler raporu yok (problem listesi ve problem araması ölçülüyor).

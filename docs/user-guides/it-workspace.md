@@ -83,6 +83,9 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 - **İlgili kayıtlar** kartında **İlgili talep oluştur**, bir arızadan yeni bir talep açar; örneğin onarılamayan bir bilgisayar için "Yeni bilgisayar" talebi. Yeni talep arızaya bağlı görünür.
 - **İlgili değişiklikler** kartı kayda bağlı değişiklikleri gösterir. Bağlantı değişiklik sayfasından kurulur (bkz. Görevler ve değişiklikler, İlgili kayıtlar).
 - **Problem** kartı yalnızca arızalarda görünür. Arıza bir probleme bağlıysa problemin numarasını, durumunu, sahip ekibini ve **Geçici çözüm** metnini gösterir; aynı hata tekrar ediyorsa önce bu geçici çözümü deneyin. Bağlı değilse **Probleme bağla** ile problem numarasını yazıp bağlayın veya **Problem oluştur** ile arızanın konusu ve açıklamasıyla dolu yeni bir problem açın. Bkz. [Problemler](problems.md).
+
+  ![Arızadaki Problem kartı](images/ticket-problem-desktop.png)
+
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
 ## İpuçları
