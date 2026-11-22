@@ -126,8 +126,9 @@ internal sealed partial class PilotSeedSession(
     private Guid _intakeTeamId;
     private readonly List<Guid> _assetIds = [];
     private readonly List<Guid> _ticketIds = [];
+    // Problems are owned by intake members, some of whom are in no other team: they link only intake incidents and changes.
     private readonly List<string> _incidentNumbers = [];
-    private readonly List<string> _changeNumbers = [];
+    private readonly List<string> _intakeChangeNumbers = [];
 
     /// <summary>Every ticket this run opened; their notifications are closed once the run ends.</summary>
     public IReadOnlyList<Guid> TicketIds => _ticketIds;
@@ -433,6 +434,9 @@ internal sealed partial class PilotSeedSession(
             at = Later(at, ClaimDelay);
             ticket = await ActAsync<TransferTicketHandler, TicketDetail>(worker, at, (h, ct) => h.HandleAsync(command, ct));
             worker = assignee;
+
+            // Problems are owned by intake members, and an intake-only member cannot see a field-team incident.
+            _incidentNumbers.Remove(ticket.Number);
         }
 
         at = Later(at, StartDelay);

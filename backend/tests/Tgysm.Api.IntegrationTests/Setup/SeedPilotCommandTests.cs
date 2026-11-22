@@ -33,6 +33,7 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
     private const double SmallScaleFactor = 0.02;
     private const string ChangeScale = "0.1";
     private const double ChangeScaleFactor = 0.1;
+    private const string TransferScale = "0.4";
     private const string ScaleOption = "--scale";
     private const string PasswordMarker = "(shown once): ";
     private const int TicketsBeforeFailure = 1;
@@ -190,6 +191,27 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         var withArticle = problems.Where(p => p.ArticleId != null).ToList();
         Assert.NotEmpty(withArticle);
         Assert.All(withArticle, p => Assert.Contains(p.Status, new[] { ProblemStatus.KnownError, ProblemStatus.Resolved }));
+    }
+
+    // Below about 0.19 the seed has one IT staff member, who is in both teams and sees every incident and change; this
+    // scale adds intake-only problem owners next to transferred incidents and field-team changes, which they cannot see.
+    [Fact]
+    public async Task Links_problems_only_to_incidents_and_changes_their_intake_owner_can_see()
+    {
+        var error = new StringWriter();
+        var exit = await SeedPilotCommand.RunAsync(ServicesIn(SeedPilotCommand.PilotEnvironment), [ScaleOption, TransferScale], TextWriter.Null, error);
+
+        Assert.True(exit == CliSuccess, error.ToString());
+        await using var db = factory.Database.CreateDbContext();
+        var intake = await db.Teams.SingleAsync(t => t.IsDefaultIntake, Ct);
+        Assert.True(await db.Tickets.AnyAsync(t => t.Kind == TicketKind.Incident && t.TeamId != intake.Id, Ct));
+        var dualMembers = await db.TeamMemberships.GroupBy(m => m.UserId).Where(g => g.Count() > 1).Select(g => g.Key).ToListAsync(Ct);
+        Assert.True(await db.Problems.AnyAsync(p => p.OwnerId != null && !dualMembers.Contains(p.OwnerId.Value), Ct));
+        var linkedTeams = await db.ProblemTicketLinks.Join(db.Tickets, l => l.TicketId, t => t.Id, (_, t) => t.TeamId).Distinct().ToListAsync(Ct);
+        Assert.Equal([intake.Id], linkedTeams);
+        Assert.True(await db.ChangeRequests.AnyAsync(c => c.OwnerTeamId != intake.Id, Ct));
+        var changeTeams = await db.ProblemChangeLinks.Join(db.ChangeRequests, l => l.ChangeId, c => c.Id, (_, c) => c.OwnerTeamId).Distinct().ToListAsync(Ct);
+        Assert.Equal([intake.Id], changeTeams);
     }
 
     [Fact]

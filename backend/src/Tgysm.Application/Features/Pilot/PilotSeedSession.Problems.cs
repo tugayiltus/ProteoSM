@@ -83,7 +83,7 @@ internal sealed partial class PilotSeedSession
         }
 
         at = Later(at, ProblemStepDelay);
-        var change = new AddProblemChangeCommand(problem.Number, Pick(_changeNumbers));
+        var change = new AddProblemChangeCommand(problem.Number, Pick(_intakeChangeNumbers));
         await ActAsync<AddProblemChangeHandler, IReadOnlyList<ProblemChangeItem>>(owner, at, (h, ct) => h.HandleAsync(change, ct));
         await ActAsync<ResolveProblemHandler, ProblemDetail>(owner, at, (h, ct) => h.HandleAsync(new ResolveProblemCommand(problem.Number, problem.Version, PilotSeedProblemData.Resolution), ct));
     }

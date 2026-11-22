@@ -100,7 +100,11 @@ internal sealed partial class PilotSeedSession
             Pick(Enum.GetValues<Level>()), Pick(Enum.GetValues<Level>()), start, end,
             PilotSeedChangeData.ImplementationPlan, PilotSeedChangeData.VerificationPlan, PilotSeedChangeData.BackoutPlan);
         var created = await ActAsync<CreateChangeHandler, ChangeDetail>(owner, at, (h, ct) => h.HandleAsync(new CreateChangeCommand(draft, teamId, owner, assets), ct));
-        _changeNumbers.Add(created.Number);
+        if (inIntake)
+        {
+            _intakeChangeNumbers.Add(created.Number);
+        }
+
         if (plan == PilotChangePlan.Draft)
         {
             return;
