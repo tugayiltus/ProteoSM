@@ -66,6 +66,9 @@ const clickButton =
     await page.getByRole('dialog').waitFor();
   };
 
+/** The change report card of closed changes tied to an incident they caused. */
+const CAUSED_INCIDENTS_CARD = 'Sorun çıkaran değişiklikler';
+
 /** Tickets assigned to the signed-in IT person that are being worked on. */
 const MY_WORK_QUEUE = '/workspace/queue?queue=assigned_to_me&status=in_progress';
 
@@ -183,6 +186,15 @@ export const MANIFEST: readonly GuideShot[] = [
   // reports
   { id: 'reports-incidents', role: 'it', path: '/reports/incidents', views: ALL_VIEWS },
   { id: 'reports-changes', role: 'admin', path: '/reports/changes', views: DESKTOP },
+  {
+    id: 'reports-changes-caused',
+    role: 'admin',
+    path: '/reports/changes',
+    setup: async (page) => {
+      await page.getByText(CAUSED_INCIDENTS_CARD, { exact: true }).scrollIntoViewIfNeeded();
+    },
+    views: DESKTOP,
+  },
   { id: 'reports-tasks', role: 'admin', path: '/reports/tasks', views: DESKTOP },
   { id: 'reports-problems', role: 'admin', path: '/reports/problems', views: DESKTOP },
   { id: 'reports-exports', role: 'it', path: '/reports/exports', views: DESKTOP },

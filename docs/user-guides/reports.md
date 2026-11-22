@@ -43,6 +43,8 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 
 ![Değişiklikler raporu](images/reports-changes-desktop.png)
 
+![Değişiklikler raporu: Sorun çıkaran değişiklikler](images/reports-changes-caused-desktop.png)
+
 ![Görevler raporu](images/reports-tasks-desktop.png)
 
 ![Problemler raporu](images/reports-problems-desktop.png)
