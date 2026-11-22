@@ -57,27 +57,13 @@ test('problem: desk opens it from an incident, field team works it to resolved, 
   await edit.getByRole('button', { name: 'Kaydet' }).click();
   await expect(edit).toBeHidden();
   await fieldPage.getByRole('button', { name: 'Bilinen hata olarak işaretle' }).click();
-  await expect(fieldPage.getByText('Bilinen hata', { exact: true }).first()).toBeVisible();
+  await expect(fieldPage.getByText('Bilinen hata', { exact: true })).toBeVisible();
   await fieldPage.getByRole('button', { name: 'Makale oluştur' }).click();
   await expect(fieldPage.getByRole('link', { name: new RegExp(`Bilinen hata: ${problemTitle}`) })).toBeVisible();
   await expect(fieldPage.getByRole('button', { name: 'Makale oluştur' })).toHaveCount(0);
   await expectNoHorizontalScroll(fieldPage);
 
-  // Field team links a fixing change, then resolves the problem.
-  const change = await seedChange(field, world, `VPN istemcisi güncelleme ${suffix}`, null, { affectedService: `VPN ${suffix}` });
-  await fieldPage.getByRole('button', { name: 'Değişiklik bağla' }).click();
-  const link = fieldPage.getByRole('dialog');
-  await link.getByLabel('Değişiklik numarası').fill(change);
-  await link.getByRole('button', { name: 'Bağla' }).click();
-  await expect(fieldPage.getByText(new RegExp(change))).toBeVisible();
-  await fieldPage.getByRole('button', { name: 'Çözüldü olarak kapat' }).click();
-  const resolve = fieldPage.getByRole('dialog');
-  await resolve.getByLabel('Kalıcı çözüm').fill(RESOLUTION);
-  await resolve.getByRole('button', { name: 'Onayla' }).click();
-  await expect(fieldPage.getByText('Çözüldü', { exact: true }).first()).toBeVisible();
-  await expectNoHorizontalScroll(fieldPage);
-
-  // Desk links a second incident and sees the workaround on it.
+  // Desk links a second incident while the problem is still open (a closed problem takes no new links) and sees the workaround.
   await deskPage.goto(`/tickets/${second}`);
   await deskPage.getByRole('button', { name: 'Probleme bağla' }).click();
   const bind = deskPage.getByRole('dialog');
@@ -85,6 +71,20 @@ test('problem: desk opens it from an incident, field team works it to resolved, 
   await bind.getByRole('button', { name: 'Bağla' }).click();
   await expect(deskPage.getByText(WORKAROUND)).toBeVisible();
   await expectNoHorizontalScroll(deskPage);
+
+  // Field team links a fixing change, then resolves the problem.
+  const change = await seedChange(field, world, `VPN istemcisi güncelleme ${suffix}`, null, { affectedService: `VPN ${suffix}` });
+  await fieldPage.getByRole('button', { name: 'Değişiklik bağla' }).click();
+  const link = fieldPage.getByRole('dialog');
+  await link.getByLabel('Değişiklik numarası').fill(change);
+  await link.getByRole('button', { name: 'Bağla' }).click();
+  await expect(fieldPage.getByRole('list', { name: 'Düzelten değişiklikler' }).getByText(new RegExp(change))).toBeVisible();
+  await fieldPage.getByRole('button', { name: 'Çözüldü olarak kapat' }).click();
+  const resolve = fieldPage.getByRole('dialog');
+  await resolve.getByLabel('Kalıcı çözüm').fill(RESOLUTION);
+  await resolve.getByRole('button', { name: 'Onayla' }).click();
+  await expect(fieldPage.getByText('Çözüldü', { exact: true })).toBeVisible();
+  await expectNoHorizontalScroll(fieldPage);
 
   // The employee who opened the incident sees no problem card.
   await employee.page.goto(`/tickets/${second}`);
