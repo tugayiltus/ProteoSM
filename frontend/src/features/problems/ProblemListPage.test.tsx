@@ -33,6 +33,14 @@ describe('ProblemListPage', () => {
     );
   });
 
+  it('opens the open team problems queue the workspace card links to', async () => {
+    const api = mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: PAGE } }) as never);
+    renderRoute('/problems?queue=team_open');
+
+    expect(await screen.findByRole('heading', { name: 'Ekibimin açık problemleri' })).toBeInTheDocument();
+    expect(api.calls.some((c) => new URL(c.url).searchParams.get('queue') === 'team_open')).toBe(true);
+  });
+
   it('opens a problem from its row', async () => {
     mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: PAGE } }) as never);
     renderRoute('/problems');

@@ -30,7 +30,7 @@ import { problemPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
 
-import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, useProblems, type ProblemListItem } from './api';
+import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, URL_QUEUES, useProblems, type ProblemListItem } from './api';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
 import { ProblemFormDialog } from './ProblemFormDialog';
 
@@ -57,7 +57,9 @@ export function ProblemListPage() {
   const navigate = useNavigate();
   const [creating, setCreating] = useState(false);
   const list = useListParams(FILTER_KEYS);
-  const queue = pick(PROBLEM_QUEUES, list.filters.queue);
+  const queue = pick(URL_QUEUES, list.filters.queue);
+  // A queue opened from a link but not offered in the filter still shows as the selected value.
+  const queueOptions = queue === undefined || PROBLEM_QUEUES.includes(queue) ? PROBLEM_QUEUES : [...PROBLEM_QUEUES, queue];
   const status = pick(PROBLEM_STATUSES, list.filters.status);
   const impact = pick(LEVELS, list.filters.impact);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
@@ -115,7 +117,7 @@ export function ProblemListPage() {
             <Selector
               label={t('list.queueFilter')}
               placeholder={t('list.all')}
-              options={PROBLEM_QUEUES.map((value) => ({ value, label: t(`queues.${value}`) }))}
+              options={queueOptions.map((value) => ({ value, label: t(`queues.${value}`) }))}
               value={option(queue)}
               onChange={(value) => list.setFilter('queue', value)}
             />

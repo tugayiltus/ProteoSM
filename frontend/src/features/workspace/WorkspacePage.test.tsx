@@ -50,8 +50,8 @@ describe('WorkspacePage', () => {
     renderRoute('/workspace');
 
     const card = await screen.findByRole('link', { name: 'Ekibimin problemleri 4 problem' });
-    expect(card).toHaveAttribute('href', '/problems?queue=team');
-    expect(api.calls.some((c) => c.url.includes('/api/v1/problems') && new URL(c.url).searchParams.get('queue') === 'team')).toBe(true);
+    expect(card).toHaveAttribute('href', '/problems?queue=team_open');
+    expect(api.calls.some((c) => c.url.includes('/api/v1/problems') && new URL(c.url).searchParams.get('queue') === 'team_open')).toBe(true);
   });
 
   it('opens the SLA risk queue from its card', async () => {

@@ -311,6 +311,32 @@ public sealed class ProblemApiTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Team_open_queue_lists_only_the_open_problems_of_my_teams()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var open = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "Açık sorun");
+        var investigating = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "İncelenen sorun");
+        var knownError = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "Bilinen sorun");
+        var resolved = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "Çözülen sorun");
+        var cancelled = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "İptal sorun");
+        await ProblemWorld.CreateForTeamAsync(world.Field, world.FieldTeam.Id, "Saha sorunu");
+        using var started = await world.Desk.PostAsync(ProblemWorld.PathOf(investigating, "start"), new { version = ProblemWorld.VersionOf(investigating) });
+        using var saved = await world.Desk.PutAsync(ProblemWorld.PathOf(knownError), ProblemWorld.EditBody(knownError, "Kablo", "Yedek hat"));
+        var edited = await world.Desk.ReadJsonAsync<JsonElement>(saved);
+        using var known = await world.Desk.PostAsync(ProblemWorld.PathOf(knownError, "known-error"), new { version = ProblemWorld.VersionOf(edited) });
+        using var resolve = await world.Desk.PostAsync(ProblemWorld.PathOf(resolved, "resolve"), new { version = ProblemWorld.VersionOf(resolved), resolution = "Düzeltildi" });
+        using var cancel = await world.Desk.PostAsync(ProblemWorld.PathOf(cancelled, "cancel"), new { version = ProblemWorld.VersionOf(cancelled), reason = "Gereksiz" });
+        Assert.All(new[] { started, known, resolve, cancel }, r => Assert.Equal(HttpStatusCode.OK, r.StatusCode));
+
+        var teamOpen = await ListAsync(world.Desk, "queue=team_open");
+
+        Assert.Equal(
+            new[] { open, investigating, knownError }.Select(ProblemWorld.NumberOf).Order(StringComparer.Ordinal),
+            teamOpen.Order(StringComparer.Ordinal));
+        Assert.Equal(5, (await ListAsync(world.Desk, "queue=team")).Count);
+    }
+
+    [Fact]
     public async Task List_rows_show_team_owner_and_incident_count()
     {
         var world = await TicketWorld.CreateAsync(factory);

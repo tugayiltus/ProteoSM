@@ -14,6 +14,7 @@
   "queues": {
     "mine": "Problemlerim",
     "team": "Ekibimin problemleri",
+    "team_open": "Ekibimin açık problemleri",
     "open": "Açık problemler",
     "known_errors": "Bilinen hatalar"
   },
@@ -30,6 +31,7 @@
     "open": "Aç",
     "incidentCount": "{{count}} arıza",
     "cardCount": "{{count}} problem",
+    "teamCard": "Ekibimin problemleri",
     "columns": {
       "number": "Numara",
       "title": "Başlık",

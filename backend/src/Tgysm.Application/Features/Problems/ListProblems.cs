@@ -12,6 +12,8 @@ public enum ProblemQueue
 {
     Mine,
     Team,
+    /// <summary>Open problems of my teams (not resolved or cancelled): the İş listem card.</summary>
+    TeamOpen,
     Open,
     KnownErrors,
 }
@@ -32,6 +34,7 @@ public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
         {
             ProblemQueue.Mine => problems.Where(p => p.OwnerId == viewer.UserId),
             ProblemQueue.Team => problems.Where(p => teamIds.Contains(p.OwnerTeamId)),
+            ProblemQueue.TeamOpen => problems.Where(p => teamIds.Contains(p.OwnerTeamId) && p.Status != ProblemStatus.Resolved && p.Status != ProblemStatus.Cancelled),
             ProblemQueue.Open => problems.Where(p => p.Status != ProblemStatus.Resolved && p.Status != ProblemStatus.Cancelled),
             ProblemQueue.KnownErrors => problems.Where(p => p.Status == ProblemStatus.KnownError),
             _ => problems,

@@ -14,9 +14,13 @@ export type ProblemTimelineItem = Schemas['ProblemTimelineItem'];
 export type ProblemTicketItem = Schemas['ProblemTicketItem'];
 export type ProblemChangeItem = Schemas['ProblemChangeItem'];
 export type Level = Schemas['Level'];
-export type ProblemQueue = 'mine' | 'team' | 'open' | 'known_errors';
+export type ProblemQueue = 'mine' | 'team' | 'team_open' | 'open' | 'known_errors';
 
+/** Queues offered in the list filter. */
 export const PROBLEM_QUEUES: readonly ProblemQueue[] = ['mine', 'team', 'open', 'known_errors'];
+/** Open problems of my teams: only the İş listem card links to it, so the list accepts it from the URL but does not offer it. */
+export const TEAM_OPEN_QUEUE: ProblemQueue = 'team_open';
+export const URL_QUEUES: readonly ProblemQueue[] = [...PROBLEM_QUEUES, TEAM_OPEN_QUEUE];
 export const PROBLEM_STATUSES: readonly ProblemStatus[] = ['open', 'investigating', 'known_error', 'resolved', 'cancelled'];
 export const LEVELS: readonly Level[] = ['low', 'medium', 'high'];
 /** A resolved or cancelled problem is read-only: no edits, state changes or new links. */
