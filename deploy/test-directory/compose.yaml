@@ -5,7 +5,8 @@
 #   test-ca     one-shot: throw-away CA + server certificate for "openldap" into the directory-certs volume
 #   openldap    OpenLDAP shaped like Active Directory (openldap/ad-lite.schema, seed.ldif); LDAPS 636 and StartTLS 389
 #   oidc        mock-oauth2-server as the Microsoft Entra stand-in
-#   ldap-tests  profile "runner": .NET SDK container that runs NovellLdapDirectoryTests and trusts the test CA
+#   postgres    profile "runner": throw-away PostgreSQL for the API-level LDAP tests (no published port)
+#   ldap-tests  profile "runner": .NET SDK container that trusts the test CA and runs the LDAP contract classes
 #
 # OIDC server choice: mock-oauth2-server, not Keycloak. It starts in seconds with no admin setup, signs real RS256
 # tokens with a published JWKS, supports the authorization code flow with PKCE and form_post, and can put any claim
@@ -28,6 +29,9 @@ services:
 
   openldap:
     <<: *openldap-image
+    # libldap checks the certificate against the canonical host name, which for localhost is the container's own
+    # name; a fixed name that is in the certificate keeps the health check's TLS verification on.
+    hostname: openldap
     depends_on:
       test-ca:
         condition: service_completed_successfully
@@ -45,9 +49,9 @@ services:
       test:
         - CMD-SHELL
         - >-
-          ldapsearch -x -LLL -H ldaps://localhost:636 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
+          ldapsearch -x -LLL -H ldaps://openldap:636 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
           -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example '(sAMAccountName=deniz.test)' dn | grep -q '^dn:'
-          && ldapsearch -x -ZZ -LLL -H ldap://localhost:389 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
+          && ldapsearch -x -ZZ -LLL -H ldap://openldap:389 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
           -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example -s base dn | grep -q '^dn:'
       interval: 2s
       timeout: 5s
@@ -116,11 +120,25 @@ services:
           ]
         }
 
+  postgres:
+    image: postgres:17.6-alpine
+    profiles: ["runner"]
+    environment:
+      # Test-only password for a database that lives and dies with this compose project.
+      POSTGRES_PASSWORD: test-only-pg-pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
   ldap-tests:
     image: mcr.microsoft.com/dotnet/sdk:10.0.401
     profiles: ["runner"]
     depends_on:
       openldap:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     entrypoint: ["/bin/bash", "/repo/deploy/test-directory/ldap-tests-in-container.sh"]
     environment:
@@ -133,6 +151,10 @@ services:
       - TGYSM_TEST_LDAP_BIND_PASSWORD
       - TGYSM_TEST_LDAP_USER
       - TGYSM_TEST_LDAP_PASSWORD
+      - TGYSM_TEST_LDAP_EMAIL
+      - TGYSM_TEST_LDAP_STOPPED
+      # PostgresDatabase creates its throw-away databases through this admin connection.
+      - TGYSM_TEST_ADMIN_CONNECTION=Host=postgres;Database=postgres;Username=postgres;Password=test-only-pg-pass
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
       - DOTNET_NOLOGO=1
     volumes:
