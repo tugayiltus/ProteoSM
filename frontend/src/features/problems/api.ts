@@ -14,6 +14,8 @@ export type ProblemStatus = Schemas['ProblemStatus'];
 export type ProblemTimelineItem = Schemas['ProblemTimelineItem'];
 export type ProblemTicketItem = Schemas['ProblemTicketItem'];
 export type ProblemChangeItem = Schemas['ProblemChangeItem'];
+export type TicketProblemItem = Schemas['TicketProblemItem'];
+export type ProblemChangeSideItem = Schemas['ProblemChangeSideItem'];
 export type Level = Schemas['Level'];
 export type ProblemQueue = 'mine' | 'team' | 'team_open' | 'open' | 'known_errors';
 
@@ -41,6 +43,9 @@ export const problemKeys = {
   timeline: (number: string) => ['problems', 'timeline', number],
   tickets: (number: string) => ['problems', 'tickets', number],
   changes: (number: string) => ['problems', 'changes', number],
+  /** The problem of one incident, and the problems one change fixes: under `all`, so every problem write refreshes them. */
+  ofTicket: (ticketNumber: string) => ['problems', 'of-ticket', ticketNumber],
+  ofChange: (changeNumber: string) => ['problems', 'of-change', changeNumber],
 } as const;
 
 export interface ProblemListParams {
@@ -99,6 +104,23 @@ export function useProblemChanges(number: string) {
   });
 }
 
+/** The incident's problem, or null when it has none (204). Employees get 404, so the caller gates the query by role. */
+export function useTicketProblem(ticketNumber: string, enabled: boolean) {
+  return useQuery({
+    enabled,
+    queryKey: problemKeys.ofTicket(ticketNumber),
+    queryFn: async (): Promise<TicketProblemItem | null> =>
+      (await unwrap(api.GET('/api/v1/tickets/{number}/problem', { params: { path: { number: ticketNumber } } }))) ?? null,
+  });
+}
+
+export function useChangeProblems(changeNumber: string) {
+  return useQuery({
+    queryKey: problemKeys.ofChange(changeNumber),
+    queryFn: () => unwrap(api.GET('/api/v1/changes/{number}/problems', { params: { path: { number: changeNumber } } })),
+  });
+}
+
 /** Problem writes show on ticket and change pages too (problem card, history), so all three caches refresh. */
 function useInvalidateProblems() {
   const queryClient = useQueryClient();
@@ -141,9 +163,11 @@ export interface NewProblemInput {
   incidentNumber: string | null;
 }
 
+/** A 409 from a create with an incident can mean the incident got a problem meanwhile, so the ticket card reloads. */
 export function useCreateProblem() {
   const invalidate = useInvalidateProblems();
-  return useMutation({ mutationFn: (body: NewProblemInput) => unwrap(api.POST('/api/v1/problems', { body })), onSuccess: invalidate });
+  const reload = useReloadOnConflict();
+  return useMutation({ mutationFn: (body: NewProblemInput) => unwrap(api.POST('/api/v1/problems', { body })), onSuccess: invalidate, onError: reload });
 }
 
 export interface ProblemEdit {
@@ -216,6 +240,18 @@ export function useLinkProblemTicket(number: string) {
   return useMutation({
     mutationFn: (ticketNumber: string) => unwrap(api.POST('/api/v1/problems/{number}/tickets', { params: { path: { number } }, body: { ticketNumber } })),
     onSuccess: invalidate,
+  });
+}
+
+/** Links one incident to the problem whose number the user types, from the incident's side. */
+export function useLinkIncidentToProblem(ticketNumber: string) {
+  const invalidate = useInvalidateProblems();
+  const reload = useReloadOnConflict();
+  return useMutation({
+    mutationFn: (problemNumber: string) =>
+      unwrap(api.POST('/api/v1/problems/{number}/tickets', { params: { path: { number: problemNumber } }, body: { ticketNumber } })),
+    onSuccess: invalidate,
+    onError: reload,
   });
 }
 

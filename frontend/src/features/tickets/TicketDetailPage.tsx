@@ -35,6 +35,7 @@ import { TicketArticles } from './TicketArticles';
 import { PriorityBadge, TicketStatusBadge } from './TicketBadges';
 import { TicketChangeLinks } from './TicketChangeLinks';
 import { TicketLinks } from './TicketLinks';
+import { TicketProblemCard } from './TicketProblemCard';
 import { TicketTasks } from './TicketTasks';
 import { Timeline } from './Timeline';
 
@@ -144,6 +145,7 @@ function TicketDetail({ number }: { number: string }) {
           {item.cancelReason && <Field label={t('detail.cancelReason')} value={item.cancelReason} />}
         </MetadataList>
       </SectionCard>
+      <TicketProblemCard ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
       <TicketLinks ticket={item} isRequester={item.requesterId === me.id} />
       <TicketTasks ticket={item} />
       <TicketChangeLinks ticket={item} isStaff={isItStaffOrAdmin(me.role)} />

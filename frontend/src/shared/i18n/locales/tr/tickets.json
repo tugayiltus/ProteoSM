@@ -119,6 +119,17 @@
       "updated": "Son işlem"
     }
   },
+  "problem": {
+    "title": "Problem",
+    "none": "Bu arıza bir probleme bağlı değil.",
+    "link": "Probleme bağla",
+    "create": "Problem oluştur",
+    "number": "Problem numarası",
+    "confirmLink": "Bağla",
+    "workaround": "Geçici çözüm",
+    "noWorkaround": "Geçici çözüm henüz yazılmadı.",
+    "team": "Sahip ekip"
+  },
   "changeLinks": {
     "title": "İlgili değişiklikler",
     "empty": "Bağlı değişiklik yok.",

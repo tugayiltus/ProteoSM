@@ -21,7 +21,7 @@ import { readPageParam } from '../../shared/lib/pageParam';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
-import { assetPath, changePath, reportPath, taskPath, ticketPath } from '../../shared/routes';
+import { assetPath, changePath, problemPath, reportPath, taskPath, ticketPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 
 import {
@@ -35,6 +35,7 @@ import {
   type DrillSelection,
   type DrilldownAssetRow,
   type DrilldownChangeRow,
+  type DrilldownProblemRow,
   type DrilldownTaskRow,
   type DrilldownTicketRow,
   type ReportName,
@@ -152,6 +153,38 @@ function useTaskColumns(): DataColumn<DrilldownTaskRow>[] {
   ];
 }
 
+function useProblemColumns(): DataColumn<DrilldownProblemRow>[] {
+  const { t } = useTranslation('reports');
+  return [
+    { key: 'number', header: t('drilldown.columns.changeNumber'), renderCell: (row) => <ProblemLink row={row} /> },
+    { key: 'title', header: t('drilldown.columns.title'), renderCell: (row) => row.title },
+    { key: 'status', header: t('drilldown.columns.status'), renderCell: problemStatus },
+    { key: 'impact', header: t('drilldown.columns.impact'), renderCell: problemImpact },
+    { key: 'team', header: t('drilldown.columns.team'), renderCell: (row) => row.ownerTeamName },
+    { key: 'createdAt', header: t('drilldown.columns.createdAt'), renderCell: (row) => formatDateTime(row.createdAt) },
+    { key: 'resolvedAt', header: t('drilldown.columns.resolvedAt'), renderCell: (row) => optionalDateTime(row.resolvedAt) },
+  ];
+}
+
+const problemStatus = (row: DrilldownProblemRow) => translateOr(`problems:statuses.${row.status}`, row.status);
+const problemImpact = (row: DrilldownProblemRow) => translateOr(`problems:levels.${row.impact}`, row.impact);
+
+function ProblemLink({ row }: { row: DrilldownProblemRow }) {
+  return <Link href={problemPath(row.number)}>{row.number}</Link>;
+}
+
+function ProblemCard({ row }: { row: DrilldownProblemRow }) {
+  const meta = [problemStatus(row), problemImpact(row), row.ownerTeamName].join(META_SEPARATOR);
+  return (
+    <VStack gap={0.5}>
+      <ProblemLink row={row} />
+      <Text wordBreak="break-word">{row.title}</Text>
+      <Text type="supporting">{meta}</Text>
+      <Text type="supporting">{formatDateTime(row.createdAt)}</Text>
+    </VStack>
+  );
+}
+
 function ChangeLink({ row }: { row: DrilldownChangeRow }) {
   return <Link href={changePath(row.number)}>{row.number}</Link>;
 }
@@ -204,9 +237,10 @@ function DrilldownRows({ report, selection, filter, page, onPageChange }: RowsPr
   const assetColumns = useAssetColumns();
   const changeColumns = useChangeColumns();
   const taskColumns = useTaskColumns();
+  const problemColumns = useProblemColumns();
   const rows = useDrilldown(report, selection, filter, page);
 
-  const paged = rows.data?.tickets ?? rows.data?.assets ?? rows.data?.changes ?? rows.data?.tasks ?? null;
+  const paged = rows.data?.tickets ?? rows.data?.assets ?? rows.data?.changes ?? rows.data?.tasks ?? rows.data?.problems ?? null;
   return (
     <VStack gap={3}>
       <Card padding={0}>
@@ -221,6 +255,15 @@ function DrilldownRows({ report, selection, filter, page, onPageChange }: RowsPr
         )}
         {rows.data?.tasks != null && rows.data.tasks.totalCount > 0 && (
           <DataList items={rows.data.tasks.items} columns={taskColumns} getKey={(row) => row.number} renderCard={(row) => <TaskCard row={row} />} caption={t('drilldown.caption')} />
+        )}
+        {rows.data?.problems != null && rows.data.problems.totalCount > 0 && (
+          <DataList
+            items={rows.data.problems.items}
+            columns={problemColumns}
+            getKey={(row) => row.number}
+            renderCard={(row) => <ProblemCard row={row} />}
+            caption={t('drilldown.caption')}
+          />
         )}
         {rows.data?.tickets == null && rows.data?.assets != null && rows.data.assets.totalCount > 0 && (
           <DataList items={rows.data.assets.items} columns={assetColumns} getKey={(row) => row.id} renderCard={(row) => <AssetCard row={row} />} caption={t('drilldown.caption')} />

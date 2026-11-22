@@ -139,6 +139,23 @@ describe('GlobalSearch', () => {
     await waitFor(() => expect(where()).toBe('/workspace/queue?queue=all&q=dell'));
   });
 
+  it('shows the Problemler group and opens the problem list with the query from Tümünü gör', async () => {
+    const problems = {
+      exact: null,
+      groups: [{ type: 'problem', hasMore: true, hits: [{ type: 'problem', key: 'PRB-2026-000001', title: 'VPN kopuyor', status: 'Bilinen hata' }] }],
+    };
+    mockApi({ [SEARCH_ROUTE]: { status: 200, body: problems } });
+    renderSearch();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const input = await openBox(user);
+    await user.type(input, 'vpn');
+    await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
+    expect(await screen.findByText('Problemler')).toBeInTheDocument();
+    expect(screen.getByText(/VPN kopuyor/)).toBeInTheDocument();
+    await user.click(screen.getByText('Tümünü gör'));
+    await waitFor(() => expect(where()).toBe('/problems?q=vpn'));
+  });
+
   it('opens the own ticket list from Tümünü gör for an employee', async () => {
     mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
     renderSearch(EMPLOYEE_ME as Me);

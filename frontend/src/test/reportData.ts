@@ -187,3 +187,44 @@ export const TASK_DRILLDOWN: DrilldownResult = {
     totalCount: 1,
   },
 };
+
+/** Two problems resolved in 1 h and 3 h: average 2 h, median 1 h. */
+export const PROBLEM_REPORT = reportResult('problems', [
+  { ...baseFigure, metric: 'known_errors_open', shape: 'count', value: 2 },
+  { ...baseFigure, metric: 'resolved', shape: 'count', value: 2 },
+  {
+    ...baseFigure,
+    metric: 'resolution_time',
+    shape: 'duration',
+    value: 2 * SECONDS_PER_HOUR,
+    denominator: 2,
+    buckets: bucketsOf(['median', SECONDS_PER_HOUR]),
+    unit: 'seconds',
+  },
+  { ...baseFigure, metric: 'by_impact', shape: 'distribution', value: 4, buckets: bucketsOf(['low', 1], ['medium', 1], ['high', 2]) },
+  { ...baseFigure, metric: 'incidents_per_problem', shape: 'distribution', value: 4, buckets: bucketsOf(['1', 2], ['2_5', 1], ['6_plus', 1]) },
+]);
+
+export const PROBLEM_DRILLDOWN: DrilldownResult = {
+  kind: 'problems',
+  tickets: null,
+  assets: null,
+  changes: null,
+  tasks: null,
+  problems: {
+    items: [
+      {
+        number: 'PRB-2026-000001',
+        title: 'VPN bağlantısı her sabah kopuyor',
+        status: 'known_error',
+        impact: 'high',
+        ownerTeamName: 'Ağ Ekibi',
+        createdAt: '2026-09-01T08:00:00Z',
+        resolvedAt: null,
+      },
+    ],
+    page: 1,
+    pageSize: 20,
+    totalCount: 1,
+  },
+};

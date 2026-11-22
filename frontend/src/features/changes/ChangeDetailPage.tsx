@@ -32,6 +32,7 @@ import { ChangeActions } from './ChangeActions';
 import { ChangeApprovalBox } from './ChangeApprovalBox';
 import { ChangeOutcomeBadge, ChangeStatusBadge, RiskBadge } from './ChangeBadges';
 import { ChangeConflictBanner } from './ChangeConflictBanner';
+import { ChangeProblems } from './ChangeProblems';
 import { ChangeSummaryView } from './ChangeSummaryView';
 import { ChangeTasks } from './ChangeTasks';
 import { ChangeTicketLinks } from './ChangeTicketLinks';
@@ -119,6 +120,7 @@ function FullView({ change }: { change: ChangeDetail }) {
         <AssetsList change={change} />
       </SectionCard>
       <ChangeTicketLinks number={change.number} status={change.status} canEdit={change.canWork} />
+      <ChangeProblems number={change.number} />
       <SectionCard title={t('detail.tasksSection')}>
         <ChangeTasks change={change} />
       </SectionCard>

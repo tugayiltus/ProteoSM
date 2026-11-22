@@ -1,7 +1,8 @@
 /**
- * @input An optional problem to edit, a saved callback and a close callback.
+ * @input An optional problem to edit or incident to start from, a saved callback and a close callback.
  * @output A dialog that opens a problem (title, symptom, impact, owner team and owner) or edits one (adds root cause and workaround).
- * @position Problem list ("Yeni problem") and the problem detail actions ("Düzenle").
+ *   From an incident, title and symptom start with the incident's text and the save links the incident.
+ * @position Problem list ("Yeni problem"), the problem detail actions ("Düzenle") and the incident Problem card ("Problem oluştur").
  */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
@@ -40,10 +41,17 @@ type Values = z.infer<typeof baseSchema>;
 
 const orNull = (value: string) => (value.trim() === '' ? null : value.trim());
 
-function initialValues(problem: ProblemDetail | undefined): Values {
+/** The incident a new problem starts from; the create links it in the same save. */
+export interface ProblemSourceIncident {
+  number: string;
+  subject: string;
+  description: string;
+}
+
+function initialValues(problem: ProblemDetail | undefined, incident: ProblemSourceIncident | undefined): Values {
   return {
-    title: problem?.title ?? '',
-    description: problem?.description ?? '',
+    title: problem?.title ?? incident?.subject.slice(0, TITLE_MAX_LENGTH) ?? '',
+    description: problem?.description ?? incident?.description.slice(0, TEXT_MAX_LENGTH) ?? '',
     impact: problem?.impact ?? DEFAULT_IMPACT,
     rootCause: problem?.rootCause ?? '',
     workaround: problem?.workaround ?? '',
@@ -54,11 +62,12 @@ function initialValues(problem: ProblemDetail | undefined): Values {
 
 interface ProblemFormDialogProps {
   problem?: ProblemDetail;
+  incident?: ProblemSourceIncident;
   onSaved: (problem: ProblemDetail) => void;
   onClose: () => void;
 }
 
-export function ProblemFormDialog({ problem, onSaved, onClose }: ProblemFormDialogProps) {
+export function ProblemFormDialog({ problem, incident, onSaved, onClose }: ProblemFormDialogProps) {
   const { t } = useTranslation('problems');
   const me = useSession();
   const teams = useReferenceTeams(problem === undefined);
@@ -69,7 +78,7 @@ export function ProblemFormDialog({ problem, onSaved, onClose }: ProblemFormDial
   const closeOnConflict = useCloseOnConflict(onClose);
   const { control, setValue, handleSubmit, formState } = useForm<Values>({
     resolver: zodResolver(problem === undefined ? createSchema : baseSchema),
-    defaultValues: initialValues(problem),
+    defaultValues: initialValues(problem, incident),
   });
   const teamId = useWatch({ control, name: 'ownerTeamId' });
   // The owner team must be one of the creator's teams, so the creator can always work the new problem; admins pick any team.
@@ -94,7 +103,7 @@ export function ProblemFormDialog({ problem, onSaved, onClose }: ProblemFormDial
           impact: v.impact as Level,
           ownerTeamId: v.ownerTeamId,
           ownerId: orNull(v.ownerId),
-          incidentNumber: null,
+          incidentNumber: incident?.number ?? null,
         },
         { onSuccess: onSaved },
       );

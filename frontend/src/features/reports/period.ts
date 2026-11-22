@@ -3,8 +3,8 @@ import { APP_TIME_ZONE, formatDate } from '../../shared/lib/format';
 
 import type { ReportName } from './api';
 
-/** Reports over a time window; the asset report is a snapshot and warranty uses its days as an expiry window. The task report has one snapshot figure (overdue) beside period figures. */
-export const PERIODIC_REPORTS: readonly ReportName[] = ['incidents', 'requests', 'operations', 'transfers', 'changes', 'tasks'];
+/** Reports over a time window; the asset report is a snapshot and warranty uses its days as an expiry window. The task and problem reports have one snapshot figure (overdue, open known errors) beside period figures. */
+export const PERIODIC_REPORTS: readonly ReportName[] = ['incidents', 'requests', 'operations', 'transfers', 'changes', 'tasks', 'problems'];
 
 export const DEFAULT_PERIOD_DAYS = 30;
 const WEEK_DAYS = 7;

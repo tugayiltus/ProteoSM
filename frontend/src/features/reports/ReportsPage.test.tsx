@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ADMIN_ME, EMPLOYEE_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
-import { CHANGE_REPORT, INCIDENTS, REFERENCE_ROUTES, reportResult, SLA_COMPLIANCE, TASK_REPORT, TEAM_ID, TEAM_LOAD, VOLUME } from '../../test/reportData';
+import { CHANGE_REPORT, INCIDENTS, PROBLEM_REPORT, REFERENCE_ROUTES, reportResult, SLA_COMPLIANCE, TASK_REPORT, TEAM_ID, TEAM_LOAD, VOLUME } from '../../test/reportData';
 import { chooseOption } from '../../test/select';
 
 /** An explicit range, so the default last-30-days period does not apply. */
@@ -19,6 +19,7 @@ const routes = (me: object = ADMIN_ME) => ({
   'GET /api/v1/reports/assets': { status: 200, body: reportResult('assets', []) },
   'GET /api/v1/reports/changes': { status: 200, body: CHANGE_REPORT },
   'GET /api/v1/reports/tasks': { status: 200, body: TASK_REPORT },
+  'GET /api/v1/reports/problems': { status: 200, body: PROBLEM_REPORT },
   ...REFERENCE_ROUTES,
 });
 
@@ -30,7 +31,7 @@ describe('ReportsPage', () => {
     expect(await screen.findByRole('link', { name: 'Açılan kayıt' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/reports/incidents');
     const tabs = screen.getByRole('navigation', { name: 'Rapor türleri' });
-    const names = ['Olaylar', 'Talepler', 'Operasyon', 'Transferler', 'Envanter', 'Garanti', 'Değişiklikler', 'Görevler'];
+    const names = ['Olaylar', 'Talepler', 'Operasyon', 'Transferler', 'Envanter', 'Garanti', 'Değişiklikler', 'Görevler', 'Problemler'];
     expect(within(tabs).getAllByRole('link')).toHaveLength(names.length);
     for (const name of names) {
       expect(within(tabs).getByRole('link', { name })).toBeInTheDocument();
@@ -160,6 +161,22 @@ describe('ReportsPage', () => {
     const completion = screen.getByRole('article', { name: 'Tamamlanma süresi' });
     expect(within(completion).getByText('Ortanca')).toBeInTheDocument();
     expect(within(completion).getByText('2 sa 0 dk')).toBeInTheDocument();
+  });
+
+  it('shows the five problem figures over a period, with the impact and incident-count buckets', async () => {
+    const api = mockApi(routes());
+    renderRoute('/reports/problems');
+
+    for (const title of ['Açık bilinen hatalar', 'Çözülen problemler', 'Çözüm süresi', 'Etkiye göre problemler', 'Problem başına arıza']) {
+      expect(await screen.findByRole('article', { name: title })).toBeInTheDocument();
+    }
+    const perProblem = screen.getByRole('article', { name: 'Problem başına arıza' });
+    for (const bucket of ['1 arıza', '2–5 arıza', '6 ve üzeri arıza']) {
+      expect(within(perProblem).getByText(bucket)).toBeInTheDocument();
+    }
+    expect(within(screen.getByRole('article', { name: 'Etkiye göre problemler' })).getByText('Yüksek')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Ekip' })).toBeInTheDocument();
+    expect(new URL(reportCalls(api, 'problems')[0]?.url ?? '').searchParams.get('from')).not.toBeNull();
   });
 
   it('drops filters the change and task tabs do not use', async () => {

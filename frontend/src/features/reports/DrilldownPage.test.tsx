@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ADMIN_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
-import { ASSET_DRILLDOWN, CHANGE_DRILLDOWN, CHANGE_REPORT, INCIDENTS, reportResult, TEAM_ID, TASK_DRILLDOWN, TASK_REPORT, TEAM_LOAD, ticketDrilldown } from '../../test/reportData';
+import { ASSET_DRILLDOWN, CHANGE_DRILLDOWN, CHANGE_REPORT, INCIDENTS, PROBLEM_DRILLDOWN, PROBLEM_REPORT, reportResult, TEAM_ID, TASK_DRILLDOWN, TASK_REPORT, TEAM_LOAD, ticketDrilldown } from '../../test/reportData';
 
 const PAGE_SIZE = 20;
 const TOTAL = 25;
@@ -114,6 +114,22 @@ describe('DrilldownPage', () => {
     const headers = within(table).getAllByRole('columnheader').map((h) => h.textContent);
     expect(headers).toEqual(['Numara', 'Başlık', 'Durum', 'Öncelik', 'Ekip', 'Atanan', 'Bitiş tarihi']);
     expect(within(table).getByText('Can Demir')).toBeInTheDocument();
+  });
+
+  it('lists problems with their columns and a link to each problem', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/reports/problems': { status: 200, body: PROBLEM_REPORT },
+      'GET /api/v1/reports/problems/drilldown': { status: 200, body: PROBLEM_DRILLDOWN },
+    });
+    renderRoute('/reports/problems/list?metric=known_errors_open');
+
+    expect((await screen.findAllByRole('link', { name: 'PRB-2026-000001' }))[0]).toHaveAttribute('href', '/problems/PRB-2026-000001');
+    const table = screen.getByRole('table');
+    const headers = within(table).getAllByRole('columnheader').map((h) => h.textContent);
+    expect(headers).toEqual(['Numara', 'Başlık', 'Durum', 'Etki', 'Ekip', 'Açılış', 'Çözülme']);
+    expect(within(table).getByText('Bilinen hata')).toBeInTheDocument();
+    expect(within(table).getByText('Yüksek')).toBeInTheDocument();
   });
 
   it('shows an empty list', async () => {

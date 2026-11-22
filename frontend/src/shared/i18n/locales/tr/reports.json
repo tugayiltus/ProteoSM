@@ -91,7 +91,11 @@
     "caused_incidents": "Sorun çıkaran değişiklikler",
     "overdue": "Gecikmiş görevler",
     "completion_time": "Tamamlanma süresi",
-    "by_team": "Ekibe göre"
+    "by_team": "Ekibe göre",
+    "known_errors_open": "Açık bilinen hatalar",
+    "resolved": "Çözülen problemler",
+    "by_impact": "Etkiye göre problemler",
+    "incidents_per_problem": "Problem başına arıza"
   },
   "buckets": {
     "0-1": "0–1 gün",
@@ -113,7 +117,10 @@
     "in_progress": "İşlemde",
     "on_hold": "Beklemede",
     "completed": "Tamamlandı",
-    "median": "Ortanca"
+    "median": "Ortanca",
+    "1": "1 arıza",
+    "2_5": "2–5 arıza",
+    "6_plus": "6 ve üzeri arıza"
   },
   "figure": {
     "noData": "Veri yok",
@@ -160,7 +167,9 @@
       "risk": "Risk",
       "windowStart": "Pencere başlangıcı",
       "actualEnd": "Gerçek bitiş",
-      "dueDate": "Bitiş tarihi"
+      "dueDate": "Bitiş tarihi",
+      "impact": "Etki",
+      "resolvedAt": "Çözülme"
     }
   },
   "export": {
