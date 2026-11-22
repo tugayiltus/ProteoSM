@@ -6,17 +6,17 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 
 | Page | Status | Screenshots |
 |---|---|---|
-| `getting-started.md` | Done (Arama section added 2026-11-19; menu and Problemler search group 2026-11-22, text only) | `home-desktop.png`, `home-menu-mobile.png`, `home-mobile.png` |
+| `getting-started.md` | Done (Arama section added 2026-11-19; menu and Problemler search group 2026-11-22; search shot 2026-11-23) | `home-desktop.png`, `home-menu-mobile.png`, `home-mobile.png`, `search-desktop.png` |
 | `incidents-and-requests.md` | Done | `tickets-new-incident-desktop.png`, `tickets-new-request-mobile.png` |
 | `my-tickets.md` | Done | `tickets-list-desktop.png`, `ticket-detail-desktop.png` |
 | `my-assets.md` | Done | `my-assets-mobile.png` |
 | `knowledge-base.md` | Done | `knowledge-base-desktop.png`, `kb-article-mobile.png`, `kb-new-desktop.png` |
 | `approvals.md` | Done (change approvals added 2026-11-18, conflict count 2026-11-19) | `approvals-desktop.png` (shows request approvals only) |
 | `it-workspace.md` | Done ("Bu hafta uygulanacak" card text and İlgili değişiklikler card 2026-11-19; Ekibimin problemleri card and Problem card 2026-11-22) | `workspace-desktop.png`, `ticket-problem-desktop.png`, `workspace-queue-desktop.png`, `ticket-work-desktop.png`, `ticket-complete-desktop.png` |
-| `tasks-and-changes.md` | Done (text only, 2026-11-18; window conflicts, maintenance calendar and İlgili kayıtlar added 2026-11-19; İlgili problemler 2026-11-22) | Pending: task list, task detail, change list, change detail, change approval, conflict banner, calendar (month and phone agenda) |
+| `tasks-and-changes.md` | Done (text only, 2026-11-18; window conflicts, maintenance calendar and İlgili kayıtlar added 2026-11-19; İlgili problemler 2026-11-22) | `tasks-list-desktop.png`, `task-detail-desktop.png`, `change-detail-desktop.png` (conflict banner), `change-detail-mobile.png`, `change-calendar-desktop.png`, `change-calendar-mobile.png` (phone agenda), `changes-list-desktop.png`; no shot of a change approval (see `approvals.md`) |
 | `problems.md` | Done (new 2026-11-22, Phase 11; screenshots 2026-11-23) | `problems-list-desktop.png`, `problem-detail-desktop.png`, `problem-detail-mobile.png`, `ticket-problem-desktop.png` |
 | `inventory.md` | Done | `assets-list-desktop.png`, `asset-new-desktop.png`, `asset-detail-desktop.png`, `assets-import-desktop.png` |
-| `reports.md` | Done (Değişiklikler and Görevler tabs and Sorun çıkaran değişiklikler added 2026-11-19; Problemler tab 2026-11-22, text only) | `reports-incidents-desktop.png`, `reports-incidents-mobile.png`, `reports-exports-desktop.png` |
+| `reports.md` | Done (Değişiklikler and Görevler tabs and Sorun çıkaran değişiklikler added 2026-11-19; Problemler tab 2026-11-22; tab shots 2026-11-23) | `reports-incidents-desktop.png`, `reports-incidents-mobile.png`, `reports-changes-desktop.png`, `reports-tasks-desktop.png`, `reports-problems-desktop.png`, `reports-exports-desktop.png` |
 | `first-setup.md` | Done | `admin-overview-desktop.png` |
 | `admin-users-and-organization.md` | Done | `admin-overview-desktop.png`, `admin-users-desktop.png`, `admin-user-new-desktop.png`, `admin-departments-desktop.png`, `admin-locations-desktop.png`, `admin-teams-desktop.png`, `admin-audit-desktop.png` |
 | `admin-catalogs.md` | Done | `admin-brands-desktop.png`, `admin-models-desktop.png`, `admin-categories-desktop.png`, `admin-request-types-desktop.png` |
@@ -28,5 +28,7 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 
 ## Screenshot status
 
-Every image in `images/` is referenced by a page and was taken from the pilot data. Pending: shots for `tasks-and-changes.md` (conflict banner, calendar and İlgili kayıtlar included), the search window and the Değişiklikler, Görevler and Problemler tabs of `reports.md`. The pilot seed holds changes with overlapping windows, tasks and problems; their entries in `frontend/guide/manifest.ts` are still missing (the problem shots `problems-list`, `problem-detail`, `ticket-problem` are in it). The other 40 images date from 2026-10-10, before the Astryx migration, and a full retake stops at `tickets-new-request` (its setup still calls `getByLabel('Talep tipi').selectOption`, which no longer matches the Astryx form); retake single shots by id until those setups are updated. Retake all with
+Every image in `images/` is referenced by a page. All 55 images were retaken on 2026-11-23 on the Astryx UI from a fresh
+pilot seed, in one full run of `tools/guide-screenshots.sh`. The pilot seed has no closed changes, so the Değişiklikler
+report shot shows empty outcome and success-rate figures. Retake all with
 `GUIDE_PASSWORD=<pilot password> tools/guide-screenshots.sh`, or single shots by id.

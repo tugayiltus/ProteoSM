@@ -97,6 +97,8 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekran
 3. Bir sonuca basarak açın. Tam bir numara yazdıysanız o kayıt en üstte gösterilir.
 4. Bir grupta daha fazla sonuç varsa **Tümünü gör** ile ilgili listeyi aynı arama metniyle açın.
 
+![Arama penceresi](images/search-desktop.png)
+
 Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem ve envanter sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
@@ -506,6 +508,8 @@ Bir kayıt üzerinde çalışırken kaydın **Görevler** bölümündeki **Göre
 
 **Görev ara**, **Durum** ve **Öncelik** ile listeyi daraltın. **İş listem** sayfasında da **Görevlerim**, **Ekibimin görevleri** ve **Geciken görevler** kartları vardır.
 
+![Ekibimin görevleri listesi](images/tasks-list-desktop.png)
+
 ### Görev üzerinde çalışma
 
 Görevi açınca **İşlemler** kartında yalnızca o anki durumda yapılabilecek işlemler çıkar.
@@ -522,6 +526,8 @@ Görevi açınca **İşlemler** kartında yalnızca o anki durumda yapılabilece
 | **Aktar** | Görevi başka bir ekibe verir. Atanan kişi boşalır ve görev yeniden açık olur. |
 
 Sayfanın altındaki **Geçmiş ve notlar** bölümünde görevin tüm geçmişi görünür. **Not ekle** ile iç not yazabilirsiniz.
+
+![İşlemdeki görev](images/task-detail-desktop.png)
 
 Görev size atanınca e-posta alırsınız. Atanmamış bir görev ekibinize aktarılınca ekibin tüm aktif üyelerine e-posta gider.
 
@@ -612,6 +618,10 @@ Geri dönüş başlayınca geri dönüş görevlerinin atananlarına e-posta gid
 - Görme yetkiniz olmayan bir değişiklikle çakışma varsa numarası ve başlığı yerine **Görmediğiniz bir değişiklik** yazar.
 - Yalnızca çalışma özetini gören kişiler çakışma uyarısını görmez.
 
+![Çakışma uyarısı olan planlanmış değişiklik](images/change-detail-desktop.png)
+
+![Telefonda değişiklik](images/change-detail-mobile.png)
+
 ### Bakım takvimi
 
 Değişiklik listesindeki **Bakım takvimi** düğmesi takvimi açar.
@@ -621,6 +631,10 @@ Değişiklik listesindeki **Bakım takvimi** düğmesi takvimi açar.
 3. Bir değişikliğe basarak sayfasını açın.
 
 Takvimde yetkinizin olduğu değişiklikler gösterilir; **Taslak** ve **İptal edildi** durumundakiler gösterilmez. Penceresi başka bir değişiklikle çakışan değişikliğin yanında **Çakışma** işareti olur. İşaret yalnızca ayrıntısını tam gördüğünüz değişikliklerde çıkar. Seçilen aralıktaki değişiklikler yüklenirken bir yükleniyor göstergesi görünür. Takvim en fazla 62 günlük aralık gösterir.
+
+![Bakım takvimi](images/change-calendar-desktop.png)
+
+![Telefonda bakım takvimi](images/change-calendar-mobile.png)
 
 ### İlgili kayıtlar
 
@@ -642,6 +656,8 @@ Değişiklik sayfasındaki **İlgili problemler** bölümü, bu değişikliğin 
 ### Değişiklik listesi
 
 **Kuyruk** filtresiyle listeyi seçin: **Benim değişikliklerim**, **Ekibimin değişiklikleri**, **Onay bekleyenler**, **Açık değişiklikler**, **Bu hafta uygulanacak**. **Durum** ve **Risk** filtreleri ile **Numara veya başlıkta ara** kutusu listeyi daraltır. **İş listem** sayfasındaki **Değişikliklerim** kartı sahibi olduğunuz değişiklikleri, **Bu hafta uygulanacak** kartı bu hafta başlayacak olanları açar. Size veya ekibinize düşen değişiklikler İş listem'de risk ve pencereyle birlikte görünür.
+
+![Açık değişiklikler listesi](images/changes-list-desktop.png)
 
 ## İpuçları
 
@@ -890,6 +906,12 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 - **Açık bilinen hatalar**: Şu anda **Bilinen hata** durumundaki problemler. Dönemden bağımsızdır.
 - **Çözülen problemler** ve problemlerin **Çözüm süresi**: Dönemde çözülen problemler ve açılıştan çözüme ortalama ve medyan süre. İptal edilen problemler sayılmaz.
 - **Etkiye göre problemler** ve **Problem başına arıza**: Dönemde açılan problemleri etkiye ve bağlı arıza sayısına (1, 2–5, 6 ve üzeri) göre sayar. Hiç arızası olmayan problem bu dağılıma girmez.
+
+![Değişiklikler raporu](images/reports-changes-desktop.png)
+
+![Görevler raporu](images/reports-tasks-desktop.png)
+
+![Problemler raporu](images/reports-problems-desktop.png)
 
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
 

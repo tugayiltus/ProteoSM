@@ -38,8 +38,8 @@ const DESKTOP: readonly GuideView[] = ['desktop'];
 /** Visible "Aç" (open) links of a list; tables and phone cards both render one, only one of them is visible. */
 const OPEN_LINK = /^Aç /;
 
-/** Article links of the knowledge base list (not the "Yeni makale" link). */
-const ARTICLE_LINK = 'main a[href^="/kb/"]:not([href="/kb/new"])';
+/** Accessible name of the knowledge base article list; its links open the articles. */
+const ARTICLE_LIST = 'Makaleler';
 
 /** Incident links in the "İlgili arızalar" panel of a problem; their name starts with the incident number. */
 const INCIDENT_LINK = /^INC-/;
@@ -55,7 +55,7 @@ const openFirst =
 
 /** Opens the first record of the list on the page. */
 const openFirstRecord = openFirst((page) => page.getByRole('link', { name: OPEN_LINK }));
-const openFirstArticle = openFirst((page) => page.locator(ARTICLE_LINK));
+const openFirstArticle = openFirst((page) => page.getByRole('list', { name: ARTICLE_LIST }).getByRole('link'));
 /** Opens the first linked incident on a problem page ("İlgili arızalar"). */
 const openFirstIncident = openFirst((page) => page.getByRole('link', { name: INCIDENT_LINK }));
 
@@ -82,6 +82,26 @@ const openMobileMenu = async (page: Page): Promise<void> => {
   await page.waitForFunction(() => document.getAnimations().every((animation) => animation.playState !== 'running'));
 };
 
+/** Picks an option of an Astryx select: a combobox, or a button named "label value" when it has a search box. */
+const chooseOption = async (page: Page, label: string, option: string): Promise<void> => {
+  const button = new RegExp(`^${label}(?:\\s|$)`);
+  await page.getByRole('combobox', { name: label }).or(page.getByRole('button', { name: button })).first().click();
+  await page.getByRole('option', { name: option, exact: true }).click();
+};
+
+/** Search text of the central search shot; it finds records of several kinds in the pilot seed. */
+const SEARCH_TEXT = 'VPN';
+const SEARCH_LABEL = 'Ara';
+
+/** Opens the central search dialog and waits until its result groups are shown. */
+const openSearch = async (page: Page): Promise<void> => {
+  await page.getByRole('button', { name: SEARCH_LABEL, exact: true }).filter({ visible: true }).first().click();
+  const dialog = page.getByRole('dialog', { name: SEARCH_LABEL });
+  await dialog.waitFor();
+  await page.keyboard.type(SEARCH_TEXT);
+  await dialog.getByText('Değişiklikler', { exact: true }).waitFor();
+};
+
 /** Seed names the guide shows in its examples (backend Features/Pilot). */
 const PILOT_CATEGORY = 'TGYSM Pilot';
 const APPROVAL_REQUEST_TYPE = 'Yeni bilgisayar';
@@ -90,6 +110,7 @@ export const MANIFEST: readonly GuideShot[] = [
   // getting-started
   { id: 'home', role: 'employee', path: '/', views: ALL_VIEWS },
   { id: 'home-menu', role: 'employee', path: '/', setup: openMobileMenu, views: MOBILE },
+  { id: 'search', role: 'admin', path: '/workspace', setup: openSearch, views: DESKTOP },
   // incidents-and-requests, feedback
   { id: 'tickets-new-incident', role: 'employee', path: '/tickets/new/incident', views: DESKTOP },
   {
@@ -97,7 +118,7 @@ export const MANIFEST: readonly GuideShot[] = [
     role: 'employee',
     path: '/tickets/new/request',
     setup: async (page) => {
-      await page.getByLabel('Talep tipi').selectOption({ label: APPROVAL_REQUEST_TYPE });
+      await chooseOption(page, 'Talep tipi', APPROVAL_REQUEST_TYPE);
     },
     views: MOBILE,
   },
@@ -106,8 +127,8 @@ export const MANIFEST: readonly GuideShot[] = [
     role: 'employee',
     path: '/tickets/new/incident',
     setup: async (page) => {
-      await page.getByLabel('Konu').fill('Rapor sayfası açılmıyor');
-      await page.getByLabel('Kategori').selectOption({ label: PILOT_CATEGORY });
+      await page.getByLabel(/^Konu/).fill('Rapor sayfası açılmıyor');
+      await chooseOption(page, 'Kategori', PILOT_CATEGORY);
     },
     views: MOBILE,
   },
@@ -148,6 +169,12 @@ export const MANIFEST: readonly GuideShot[] = [
     },
     views: DESKTOP,
   },
+  // tasks-and-changes
+  { id: 'tasks-list', role: 'it', path: '/tasks?queue=team', views: DESKTOP },
+  { id: 'task-detail', role: 'admin', path: '/tasks?status=in_progress', setup: openFirstRecord, views: DESKTOP },
+  { id: 'changes-list', role: 'admin', path: '/changes?queue=open', views: DESKTOP },
+  { id: 'change-detail', role: 'admin', path: '/changes?status=scheduled', setup: openFirstRecord, views: ALL_VIEWS },
+  { id: 'change-calendar', role: 'admin', path: '/changes/calendar', views: ALL_VIEWS },
   // inventory
   { id: 'assets-list', role: 'it', path: '/assets', views: DESKTOP },
   { id: 'asset-detail', role: 'it', path: '/assets?status=assigned', setup: openFirstRecord, views: DESKTOP },
@@ -155,6 +182,9 @@ export const MANIFEST: readonly GuideShot[] = [
   { id: 'assets-import', role: 'it', path: '/assets/import', views: DESKTOP },
   // reports
   { id: 'reports-incidents', role: 'it', path: '/reports/incidents', views: ALL_VIEWS },
+  { id: 'reports-changes', role: 'admin', path: '/reports/changes', views: DESKTOP },
+  { id: 'reports-tasks', role: 'admin', path: '/reports/tasks', views: DESKTOP },
+  { id: 'reports-problems', role: 'admin', path: '/reports/problems', views: DESKTOP },
   { id: 'reports-exports', role: 'it', path: '/reports/exports', views: DESKTOP },
   // approvals
   { id: 'approvals', role: 'approver', path: '/approvals', views: DESKTOP },

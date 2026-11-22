@@ -41,6 +41,12 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 - **Çözülen problemler** ve problemlerin **Çözüm süresi**: Dönemde çözülen problemler ve açılıştan çözüme ortalama ve medyan süre. İptal edilen problemler sayılmaz.
 - **Etkiye göre problemler** ve **Problem başına arıza**: Dönemde açılan problemleri etkiye ve bağlı arıza sayısına (1, 2–5, 6 ve üzeri) göre sayar. Hiç arızası olmayan problem bu dağılıma girmez.
 
+![Değişiklikler raporu](images/reports-changes-desktop.png)
+
+![Görevler raporu](images/reports-tasks-desktop.png)
+
+![Problemler raporu](images/reports-problems-desktop.png)
+
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
 
 ## Rakamın arkasındaki kayıtları görme

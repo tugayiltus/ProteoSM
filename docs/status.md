@@ -2,7 +2,7 @@
 
 Biten faz ve işlerin tek sayfalık özeti. Ayrıntı her satırdaki plan, spec ve ADR'de; planlar yerinde kalır. Faz tablosu: `tgysm.md` (Faz 0–6 = ilk sürüm).
 
-Güncel: 2026-11-22.
+Güncel: 2026-11-23.
 
 ## Biten fazlar (ilk sürüm)
 
@@ -36,14 +36,13 @@ Güncel: 2026-11-22.
 | 8 — Değişiklik | Normal değişiklik (`CHG-`), durum makinesi, faz görevleri, plan parmak izli tek aşamalı yönetici onayı (plan yazanlar onaylayamaz), kapanış ve geri dönüş, Onaylar ve İş listem'de değişiklikler, üç değişiklik e-postası | `docs/superpowers/plans/2026-11-13-phase-8-changes.md` (10 görev) | 0032 | `master` (`0062691`) |
 | 9 — Takvim/Rapor | Bakım takvimi (ay, hafta, telefonda gün listesi), pencere çakışma uyarısı (değişiklik sayfası, Onaylar, takvim), "Bu hafta uygulanacak" kuyruğu ve kartı, değişiklik ve görev raporları (`by_outcome`, `success_rate`, `by_risk`, `cancelled`; `overdue`, `by_status`, `completion_time`, `by_team`), pilot veri ve performans ölçümü | `docs/superpowers/plans/2026-11-18-phase-9-calendar-reports.md` | 0032 (ek not) | `master` (`3c4e618`) |
 | 10 — İlgili kayıtlar/Arama | Kayıt ↔ değişiklik bağlantısı (`prompted`, `caused`), "İlgili kayıtlar" ve "İlgili değişiklikler" panelleri, "Sorun çıkaran değişiklikler" rapor figürü, üst çubukta merkezi arama ("Ara", `/` kısayolu; kayıt, değişiklik, görev, varlık, makale; tam numarayla doğrudan açma), "Tüm kayıtlar" kuyruğu, performans ölçümü | `docs/superpowers/plans/2026-11-19-phase-10-related-records-search.md` (7 görev) | 0033 | `master` (`d79ea26`) |
-| 11 — Problem | Hafif problem yönetimi (`PRB-`): Açık → İnceleniyor → Bilinen hata → Çözüldü / İptal, kök neden, geçici ve kalıcı çözüm, arıza ve düzelten değişiklik bağlantıları, "Makale oluştur" (iç taslak bilinen hata makalesi), arızada Problem kartı, değişiklikte "İlgili problemler", merkezi aramada problemler, Problemler rapor sekmesi, İş listem kartı "Ekibimin problemleri", pilot veri; ayrıca dizin girişi sözleşme testi (Görev 10) | `docs/superpowers/plans/2026-11-20-phase-11-problem-management.md` (10 görev) | 0034 | `feature/problem-management` (`8866fdd`), `master`'a birleştirme sahibin onayını bekliyor |
+| 11 — Problem | Hafif problem yönetimi (`PRB-`): Açık → İnceleniyor → Bilinen hata → Çözüldü / İptal, kök neden, geçici ve kalıcı çözüm, arıza ve düzelten değişiklik bağlantıları, "Makale oluştur" (iç taslak bilinen hata makalesi), arızada Problem kartı, değişiklikte "İlgili problemler", merkezi aramada problemler, Problemler rapor sekmesi, İş listem kartı "Ekibimin problemleri", pilot veri; ayrıca dizin girişi sözleşme testi (Görev 10) | `docs/superpowers/plans/2026-11-20-phase-11-problem-management.md` (10 görev) | 0034 | `master` (`489b680`, CI yeşil) |
 
 ## Açık işler
 
 - Dizin sözleşme testi yerelde tamam: `tools/directory-contract-test.sh` (OpenLDAP + sahte OIDC, LDAPS ve StartTLS, kesinti), sonuç `docs/release/directory-contract-test.md`. SSO canlıya almadan önce hâlâ gerekli: gerçek Entra kiracısı ve gerçek AD ile `TGYSM_TEST_LDAP_*` sözleşme testi ve elle giriş. Testi CI'a eklemek sahibin kararı.
 - `SECURITY.md` QR, `ASSET-` etiketi, SSO, görevler ve değişiklikler için eski; sahibin isteğiyle güncellenir. `README.md` ve `capabilities.md` `8866fdd` itibarıyla güncel.
-- Kullanıcı rehberinde görev ve değişiklik sayfası, Faz 9 anlatımı (takvim, çakışma uyarısı, değişiklik/görev raporları), Faz 10 anlatımı (ilgili kayıtlar, merkezi arama) ekran görüntüsüz (Faz 11 Problemler sayfasının görüntüleri var); görüntüler `tools/guide-screenshots.sh` ile eklenecek. Eski 40 görüntü Astryx öncesine ait; tam yeniden çekim `tickets-new-request` adımında duruyor, manifest adımları güncellenmeli.
+- Kullanıcı rehberinin tüm ekran görüntüleri Astryx arayüzünde yeniden çekildi (görevler, değişiklikler, bakım takvimi, merkezi arama, Değişiklikler/Görevler/Problemler rapor sekmeleri dahil); `docs/guide-reshoot` dalında, `master`'a birleştirme sahibin onayını bekliyor.
 - Bekleyen Dependabot PR'ları.
-- Faz 11 dalının (`feature/problem-management`) `master`'a birleştirilmesi: sahibin onayı gerekir (CI yeşil olmalı).
 - Performans ölçümünde Problemler raporu yok (problem listesi ve problem araması ölçülüyor).
 - Sıradaki: hizmet kataloğu + hafif CMDB (tasarım, ADR ve onay ister).
