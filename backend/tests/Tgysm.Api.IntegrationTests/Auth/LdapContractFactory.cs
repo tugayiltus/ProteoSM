@@ -21,7 +21,10 @@ public sealed record LdapDirectoryServer(
     /// <summary>Set only for the run after the directory container was stopped (tools/directory-contract-test.sh).</summary>
     public const string StoppedVariable = Prefix + "STOPPED";
 
-    public static bool IsStopped => Environment.GetEnvironmentVariable(StoppedVariable) == "1";
+    /// <summary>Value of <see cref="StoppedVariable"/> that marks the directory as stopped.</summary>
+    public const string StoppedValue = "1";
+
+    public static bool IsStopped => Environment.GetEnvironmentVariable(StoppedVariable) == StoppedValue;
 
     public static LdapDirectoryServer? FromEnvironment() =>
         Env("HOST") is { } host && Env("PORT") is { } port && Env("SECURITY") is { } security && Env("BASE_DN") is { } baseDn
