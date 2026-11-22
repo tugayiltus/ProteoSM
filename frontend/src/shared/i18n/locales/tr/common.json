@@ -33,12 +33,6 @@
     "it_staff": "IT personeli",
     "admin": "Yönetici"
   },
-  "pagination": {
-    "label": "Sayfalama",
-    "previous": "Önceki",
-    "next": "Sonraki",
-    "summary": "{{from}}–{{to}} / {{total}} kayıt"
-  },
   "notFound": {
     "title": "Sayfa bulunamadı",
     "back": "Ana sayfaya dön"
@@ -51,9 +45,6 @@
   "forbidden": {
     "title": "Bu sayfayı görme yetkiniz yok",
     "back": "Ana sayfaya dön"
-  },
-  "toast": {
-    "label": "Bildirimler"
   },
   "list": {
     "selectRow": "{{label}} öğesini seç"

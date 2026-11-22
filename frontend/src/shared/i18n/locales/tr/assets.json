@@ -139,10 +139,6 @@
     "assignedAt": "Teslim tarihi: {{date}}",
     "caption": "Zimmetli cihazlarım"
   },
-  "nav": {
-    "inventory": "Envanter",
-    "mine": "Zimmetlerim"
-  },
   "home": {
     "mineCard": "Zimmetlerim",
     "mineCardDescription": "Üzerinize kayıtlı cihazları görün.",

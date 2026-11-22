@@ -44,7 +44,6 @@
     "anyone": "Ekipten biri üstlensin",
     "priority": "Öncelik",
     "dueDate": "Bitiş tarihi",
-    "ticket": "Bağlı kayıt: {{number}}",
     "select": "Seçin",
     "phase": "Aşama: {{phase}}"
   },

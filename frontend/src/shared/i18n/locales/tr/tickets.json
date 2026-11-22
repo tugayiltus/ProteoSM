@@ -237,11 +237,6 @@
       "change": "Değişiklik"
     }
   },
-  "nav": {
-    "tickets": "Kayıtlarım",
-    "workspace": "İş listem",
-    "approvals": "Onaylar"
-  },
   "home": {
     "incidentCard": "Bir şey çalışmıyor",
     "incidentCardDescription": "Arıza bildirin, IT ekibi ilgilensin.",

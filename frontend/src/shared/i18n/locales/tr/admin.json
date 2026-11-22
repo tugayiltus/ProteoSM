@@ -2,20 +2,7 @@
   "title": "Yönetim",
   "nav": {
     "label": "Yönetim menüsü",
-    "users": "Kullanıcılar",
-    "departments": "Departmanlar",
-    "locations": "Lokasyonlar",
-    "categories": "Kategoriler",
-    "requestTypes": "Talep tipleri",
-    "teams": "Ekipler",
-    "audit": "Denetim kayıtları",
-    "backToApp": "Uygulamaya dön",
-    "reports": "Raporlar",
-    "emailTemplates": "E-posta şablonları",
-    "emailDeliveries": "E-posta gönderimleri",
-    "system": "Sistem",
-    "slaCalendar": "SLA takvimi",
-    "slaPolicy": "SLA politikası"
+    "backToApp": "Uygulamaya dön"
   },
   "users": {
     "title": "Kullanıcılar",
@@ -451,7 +438,6 @@
       "ldap": "Active Directory (LDAP)"
     },
     "save": "Kaydet",
-    "saved": "Ayarlar kaydedildi.",
     "test": "Bağlantıyı test et",
     "testOk": "Bağlantı başarılı. Bu yöntemi açabilirsiniz.",
     "switchOn": "Bu yöntemi aç",
@@ -516,7 +502,6 @@
     "open": "Çalışılıyor",
     "starts": "Başlangıç",
     "ends": "Bitiş",
-    "closed": "Kapalı",
     "save": "Takvimi kaydet",
     "saved": "Takvim kaydedildi.",
     "reload": "Sunucudaki takvimi yükle",

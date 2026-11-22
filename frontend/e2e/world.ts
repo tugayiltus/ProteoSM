@@ -5,7 +5,7 @@ import { expect, type APIRequestContext, type Browser, type BrowserContext, type
 
 import { changePassword, login, requiredEnv, messageAlert } from './helpers';
 
-export const ADMIN_NEW_PASSWORD = 'Admin-new-pass-2026';
+const ADMIN_NEW_PASSWORD = 'Admin-new-pass-2026';
 const USER_PASSWORD = 'User-new-pass-2026';
 const CSRF_PATH = '/api/v1/auth/csrf';
 const CSRF_HEADER = 'X-CSRF-TOKEN';
@@ -302,7 +302,7 @@ function decodeEncodedWords(value: string): string {
 }
 
 /** Parses the plain-text single-part message the Pickup sender writes (UTF-8, quoted-printable or base64 body). */
-export function parseEml(raw: string): PickedUpEmail {
+function parseEml(raw: string): PickedUpEmail {
   const [head = '', ...rest] = raw.split(HEADER_BODY_SEPARATOR);
   const headers = head.replace(HEADER_FOLD, ' ');
   const header = (name: string) => new RegExp(`^${name}:\\s*(.*)$`, 'im').exec(headers)?.[1] ?? '';

@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#5856d6" />
+    <!-- Browser bar color: the Astryx neutral body background (`--color-background-body`) per color scheme. -->
+    <meta name="theme-color" content="#f1f1f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1b1b1b" media="(prefers-color-scheme: dark)" />
     <title>TGYSM</title>
     <script>
       // Applies the stored color mode before the first paint (no light flash in dark mode). Key mirrors COLOR_MODE_STORAGE_KEY.

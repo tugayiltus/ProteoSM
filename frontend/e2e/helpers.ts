@@ -67,8 +67,8 @@ export function visibleEntry(page: Page, text: string): Locator {
 }
 
 /** Layout stability budget (spec criterion 8): cumulative layout shift and the longest main-thread task while a page loads. */
-export const MAX_CLS = 0.1;
-export const MAX_LONG_TASK_MS = 200;
+const MAX_CLS = 0.1;
+const MAX_LONG_TASK_MS = 200;
 
 /** Records layout shifts and long tasks from the first byte of every document this page loads. */
 export async function recordStability(page: Page): Promise<void> {
