@@ -40,9 +40,9 @@ Güncel: 2026-11-23.
 
 ## Açık işler
 
-- Dizin sözleşme testi yerelde tamam: `tools/directory-contract-test.sh` (OpenLDAP + sahte OIDC, LDAPS ve StartTLS, kesinti), sonuç `docs/release/directory-contract-test.md`. SSO canlıya almadan önce hâlâ gerekli: gerçek Entra kiracısı ve gerçek AD ile `TGYSM_TEST_LDAP_*` sözleşme testi ve elle giriş. Testi CI'a eklemek sahibin kararı.
+- Dizin sözleşme testi yerelde tamam: `tools/directory-contract-test.sh` (OpenLDAP + sahte OIDC, LDAPS ve StartTLS, kesinti), sonuç `docs/release/directory-contract-test.md`. SSO canlıya almadan önce hâlâ gerekli: gerçek Entra kiracısı ve gerçek AD ile `TGYSM_TEST_LDAP_*` sözleşme testi ve elle giriş. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
 - `SECURITY.md` QR, `ASSET-` etiketi, SSO, görevler ve değişiklikler için eski; sahibin isteğiyle güncellenir. `README.md` ve `capabilities.md` `8866fdd` itibarıyla güncel.
-- Kullanıcı rehberinin tüm ekran görüntüleri Astryx arayüzünde yeniden çekildi (görevler, değişiklikler, bakım takvimi, merkezi arama, Değişiklikler/Görevler/Problemler rapor sekmeleri dahil); `docs/guide-reshoot` dalında, `master`'a birleştirme sahibin onayını bekliyor.
+- Kullanıcı rehberinin tüm ekran görüntüleri Astryx arayüzünde yeniden çekildi (görevler, değişiklikler, bakım takvimi, merkezi arama, Değişiklikler/Görevler/Problemler rapor sekmeleri dahil); hepsi kapanmış değişiklikleri de içeren tek pilot veriyle çekildi; `master` (`016f97f`).
 - Bekleyen Dependabot PR'ları.
-- Performans ölçümünde Problemler raporu yok (problem listesi ve problem araması ölçülüyor).
+- `frontend/perf/measure.ts` artık Problemler raporunu da ölçüyor; sayısı `docs/release/performance.md`'ye bir sonraki `tools/perf-measure.sh` çalışmasında girer.
 - Sıradaki: hizmet kataloğu + hafif CMDB (tasarım, ADR ve onay ister).
