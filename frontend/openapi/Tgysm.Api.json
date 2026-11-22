@@ -16175,6 +16175,7 @@
           "ticket",
           "change",
           "task",
+          "problem",
           "asset",
           "article"
         ]

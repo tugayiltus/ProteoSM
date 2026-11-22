@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Tgysm.Application.Abstractions;
 using Tgysm.Application.Common;
 using Tgysm.Application.Features.Changes;
+using Tgysm.Application.Features.Problems;
 using Tgysm.Application.Features.Tasks;
 using Tgysm.Application.Features.Tickets;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Common;
 using Tgysm.Domain.Knowledge;
+using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
 
@@ -21,11 +23,12 @@ public enum SearchHitType
     Ticket,
     Change,
     Task,
+    Problem,
     Asset,
     Article,
 }
 
-/// <summary><paramref name="Key"/> is the ticket, change or task number, the asset tag, or the article id the knowledge base route uses.</summary>
+/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, or the article id the knowledge base route uses.</summary>
 public sealed record SearchHit(SearchHitType Type, string Key, string Title, string? Status);
 
 public sealed record SearchGroup(SearchHitType Type, IReadOnlyList<SearchHit> Hits, bool HasMore);
@@ -46,7 +49,7 @@ public sealed record SearchQuery(string? Text);
 /// Searches every record type the viewer may see: a full number or tag of a visible record becomes the exact hit,
 /// the rest is a text search per type. Visibility of the exact hit equals visibility of that type's text search.
 /// </summary>
-public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, ChangeScope changeScope, TaskScope taskScope)
+public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, ChangeScope changeScope, TaskScope taskScope, ProblemScope problemScope)
 {
     private const string QueryField = "q";
     private static readonly string QueryInvalidMessage = $"The search text must be {SearchLimits.MinLength} to {SearchLimits.MaxLength} characters.";
@@ -122,6 +125,22 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
                 tasks.Where(t => EF.Functions.Like(t.SearchText, pattern, LikePattern.EscapeText))
                     .OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id)
                     .Select(t => new Row(t.Number, t.Title, t.Status.ToString())),
+                cancellationToken));
+
+            var problems = problemScope.Visible(new ProblemViewer(viewer.UserId, viewer.Role, viewer.TeamIds)).AsNoTracking();
+            var problemNumber = ProblemNumber.Normalize(text);
+            if (exact is null && ProblemNumber.IsValid(problemNumber))
+            {
+                exact = await FirstAsync(
+                    SearchHitType.Problem,
+                    problems.Where(p => p.Number == problemNumber).Select(p => new Row(p.Number, p.Title, p.Status.ToString())),
+                    cancellationToken);
+            }
+
+            AddGroup(groups, SearchHitType.Problem, await TopAsync(
+                problems.Where(p => EF.Functions.Like(p.SearchText, pattern, LikePattern.EscapeText))
+                    .OrderByDescending(p => p.UpdatedAt).ThenByDescending(p => p.Id)
+                    .Select(p => new Row(p.Number, p.Title, p.Status.ToString())),
                 cancellationToken));
 
             var assets = db.Assets.AsNoTracking();

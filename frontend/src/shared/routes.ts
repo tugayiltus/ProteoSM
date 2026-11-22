@@ -13,6 +13,7 @@ export const ROUTES = {
   myAssets: '/assets/mine',
   tickets: '/tickets',
   tasks: '/tasks',
+  problems: '/problems',
   changes: '/changes',
   changeCalendar: '/changes/calendar',
   newIncident: '/tickets/new/incident',
@@ -51,6 +52,7 @@ export const assetLabelsPath = (id: string) => `${ROUTES.assetLabels}?${new URLS
 
 export const ticketPath = (number: string) => `${ROUTES.tickets}/${number}`;
 export const taskPath = (number: string) => `${ROUTES.tasks}/${number}`;
+export const problemPath = (number: string) => `${ROUTES.problems}/${number}`;
 export const changePath = (number: string) => `${ROUTES.changes}/${number}`;
 
 export const articlePath = (id: string) => `${ROUTES.kb}/${id}`;

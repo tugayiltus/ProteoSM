@@ -5,7 +5,7 @@
  */
 import type { components } from '../../shared/api/schema';
 import { SEARCH_PARAM } from '../../shared/list/useListParams';
-import { ROUTES, articlePath, changePath, taskPath, ticketPath } from '../../shared/routes';
+import { ROUTES, articlePath, changePath, problemPath, taskPath, ticketPath } from '../../shared/routes';
 import type { Role } from '../auth/api';
 import { isItStaffOrAdmin } from '../auth/session';
 import { allTicketsPath } from '../workspace/queuePath';
@@ -17,6 +17,7 @@ const LIST_ROUTES: Record<SearchHitType, string> = {
   ticket: ROUTES.tickets,
   change: ROUTES.changes,
   task: ROUTES.tasks,
+  problem: ROUTES.problems,
   asset: ROUTES.assets,
   article: ROUTES.kb,
 };
@@ -44,6 +45,8 @@ export function pathForHit(hit: SearchHit, role: Role): string {
       return changePath(hit.key);
     case 'task':
       return taskPath(hit.key);
+    case 'problem':
+      return problemPath(hit.key);
     case 'article':
       return articlePath(hit.key);
     case 'asset':

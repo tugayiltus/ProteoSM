@@ -118,7 +118,7 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
   echo
   echo "- Target: $target."
   echo "- Machine: $machine."
-  echo "- Data volume before the run (tickets and assets as the IT staff account sees them, changes and tasks as the admin sees them): $volume."
+  echo "- Data volume before the run (tickets and assets as the IT staff account sees them, changes and tasks as the admin sees them, problems as the IT staff account sees them): $volume."
   echo "- Runs per operation: $PERF_RUNS; times are wall-clock milliseconds from request to the last byte of the body, over HTTP on the same machine (no network, no browser rendering)."
   echo "- The CSV import commit writes 5,000 assets, so each run grows the database by that many; it is timed once per run (one sample), the preview $PERF_RUNS times."
   echo "- No numeric targets are set (criterion 18); outliers are reported to the owner, not tuned."

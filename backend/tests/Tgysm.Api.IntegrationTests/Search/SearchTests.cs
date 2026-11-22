@@ -5,6 +5,7 @@ using Tgysm.Api.IntegrationTests.Assets;
 using Tgysm.Api.IntegrationTests.Changes;
 using Tgysm.Api.IntegrationTests.Infrastructure;
 using Tgysm.Api.IntegrationTests.Knowledge;
+using Tgysm.Api.IntegrationTests.Problems;
 using Tgysm.Api.IntegrationTests.Tickets;
 using Tgysm.Application.Features.Search;
 using Tgysm.Domain.Changes;
@@ -19,6 +20,7 @@ public sealed class SearchTests(ApiFactory factory) : IAsyncLifetime
     private const string TicketGroup = "ticket";
     private const string ChangeGroup = "change";
     private const string TaskGroup = "task";
+    private const string ProblemGroup = "problem";
     private const string AssetGroup = "asset";
     private const string ArticleGroup = "article";
     private const string SerialNumber = "SN-ZX81-QQ";
@@ -113,6 +115,33 @@ public sealed class SearchTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(ChangeWorld.NumberOf(change), byChange.GetProperty("exact").GetProperty("key").GetString());
         Assert.Equal("task", byTask.GetProperty("exact").GetProperty("type").GetString());
         Assert.Equal(task.GetProperty("number").GetString(), byTask.GetProperty("exact").GetProperty("key").GetString());
+    }
+
+    [Fact]
+    public async Task Staff_find_a_problem_by_a_title_word_and_by_its_full_number()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var problem = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "Sunucu odası klimaları durdu");
+
+        var byWord = await SearchAsync(world.Desk, "KLİMALARI");
+        var byNumber = await SearchAsync(world.Desk, ProblemWorld.NumberOf(problem));
+
+        Assert.Equal([ProblemWorld.NumberOf(problem)], Keys(byWord, ProblemGroup));
+        Assert.Equal("problem", byNumber.GetProperty("exact").GetProperty("type").GetString());
+        Assert.Equal(ProblemWorld.NumberOf(problem), byNumber.GetProperty("exact").GetProperty("key").GetString());
+    }
+
+    [Fact]
+    public async Task Employee_gets_no_problem_group_and_no_exact_problem_hit()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var problem = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id, "Yazıcı kuyruğu tıkanıyor");
+
+        var byWord = await SearchAsync(world.Employee, "yazıcı");
+        var byNumber = await SearchAsync(world.Employee, ProblemWorld.NumberOf(problem));
+
+        Assert.DoesNotContain(ProblemGroup, GroupTypes(byWord));
+        Assert.Equal(JsonValueKind.Null, byNumber.GetProperty("exact").ValueKind);
     }
 
     [Fact]
