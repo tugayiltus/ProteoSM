@@ -322,6 +322,7 @@
       "status_changed": "Problem durumu değişti",
       "transferred": "Problem aktarıldı",
       "owner_changed": "Problem sahibi değişti",
+      "article_created": "Problemden makale oluşturuldu",
       "ticket_linked": "Probleme arıza bağlandı",
       "ticket_unlinked": "Problemden arıza ayrıldı",
       "change_linked": "Probleme değişiklik bağlandı",

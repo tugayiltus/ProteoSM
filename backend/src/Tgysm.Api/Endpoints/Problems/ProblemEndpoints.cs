@@ -35,6 +35,7 @@ internal static class ProblemEndpoints
     private const string ImpactParameter = "impact";
     private const string TicketsSegment = "tickets";
     private const string ChangesSegment = "changes";
+    private const string ArticleSegment = "article";
     private const string TicketNumberRoute = "{ticketNumber}";
     private const string ChangeNumberRoute = "{changeNumber}";
 
@@ -83,6 +84,8 @@ internal static class ProblemEndpoints
             TypedResults.Ok(await h.HandleAsync(new TransferProblemCommand(number, r.Version, r.TeamId, r.Reason), ct))));
         Action(problems.MapPost($"{NumberRoute}/owner", async (string number, SetProblemOwnerRequest r, SetProblemOwnerHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new SetProblemOwnerCommand(number, r.Version, r.OwnerId), ct))));
+        Action(problems.MapPost($"{NumberRoute}/{ArticleSegment}", async (string number, VersionRequest r, CreateProblemArticleHandler h, CancellationToken ct) =>
+            Created(await h.HandleAsync(new CreateProblemArticleCommand(number, r.Version), ct))));
         problems.MapPost($"{NumberRoute}/notes", async (string number, ProblemNoteRequest r, AddProblemNoteHandler h, CancellationToken ct) =>
             {
                 await h.HandleAsync(new AddProblemNoteCommand(number, r.Text), ct);
