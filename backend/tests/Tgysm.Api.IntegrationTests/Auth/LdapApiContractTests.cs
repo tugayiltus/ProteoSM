@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Tgysm.Api.IntegrationTests.Infrastructure;
 using Tgysm.Domain.Auth;
+using Tgysm.Domain.Common;
 using Tgysm.Domain.Users;
 
 namespace Tgysm.Api.IntegrationTests.Auth;
@@ -82,6 +83,8 @@ public sealed class LdapApiContractTests(LdapContractFixture fixture) : IClassFi
         using var me = await client.GetAsync(ApiClient.MePath);
 
         Assert.Equal((HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized), (wrong.StatusCode, me.StatusCode));
+        Assert.Equal(ErrorCodes.InvalidCredentials, await ApiClient.ReadCodeAsync(wrong));
+        Assert.Equal(ErrorCodes.Unauthenticated, await ApiClient.ReadCodeAsync(me));
     }
 
     [Fact]
@@ -94,11 +97,14 @@ public sealed class LdapApiContractTests(LdapContractFixture fixture) : IClassFi
         {
             using var wrong = await LoginAsync(client, server.User, WrongPassword);
             Assert.Equal(HttpStatusCode.Unauthorized, wrong.StatusCode);
+            Assert.Equal(ErrorCodes.InvalidCredentials, await ApiClient.ReadCodeAsync(wrong));
         }
 
         using var right = await LoginAsync(client, server.User, server.Password);
 
+        // The lock answers exactly like a wrong password (no enumeration), not with a rate limit or a directory error.
         Assert.Equal(HttpStatusCode.Unauthorized, right.StatusCode);
+        Assert.Equal(ErrorCodes.InvalidCredentials, await ApiClient.ReadCodeAsync(right));
     }
 
     [Fact]
