@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import indexHtml from '../../../index.html?raw';
 import { stubSystemColorScheme } from '../../test/colorMode';
 
 import { applyColorMode, COLOR_MODE_STORAGE_KEY, readStoredMode, resetColorModeForTests, resolveMode, setColorMode, useColorMode } from './colorMode';
@@ -67,5 +68,10 @@ describe('color mode', () => {
     stubSystemColorScheme(true);
     applyColorMode('light');
     expect(document.documentElement.style.colorScheme).toBe('light');
+  });
+
+  it('applies the stored color mode before the first paint with the shared storage key', () => {
+    expect(indexHtml).toContain(`localStorage.getItem('${COLOR_MODE_STORAGE_KEY}')`);
+    expect(indexHtml).toContain('colorScheme');
   });
 });

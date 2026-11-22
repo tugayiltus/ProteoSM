@@ -142,10 +142,10 @@ describe('report navigation', () => {
 });
 
 describe('charts', () => {
-  it('uses Chart.js through react-chartjs-2; Recharts and the CoreUI chart wrapper are gone', () => {
+  it('uses Chart.js 4.5 through react-chartjs-2, not Recharts (ADR-0022)', () => {
     const dependencies: Record<string, string> = { ...packageJson.dependencies };
     expect(dependencies).not.toHaveProperty('recharts');
-    expect(dependencies).not.toHaveProperty('@coreui/react-chartjs');
     expect(dependencies).toHaveProperty('react-chartjs-2');
+    expect(dependencies['chart.js']).toMatch(/^[~^]?4\.5(\.|$)/);
   });
 });
