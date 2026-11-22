@@ -1,0 +1,29 @@
+# The few Active Directory names NovellLdapDirectory reads (ADR-0030), so OpenLDAP can stand in for a domain
+# controller in the contract tests. OIDs are the Active Directory ones; syntaxes follow RFC 4517.
+# Test-only: never load this into a real directory.
+
+# sAMAccountName: the Windows user name ("deniz.test").
+attributetype ( 1.2.840.113556.1.4.221 NAME 'sAMAccountName'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+# userPrincipalName: the sign-in name in email form.
+attributetype ( 1.2.840.113556.1.4.656 NAME 'userPrincipalName'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+# objectGUID: 16 raw bytes, read as the stable directory id.
+attributetype ( 1.2.840.113556.1.4.2 NAME 'objectGUID'
+	EQUALITY octetStringMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.40
+	SINGLE-VALUE )
+
+# user: the class the search filter asks for ((objectClass=user)).
+objectclass ( 1.2.840.113556.1.5.9 NAME 'user'
+	SUP inetOrgPerson
+	STRUCTURAL
+	MAY ( sAMAccountName $ userPrincipalName $ objectGUID ) )

@@ -1,0 +1,145 @@
+# Local stand-ins for the company directory in the directory sign-in contract test (Phase 11 Task 10, ADR-0030).
+# Run only through tools/directory-contract-test.sh: it sets TGYSM_TEST_OIDC_TENANT, starts and stops everything.
+# Everything here is fake test data and listens on 127.0.0.1 only.
+#
+#   test-ca     one-shot: throw-away CA + server certificate for "openldap" into the directory-certs volume
+#   openldap    OpenLDAP shaped like Active Directory (openldap/ad-lite.schema, seed.ldif); LDAPS 636 and StartTLS 389
+#   oidc        mock-oauth2-server as the Microsoft Entra stand-in
+#   ldap-tests  profile "runner": .NET SDK container that runs NovellLdapDirectoryTests and trusts the test CA
+#
+# OIDC server choice: mock-oauth2-server, not Keycloak. It starts in seconds with no admin setup, signs real RS256
+# tokens with a published JWKS, supports the authorization code flow with PKCE and form_post, and can put any claim
+# (tid, oid, preferred_username) into the token per client id. Keycloak would need a realm import and still could
+# not issue the Entra-only claims without custom mappers. Interactive login is off: the authorize endpoint answers at
+# once, so the test needs no browser.
+name: tgysm-test-directory
+
+x-openldap-image: &openldap-image
+  build: ./openldap
+  image: tgysm-test-openldap:local
+
+services:
+  test-ca:
+    <<: *openldap-image
+    entrypoint: ["/usr/local/bin/gen-test-ca.sh"]
+    volumes:
+      - directory-certs:/certs
+    restart: "no"
+
+  openldap:
+    <<: *openldap-image
+    depends_on:
+      test-ca:
+        condition: service_completed_successfully
+    volumes:
+      - directory-certs:/certs:ro
+      - ./seed.ldif:/seed/seed.ldif:ro
+    ports:
+      - "127.0.0.1:1389:389"
+      - "127.0.0.1:1636:636"
+    environment:
+      # ldapsearch in the health check trusts the test CA.
+      LDAPTLS_CACERT: /certs/ca.crt
+    healthcheck:
+      # Healthy = the seed is loaded and the service account can bind and read over both LDAPS and StartTLS.
+      test:
+        - CMD-SHELL
+        - >-
+          ldapsearch -x -LLL -H ldaps://localhost:636 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
+          -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example '(sAMAccountName=deniz.test)' dn | grep -q '^dn:'
+          && ldapsearch -x -ZZ -LLL -H ldap://localhost:389 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
+          -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example -s base dn | grep -q '^dn:'
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  oidc:
+    image: ghcr.io/navikt/mock-oauth2-server:2.1.10
+    ports:
+      - "127.0.0.1:8089:8080"
+    environment:
+      SERVER_PORT: "8080"
+      # The issuer id is the tenant id, so the issuer is http://127.0.0.1:8089/<tenant>. Tokens are shaped per client
+      # id; the client ids and claims must match OidcContractTests (backend/tests/Tgysm.Api.IntegrationTests/Auth).
+      #   tgysm-member          member of the configured tenant with an allowed domain: signs in
+      #   tgysm-other-tenant    tid of another tenant (9e2d4c6b-...): refused
+      #   tgysm-foreign-domain  configured tenant, sign-in name outside the allowed domains: refused
+      JSON_CONFIG: >-
+        {
+          "interactiveLogin": false,
+          "tokenCallbacks": [
+            {
+              "issuerId": "${TGYSM_TEST_OIDC_TENANT:?run through tools/directory-contract-test.sh}",
+              "tokenExpiry": 300,
+              "requestMappings": [
+                {
+                  "requestParam": "client_id",
+                  "match": "tgysm-member",
+                  "claims": {
+                    "sub": "deniz-test-subject",
+                    "aud": ["tgysm-member"],
+                    "tid": "${TGYSM_TEST_OIDC_TENANT}",
+                    "oid": "0b7e3c1a-4d2f-4a6b-9c8d-1e2f3a4b5c6d",
+                    "preferred_username": "deniz.test@tgysm-test.example",
+                    "given_name": "Deniz",
+                    "family_name": "Test"
+                  }
+                },
+                {
+                  "requestParam": "client_id",
+                  "match": "tgysm-other-tenant",
+                  "claims": {
+                    "sub": "other-tenant-subject",
+                    "aud": ["tgysm-other-tenant"],
+                    "tid": "9e2d4c6b-8a1f-4b3e-a5d7-1c3e5f7a9b20",
+                    "oid": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d",
+                    "preferred_username": "deniz.test@tgysm-test.example",
+                    "given_name": "Deniz",
+                    "family_name": "Test"
+                  }
+                },
+                {
+                  "requestParam": "client_id",
+                  "match": "tgysm-foreign-domain",
+                  "claims": {
+                    "sub": "foreign-domain-subject",
+                    "aud": ["tgysm-foreign-domain"],
+                    "tid": "${TGYSM_TEST_OIDC_TENANT}",
+                    "oid": "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+                    "preferred_username": "deniz.test@baska-alan.example",
+                    "given_name": "Deniz",
+                    "family_name": "Test"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+
+  ldap-tests:
+    image: mcr.microsoft.com/dotnet/sdk:10.0.401
+    profiles: ["runner"]
+    depends_on:
+      openldap:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/repo/deploy/test-directory/ldap-tests-in-container.sh"]
+    environment:
+      # Passed through from tools/directory-contract-test.sh (NovellLdapDirectoryTests reads these names).
+      - TGYSM_TEST_LDAP_HOST
+      - TGYSM_TEST_LDAP_PORT
+      - TGYSM_TEST_LDAP_SECURITY
+      - TGYSM_TEST_LDAP_BASE_DN
+      - TGYSM_TEST_LDAP_BIND_DN
+      - TGYSM_TEST_LDAP_BIND_PASSWORD
+      - TGYSM_TEST_LDAP_USER
+      - TGYSM_TEST_LDAP_PASSWORD
+      - DOTNET_CLI_TELEMETRY_OPTOUT=1
+      - DOTNET_NOLOGO=1
+    volumes:
+      - ../..:/repo:ro
+      - directory-certs:/certs:ro
+      - nuget-packages:/root/.nuget/packages
+
+volumes:
+  directory-certs:
+  nuget-packages:
