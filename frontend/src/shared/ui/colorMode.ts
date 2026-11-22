@@ -34,8 +34,20 @@ export function resolveMode(mode: ColorMode): ResolvedMode {
   return systemPrefersDark() ? 'dark' : 'light';
 }
 
+/**
+ * Browser bar color per mode: the Astryx neutral body background (`--color-background-body`).
+ * Mirrored in `index.html`; a test keeps the two equal.
+ */
+export const THEME_COLORS: Record<ResolvedMode, string> = { light: '#f1f1f1', dark: '#1b1b1b' };
+const THEME_COLOR_META = 'meta[name="theme-color"]';
+
 export function applyColorMode(mode: ColorMode, root: HTMLElement = document.documentElement) {
-  root.style.colorScheme = resolveMode(mode);
+  const resolved = resolveMode(mode);
+  root.style.colorScheme = resolved;
+  // Every theme-color meta gets the chosen color, so the browser bar follows the app and not only the system.
+  root.ownerDocument.querySelectorAll<HTMLMetaElement>(THEME_COLOR_META).forEach((meta) => {
+    meta.content = THEME_COLORS[resolved];
+  });
 }
 
 interface ColorModeState {

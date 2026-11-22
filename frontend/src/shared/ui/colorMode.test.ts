@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import indexHtml from '../../../index.html?raw';
 import { stubSystemColorScheme } from '../../test/colorMode';
 
-import { applyColorMode, COLOR_MODE_STORAGE_KEY, readStoredMode, resetColorModeForTests, resolveMode, setColorMode, useColorMode } from './colorMode';
+import { applyColorMode, COLOR_MODE_STORAGE_KEY, readStoredMode, resetColorModeForTests, resolveMode, setColorMode, THEME_COLORS, useColorMode } from './colorMode';
 
 describe('color mode', () => {
   beforeEach(() => {
@@ -68,6 +68,30 @@ describe('color mode', () => {
     stubSystemColorScheme(true);
     applyColorMode('light');
     expect(document.documentElement.style.colorScheme).toBe('light');
+  });
+
+  it('gives the browser bar the chosen mode color, also against the system', () => {
+    stubSystemColorScheme(false);
+    const metas = ['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)'].map((media) => {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.media = media;
+      document.head.append(meta);
+      return meta;
+    });
+    try {
+      setColorMode('dark');
+      expect(metas.map((meta) => meta.content)).toEqual([THEME_COLORS.dark, THEME_COLORS.dark]);
+      setColorMode('light');
+      expect(metas.map((meta) => meta.content)).toEqual([THEME_COLORS.light, THEME_COLORS.light]);
+    } finally {
+      metas.forEach((meta) => meta.remove());
+    }
+  });
+
+  it('starts the browser bar with the same colors as the app', () => {
+    expect(indexHtml).toContain(`content="${THEME_COLORS.light}" media="(prefers-color-scheme: light)"`);
+    expect(indexHtml).toContain(`content="${THEME_COLORS.dark}" media="(prefers-color-scheme: dark)"`);
   });
 
   it('applies the stored color mode before the first paint with the shared storage key', () => {

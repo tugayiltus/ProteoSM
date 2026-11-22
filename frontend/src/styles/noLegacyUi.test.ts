@@ -13,8 +13,11 @@ const allDependencies: Record<string, string> = { ...packageJson.dependencies, .
 
 /** Packages of the replaced UI stacks: CoreUI, Bootstrap, Sass, Tailwind and Radix. */
 const LEGACY_PACKAGE = /^(@coreui\/.+|bootstrap|sass|sass-embedded|tailwindcss|@tailwindcss\/.+|radix-ui|@radix-ui\/.+)$/;
-/** An import of a legacy package: `from '…'`, a side-effect `import '…'`, or a dynamic `import('…')`. */
-const LEGACY_IMPORT = /(?:from|import)\s*\(?\s*['"](?:@coreui\/|bootstrap|sass|tailwindcss|@tailwindcss\/|radix-ui|@radix-ui\/)/;
+/**
+ * An import of a legacy package: `from '…'`, a side-effect `import '…'`, or a dynamic `import('…')`.
+ * A bare name ends at the quote or a `/`, so `sassy-x` or `bootstrapper` do not match.
+ */
+const LEGACY_IMPORT = /(?:from|import)\s*\(?\s*['"](?:@coreui\/|@tailwindcss\/|@radix-ui\/|(?:bootstrap|sass|sass-embedded|tailwindcss|radix-ui)(?=['"/]))/;
 /** Astryx takes styling through props and tokens, so no component sets a class attribute. */
 const CLASS_ATTRIBUTE = /\bclass(?:Name)?\s*=/;
 /** Hooks the old stacks left in the build config and the page shell. */
@@ -38,6 +41,13 @@ describe('no legacy UI library or utility classes', () => {
   it('uses Astryx and depends on no replaced UI package', () => {
     expect(allDependencies).toHaveProperty('@astryxdesign/core');
     expect(Object.keys(allDependencies).filter((name) => LEGACY_PACKAGE.test(name))).toEqual([]);
+  });
+
+  it('matches whole legacy package names only', () => {
+    const legacy = ["import '@coreui/coreui/dist/css/coreui.min.css';", "import 'bootstrap';", "from 'sass'", "import('tailwindcss/plugin')", "from \"radix-ui\""];
+    const other = ["import 'sassy-x';", "from 'bootstrapper'", "from 'tailwindcss-like'", "from '@astryxdesign/core'"];
+    expect(legacy.filter((line) => !LEGACY_IMPORT.test(line))).toEqual([]);
+    expect(other.filter((line) => LEGACY_IMPORT.test(line))).toEqual([]);
   });
 
   it('has no source file that imports a replaced UI package', () => {
