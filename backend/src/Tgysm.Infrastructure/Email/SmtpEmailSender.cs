@@ -1,3 +1,4 @@
+using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ internal sealed class SmtpEmailSender(IOptionsMonitor<EmailOptions> options) : I
                 await client.AuthenticateAsync(settings.Smtp.UserName, settings.Smtp.Password ?? string.Empty, deadline.Token);
             }
 
-            await client.SendAsync(mime, deadline.Token);
+            await client.SendAsync(new SendRequest(mime), deadline.Token);
             await client.DisconnectAsync(true, deadline.Token);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
