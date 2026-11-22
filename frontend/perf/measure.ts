@@ -33,7 +33,7 @@ const CSV_HEADER = ['Demirbaş No', 'Tür', 'Marka', 'Model', 'Seri No', 'Konum'
 const IMPORT_STATUS = 'in_stock';
 const IMPORT_FILE_NAME = 'perf-import.csv';
 const IMPORT_MIME = 'text/csv';
-const REPORTS = ['incidents', 'requests', 'operations', 'transfers', 'assets', 'warranty', 'changes', 'tasks'] as const;
+const REPORTS = ['incidents', 'requests', 'operations', 'transfers', 'assets', 'warranty', 'changes', 'tasks', 'problems'] as const;
 const DRILLDOWN_REPORT = 'incidents';
 const MS_DIGITS = 0;
 /** The API lists a location path with this (backend `LocationPaths.Separator`); the CSV importer splits typed paths on '/'. */
