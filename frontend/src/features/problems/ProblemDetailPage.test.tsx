@@ -139,6 +139,67 @@ describe('ProblemDetailPage', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
+  it('reloads the problem after a version conflict on a direct action, so the retry sends the fresh version', async () => {
+    const versions: unknown[] = [];
+    let current: ProblemDetail = PROBLEM;
+    const api = mockApi(
+      problemRoutes(PROBLEM, {
+        [`GET ${BASE}`]: () => ({ status: 200, body: current }),
+        [`POST ${BASE}/start`]: async (request: Request) => {
+          versions.push(((await request.json()) as { version: number }).version);
+          if (versions.length === 1) {
+            current = { ...PROBLEM, version: 9 };
+            return { status: 409, body: { code: 'concurrency.conflict' } };
+          }
+          return { status: 200, body: { ...current, status: 'investigating', version: 10 } };
+        },
+      }) as never,
+    );
+    const { user } = renderRoute(`/problems/${PROBLEM.number}`);
+    const detailLoads = () => api.calls.filter((c) => c.method === 'GET' && new URL(c.url).pathname === BASE).length;
+
+    await user.click(await screen.findByRole('button', { name: 'İncelemeye al' }));
+    expect(await screen.findAllByText(/başka biri tarafından değiştirildi/)).not.toHaveLength(0);
+    await waitFor(() => expect(detailLoads()).toBeGreaterThan(1));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'İncelemeye al' })).not.toHaveAttribute('aria-disabled', 'true'));
+    await user.click(screen.getByRole('button', { name: 'İncelemeye al' }));
+
+    await waitFor(() => expect(versions).toEqual([PROBLEM.version, 9]));
+  });
+
+  it('closes a dialog on a version conflict and opens it again on the fresh version', async () => {
+    const versions: unknown[] = [];
+    let current: ProblemDetail = { ...DIAGNOSED, status: 'known_error' };
+    mockApi(
+      problemRoutes(current, {
+        [`GET ${BASE}`]: () => ({ status: 200, body: current }),
+        [`POST ${BASE}/resolve`]: async (request: Request) => {
+          versions.push(((await request.json()) as { version: number }).version);
+          if (versions.length === 1) {
+            current = { ...current, version: 9 };
+            return { status: 409, body: { code: 'concurrency.conflict' } };
+          }
+          return { status: 200, body: { ...current, status: 'resolved', resolution: 'Kira süresi uzatıldı', version: 10 } };
+        },
+      }) as never,
+    );
+    const { user } = renderRoute(`/problems/${PROBLEM.number}`);
+
+    const resolveOnce = async () => {
+      await waitFor(() => expect(screen.getByRole('button', { name: 'Çözüldü olarak kapat' })).not.toHaveAttribute('aria-disabled', 'true'));
+      await user.click(screen.getByRole('button', { name: 'Çözüldü olarak kapat' }));
+      const dialog = await screen.findByRole('dialog');
+      await user.type(within(dialog).getByLabelText('Kalıcı çözüm'), 'Kira süresi uzatıldı');
+      await user.click(within(dialog).getByRole('button', { name: 'Onayla' }));
+    };
+    await screen.findByRole('button', { name: 'Çözüldü olarak kapat' });
+    await resolveOnce();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await resolveOnce();
+
+    await waitFor(() => expect(versions).toEqual([PROBLEM.version, 9]));
+  });
+
   it('shows the content but no write actions to someone outside the owner team', async () => {
     mockApi(
       problemRoutes({ ...DIAGNOSED, status: 'known_error', canWork: false }, {
