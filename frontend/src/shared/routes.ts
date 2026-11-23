@@ -55,7 +55,7 @@ export const assetLabelsPath = (id: string) => `${ROUTES.assetLabels}?${new URLS
 export const ticketPath = (number: string) => `${ROUTES.tickets}/${number}`;
 export const taskPath = (number: string) => `${ROUTES.tasks}/${number}`;
 export const servicePath = (id: string) => `${ROUTES.services}/${id}`;
-/** Query parameter of the ticket, change and problem lists that keeps only one service's records. */
+/** Query parameter of the staff ticket, change and problem lists that keeps only one service's records. */
 export const SERVICE_FILTER_PARAM = 'serviceId';
 /** A record list filtered to one service ("Tümünü göster" on the service page). */
 export const serviceFilteredPath = (listPath: string, serviceId: string) => `${listPath}?${new URLSearchParams({ [SERVICE_FILTER_PARAM]: serviceId }).toString()}`;

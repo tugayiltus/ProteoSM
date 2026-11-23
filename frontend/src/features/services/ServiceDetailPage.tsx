@@ -30,6 +30,7 @@ import type { ProblemStatus } from '../problems/api';
 import { ProblemStatusBadge } from '../problems/ProblemBadges';
 import type { TicketStatus } from '../tickets/api';
 import { TicketStatusBadge } from '../tickets/TicketBadges';
+import { serviceTicketsPath } from '../workspace/queuePath';
 
 import { useServiceDetail, useServiceImpact, type ImpactAsset, type ImpactRecord, type ServiceDetail } from './api';
 import { ImpactSection, type ImpactRow } from './ImpactSection';
@@ -78,7 +79,7 @@ function ImpactSections({ service }: { service: ServiceDetail }) {
         total={tickets.total}
         rows={tickets.items.map((x) => recordRow(x, ticketPath, <TicketStatusBadge status={x.status as TicketStatus} />))}
         serviceName={service.name}
-        showAllHref={serviceFilteredPath(ROUTES.tickets, service.id)}
+        showAllHref={serviceTicketsPath(service.id)}
       />
       <ImpactSection
         title={t('detail.sections.changes')}

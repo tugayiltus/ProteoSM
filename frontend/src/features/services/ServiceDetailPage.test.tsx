@@ -34,7 +34,7 @@ describe('ServiceDetailPage', () => {
     renderRoute(DETAIL_PATH);
 
     await screen.findByRole('heading', { name: 'Açık kayıtlar' });
-    expect(section('Açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/tickets?serviceId=${SERVICE.id}`);
+    expect(section('Açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/workspace/queue?queue=all&serviceId=${SERVICE.id}`);
     expect(section('Açık problemler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/problems?serviceId=${SERVICE.id}`);
     expect(section('Değişiklikler').queryByRole('link', { name: 'Tümünü göster' })).not.toBeInTheDocument();
     // The asset list has no service filter: the section says how many it shows instead.
