@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Tgysm.Api.IntegrationTests.Changes;
 using Tgysm.Api.IntegrationTests.Infrastructure;
 using Tgysm.Api.IntegrationTests.Problems;
@@ -19,6 +21,7 @@ public sealed class SetServiceEndpointTests(ApiFactory factory) : IAsyncLifetime
     private const string ServiceSegment = "service";
     private const string ServiceProperty = "service";
     private const string InactiveCode = "services.inactive";
+    private const string OpenApiDocumentName = "v1";
 
     public async ValueTask InitializeAsync() => await factory.ResetAsync();
 
@@ -186,6 +189,20 @@ public sealed class SetServiceEndpointTests(ApiFactory factory) : IAsyncLifetime
         Assert.False(own.TryGetProperty(ServiceProperty, out _));
         Assert.Equal(HttpStatusCode.NotFound, put.StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, filtered.StatusCode);
+    }
+
+    [Fact]
+    public async Task Contract_marks_the_ticket_service_optional_because_a_null_service_is_left_out()
+    {
+        var provider = factory.Services.GetRequiredKeyedService<IOpenApiDocumentProvider>(OpenApiDocumentName);
+
+        var document = await provider.GetOpenApiDocumentAsync(Ct);
+
+        var schemas = document.Components!.Schemas!;
+        Assert.Contains(ServiceProperty, schemas["TicketDetail"].Properties!.Keys);
+        Assert.DoesNotContain(ServiceProperty, schemas["TicketDetail"].Required ?? new HashSet<string>());
+        Assert.Contains(ServiceProperty, schemas["ChangeDetail"].Required!);
+        Assert.Contains(ServiceProperty, schemas["ProblemDetail"].Required!);
     }
 
     [Fact]

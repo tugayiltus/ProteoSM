@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using Tgysm.Api.Http;
+using Tgysm.Api.OpenApi;
 using Tgysm.Api.Security;
 using Tgysm.Application.Abstractions;
 using Tgysm.Application.Common;
@@ -59,7 +60,7 @@ internal static class ApiServiceCollectionExtensions
         services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
-        services.AddOpenApi();
+        services.AddOpenApi(options => options.AddSchemaTransformer<OmittedWhenNullSchemaTransformer>());
 
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>

@@ -12946,7 +12946,7 @@ export interface components {
             /** Format: int32 */
             openTaskCount: number;
             tasks: components["schemas"]["TicketTaskItem"][];
-            service: null | components["schemas"]["ServiceRef"];
+            service?: null | components["schemas"]["ServiceRef"];
         };
         /** @enum {unknown} */
         TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked" | "service_set" | "service_cleared";
