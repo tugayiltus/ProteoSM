@@ -8970,6 +8970,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/services/{id}/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ServiceImpact"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/changes": {
         parameters: {
             query?: never;
@@ -12103,6 +12149,17 @@ export interface components {
         };
         /** Format: binary */
         IFormFile: string;
+        ImpactAsset: {
+            tag: string;
+            name: string;
+            status: string;
+        };
+        ImpactRecord: {
+            number: string;
+            title: string;
+            status: string;
+            canOpen: boolean;
+        };
         JsonElement: unknown;
         KeyValuePairOfstringAndStringValues: {
             key: null | string;
@@ -12697,6 +12754,16 @@ export interface components {
             exact: null | components["schemas"]["SearchHit"];
             groups: components["schemas"]["SearchGroup"][];
         };
+        SectionOfImpactAsset: {
+            items: components["schemas"]["ImpactAsset"][];
+            /** Format: int32 */
+            total: number;
+        };
+        SectionOfImpactRecord: {
+            items: components["schemas"]["ImpactRecord"][];
+            /** Format: int32 */
+            total: number;
+        };
         ServiceAssetItem: {
             /** Format: uuid */
             assetId: string;
@@ -12716,6 +12783,12 @@ export interface components {
             isActive: boolean;
             /** Format: uint32 */
             version: number;
+        };
+        ServiceImpact: {
+            assets: components["schemas"]["SectionOfImpactAsset"];
+            tickets: components["schemas"]["SectionOfImpactRecord"];
+            changes: components["schemas"]["SectionOfImpactRecord"];
+            problems: components["schemas"]["SectionOfImpactRecord"];
         };
         ServiceListItem: {
             /** Format: uuid */

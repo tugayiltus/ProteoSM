@@ -21,6 +21,9 @@ internal static class ServiceEndpoints
         services.MapGet("/{id:guid}", async (Guid id, GetServiceHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new GetServiceQuery(id), ct))).ProducesProblem(StatusCodes.Status404NotFound);
 
+        services.MapGet("/{id:guid}/impact", async (Guid id, GetServiceImpactHandler h, CancellationToken ct) =>
+            TypedResults.Ok(await h.HandleAsync(new GetServiceImpactQuery(id), ct))).ProducesProblem(StatusCodes.Status404NotFound);
+
         // Outside the asset group on purpose: that group answers employees with 403, service routes answer 404.
         api.MapGet(AssetServicesRoute, async (string tag, ListAssetServicesHandler h, CancellationToken ct) =>
                 TypedResults.Ok(await h.HandleAsync(new ListAssetServicesQuery(tag), ct)))

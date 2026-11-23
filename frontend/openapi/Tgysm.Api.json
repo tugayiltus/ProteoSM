@@ -8911,6 +8911,46 @@
         }
       }
     },
+    "/api/v1/services/{id}/impact": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceImpact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/changes": {
       "post": {
         "tags": [
@@ -14822,6 +14862,48 @@
         "type": "string",
         "format": "binary"
       },
+      "ImpactAsset": {
+        "required": [
+          "tag",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ImpactRecord": {
+        "required": [
+          "number",
+          "title",
+          "status",
+          "canOpen"
+        ],
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "canOpen": {
+            "type": "boolean"
+          }
+        }
+      },
       "JsonElement": { },
       "KeyValuePairOfstringAndStringValues": {
         "required": [
@@ -17038,6 +17120,44 @@
           }
         }
       },
+      "SectionOfImpactAsset": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImpactAsset"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SectionOfImpactRecord": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImpactRecord"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "ServiceAssetItem": {
         "required": [
           "assetId",
@@ -17101,6 +17221,29 @@
           "version": {
             "type": "integer",
             "format": "uint32"
+          }
+        }
+      },
+      "ServiceImpact": {
+        "required": [
+          "assets",
+          "tickets",
+          "changes",
+          "problems"
+        ],
+        "type": "object",
+        "properties": {
+          "assets": {
+            "$ref": "#/components/schemas/SectionOfImpactAsset"
+          },
+          "tickets": {
+            "$ref": "#/components/schemas/SectionOfImpactRecord"
+          },
+          "changes": {
+            "$ref": "#/components/schemas/SectionOfImpactRecord"
+          },
+          "problems": {
+            "$ref": "#/components/schemas/SectionOfImpactRecord"
           }
         }
       },
