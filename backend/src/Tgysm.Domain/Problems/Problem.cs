@@ -41,6 +41,9 @@ public sealed class Problem : Entity
     public DateTimeOffset? ResolvedAt { get; private set; }
     public DateTimeOffset? ClosedAt { get; private set; }
 
+    /// <summary>The IT service this record belongs to; any state may set or clear it (Phase 12).</summary>
+    public Guid? ServiceId { get; private set; }
+
     public bool IsClosed => Status is ProblemStatus.Resolved or ProblemStatus.Cancelled;
 
     public static Problem Create(
@@ -156,6 +159,19 @@ public sealed class Problem : Entity
     }
 
     public void Touch(DateTimeOffset now) => UpdatedAt = now;
+
+    /// <summary>Sets or clears the service in any state; touches <c>UpdatedAt</c> only when the value changes.</summary>
+    public bool SetService(Guid? serviceId, DateTimeOffset now)
+    {
+        if (ServiceId == serviceId)
+        {
+            return false;
+        }
+
+        ServiceId = serviceId;
+        Touch(now);
+        return true;
+    }
 
     private static string? Clean(string? text) => string.IsNullOrWhiteSpace(text) ? null : text.Trim();
 

@@ -5,6 +5,7 @@ using Tgysm.Domain.Catalog;
 using Tgysm.Domain.Knowledge;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Problems;
+using Tgysm.Domain.Services;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Audit;
@@ -52,6 +53,8 @@ public interface IAppDbContext
     DbSet<ProblemEvent> ProblemEvents { get; }
     DbSet<ProblemTicketLink> ProblemTicketLinks { get; }
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
+    DbSet<Service> Services { get; }
+    DbSet<ServiceAsset> ServiceAssets { get; }
     DbSet<TicketRelation> TicketRelations { get; }
     DbSet<TicketAsset> TicketAssets { get; }
     DbSet<TicketArticle> TicketArticles { get; }

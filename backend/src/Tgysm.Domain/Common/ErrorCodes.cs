@@ -164,4 +164,10 @@ public static class ErrorCodes
     public const string ReportsExportExpired = "reports.export_expired";
     public const string ReportsExportAttemptsExhausted = "reports.export_attempts_exhausted";
     public const string ReportsExportQueueFull = "reports.export_queue_full";
+
+    public const string ServiceNameTaken = "services.name_taken";
+    public const string ServiceOwnerTeamInactive = "services.owner_team_inactive";
+    public const string ServiceInactive = "services.inactive";
+    public const string ServiceAssetNotLinkable = "services.asset_not_linkable";
+    public const string ServiceAssetLinkExists = "services.asset_link_exists";
 }

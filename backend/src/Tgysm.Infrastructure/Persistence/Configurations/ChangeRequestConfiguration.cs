@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Organization;
+using Tgysm.Domain.Services;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Users;
 using Tgysm.Infrastructure.Persistence.Converters;
@@ -45,5 +46,7 @@ internal sealed class ChangeRequestConfiguration : IEntityTypeConfiguration<Chan
         builder.HasOne<Team>().WithMany().HasForeignKey(c => c.OwnerTeamId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<User>().WithMany().HasForeignKey(c => c.OwnerId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<User>().WithMany().HasForeignKey(c => c.CreatedById).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(c => c.ServiceId).HasDatabaseName("ix_change_requests_service_id");
+        builder.HasOne<Service>().WithMany().HasForeignKey(c => c.ServiceId).OnDelete(DeleteBehavior.Restrict);
     }
 }

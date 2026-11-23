@@ -66,6 +66,9 @@ public sealed class ChangeRequest : Entity
     public DateTimeOffset UpdatedAt { get; private set; }
     public DateTimeOffset? ClosedAt { get; private set; }
 
+    /// <summary>The IT service this record belongs to; any state may set or clear it (Phase 12).</summary>
+    public Guid? ServiceId { get; private set; }
+
     public bool IsOpen => Status is not (ChangeStatus.Closed or ChangeStatus.Cancelled);
 
     /// <summary>From implementing on, the fingerprint fields cannot change.</summary>
@@ -230,6 +233,19 @@ public sealed class ChangeRequest : Entity
     }
 
     public void Touch(DateTimeOffset now) => UpdatedAt = now;
+
+    /// <summary>Sets or clears the service in any state; touches <c>UpdatedAt</c> only when the value changes.</summary>
+    public bool SetService(Guid? serviceId, DateTimeOffset now)
+    {
+        if (ServiceId == serviceId)
+        {
+            return false;
+        }
+
+        ServiceId = serviceId;
+        Touch(now);
+        return true;
+    }
 
     private void RequireSuccessful(ChangeClosing closing, ChangeTaskTally tasks)
     {

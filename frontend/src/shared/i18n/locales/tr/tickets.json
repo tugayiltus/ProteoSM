@@ -71,6 +71,8 @@
     "change_unlinked": "Değişiklik ayrıldı",
     "problem_linked": "Probleme bağlandı",
     "problem_unlinked": "Problemden ayrıldı",
+    "service_set": "Hizmet atandı",
+    "service_cleared": "Hizmet kaldırıldı",
     "completed": "Kayıt tamamlandı",
     "cancelled": "Kayıt iptal edildi"
   },

@@ -229,7 +229,9 @@
       "ticket_linked": "Kayıt bağlandı",
       "ticket_unlinked": "Kayıt ayrıldı",
       "problem_linked": "Probleme bağlandı",
-      "problem_unlinked": "Problemden ayrıldı"
+      "problem_unlinked": "Problemden ayrıldı",
+      "service_set": "Hizmet atandı",
+      "service_cleared": "Hizmet kaldırıldı"
     }
   },
   "conflicts": {

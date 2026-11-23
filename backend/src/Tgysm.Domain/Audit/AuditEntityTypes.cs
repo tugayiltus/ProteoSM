@@ -17,6 +17,7 @@ public static class AuditEntityTypes
     public const string Task = "task";
     public const string Change = "change";
     public const string Problem = "problem";
+    public const string Service = "service";
     public const string Approval = "approval";
     public const string Attachment = "attachment";
     public const string EmailTemplate = "email_template";

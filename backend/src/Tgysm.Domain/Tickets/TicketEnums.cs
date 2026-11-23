@@ -105,4 +105,6 @@ public enum TicketEventKind
     ChangeUnlinked,
     ProblemLinked,
     ProblemUnlinked,
+    ServiceSet,
+    ServiceCleared,
 }

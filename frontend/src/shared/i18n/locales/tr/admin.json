@@ -150,7 +150,8 @@
     "asset_model": "Model",
     "task": "Görev",
     "change": "Değişiklik",
-    "problem": "Problem"
+    "problem": "Problem",
+    "service": "Hizmet"
   },
   "auditActions": {
     "setup": {
@@ -240,7 +241,8 @@
       "change_linked": "Kayda değişiklik bağlandı",
       "change_unlinked": "Kayıttan değişiklik ayrıldı",
       "problem_linked": "Kayıt probleme bağlandı",
-      "problem_unlinked": "Kayıt problemden ayrıldı"
+      "problem_unlinked": "Kayıt problemden ayrıldı",
+      "service_set": "Kaydın hizmeti değişti"
     },
     "approvals": {
       "approved": "Talep onaylandı",
@@ -301,7 +303,8 @@
       "ticket_linked": "Değişikliğe kayıt bağlandı",
       "ticket_unlinked": "Değişiklikten kayıt ayrıldı",
       "problem_linked": "Değişiklik probleme bağlandı",
-      "problem_unlinked": "Değişiklik problemden ayrıldı"
+      "problem_unlinked": "Değişiklik problemden ayrıldı",
+      "service_set": "Değişikliğin hizmeti değişti"
     },
     "problems": {
       "created": "Problem oluşturuldu",
@@ -313,7 +316,16 @@
       "ticket_linked": "Probleme arıza bağlandı",
       "ticket_unlinked": "Problemden arıza ayrıldı",
       "change_linked": "Probleme değişiklik bağlandı",
-      "change_unlinked": "Problemden değişiklik ayrıldı"
+      "change_unlinked": "Problemden değişiklik ayrıldı",
+      "service_set": "Problemin hizmeti değişti"
+    },
+    "services": {
+      "created": "Hizmet oluşturuldu",
+      "updated": "Hizmet güncellendi",
+      "activated": "Hizmet aktifleştirildi",
+      "deactivated": "Hizmet pasifleştirildi",
+      "asset_linked": "Hizmete cihaz bağlandı",
+      "asset_unlinked": "Hizmetten cihaz ayrıldı"
     }
   },
   "emailEvents": {

@@ -26,4 +26,6 @@ public enum ProblemEventKind
     ChangeLinked,
     ChangeUnlinked,
     ArticleCreated,
+    ServiceSet,
+    ServiceCleared,
 }

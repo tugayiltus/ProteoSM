@@ -185,6 +185,13 @@
     "cancel_reason_required": "Problemi iptal etmek için neden yazın.",
     "transfer_same_team": "Problem zaten bu ekipte."
   },
+  "services": {
+    "name_taken": "Bu adla başka bir hizmet var.",
+    "owner_team_inactive": "Sahip ekip aktif olmalı.",
+    "inactive": "Pasif hizmet seçilemez.",
+    "asset_not_linkable": "Kullanım dışı veya kayıp cihaz hizmete bağlanamaz.",
+    "asset_link_exists": "Bu cihaz zaten bu hizmete bağlı."
+  },
   "search": {
     "query_invalid": "Arama metni 2 ile 100 karakter arasında olmalı."
   }

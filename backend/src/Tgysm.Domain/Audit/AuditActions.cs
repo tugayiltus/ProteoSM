@@ -103,6 +103,15 @@ public static class AuditActions
     public const string TicketProblemUnlinked = "tickets.problem_unlinked";
     public const string ChangeProblemLinked = "changes.problem_linked";
     public const string ChangeProblemUnlinked = "changes.problem_unlinked";
+    public const string ServiceCreated = "services.created";
+    public const string ServiceUpdated = "services.updated";
+    public const string ServiceActivated = "services.activated";
+    public const string ServiceDeactivated = "services.deactivated";
+    public const string ServiceAssetLinked = "services.asset_linked";
+    public const string ServiceAssetUnlinked = "services.asset_unlinked";
+    public const string TicketServiceSet = "tickets.service_set";
+    public const string ChangeServiceSet = "changes.service_set";
+    public const string ProblemServiceSet = "problems.service_set";
     public const string ChangeCreated = "changes.created";
     public const string ChangeUpdated = "changes.updated";
     public const string ChangeStatusChanged = "changes.status_changed";

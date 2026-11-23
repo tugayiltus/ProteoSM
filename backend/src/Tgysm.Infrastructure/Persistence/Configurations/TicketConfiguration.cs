@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tgysm.Domain.Catalog;
 using Tgysm.Domain.Organization;
+using Tgysm.Domain.Services;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Users;
 using Tgysm.Infrastructure.Persistence.Converters;
@@ -63,5 +64,7 @@ internal sealed class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.HasOne<User>().WithMany().HasForeignKey(t => t.AssigneeId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<Team>().WithMany().HasForeignKey(t => t.TeamId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<RequestType>().WithMany().HasForeignKey(t => t.RequestTypeId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(t => t.ServiceId).HasDatabaseName("ix_tickets_service_id");
+        builder.HasOne<Service>().WithMany().HasForeignKey(t => t.ServiceId).OnDelete(DeleteBehavior.Restrict);
     }
 }

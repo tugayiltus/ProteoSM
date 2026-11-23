@@ -39,4 +39,7 @@ public static class SerializationLocks
 
     /// <summary>Linking an incident or a change to a problem: two adds never reach the unique indexes together (ADR-0034).</summary>
     public const long ProblemLink = 7_011;
+
+    /// <summary>Creating, renaming and activating a service: two writes never reach the unique name index together.</summary>
+    public const long ServiceCatalog = 7_012;
 }

@@ -134,7 +134,9 @@
       "ticket_unlinked": "Arıza ayrıldı",
       "change_linked": "Değişiklik bağlandı",
       "change_unlinked": "Değişiklik ayrıldı",
-      "article_created": "Bilinen hata makalesi oluşturuldu"
+      "article_created": "Bilinen hata makalesi oluşturuldu",
+      "service_set": "Hizmet atandı",
+      "service_cleared": "Hizmet kaldırıldı"
     }
   }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Knowledge;
 using Tgysm.Domain.Organization;
+using Tgysm.Domain.Services;
 using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Users;
@@ -41,6 +42,8 @@ internal sealed class ProblemConfiguration : IEntityTypeConfiguration<Problem>
         builder.HasOne<User>().WithMany().HasForeignKey(p => p.OwnerId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<User>().WithMany().HasForeignKey(p => p.CreatedById).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<KnowledgeArticle>().WithMany().HasForeignKey(p => p.ArticleId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(p => p.ServiceId).HasDatabaseName("ix_problems_service_id");
+        builder.HasOne<Service>().WithMany().HasForeignKey(p => p.ServiceId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 

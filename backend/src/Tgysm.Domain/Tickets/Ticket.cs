@@ -46,6 +46,9 @@ public sealed class Ticket : Entity
     /// <summary>When the ticket closed: completion, cancellation or approval rejection (reports use it as the "completed" date basis).</summary>
     public DateTimeOffset? CompletedAt { get; private set; }
 
+    /// <summary>The IT service this record belongs to; any state may set or clear it (Phase 12).</summary>
+    public Guid? ServiceId { get; private set; }
+
     public bool IsClosed => Status is TicketStatus.Completed or TicketStatus.Cancelled;
 
     public static Ticket CreateIncident(
@@ -234,6 +237,19 @@ public sealed class Ticket : Entity
 
     /// <summary>Marks a change that is not a state change (comment, link) so lists sort by activity.</summary>
     public void Touch(DateTimeOffset now) => UpdatedAt = now;
+
+    /// <summary>Sets or clears the service in any state; touches <c>UpdatedAt</c> only when the value changes.</summary>
+    public bool SetService(Guid? serviceId, DateTimeOffset now)
+    {
+        if (ServiceId == serviceId)
+        {
+            return false;
+        }
+
+        ServiceId = serviceId;
+        Touch(now);
+        return true;
+    }
 
     private void LeaveHold(DateTimeOffset now)
     {
