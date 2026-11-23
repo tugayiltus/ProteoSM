@@ -45,6 +45,16 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
     private const string PasswordMarker = "(shown once): ";
     private const int TicketsBeforeFailure = 1;
 
+    // The service catalogue is the same at any scale: eight services, each with an owner team and one to four assets.
+    private const int SeededServices = 8;
+    private const int MinAssetsPerService = 1;
+    private const int MaxAssetsPerService = 4;
+
+    // About 30% of the tickets get a service; the bounds leave room for the deterministic draw at a small scale.
+    private const int MinServicedTicketPercent = 15;
+    private const int MaxServicedTicketPercent = 45;
+    private const int Percent = 100;
+
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     public async ValueTask InitializeAsync() => await factory.ResetAsync();
@@ -142,6 +152,18 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(Scaled(PilotSeedVolumes.Articles), await db.KnowledgeArticles.CountAsync(Ct));
         Assert.True(await db.Categories.AnyAsync(c => c.Name == PilotSeed.PilotCategoryName && c.Scope == CategoryScope.Incident, Ct));
 
+        var catalogue = await db.Services.AsNoTracking().ToListAsync(Ct);
+        Assert.Equal(SeededServices, catalogue.Count);
+        var teamIds = await db.Teams.Select(t => t.Id).ToListAsync(Ct);
+        Assert.All(catalogue, s => Assert.Contains(s.OwnerTeamId, teamIds));
+        var links = await db.ServiceAssets.AsNoTracking().ToListAsync(Ct);
+        Assert.All(catalogue, s => Assert.InRange(links.Count(l => l.ServiceId == s.Id), MinAssetsPerService, MaxAssetsPerService));
+        var serviced = tickets.Where(t => t.ServiceId != null).ToList();
+        Assert.InRange(serviced.Count * Percent, tickets.Count * MinServicedTicketPercent, tickets.Count * MaxServicedTicketPercent);
+        Assert.Contains(serviced, t => t.Kind == TicketKind.Incident);
+        Assert.Contains(serviced, t => t.Kind == TicketKind.Request);
+        Assert.All(serviced, t => Assert.Contains(t.ServiceId!.Value, catalogue.Select(s => s.Id)));
+
         var printed = output.ToString();
         var password = PrintedPassword(printed);
         Assert.Equal(1, CountOccurrences(printed, password));
@@ -198,6 +220,13 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         var withArticle = problems.Where(p => p.ArticleId != null).ToList();
         Assert.NotEmpty(withArticle);
         Assert.All(withArticle, p => Assert.Contains(p.Status, new[] { ProblemStatus.KnownError, ProblemStatus.Resolved }));
+
+        // Some problems and some changes name the service they concern, not all of them.
+        Assert.Contains(problems, p => p.ServiceId != null);
+        Assert.Contains(problems, p => p.ServiceId == null);
+        var changes = await db.ChangeRequests.AsNoTracking().ToListAsync(Ct);
+        Assert.Contains(changes, c => c.ServiceId != null);
+        Assert.Contains(changes, c => c.ServiceId == null);
     }
 
     // Below about 0.19 the seed has one IT staff member, who is in both teams and sees every incident and change; this

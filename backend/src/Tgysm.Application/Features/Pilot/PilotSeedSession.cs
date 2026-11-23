@@ -143,6 +143,7 @@ internal sealed partial class PilotSeedSession(
         await SeedPeopleAsync();
         await SeedCatalogAsync();
         await SeedAssetsAsync();
+        await SeedServicesAsync();
         await SeedArticlesAsync();
         await SeedTicketsAsync();
         await SeedChangesAsync();
@@ -378,6 +379,7 @@ internal sealed partial class PilotSeedSession(
         }
 
         _ticketIds.Add(ticket.Id);
+        ticket = await MaybeSetTicketServiceAsync(ticket, at);
         if (ticket.Kind == TicketKind.Incident)
         {
             _incidentNumbers.Add(ticket.Number);

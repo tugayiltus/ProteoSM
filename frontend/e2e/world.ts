@@ -253,6 +253,15 @@ export async function seedIncidents(requester: Session, subjects: readonly strin
   return numbers;
 }
 
+/** Creates a service owned by the team through the admin API, links the asset to it and returns the service id. */
+export async function seedService(admin: Session, name: string, ownerTeamId: string, assetId: string): Promise<string> {
+  const request = admin.context.request;
+  const service = await send(request, 'POST', '/api/v1/admin/services', { name, description: `${name} hizmeti`, ownerTeamId });
+  const id = String(service.id);
+  await send(request, 'POST', `/api/v1/admin/services/${id}/assets`, { assetId });
+  return id;
+}
+
 /** Hands a ticket to another team as the session's user (a member of the team that holds it). */
 export async function transferTicket(staff: Session, ticketNumber: string, teamId: string): Promise<void> {
   const body = (await (await staff.context.request.get(`/api/v1/tickets/${ticketNumber}`)).json()) as { version?: number; detail?: { version: number } };

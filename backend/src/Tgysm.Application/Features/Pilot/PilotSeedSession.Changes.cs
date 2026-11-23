@@ -119,6 +119,7 @@ internal sealed partial class PilotSeedSession
             Pick(Enum.GetValues<Level>()), Pick(Enum.GetValues<Level>()), start, end,
             PilotSeedChangeData.ImplementationPlan, PilotSeedChangeData.VerificationPlan, PilotSeedChangeData.BackoutPlan);
         var created = await ActAsync<CreateChangeHandler, ChangeDetail>(owner, at, (h, ct) => h.HandleAsync(new CreateChangeCommand(draft, teamId, owner, assets), ct));
+        await MaybeSetChangeServiceAsync(index, created, owner, at);
         // A problem's fixing change is one still planned or one that worked, never a cancelled or backed-out one.
         if (inIntake && plan is not (PilotChangePlan.RolledBack or PilotChangePlan.Failed or PilotChangePlan.Cancelled))
         {

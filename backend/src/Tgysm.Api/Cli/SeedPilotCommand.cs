@@ -86,6 +86,7 @@ internal static class SeedPilotCommand
 
         await output.WriteLineAsync($"Changes: {result.Changes}");
         await output.WriteLineAsync($"Tasks: {result.Tasks}");
+        await output.WriteLineAsync($"Services: {result.Services}");
         await output.WriteLineAsync($"Comments: {result.Comments}");
         await output.WriteLineAsync($"Articles: {result.Articles}");
         await output.WriteLineAsync($"Audit events: {result.AuditEvents}");

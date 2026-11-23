@@ -42,7 +42,8 @@ public sealed record PilotSeedResult(
     int Articles,
     int AuditEvents,
     int Changes,
-    int Tasks);
+    int Tasks,
+    int Services);
 
 /// <summary>
 /// Fills an empty database with pilot data (spec §5.1) through the application handlers, so business rules, SLA
@@ -133,6 +134,7 @@ public sealed class PilotSeed(IServiceScopeFactory scopes, PilotSeedActor actor,
             await db.KnowledgeArticles.CountAsync(cancellationToken),
             await db.AuditEvents.CountAsync(cancellationToken),
             await db.ChangeRequests.CountAsync(cancellationToken),
-            await db.WorkTasks.CountAsync(cancellationToken));
+            await db.WorkTasks.CountAsync(cancellationToken),
+            await db.Services.CountAsync(cancellationToken));
     }
 }

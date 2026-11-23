@@ -46,6 +46,7 @@ internal sealed partial class PilotSeedSession
         var title = $"{PilotSeedProblemData.ProblemTitles[index % PilotSeedProblemData.ProblemTitles.Length]} ({index + 1})";
         var create = new CreateProblemCommand(title, PilotSeedProblemData.Description, Pick(Enum.GetValues<Level>()), _intakeTeamId, owner, NextIncident());
         var problem = await ActAsync<CreateProblemHandler, ProblemDetail>(owner, at, (h, ct) => h.HandleAsync(create, ct));
+        problem = await MaybeSetProblemServiceAsync(index, problem, owner, at);
 
         for (var extra = _random.Next(MaxExtraIncidentsPerProblem + 1); extra > 0; extra--)
         {
