@@ -14,6 +14,7 @@ export const ROUTES = {
   tickets: '/tickets',
   tasks: '/tasks',
   problems: '/problems',
+  services: '/services',
   changes: '/changes',
   changeCalendar: '/changes/calendar',
   newIncident: '/tickets/new/incident',
@@ -52,6 +53,7 @@ export const assetLabelsPath = (id: string) => `${ROUTES.assetLabels}?${new URLS
 
 export const ticketPath = (number: string) => `${ROUTES.tickets}/${number}`;
 export const taskPath = (number: string) => `${ROUTES.tasks}/${number}`;
+export const servicePath = (id: string) => `${ROUTES.services}/${id}`;
 export const problemPath = (number: string) => `${ROUTES.problems}/${number}`;
 export const changePath = (number: string) => `${ROUTES.changes}/${number}`;
 

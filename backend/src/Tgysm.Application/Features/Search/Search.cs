@@ -25,10 +25,11 @@ public enum SearchHitType
     Task,
     Problem,
     Asset,
+    Service,
     Article,
 }
 
-/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, or the article id the knowledge base route uses.</summary>
+/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, the service id, or the article id the knowledge base route uses.</summary>
 public sealed record SearchHit(SearchHitType Type, string Key, string Title, string? Status);
 
 public sealed record SearchGroup(SearchHitType Type, IReadOnlyList<SearchHit> Hits, bool HasMore);
@@ -54,6 +55,8 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
     private const string QueryField = "q";
     private static readonly string QueryInvalidMessage = $"The search text must be {SearchLimits.MinLength} to {SearchLimits.MaxLength} characters.";
     private const string Separator = " ";
+    private const string ServiceActive = "Active";
+    private const string ServiceInactive = "Inactive";
 
     // A short legacy tag must not hijack typing: only a whole-looking tag is tried as an exact match.
     private static bool LooksLikeTag(string text) => text.Length >= SearchLimits.MinExactTagLength && !text.Any(char.IsWhiteSpace);
@@ -159,6 +162,13 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
                         || (a.NormalizedSerialNumber != null && EF.Functions.Like(a.NormalizedSerialNumber, codePattern, LikePattern.EscapeText)))
                     .OrderByDescending(a => a.UpdatedAt).ThenByDescending(a => a.Id)
                     .Select(a => new Row(a.AssetTag, a.Brand + Separator + a.Model, a.Status.ToString())),
+                cancellationToken));
+
+            AddGroup(groups, SearchHitType.Service, await TopAsync(
+                db.Services.AsNoTracking()
+                    .Where(s => EF.Functions.Like(s.SearchText, pattern, LikePattern.EscapeText))
+                    .OrderByDescending(s => s.IsActive).ThenBy(s => s.Name).ThenBy(s => s.Id)
+                    .Select(s => new Row(s.Id.ToString(), s.Name, s.IsActive ? ServiceActive : ServiceInactive)),
                 cancellationToken));
         }
 

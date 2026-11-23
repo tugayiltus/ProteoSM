@@ -12752,7 +12752,7 @@ export interface components {
             status: null | string;
         };
         /** @enum {unknown} */
-        SearchHitType: "ticket" | "change" | "task" | "problem" | "asset" | "article";
+        SearchHitType: "ticket" | "change" | "task" | "problem" | "asset" | "service" | "article";
         SearchResult: {
             exact: null | components["schemas"]["SearchHit"];
             groups: components["schemas"]["SearchGroup"][];

@@ -23,6 +23,8 @@ public sealed class SearchTests(ApiFactory factory) : IAsyncLifetime
     private const string ProblemGroup = "problem";
     private const string AssetGroup = "asset";
     private const string ArticleGroup = "article";
+    private const string ServiceGroup = "service";
+    private const string AdminServicesPath = "/api/v1/admin/services";
     private const string SerialNumber = "SN-ZX81-QQ";
     private const string MissText = "hicbirsey";
     private const int OverLimit = SearchLimits.PerType + 1;
@@ -237,6 +239,31 @@ public sealed class SearchTests(ApiFactory factory) : IAsyncLifetime
         var result = await SearchAsync(world.Field, "altyapı");
 
         Assert.Equal([ChangeWorld.NumberOf(change)], Keys(result, ChangeGroup));
+    }
+
+    [Fact]
+    public async Task Desk_finds_a_service_by_name_and_sees_inactive_status_and_employee_gets_no_service_group()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var active = await CreateServiceAsync(world, "SAP Finans");
+        var retired = await CreateServiceAsync(world, "SAP Eski");
+        await TestData.SaveAsync(factory, db => db.Services.Single(s => s.Id == retired).SetActive(false, DateTimeOffset.UtcNow));
+
+        var desk = await SearchAsync(world.Desk, "sap");
+        var employee = await SearchAsync(world.Employee, "sap");
+
+        var hits = Groups(desk).Single(g => g.GetProperty("type").GetString() == ServiceGroup).GetProperty("hits").EnumerateArray()
+            .ToDictionary(h => h.GetProperty("key").GetString()!, h => h.GetProperty("status").GetString());
+        Assert.Equal("active", hits[active.ToString()]);
+        Assert.Equal("inactive", hits[retired.ToString()]);
+        Assert.DoesNotContain(ServiceGroup, GroupTypes(employee));
+    }
+
+    private static async Task<Guid> CreateServiceAsync(TicketWorld world, string name)
+    {
+        using var response = await world.Admin.PostAsync(AdminServicesPath, new { name, description = (string?)null, ownerTeamId = world.ServiceDesk.Id });
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        return (await world.Admin.ReadJsonAsync<JsonElement>(response)).GetProperty("id").GetGuid();
     }
 
     [Fact]
