@@ -94,7 +94,7 @@ public static class ChangeMetrics
             new(Key, Shape, await Rows(filtered, context).LongCountAsync(cancellationToken), null, null, null, MetricKeys.UnitChanges);
     }
 
-    /// <summary>Changes created in the period by service; the bucket key is the service name, or <c>none</c>.</summary>
+    /// <summary>Changes created in the period by service; the bucket key is the service id (label: its name), or <c>none</c>.</summary>
     private sealed class ServiceMetric : ChangeReportMetric
     {
         public override string Key => ByService;
@@ -107,10 +107,11 @@ public static class ChangeMetrics
 
         public override IQueryable<ChangeRequest> Rows(IQueryable<ChangeRequest> filtered, ReportContext context) => filtered;
 
-        public override IQueryable<ChangeRequest> BucketRows(IQueryable<ChangeRequest> filtered, ReportContext context, string bucket) =>
-            bucket == OperationsMetrics.None
-                ? filtered.Where(c => c.ServiceId == null)
-                : filtered.Where(c => context.Db.Services.Any(s => s.Id == c.ServiceId && s.Name == bucket));
+        public override IQueryable<ChangeRequest> BucketRows(IQueryable<ChangeRequest> filtered, ReportContext context, string bucket)
+        {
+            var serviceId = ServiceBuckets.ServiceId(bucket);
+            return serviceId is null ? filtered.Where(c => c.ServiceId == null) : filtered.Where(c => c.ServiceId == serviceId);
+        }
 
         public override async Task<ReportFigure> ComputeAsync(IQueryable<ChangeRequest> filtered, ReportContext context, CancellationToken cancellationToken)
         {

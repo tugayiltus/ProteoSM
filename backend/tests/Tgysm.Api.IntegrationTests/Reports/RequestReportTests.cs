@@ -80,7 +80,8 @@ public sealed class RequestReportTests(ApiFactory factory) : IAsyncLifetime
         var result = await fx.RunAsync(ReportName.Requests, world.Admin.Id, March10, Now);
 
         Assert.Equal(3, Figure(result, RequestMetrics.ByService).Value);
-        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, RequestMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        Assert.Equal([(sap.Id.ToString(), "SAP", 2L), (OperationsMetrics.None, null, 1L)],
+            Figure(result, RequestMetrics.ByService).Buckets!.Select(b => (b.Key, b.Label, b.Count)));
         await fx.AssertFiguresMatchRowsAsync(ReportName.Requests, March10, Now);
     }
 

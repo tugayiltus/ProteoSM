@@ -25,6 +25,7 @@ public static class ExportHeaders
     private const string ValuesGroup = "values";
     private const string MetricsGroup = "metrics";
     private const string BucketsGroup = "buckets";
+    private const string MetricBucketsGroup = "metric_buckets";
 
     /// <summary>How the "Filtreler" sheet shows a day filter.</summary>
     public const string DayFormat = "dd.MM.yyyy";
@@ -77,11 +78,14 @@ public static class ExportHeaders
     public static string Metric(string metricKey) => Get(MetricsGroup, metricKey);
 
     /// <summary>
-    /// Text of a fixed bucket key ("8+", "none", an enum name). A key without text (an id bucket whose name could not be resolved)
-    /// is shown as it is rather than failing the whole export.
+    /// Text of a fixed bucket key ("8+", "none", an enum name) of a metric: a metric's own wording (<c>metric_buckets</c>, such as the
+    /// service figure's "none") wins over the shared one. A key without text (an id bucket whose name could not be resolved) is shown
+    /// as it is rather than failing the whole export.
     /// </summary>
-    public static string Bucket(string bucketKey) =>
-        Texts.Value.TryGetValue(BucketsGroup + KeySeparator + bucketKey, out var text) ? text : bucketKey;
+    public static string Bucket(string metricKey, string bucketKey) =>
+        Texts.Value.TryGetValue(MetricBucketsGroup + KeySeparator + metricKey + KeySeparator + bucketKey, out var own) ? own
+        : Texts.Value.TryGetValue(BucketsGroup + KeySeparator + bucketKey, out var text) ? text
+        : bucketKey;
 
     /// <summary>The text of an enum value ("on_hold" of <c>TicketStatus</c>), looked up by its type and snake_case name.</summary>
     public static string Value<TEnum>(TEnum value)

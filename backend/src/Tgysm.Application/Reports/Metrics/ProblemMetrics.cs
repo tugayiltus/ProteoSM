@@ -137,7 +137,7 @@ public static class ProblemMetrics
         }
     }
 
-    /// <summary>Problems created in the period by service; the bucket key is the service name, or <c>none</c>.</summary>
+    /// <summary>Problems created in the period by service; the bucket key is the service id (label: its name), or <c>none</c>.</summary>
     private sealed class ServiceMetric : ProblemReportMetric
     {
         public override string Key => ByService;
@@ -150,10 +150,11 @@ public static class ProblemMetrics
 
         public override IQueryable<Problem> Rows(IQueryable<Problem> filtered, ReportContext context) => filtered;
 
-        public override IQueryable<Problem> BucketRows(IQueryable<Problem> filtered, ReportContext context, string bucket) =>
-            bucket == OperationsMetrics.None
-                ? filtered.Where(p => p.ServiceId == null)
-                : filtered.Where(p => context.Db.Services.Any(s => s.Id == p.ServiceId && s.Name == bucket));
+        public override IQueryable<Problem> BucketRows(IQueryable<Problem> filtered, ReportContext context, string bucket)
+        {
+            var serviceId = ServiceBuckets.ServiceId(bucket);
+            return serviceId is null ? filtered.Where(p => p.ServiceId == null) : filtered.Where(p => p.ServiceId == serviceId);
+        }
 
         public override async Task<ReportFigure> ComputeAsync(IQueryable<Problem> filtered, ReportContext context, CancellationToken cancellationToken)
         {

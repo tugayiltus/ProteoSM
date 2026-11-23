@@ -91,8 +91,10 @@ describe('median line', () => {
   });
 
   it('shows a service name as its own label and a missing service as "Hizmet yok"', () => {
-    expect(bucketLabel('by_service', { key: 'SAP', label: 'SAP' })).toBe('SAP');
+    const SERVICE_ID = '0190a1b2-0000-7000-8000-000000000001';
+    expect(bucketLabel('by_service', { key: SERVICE_ID, label: 'SAP' })).toBe('SAP');
     expect(bucketLabel('by_service', { key: 'none', label: null })).toBe('Hizmet yok');
+    expect(bucketLabel('by_service', { key: SERVICE_ID, label: 'none' })).toBe('none'); // a service named "none" keeps its name
     expect(bucketLabel('by_department', { key: 'none', label: null })).toBe('Belirtilmemiş');
   });
 });

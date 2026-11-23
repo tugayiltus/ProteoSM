@@ -249,6 +249,9 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         await AssertInvalidAsync(handler, Query(ReportName.Changes, ChangeMetrics.ByRisk, part: ReportDrillPart.Denominator), "part", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.ByStatus, "nope"), "bucket", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.ByTeam, "not-a-guid"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Incidents, IncidentMetrics.ByService, "SAP"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Changes, ChangeMetrics.ByService, "SAP"), "bucket", ErrorCodes.ReportsInvalidFilter);
+        await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.ByService, "SAP"), "bucket", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.Overdue, "open"), "bucket", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Tasks, TaskMetrics.Overdue, part: ReportDrillPart.Denominator), "part", ErrorCodes.ReportsInvalidFilter);
         await AssertInvalidAsync(handler, Query(ReportName.Problems, ProblemMetrics.ByImpact, "nope"), "bucket", ErrorCodes.ReportsInvalidFilter);

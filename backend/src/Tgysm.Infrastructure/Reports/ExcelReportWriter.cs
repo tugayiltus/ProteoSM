@@ -103,7 +103,7 @@ internal sealed class ExcelReportWriter(ICompanyClock companyClock, TimeProvider
         Add(ExportHeaders.Label(ExportHeaders.Labels.Metric), ExportHeaders.Metric(content.Metric));
         if (content.Bucket is not null)
         {
-            Add(ExportHeaders.Label(ExportHeaders.Labels.Bucket), NameOf(content, content.Bucket) ?? ExportHeaders.Bucket(content.Bucket));
+            Add(ExportHeaders.Label(ExportHeaders.Labels.Bucket), NameOf(content, content.Bucket) ?? ExportHeaders.Bucket(content.Metric, content.Bucket));
         }
 
         Add(ExportHeaders.Label(ExportHeaders.Labels.Part), ExportHeaders.Value(content.Part));

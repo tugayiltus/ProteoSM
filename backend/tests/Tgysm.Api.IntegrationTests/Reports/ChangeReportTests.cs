@@ -18,6 +18,8 @@ public sealed class ChangeReportTests(ApiFactory factory) : IAsyncLifetime
     private const string ReportsPath = "/api/v1/reports/changes";
     private const string March = "from=2026-03-01&to=2026-03-31";
     private const string RecordsSheet = "Kayıtlar";
+    private const string FiltersSheet = "Filtreler";
+    private const string BucketLabel = "Dilim";
 
     private static readonly DateTimeOffset T0 = ReportFixture.T0;
     private static readonly ReportFilter MarchFilter = new() { From = new DateOnly(2026, 3, 1), To = new DateOnly(2026, 3, 31) };
@@ -200,10 +202,11 @@ public sealed class ChangeReportTests(ApiFactory factory) : IAsyncLifetime
         var result = await fx.RunAsync(ReportName.Changes, world.Admin.Id, MarchFilter);
 
         Assert.Equal(3, Figure(result, ChangeMetrics.ByService).Value);
-        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, ChangeMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        Assert.Equal([(sap.Id.ToString(), "SAP", 2L), (OperationsMetrics.None, null, 1L)],
+            Figure(result, ChangeMetrics.ByService).Buckets!.Select(b => (b.Key, b.Label, b.Count)));
 
         var (admin, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.Admin, "boss@example.com");
-        var query = $"metric={ChangeMetrics.ByService}&bucket=SAP&{March}";
+        var query = $"metric={ChangeMetrics.ByService}&bucket={sap.Id}&{March}";
         using var drill = await admin.GetAsync($"{ReportsPath}/drilldown?{query}&pageSize=100");
         var body = await admin.ReadJsonAsync<JsonElement>(drill);
         var rows = body.GetProperty("changes").GetProperty("items").EnumerateArray().ToList();
@@ -215,8 +218,10 @@ public sealed class ChangeReportTests(ApiFactory factory) : IAsyncLifetime
         var sheet = workbook.Worksheet(RecordsSheet);
         Assert.Equal("Hizmet", sheet.Cell(1, ExpectedHeaders.Length).GetString());
         Assert.Equal("SAP", sheet.Cell(2, ExpectedHeaders.Length).GetString());
+        var filters = workbook.Worksheet(FiltersSheet).RowsUsed().Skip(1).ToDictionary(r => r.Cell(1).GetString(), r => r.Cell(2).GetString());
+        Assert.Equal("SAP", filters[BucketLabel]); // the id bucket is named, not shown as a guid
 
-        using var none = await admin.GetAsync($"{ReportsPath}/drilldown?metric={ChangeMetrics.ByService}&bucket=none&{March}");
+        using var none = await admin.GetAsync($"{ReportsPath}/drilldown?metric={ChangeMetrics.ByService}&bucket={OperationsMetrics.None}&{March}");
         var noneRow = Assert.Single((await admin.ReadJsonAsync<JsonElement>(none)).GetProperty("changes").GetProperty("items").EnumerateArray());
         Assert.Equal(JsonValueKind.Null, noneRow.GetProperty("serviceName").ValueKind);
     }

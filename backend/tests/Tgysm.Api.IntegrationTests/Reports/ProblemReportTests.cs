@@ -201,10 +201,11 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
         var result = await fx.RunAsync(fx.World.Admin.Id, MarchFilter);
 
         Assert.Equal(3, Figure(result, ProblemMetrics.ByService).Value);
-        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, ProblemMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        Assert.Equal([(sap.Id.ToString(), "SAP", 2L), (OperationsMetrics.None, null, 1L)],
+            Figure(result, ProblemMetrics.ByService).Buckets!.Select(b => (b.Key, b.Label, b.Count)));
 
         var (admin, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.Admin, "boss@example.com");
-        var query = $"metric={ProblemMetrics.ByService}&bucket=SAP&{March}";
+        var query = $"metric={ProblemMetrics.ByService}&bucket={sap.Id}&{March}";
         using var drill = await admin.GetAsync($"{ReportsPath}/drilldown?{query}&pageSize=100");
         var body = await admin.ReadJsonAsync<JsonElement>(drill);
         var rows = body.GetProperty("problems").GetProperty("items").EnumerateArray().ToList();
@@ -217,7 +218,7 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal("Hizmet", sheet.Cell(1, ExpectedHeaders.Length).GetString());
         Assert.Equal("SAP", sheet.Cell(2, ExpectedHeaders.Length).GetString());
 
-        using var none = await admin.GetAsync($"{ReportsPath}/drilldown?metric={ProblemMetrics.ByService}&bucket=none&{March}");
+        using var none = await admin.GetAsync($"{ReportsPath}/drilldown?metric={ProblemMetrics.ByService}&bucket={OperationsMetrics.None}&{March}");
         var noneRow = Assert.Single((await admin.ReadJsonAsync<JsonElement>(none)).GetProperty("problems").GetProperty("items").EnumerateArray());
         Assert.Equal(JsonValueKind.Null, noneRow.GetProperty("serviceName").ValueKind);
     }

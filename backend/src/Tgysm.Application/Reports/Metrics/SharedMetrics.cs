@@ -56,8 +56,9 @@ internal static class TicketRules
 }
 
 /// <summary>
-/// Counting by service for the <c>by_service</c> figure of the four record reports. A bucket key is the service name (names are unique)
-/// or <see cref="OperationsMetrics.None"/> for records without a service; the label is the name, null for none (the UI translates it).
+/// Counting by service for the <c>by_service</c> figure of the four record reports. A bucket key is the service id (a name such as
+/// "none" must not collide with the no-service bucket) or <see cref="OperationsMetrics.None"/> for records without a service; the label
+/// is the name, null for none (the UI translates it).
 /// </summary>
 internal static class ServiceBuckets
 {
@@ -69,12 +70,19 @@ internal static class ServiceBuckets
         var ids = groups.Where(g => g.Key != null).Select(g => g.Key!.Value).ToList();
         var names = await db.Services.Where(s => ids.Contains(s.Id)).ToDictionaryAsync(s => s.Id, s => s.Name, cancellationToken);
         return groups
-            .Select(g => (Name: g.Key is { } id ? names[id] : null, g.Count))
+            .Select(g => (Key: g.Key?.ToString() ?? OperationsMetrics.None, Name: g.Key is { } id ? names[id] : null, g.Count))
             .OrderByDescending(g => g.Count)
-            .ThenBy(g => g.Name ?? OperationsMetrics.None, StringComparer.Ordinal)
-            .Select(g => new ReportBucket(g.Name ?? OperationsMetrics.None, g.Name, g.Count))
+            .ThenBy(g => g.Name is null)
+            .ThenBy(g => g.Name, StringComparer.Ordinal)
+            .Select(g => new ReportBucket(g.Key, g.Name, g.Count))
             .ToList();
     }
+
+    /// <summary>The service id a bucket key names, or null for the bucket of records without a service.</summary>
+    public static Guid? ServiceId(string bucket) =>
+        bucket == OperationsMetrics.None ? null
+        : Guid.TryParse(bucket, out var id) ? id
+        : throw new NotSupportedException($"Unknown bucket '{bucket}'.");
 }
 
 /// <summary>Tickets created in the window, by the service they are set on.</summary>
@@ -90,10 +98,11 @@ internal sealed class ServiceMetric(ReportName report) : ReportMetric
 
     public override IQueryable<Ticket> Rows(IQueryable<Ticket> filtered, ReportContext context) => filtered;
 
-    public override IQueryable<Ticket> BucketRows(IQueryable<Ticket> filtered, ReportContext context, string bucket) =>
-        bucket == OperationsMetrics.None
-            ? filtered.Where(t => t.ServiceId == null)
-            : filtered.Where(t => context.Db.Services.Any(s => s.Id == t.ServiceId && s.Name == bucket));
+    public override IQueryable<Ticket> BucketRows(IQueryable<Ticket> filtered, ReportContext context, string bucket)
+    {
+        var serviceId = ServiceBuckets.ServiceId(bucket);
+        return serviceId is null ? filtered.Where(t => t.ServiceId == null) : filtered.Where(t => t.ServiceId == serviceId);
+    }
 
     public override async Task<ReportFigure> ComputeAsync(IQueryable<Ticket> filtered, ReportContext context, CancellationToken cancellationToken)
     {

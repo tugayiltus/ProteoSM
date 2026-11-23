@@ -5,7 +5,7 @@ namespace Tgysm.Application.Reports;
 
 /// <summary>
 /// Names for the ids an export's "Filtreler" sheet would otherwise show as raw guids: the id filters (category, team, assignee,
-/// department, location) and an id bucket (team, assignee, category, location or department). Keyed by the id's text; an id that no
+/// department, location) and an id bucket (team, assignee, category, location, department or service). Keyed by the id's text; an id that no
 /// longer resolves is left out and shown as it is.
 /// </summary>
 public static class ReportExportNames
@@ -30,6 +30,7 @@ public static class ReportExportNames
             db.Users.Where(u => u.Id == id).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefaultAsync(cancellationToken);
         Task<string?> Department(Guid id) => db.Departments.Where(d => d.Id == id).Select(d => d.Name).FirstOrDefaultAsync(cancellationToken);
         Task<string?> Location(Guid id) => db.Locations.Where(l => l.Id == id).Select(l => l.Name).FirstOrDefaultAsync(cancellationToken);
+        Task<string?> Service(Guid id) => db.Services.Where(s => s.Id == id).Select(s => s.Name).FirstOrDefaultAsync(cancellationToken);
 
         await AddAsync(filter.CategoryId, Category);
         await AddAsync(filter.TeamId, Team);
@@ -41,7 +42,7 @@ public static class ReportExportNames
         if (Guid.TryParse(bucket, out var bucketId))
         {
             await AddAsync(bucketId, async id =>
-                await Team(id) ?? await User(id) ?? await Category(id) ?? await Location(id) ?? await Department(id));
+                await Team(id) ?? await User(id) ?? await Category(id) ?? await Location(id) ?? await Department(id) ?? await Service(id));
         }
 
         return names;

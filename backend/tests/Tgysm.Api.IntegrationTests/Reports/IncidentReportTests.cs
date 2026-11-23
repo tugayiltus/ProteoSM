@@ -225,7 +225,25 @@ public sealed class IncidentReportTests(ApiFactory factory) : IAsyncLifetime
         var result = await fx.RunAsync(ReportName.Incidents, world.Admin.Id, March10, Now);
 
         Assert.Equal(3, Figure(result, IncidentMetrics.ByService).Value);
-        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, IncidentMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        Assert.Equal([(sap.Id.ToString(), "SAP", 2L), (OperationsMetrics.None, null, 1L)],
+            Figure(result, IncidentMetrics.ByService).Buckets!.Select(b => (b.Key, b.Label, b.Count)));
+        await fx.AssertFiguresMatchRowsAsync(ReportName.Incidents, March10, Now);
+    }
+
+    [Fact]
+    public async Task By_service_keeps_a_service_named_none_apart_from_incidents_without_a_service()
+    {
+        var world = await ReportWorld.CreateAsync(factory);
+        var fx = new ReportFixture(world);
+        var named = await world.ServiceAsync(OperationsMetrics.None);
+        await fx.IncidentAsync(T0, t => t.SetService(named.Id, T0));
+        await fx.IncidentAsync(T0, t => t.SetService(named.Id, T0));
+        await fx.IncidentAsync(T0);
+
+        var result = await fx.RunAsync(ReportName.Incidents, world.Admin.Id, March10, Now);
+
+        Assert.Equal([(named.Id.ToString(), OperationsMetrics.None, 2L), (OperationsMetrics.None, null, 1L)],
+            Figure(result, IncidentMetrics.ByService).Buckets!.Select(b => (b.Key, b.Label, b.Count)));
         await fx.AssertFiguresMatchRowsAsync(ReportName.Incidents, March10, Now);
     }
 

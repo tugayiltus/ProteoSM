@@ -17,6 +17,9 @@ public sealed class ExportHeadersCoverageTests
 {
     private static readonly IReadOnlySet<string> Keys = ExportHeaders.Keys;
 
+    /// <summary>The service figure's own text for records without a service.</summary>
+    private static readonly string ServiceNoneKey = $"metric_buckets.{MetricKeys.ByService}.{OperationsMetrics.None}";
+
     private static IEnumerable<string> MetricKeysOfAllReports() =>
         Enum.GetValues<ReportName>().SelectMany(r => ReportCatalog.Get(r)).Select(m => m.Key).Distinct();
 
@@ -32,8 +35,16 @@ public sealed class ExportHeadersCoverageTests
     {
         Assert.All(MetricKeysOfAllReports(), key => Assert.Contains($"metrics.{key}", Keys));
         Assert.All(FixedBucketKeys(), key => Assert.Contains($"buckets.{key}", Keys));
-        Assert.Equal("8+ gün", ExportHeaders.Bucket("8+"));
-        Assert.Equal("0190a1b2-0000-7000-8000-000000000000", ExportHeaders.Bucket("0190a1b2-0000-7000-8000-000000000000")); // unresolved id
+        Assert.Equal("8+ gün", ExportHeaders.Bucket(IncidentMetrics.OpenBacklog, "8+"));
+        Assert.Equal("0190a1b2-0000-7000-8000-000000000000", ExportHeaders.Bucket(MetricKeys.ByService, "0190a1b2-0000-7000-8000-000000000000")); // unresolved id
+    }
+
+    [Fact]
+    public void The_service_figure_names_its_empty_bucket_like_the_screen()
+    {
+        Assert.Contains(ServiceNoneKey, Keys);
+        Assert.Equal("Hizmet yok", ExportHeaders.Bucket(MetricKeys.ByService, OperationsMetrics.None));
+        Assert.Equal("Belirtilmemiş", ExportHeaders.Bucket(OperationsMetrics.ByLocation, OperationsMetrics.None));
     }
 
     [Fact]
@@ -108,6 +119,7 @@ public sealed class ExportHeadersCoverageTests
             .Concat([$"scope.{GetReportHandler.AllScope}", $"scope.{GetReportHandler.TeamsScope}"])
             .Concat(MetricKeysOfAllReports().Select(k => $"metrics.{k}"))
             .Concat(FixedBucketKeys().Select(k => $"buckets.{k}"))
+            .Append(ServiceNoneKey)
             .Concat(ExportHeaders.EnumTypes.SelectMany(t => Enum.GetNames(t).Select(n => $"values.{ExportHeaders.GroupOf(t)}.{System.Text.Json.JsonNamingPolicy.SnakeCaseLower.ConvertName(n)}")))
             .ToHashSet();
         Assert.Empty(Keys.Except(expected));
