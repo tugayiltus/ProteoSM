@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Tgysm.Api.Contracts;
 using Tgysm.Api.Http;
 using Tgysm.Application.Common.Paging;
 using Tgysm.Application.Features.Changes;
@@ -51,6 +52,9 @@ internal static class ChangeEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
         changes.MapGet($"{NumberRoute}/timeline", async (string number, GetChangeTimelineHandler handler, CancellationToken ct) =>
             TypedResults.Ok(await handler.HandleAsync(new GetChangeTimelineQuery(number), ct))).ProducesProblem(StatusCodes.Status404NotFound);
+        changes.MapPut($"{NumberRoute}{ServiceRoutes.ServiceSegment}", async (string number, SetServiceRequest r, SetChangeServiceHandler handler, CancellationToken ct) =>
+                TypedResults.Ok(await handler.HandleAsync(new SetChangeServiceCommand(number, r.ServiceId, r.Version), ct)))
+            .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
         changes.MapPost($"{NumberRoute}/submit", async (string number, ChangeVersionRequest r, SubmitChangeHandler handler, CancellationToken ct) =>
                 TypedResults.Ok(await handler.HandleAsync(new SubmitChangeCommand(number, r.Version), ct)))
             .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
@@ -108,7 +112,7 @@ internal static class ChangeEndpoints
         DateOnly.TryParseExact(value, DateFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var day) ? day : null;
 
     private static async Task<Ok<PagedResult<ChangeListItem>>> ListAsync(
-        string? queue, string? status, string? risk, string? search, int? page, int? pageSize,
+        string? queue, string? status, string? risk, string? search, int? page, int? pageSize, Guid? serviceId,
         ListChangesHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListChangesQuery(
@@ -117,7 +121,8 @@ internal static class ChangeEndpoints
             QueryParsing.ParseEnum<Level>(risk, RiskParameter),
             search,
             page ?? PageRequest.FirstPage,
-            pageSize ?? PageRequest.DefaultPageSize);
+            pageSize ?? PageRequest.DefaultPageSize,
+            serviceId);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 

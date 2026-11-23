@@ -25,6 +25,7 @@ export const PROBLEM: ProblemDetail = {
   resolvedAt: null,
   canWork: true,
   version: 5,
+  service: null,
 };
 
 export const PROBLEM_ROW: ProblemListItem = {

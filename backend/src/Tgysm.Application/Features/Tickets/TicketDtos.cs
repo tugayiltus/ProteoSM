@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Tgysm.Application.Features.Services;
 using Tgysm.Application.Sla;
 using Tgysm.Domain.Tickets;
 
@@ -22,6 +24,10 @@ public sealed record RelatedTicketItem(string Number, TicketKind Kind, string Su
 
 public sealed record ApprovalSummary(Guid Id, uint Version, ApprovalStatus Status, Guid? ApproverId, string? ApproverName, string? Reason, DateTimeOffset CreatedAt, DateTimeOffset? DecidedAt);
 
+/// <summary>
+/// Ticket detail for every viewer. <see cref="Service"/> is IT-only: it stays null for employees and is then left out of
+/// the JSON altogether, so the requester's payload carries no service property (Phase 12).
+/// </summary>
 public sealed record TicketDetail(
     Guid Id,
     string Number,
@@ -60,7 +66,8 @@ public sealed record TicketDetail(
     uint Version,
     IReadOnlyList<TicketSla> Sla,
     int OpenTaskCount,
-    IReadOnlyList<TicketTaskItem> Tasks);
+    IReadOnlyList<TicketTaskItem> Tasks,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ServiceRef? Service);
 
 /// <summary>A task opened from the ticket, for IT staff on the ticket detail; the requester never sees tasks (ADR-0031).</summary>
 public sealed record TicketTaskItem(string Number, string Title, Tgysm.Domain.Tasks.WorkTaskStatus Status, string TeamName, string? AssigneeName);

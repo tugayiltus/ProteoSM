@@ -5222,6 +5222,7 @@ export interface paths {
                     search?: string;
                     page?: number;
                     pageSize?: number;
+                    serviceId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -5577,6 +5578,74 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tickets/{number}/service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetServiceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TicketDetail"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -7540,6 +7609,7 @@ export interface paths {
                     search?: string;
                     page?: number;
                     pageSize?: number;
+                    serviceId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -7780,6 +7850,83 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/problems/{number}/service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetServiceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetail"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -8839,6 +8986,7 @@ export interface paths {
                     search?: string;
                     page?: number;
                     pageSize?: number;
+                    serviceId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -9126,6 +9274,74 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changes/{number}/service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetServiceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChangeDetail"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -11428,6 +11644,7 @@ export interface components {
             canWork: boolean;
             /** Format: uint32 */
             version: number;
+            service: null | components["schemas"]["ServiceRef"];
         };
         ChangeDraft: {
             title: string;
@@ -12271,6 +12488,7 @@ export interface components {
             canWork: boolean;
             /** Format: uint32 */
             version: number;
+            service: null | components["schemas"]["ServiceRef"];
         };
         ProblemDetails: {
             type?: null | string;
@@ -12528,6 +12746,12 @@ export interface components {
             /** Format: uuid */
             ownerId: null | string;
         };
+        SetServiceRequest: {
+            /** Format: uuid */
+            serviceId: null | string;
+            /** Format: uint32 */
+            version: number;
+        };
         /** @enum {unknown} */
         SlaMetric: "first_response" | "resolution";
         /** @enum {unknown} */
@@ -12722,6 +12946,7 @@ export interface components {
             /** Format: int32 */
             openTaskCount: number;
             tasks: components["schemas"]["TicketTaskItem"][];
+            service: null | components["schemas"]["ServiceRef"];
         };
         /** @enum {unknown} */
         TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked" | "service_set" | "service_cleared";

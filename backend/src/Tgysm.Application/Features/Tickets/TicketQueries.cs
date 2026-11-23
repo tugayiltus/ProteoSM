@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tgysm.Application.Abstractions;
 using Tgysm.Application.Sla;
+using Tgysm.Application.Features.Services;
 using Tgysm.Application.Features.Tasks;
 using Tgysm.Domain.Tasks;
 using Tgysm.Domain.Tickets;
@@ -41,6 +42,7 @@ internal static class TicketQueries
 
         var sla = await slaReader.LoadAsync(t.Id, cancellationToken);
         var (openTaskCount, tasks) = viewer.SeesInternal ? await TasksAsync(db, t.Id, viewer, cancellationToken) : (0, []);
+        var service = viewer.SeesInternal ? await ServiceAssignment.RefAsync(db, t.ServiceId, cancellationToken) : null;
 
         return new TicketDetail(
             t.Id, t.Number, t.Kind, t.Subject, t.Description, t.Status, t.HoldReason, t.HoldNote, t.Impact, t.Urgency, t.Priority,
@@ -48,7 +50,7 @@ internal static class TicketQueries
             t.RequestTypeId, requestType, t.RequiresApproval,
             viewer.SeesInternal ? t.RootCause : null,
             t.Resolution, t.Outcome, t.CancelReason, t.CreatedAt, t.UpdatedAt, t.CompletedAt, approval, related, viewer.CanWork(t), t.Version, sla,
-            openTaskCount, tasks);
+            openTaskCount, tasks, service);
     }
 
     /// <summary>

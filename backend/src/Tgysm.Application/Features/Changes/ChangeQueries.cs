@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tgysm.Application.Abstractions;
 using Tgysm.Application.Common;
+using Tgysm.Application.Features.Services;
 using Tgysm.Domain.Audit;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Users;
@@ -74,7 +75,7 @@ internal static class ChangeQueries
             change.ClosingNote, change.CancelReason, change.CreatedById, row.CreatedByName, change.CreatedAt, change.UpdatedAt,
             change.ClosedAt, assets, groups, await LoadApprovalAsync(db, change, viewer, cancellationToken),
             (await conflicts.FindAsync([changeId], viewer, cancellationToken))[changeId], hasEligibleApprover,
-            viewer.CanWork(change), change.Version);
+            viewer.CanWork(change), change.Version, await ServiceAssignment.RefAsync(db, change.ServiceId, cancellationToken));
     }
 
     private static async Task<ChangeApprovalInfo?> LoadApprovalAsync(

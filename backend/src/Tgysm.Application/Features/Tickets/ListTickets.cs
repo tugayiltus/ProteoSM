@@ -18,7 +18,7 @@ public enum TicketQueue
     SlaRisk,
 }
 
-public sealed record ListTicketsQuery(TicketQueue? Queue, TicketStatus? Status, TicketKind? Kind, Priority? Priority, string? Search, int Page, int PageSize);
+public sealed record ListTicketsQuery(TicketQueue? Queue, TicketStatus? Status, TicketKind? Kind, Priority? Priority, string? Search, int Page, int PageSize, Guid? ServiceId);
 
 /// <summary>Lists tickets in the viewer's scope; queues and filters only narrow it.</summary>
 public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, TicketSlaReader slaReader)
@@ -28,7 +28,7 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
     public async Task<PagedResult<TicketListItem>> HandleAsync(ListTicketsQuery query, CancellationToken cancellationToken)
     {
         var viewer = await scope.ViewerAsync(cancellationToken);
-        if (query.Queue == TicketQueue.SlaRisk && !viewer.SeesInternal)
+        if ((query.Queue == TicketQueue.SlaRisk || query.ServiceId is not null) && !viewer.SeesInternal)
         {
             throw new ForbiddenException();
         }
@@ -59,6 +59,11 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
         if (query.Priority is { } priority)
         {
             tickets = tickets.Where(t => t.Priority == priority);
+        }
+
+        if (query.ServiceId is { } serviceId)
+        {
+            tickets = tickets.Where(t => t.ServiceId == serviceId);
         }
 
         if (!string.IsNullOrWhiteSpace(query.Search))

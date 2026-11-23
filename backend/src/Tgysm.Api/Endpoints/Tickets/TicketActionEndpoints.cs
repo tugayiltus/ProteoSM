@@ -68,6 +68,9 @@ internal static partial class TicketEndpoints
             return TypedResults.File(file.Content, file.ContentType, file.FileName);
         }).ProducesProblem(StatusCodes.Status404NotFound);
 
+        tickets.MapPut($"{NumberRoute}{ServiceRoutes.ServiceSegment}", async (string number, SetServiceRequest r, SetTicketServiceHandler h, CancellationToken ct) =>
+            TypedResults.Ok(await h.HandleAsync(new SetTicketServiceCommand(number, r.ServiceId, r.Version), ct)))
+            .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
         tickets.MapPost($"{NumberRoute}/claim", async (string number, VersionRequest r, ClaimTicketHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new ClaimTicketCommand(number, r.Version), ct))).ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
         tickets.MapPost($"{NumberRoute}/transfer", async (string number, TransferTicketRequest r, TransferTicketHandler h, CancellationToken ct) =>

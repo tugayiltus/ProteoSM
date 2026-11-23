@@ -39,6 +39,7 @@ export const INCIDENT: TicketDetail = {
   sla: [],
   openTaskCount: 0,
   tasks: [],
+  service: null,
 };
 
 export const LIST_ITEM: TicketListItem = {

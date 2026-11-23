@@ -1,3 +1,4 @@
+using Tgysm.Application.Features.Services;
 using Tgysm.Domain.Assets;
 using Tgysm.Domain.Changes;
 using Tgysm.Domain.Tasks;
@@ -55,7 +56,8 @@ public sealed record ChangeDetail(
     IReadOnlyList<ChangeConflict> Conflicts,
     bool HasEligibleApprover,
     bool CanWork,
-    uint Version);
+    uint Version,
+    ServiceRef? Service);
 
 /// <summary>
 /// Working summary for people who only have a task on the change: the plan of their phase, never approvals, history,

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Tgysm.Application.Abstractions;
+using Tgysm.Application.Features.Services;
 
 namespace Tgysm.Application.Features.Problems;
 
@@ -19,6 +20,7 @@ internal static class ProblemQueries
             : null;
         return new ProblemDetail(
             p.Id, p.Number, p.Title, p.Description, p.Impact, p.Status, p.OwnerTeamId, team, p.OwnerId, owner, p.RootCause, p.Workaround,
-            p.Resolution, p.CancelReason, p.ArticleId, articleTitle, p.CreatedAt, p.KnownErrorAt, p.ResolvedAt, viewer.CanWork(p), p.Version);
+            p.Resolution, p.CancelReason, p.ArticleId, articleTitle, p.CreatedAt, p.KnownErrorAt, p.ResolvedAt, viewer.CanWork(p), p.Version,
+            await ServiceAssignment.RefAsync(db, p.ServiceId, cancellationToken));
     }
 }

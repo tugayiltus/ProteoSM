@@ -46,6 +46,7 @@ export const CHANGE: ChangeDetail = {
   hasEligibleApprover: true,
   canWork: true,
   version: 3,
+  service: null,
 };
 
 export const CHANGE_SUMMARY: ChangeSummary = {

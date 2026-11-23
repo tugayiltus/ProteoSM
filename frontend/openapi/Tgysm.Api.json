@@ -4985,6 +4985,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "serviceId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -5315,6 +5323,75 @@
         "responses": {
           "404": {
             "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{number}/service": {
+      "put": {
+        "tags": [
+          "Tickets"
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetServiceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -7455,6 +7532,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "serviceId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -7638,6 +7723,85 @@
           },
           "404": {
             "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/problems/{number}/service": {
+      "put": {
+        "tags": [
+          "Problems"
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetServiceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -8853,6 +9017,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "serviceId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -9084,6 +9256,75 @@
           },
           "404": {
             "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/changes/{number}/service": {
+      "put": {
+        "tags": [
+          "Changes"
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetServiceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -12517,7 +12758,8 @@
           "conflicts",
           "hasEligibleApprover",
           "canWork",
-          "version"
+          "version",
+          "service"
         ],
         "type": "object",
         "properties": {
@@ -12712,6 +12954,16 @@
           "version": {
             "type": "integer",
             "format": "uint32"
+          },
+          "service": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ServiceRef"
+              }
+            ]
           }
         }
       },
@@ -15843,7 +16095,8 @@
           "knownErrorAt",
           "resolvedAt",
           "canWork",
-          "version"
+          "version",
+          "service"
         ],
         "type": "object",
         "properties": {
@@ -15947,6 +16200,16 @@
           "version": {
             "type": "integer",
             "format": "uint32"
+          },
+          "service": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ServiceRef"
+              }
+            ]
           }
         }
       },
@@ -16935,6 +17198,26 @@
           }
         }
       },
+      "SetServiceRequest": {
+        "required": [
+          "serviceId",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "SlaMetric": {
         "enum": [
           "first_response",
@@ -17513,7 +17796,8 @@
           "version",
           "sla",
           "openTaskCount",
-          "tasks"
+          "tasks",
+          "service"
         ],
         "type": "object",
         "properties": {
@@ -17711,6 +17995,16 @@
             "items": {
               "$ref": "#/components/schemas/TicketTaskItem"
             }
+          },
+          "service": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ServiceRef"
+              }
+            ]
           }
         }
       },

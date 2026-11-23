@@ -1,3 +1,4 @@
+using Tgysm.Application.Features.Services;
 using Tgysm.Domain.Problems;
 using Tgysm.Domain.Tickets;
 
@@ -35,4 +36,5 @@ public sealed record ProblemDetail(
     DateTimeOffset? KnownErrorAt,
     DateTimeOffset? ResolvedAt,
     bool CanWork,
-    uint Version);
+    uint Version,
+    ServiceRef? Service);

@@ -32,7 +32,7 @@ public sealed record ChangeListItem(
     string? OwnerName,
     DateTimeOffset UpdatedAt);
 
-public sealed record ListChangesQuery(ChangeQueue? Queue, ChangeStatus? Status, Level? Risk, string? Search, int Page, int PageSize);
+public sealed record ListChangesQuery(ChangeQueue? Queue, ChangeStatus? Status, Level? Risk, string? Search, int Page, int PageSize, Guid? ServiceId);
 
 /// <summary>Lists changes in the viewer's scope; queues and filters only narrow it. Employees get not found.</summary>
 public sealed class ListChangesHandler(IAppDbContext db, ChangeScope scope, ICompanyClock companyClock, TimeProvider clock)
@@ -76,6 +76,11 @@ public sealed class ListChangesHandler(IAppDbContext db, ChangeScope scope, ICom
         if (query.Risk is { } risk)
         {
             changes = changes.Where(c => c.Risk == risk);
+        }
+
+        if (query.ServiceId is { } serviceId)
+        {
+            changes = changes.Where(c => c.ServiceId == serviceId);
         }
 
         if (!string.IsNullOrWhiteSpace(query.Search))

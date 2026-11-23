@@ -56,7 +56,7 @@ internal static class ProblemEndpoints
     }
 
     private static async Task<Ok<PagedResult<ProblemListItem>>> ListAsync(
-        string? queue, string? status, string? impact, string? search, int? page, int? pageSize, ListProblemsHandler handler, CancellationToken cancellationToken)
+        string? queue, string? status, string? impact, string? search, int? page, int? pageSize, Guid? serviceId, ListProblemsHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListProblemsQuery(
             QueryParsing.ParseEnum<ProblemQueue>(queue, QueueParameter),
@@ -64,7 +64,8 @@ internal static class ProblemEndpoints
             QueryParsing.ParseEnum<Level>(impact, ImpactParameter),
             search,
             page ?? PageRequest.FirstPage,
-            pageSize ?? PageRequest.DefaultPageSize);
+            pageSize ?? PageRequest.DefaultPageSize,
+            serviceId);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 
@@ -72,6 +73,8 @@ internal static class ProblemEndpoints
     {
         Action(problems.MapPut(NumberRoute, async (string number, UpdateProblemRequest r, UpdateProblemHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new UpdateProblemCommand(number, r.Version, r.Title, r.Description, r.Impact, r.RootCause, r.Workaround), ct))));
+        Action(problems.MapPut($"{NumberRoute}{ServiceRoutes.ServiceSegment}", async (string number, SetServiceRequest r, SetProblemServiceHandler h, CancellationToken ct) =>
+            TypedResults.Ok(await h.HandleAsync(new SetProblemServiceCommand(number, r.ServiceId, r.Version), ct))));
         Action(problems.MapPost($"{NumberRoute}/start", async (string number, VersionRequest r, StartProblemHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new StartProblemCommand(number, r.Version), ct))));
         Action(problems.MapPost($"{NumberRoute}/known-error", async (string number, VersionRequest r, MarkKnownErrorHandler h, CancellationToken ct) =>

@@ -18,7 +18,7 @@ public enum ProblemQueue
     KnownErrors,
 }
 
-public sealed record ListProblemsQuery(ProblemQueue? Queue, ProblemStatus? Status, Level? Impact, string? Search, int Page, int PageSize);
+public sealed record ListProblemsQuery(ProblemQueue? Queue, ProblemStatus? Status, Level? Impact, string? Search, int Page, int PageSize, Guid? ServiceId);
 
 /// <summary>Lists problems for IT staff and admins; queues and filters only narrow the list. Employees get not found.</summary>
 public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
@@ -47,6 +47,11 @@ public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
         if (query.Impact is { } impact)
         {
             problems = problems.Where(p => p.Impact == impact);
+        }
+
+        if (query.ServiceId is { } serviceId)
+        {
+            problems = problems.Where(p => p.ServiceId == serviceId);
         }
 
         if (!string.IsNullOrWhiteSpace(query.Search))
