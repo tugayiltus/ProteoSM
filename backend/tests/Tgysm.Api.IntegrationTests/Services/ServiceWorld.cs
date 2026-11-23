@@ -59,12 +59,6 @@ internal sealed class ServiceWorld
             db.AssetMovements.Add(change.Movement);
         });
 
-    public async Task<uint> AssetVersionAsync(Guid assetId)
-    {
-        using var response = await Admin.GetAsync($"{AssetsPath}/{assetId}");
-        return (await Admin.ReadJsonAsync<JsonElement>(response)).GetProperty("version").GetUInt32();
-    }
-
     public static Guid Id(JsonElement item) => item.GetProperty("id").GetGuid();
 
     public static uint Version(JsonElement item) => item.GetProperty("version").GetUInt32();

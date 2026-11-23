@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Tgysm.Api.IntegrationTests.Infrastructure;
-using Tgysm.Domain.Assets;
+using Tgysm.Application.Common;
 using Tgysm.Domain.Audit;
 using Tgysm.Domain.Common;
 using Tgysm.Domain.Services;
@@ -14,7 +14,8 @@ namespace Tgysm.Api.IntegrationTests.Services;
 [Collection(ApiCollection.Name)]
 public sealed class ServiceAdminEndpointTests(ApiFactory factory) : IAsyncLifetime
 {
-    private const int RaceRounds = 6;
+    private static readonly TimeSpan LockPollInterval = TimeSpan.FromMilliseconds(50);
+    private static readonly TimeSpan LockWaitTimeout = TimeSpan.FromSeconds(10);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -180,40 +181,53 @@ public sealed class ServiceAdminEndpointTests(ApiFactory factory) : IAsyncLifeti
         Assert.Contains(AuditActions.ServiceAssetUnlinked, actions);
     }
 
+    /// <summary>
+    /// Deterministic race: a retire holds the asset lifecycle lock and is not yet committed while the link call arrives.
+    /// The link must wait for the lock, then see the retired asset. Without the lock it reads the old status and links.
+    /// </summary>
     [Fact]
-    public async Task A_link_racing_a_retire_is_never_created_after_the_retirement()
+    public async Task A_link_waiting_on_an_uncommitted_retire_sees_the_retired_asset()
     {
-        for (var round = 0; round < RaceRounds; round++)
+        var world = await ServiceWorld.CreateAsync(factory);
+        var service = await world.CreateServiceAsync("ERP");
+        var (assetId, _) = await world.AssetAsync("RACE-0001");
+
+        await using var retireDb = factory.Database.CreateDbContext();
+        await using var retire = await retireDb.Database.BeginTransactionAsync(Ct);
+        await retireDb.Database.ExecuteSqlAsync($"SELECT pg_advisory_xact_lock({SerializationLocks.AssetLifecycle})", Ct);
+        var asset = await retireDb.Assets.SingleAsync(a => a.Id == assetId, Ct);
+        retireDb.AssetMovements.Add(asset.Retire(null, world.AdminUser.Id, RetireReason, DateTimeOffset.UtcNow).Movement);
+        await retireDb.SaveChangesAsync(Ct);
+
+        var linkCall = world.Admin.PostAsync($"{AdminServicesPath}/{Id(service)}/assets", new { assetId });
+        await WaitUntilBlockedOrDoneAsync(linkCall);
+        await retire.CommitAsync(Ct);
+
+        using var link = await linkCall;
+        Assert.Equal(HttpStatusCode.Conflict, link.StatusCode);
+        Assert.Equal(ErrorCodes.ServiceAssetNotLinkable, await ApiClient.ReadCodeAsync(link));
+        await using var db = factory.Database.CreateDbContext();
+        Assert.False(await db.ServiceAssets.AnyAsync(l => l.AssetId == assetId, Ct));
+    }
+
+    /// <summary>Returns once the call waits on an advisory lock, or once it finished without waiting (the red case).</summary>
+    private async Task WaitUntilBlockedOrDoneAsync(Task call)
+    {
+        var deadline = DateTimeOffset.UtcNow + LockWaitTimeout;
+        while (!call.IsCompleted && DateTimeOffset.UtcNow < deadline)
         {
-            await factory.ResetAsync();
-            var world = await ServiceWorld.CreateAsync(factory);
-            var service = await world.CreateServiceAsync("ERP");
-            var (assetId, _) = await world.AssetAsync($"RACE-{round:D4}");
-            var version = await world.AssetVersionAsync(assetId);
-
-            var responses = await Task.WhenAll(
-                world.Admin.PostAsync($"{AdminServicesPath}/{Id(service)}/assets", new { assetId }),
-                world.Admin.PostAsync($"{AssetsPath}/{assetId}/retire", new { version, reason = RetireReason }));
-            var (link, retire) = (responses[0], responses[1]);
-
-            Assert.Equal(HttpStatusCode.OK, retire.StatusCode);
-            await using var db = factory.Database.CreateDbContext();
-            var retiredAt = await db.AssetMovements.Where(m => m.AssetId == assetId && m.ToStatus == AssetStatus.Retired)
-                .Select(m => m.OccurredAt).SingleAsync(Ct);
-            var linkedAt = await db.ServiceAssets.Where(l => l.AssetId == assetId).Select(l => (DateTimeOffset?)l.CreatedAt).SingleOrDefaultAsync(Ct);
-            if (link.StatusCode == HttpStatusCode.Created)
+            await using var probe = factory.Database.CreateDbContext();
+            var waiting = await probe.Database
+                .SqlQuery<int>($"SELECT count(*)::int AS \"Value\" FROM pg_locks WHERE locktype = 'advisory' AND NOT granted")
+                .SingleAsync(Ct);
+            if (waiting > 0)
             {
-                Assert.NotNull(linkedAt);
-                Assert.True(linkedAt <= retiredAt, $"Link created after the retirement in round {round}.");
-            }
-            else
-            {
-                Assert.Equal(ErrorCodes.ServiceAssetNotLinkable, await ApiClient.ReadCodeAsync(link));
-                Assert.Null(linkedAt);
+                return;
             }
 
-            link.Dispose();
-            retire.Dispose();
+            await Task.Delay(LockPollInterval, Ct);
         }
+
+        Assert.True(call.IsCompleted, "The link call neither waited on the lock nor finished.");
     }
 }
