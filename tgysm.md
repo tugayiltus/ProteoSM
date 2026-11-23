@@ -126,7 +126,7 @@ Envanter, cihazın ne olduğunu ve nerede bulunduğunu gösterir. Asset Manageme
 - Açık üyelik, sosyal giriş, LDAP/SSO, Entra ID ve otomatik kullanıcı senkronizasyonu.
 - Kullanıcıya doğrudan ek yetki tanımlama; sınırsız özel rol tasarımı.
 - Otomatik cihaz keşfi, Intune, ağ taraması, cihaz ajanı.
-- Tam CMDB ve servis bağımlılık haritası.
+- Tam CMDB ve servis bağımlılık haritası (servisler arası bağımlılık, CI sınıfları, otomatik keşif). Hafif hizmet kataloğu (hizmet, sahip ekip, hizmet ↔ varlık bağlantısı, arıza/talep, değişiklik ve problemde tek isteğe bağlı "Hizmet" alanı, hizmet etki görünümü, hizmete göre rapor ve arama; yalnızca IT) Faz 12 ile kapsama alındı (ADR-0036).
 - Satın alma, sözleşme, yazılım lisansı ve amortisman muhasebesi.
 - Tam Problem Management (SLA, e-posta, eğilim analizi, yeniden açma), CAB, standart/acil değişiklik ve Release Management. Görevler ve normal değişiklik (onay, bakım penceresi, geri dönüş) Faz 7–9 ile kapsama alındı (ADR-0031). Kayıt ↔ değişiklik bağlantıları ("İlgili kayıtlar", "Sorun çıkaran değişiklikler") ve merkezi arama Faz 10 ile hafif ITIL kapsamına alındı (ADR-0033). Hafif Problem Management (`PRB-` kaydı, arıza ve değişiklik bağlantıları, bilinen hata makalesi, problem raporu) Faz 11 ile kapsama alındı (ADR-0034).
 - Çok aşamalı onay, genel amaçlı BPM/otomasyon motoru.
@@ -590,6 +590,7 @@ Ekip büyüklüğü, çalışma kapasitesi ve yayın ortamı bilinmediğinden ta
 | 9 — Takvim/Rapor | Bakım takvimi, pencere çakışma uyarısı, "Bu hafta" kartı, değişiklik/görev raporları ve Excel | Faz 8 | A9 ve rapor gerilemeleri yeşil; performans sınırlar içinde |
 | 10 — İlgili kayıtlar/Arama | Arıza/talep ↔ değişiklik bağlantısı (`prompted`/`caused`), "Sorun çıkaran değişiklikler" raporu, üst çubukta merkezi arama (kayıt, değişiklik, görev, envanter, makale) | Faz 9 | Bağlantı ve arama kapsam testleri yeşil; bağlantı bilgisi çalışana görünmez; arama performans sınırlarında |
 | 11 — Problem | Hafif problem yönetimi (`PRB-`), durum akışı (açık, inceleniyor, bilinen hata, çözüldü, iptal), arıza ve değişiklik bağlantıları, bilinen hata makalesi, problem raporu, merkezi aramada problemler | Faz 10 | Kapsam ve bağlantı testleri yeşil; çalışan problem görmez; arızadan problem açma E2E |
+| 12 — Hizmet kataloğu | Hafif hizmet kataloğu ve CMDB: `/admin` hizmet yönetimi, hizmet ↔ varlık bağlantısı, arıza/talep, değişiklik ve problemde "Hizmet" alanı ve liste filtresi, hizmet etki sayfası (varlıklar, açık kayıtlar, değişiklikler, açık problemler), raporda hizmet dağılımı, merkezi aramada hizmetler | Faz 11 | Kapsam ve erişim testleri yeşil; çalışan hizmet görmez; hizmet atama ve etki sayfası E2E |
 
 Bilgi bankası çalışması ekip kapasitesi uygunsa veri sözleşmeleri sabitlendikten sonra paralel yürütülebilir. Envanter, onay, SLA ve rapor veri modeli kritik bağımlılıklardır. Kapsam değişiminde etkilenen faz ve kabul ölçütleri güncellenir; özellikler sessizce sonraki sürüme taşınmaz.
 

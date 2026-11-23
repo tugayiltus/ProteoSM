@@ -39,3 +39,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0033](0033-ticket-change-links-and-central-search.md) | Ticket-Change Links and Central Search | accepted | 2026-11-19 |
 | [0034](0034-light-problem-management.md) | Light Problem Management | accepted | 2026-11-22 |
 | [0035](0035-dotnet-11-and-node-26-runtime.md) | .NET 11 and Node 26 LTS Runtime | accepted | 2026-11-23 |
+| [0036](0036-service-catalogue-light-cmdb.md) | Service Catalogue and Light CMDB | accepted | 2026-11-23 |
