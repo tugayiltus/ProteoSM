@@ -12153,6 +12153,8 @@ export interface components {
         /** Format: binary */
         IFormFile: string;
         ImpactAsset: {
+            /** Format: uuid */
+            id: string;
             tag: string;
             name: string;
             status: string;

@@ -14885,12 +14885,17 @@
       },
       "ImpactAsset": {
         "required": [
+          "id",
           "tag",
           "name",
           "status"
         ],
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "tag": {
             "type": "string"
           },

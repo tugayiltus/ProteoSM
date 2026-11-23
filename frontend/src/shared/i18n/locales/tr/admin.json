@@ -108,6 +108,38 @@
     "intakeHint": "Yalnızca bir ekip seçilebilir; seçtiğinizde önceki ekipten kaldırılır.",
     "intakeBadge": "Kayıt alan ekip"
   },
+  "services": {
+    "title": "Hizmetler",
+    "new": "Yeni hizmet",
+    "edit": "Hizmeti düzenle",
+    "searchLabel": "Hizmet ara",
+    "listCaption": "Hizmet listesi",
+    "cardMeta": "{{team}} · {{count}} varlık",
+    "fields": {
+      "name": "Hizmet",
+      "ownerTeam": "Sahip ekip",
+      "description": "Açıklama"
+    },
+    "columns": {
+      "name": "Hizmet",
+      "ownerTeam": "Sahip ekip",
+      "assets": "Varlıklar",
+      "status": "Durum",
+      "actions": "İşlemler"
+    },
+    "deactivate": "Pasife al",
+    "activate": "Aktif et",
+    "confirmDeactivate": "{{name}} pasife alınsın mı? Pasif hizmet yeni kayıtlarda seçilemez.",
+    "confirmActivate": "{{name}} aktif edilsin mi?",
+    "manageAssets": "Varlıklar",
+    "assetsTitle": "{{name}} varlıkları",
+    "assetSearch": "Etiket ara",
+    "assetToLink": "Bağlanacak varlık",
+    "linkAsset": "Varlık bağla",
+    "unlink": "Bağı kaldır",
+    "noAssets": "Bu hizmete bağlı varlık yok.",
+    "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor."
+  },
   "audit": {
     "title": "Denetim kayıtları",
     "listCaption": "Denetim kayıtları",

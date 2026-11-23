@@ -13,7 +13,8 @@ namespace Tgysm.Application.Features.Services;
 
 public sealed record Section<T>(IReadOnlyList<T> Items, int Total);
 
-public sealed record ImpactAsset(string Tag, string Name, string Status);
+/// <summary>A linked asset. <c>Id</c> lets an admin unlink it; <c>Tag</c> opens its detail page.</summary>
+public sealed record ImpactAsset(Guid Id, string Tag, string Name, string Status);
 
 /// <summary>An open record of a service. Without access the row stays at number, title and status (ADR-0033).</summary>
 public sealed record ImpactRecord(string Number, string Title, string Status, bool CanOpen);
@@ -60,10 +61,10 @@ public sealed class GetServiceImpactHandler(IAppDbContext db, ICurrentActor acto
             from l in linked
             join a in db.Assets on l.AssetId equals a.Id
             orderby a.NormalizedAssetTag, a.Id
-            select new { a.AssetTag, a.Brand, a.Model, a.Status })
+            select new { a.Id, a.AssetTag, a.Brand, a.Model, a.Status })
             .Take(ServiceImpactLimits.PerSection).ToListAsync(cancellationToken);
         return new Section<ImpactAsset>(
-            [.. rows.Select(r => new ImpactAsset(r.AssetTag, r.Brand + NameSeparator + r.Model, Wire(r.Status)))], total);
+            [.. rows.Select(r => new ImpactAsset(r.Id, r.AssetTag, r.Brand + NameSeparator + r.Model, Wire(r.Status)))], total);
     }
 
     private async Task<Section<ImpactRecord>> TicketsAsync(Guid serviceId, CancellationToken cancellationToken)

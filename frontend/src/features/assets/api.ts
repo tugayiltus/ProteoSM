@@ -21,6 +21,7 @@ export const assetKeys = {
   list: (params: AssetListParams) => ['assets', 'list', params],
   detail: (id: string) => ['assets', 'detail', id],
   history: (id: string) => ['assets', 'history', id],
+  services: (tag: string) => ['assets', 'services', tag],
   mine: ['assets', 'mine'],
   labels: (ids: readonly string[]) => ['assets', 'labels', ...ids],
   reference: ['reference'],
@@ -54,6 +55,10 @@ export function useAsset(id: string) {
 
 export function useAssetHistory(id: string) {
   return useQuery({ queryKey: assetKeys.history(id), queryFn: () => unwrap(api.GET('/api/v1/assets/{id}/history', { params: { path: { id } } })) });
+}
+
+export function useAssetServices(tag: string) {
+  return useQuery({ queryKey: assetKeys.services(tag), queryFn: () => unwrap(api.GET('/api/v1/assets/{tag}/services', { params: { path: { tag } } })) });
 }
 
 export function useMyAssets(enabled = true) {

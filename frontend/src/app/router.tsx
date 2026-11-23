@@ -125,6 +125,7 @@ const appRoutes: RouteObject[] = [
               { id: 'adminDepartments', path: ROUTES.adminDepartments, lazy: async () => ({ Component: (await import('../features/admin/departments/DepartmentsPage')).DepartmentsPage }) },
               { id: 'adminLocations', path: ROUTES.adminLocations, lazy: async () => ({ Component: (await import('../features/admin/locations/LocationsPage')).LocationsPage }) },
               { id: 'adminTeams', path: ROUTES.adminTeams, lazy: async () => ({ Component: (await import('../features/admin/teams/TeamsPage')).TeamsPage }) },
+              { id: 'adminServices', path: ROUTES.adminServices, lazy: async () => ({ Component: (await import('../features/admin/services/ServicesAdminPage')).ServicesAdminPage }) },
               { id: 'adminCategories', path: ROUTES.adminCategories, lazy: async () => ({ Component: (await import('../features/admin/catalog/CategoriesPage')).CategoriesPage }) },
               { id: 'adminRequestTypes', path: ROUTES.adminRequestTypes, lazy: async () => ({ Component: (await import('../features/admin/catalog/RequestTypesPage')).RequestTypesPage }) },
               { id: 'adminBrands', path: ROUTES.adminBrands, lazy: async () => ({ Component: (await import('../features/admin/deviceCatalog/BrandsPage')).BrandsPage }) },

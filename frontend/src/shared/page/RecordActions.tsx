@@ -1,6 +1,6 @@
 /**
  * @input The record's name and active state, the edit and toggle callbacks, and optional extra buttons.
- * @output Düzenle and Pasifleştir/Etkinleştir buttons whose names include the record, e.g. "Düzenle Muhasebe".
+ * @output Düzenle and Pasifleştir/Aktifleştir (or the given toggle labels) buttons whose names include the record, e.g. "Düzenle Muhasebe".
  * @position Last column (or card footer) of admin lists.
  */
 import { Button } from '@astryxdesign/core/Button';
@@ -17,11 +17,14 @@ export interface RecordActionsProps {
   onToggle: () => void;
   /** Buttons before Düzenle, such as "Üyeler". */
   extra?: ReactNode;
+  /** Toggle text when a page uses its own words, such as "Pasife al". */
+  deactivateLabel?: string;
+  reactivateLabel?: string;
 }
 
-export function RecordActions({ name, isActive, onEdit, onToggle, extra }: RecordActionsProps) {
+export function RecordActions({ name, isActive, onEdit, onToggle, extra, deactivateLabel, reactivateLabel }: RecordActionsProps) {
   const { t } = useTranslation();
-  const toggleLabel = isActive ? t('actions.deactivate') : t('actions.reactivate');
+  const toggleLabel = isActive ? (deactivateLabel ?? t('actions.deactivate')) : (reactivateLabel ?? t('actions.reactivate'));
   return (
     <HStack gap={2} wrap="wrap">
       {extra}

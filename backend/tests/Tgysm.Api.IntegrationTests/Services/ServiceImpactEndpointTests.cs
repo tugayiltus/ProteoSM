@@ -111,6 +111,11 @@ public sealed class ServiceImpactEndpointTests(ApiFactory factory) : IAsyncLifet
             .ToDictionary(a => a.GetProperty("tag").GetString()!, a => a.GetProperty("status").GetString()!);
         Assert.NotEqual("retired", statusByTag[liveTag]);
         Assert.Equal("retired", statusByTag[retiredTag]);
+        // The admin unlinks a listed asset by its id.
+        var idByTag = assets.GetProperty(ItemsProperty).EnumerateArray()
+            .ToDictionary(a => a.GetProperty("tag").GetString()!, a => a.GetProperty("id").GetGuid());
+        Assert.Equal(liveId, idByTag[liveTag]);
+        Assert.Equal(retiredId, idByTag[retiredTag]);
     }
 
     [Fact]

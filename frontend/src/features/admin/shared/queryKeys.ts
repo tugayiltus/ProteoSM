@@ -3,6 +3,7 @@ export const adminKeys = {
   departments: ['admin', 'departments'],
   locations: ['admin', 'locations'],
   teams: ['admin', 'teams'],
+  services: ['admin', 'services'],
   audit: ['admin', 'audit'],
   emailTemplates: ['admin', 'email-templates'],
   emailDeliveries: ['admin', 'email-deliveries'],

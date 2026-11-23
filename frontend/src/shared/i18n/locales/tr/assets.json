@@ -144,5 +144,12 @@
     "mineCardDescription": "Üzerinize kayıtlı cihazları görün.",
     "inventoryCard": "Envanter",
     "inventoryCardDescription": "Cihazları ekleyin, teslim edin, takip edin."
+  },
+  "services": {
+    "title": "Hizmetler",
+    "none": "Hizmet yok",
+    "toLink": "Bağlanacak hizmet",
+    "link": "Hizmete bağla",
+    "unlink": "Bağı kaldır"
   }
 }

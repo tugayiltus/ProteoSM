@@ -31,6 +31,7 @@ export const ROUTES = {
   adminDepartments: '/admin/departments',
   adminLocations: '/admin/locations',
   adminTeams: '/admin/teams',
+  adminServices: '/admin/services',
   adminAudit: '/admin/audit',
   adminEmailTemplates: '/admin/email-templates',
   adminEmailDeliveries: '/admin/email-deliveries',

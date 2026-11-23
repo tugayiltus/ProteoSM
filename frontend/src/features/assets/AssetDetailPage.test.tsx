@@ -1,8 +1,8 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { LAPTOP, LOCATIONS } from '../../test/assetData';
-import { IT_ME, mockApi } from '../../test/mockApi';
+import { ADMIN_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
 import { chooseOption } from '../../test/select';
 
@@ -141,5 +141,49 @@ describe('AssetOperationDialog user search', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Onayla' }));
 
     expect(await within(dialog).findByText('Bu alan zorunludur.')).toBeInTheDocument();
+  });
+});
+
+describe('AssetDetailPage services card', () => {
+  const SAP = { id: 's-1', name: 'SAP Finans', isActive: true };
+  const MAIL = { id: 's-2', name: 'E-posta', isActive: true, ownerTeamId: 't-1', ownerTeamName: 'Saha Destek', assetCount: 0, openTicketCount: 0 };
+  const servicesRoutes = {
+    'GET /api/v1/assets/DT-0001/services': { status: 200, body: [SAP] },
+    'GET /api/v1/services': { status: 200, body: { items: [MAIL], page: 1, pageSize: 100, totalCount: 1 } },
+  };
+
+  it('lists the services read-only for IT staff', async () => {
+    mockApi({ ...detailRoutes(), ...servicesRoutes });
+    renderRoute('/assets/a-1');
+
+    const card = await screen.findByRole('list', { name: 'Hizmetler' });
+    expect(within(card).getByRole('link', { name: 'SAP Finans' })).toHaveAttribute('href', '/services/s-1');
+    expect(screen.queryByRole('button', { name: /^Bağı kaldır/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Hizmete bağla' })).not.toBeInTheDocument();
+  });
+
+  it('lets an admin link the asset to a service and unlink it', async () => {
+    let linked: unknown;
+    let unlinked = false;
+    mockApi({
+      ...detailRoutes(),
+      ...servicesRoutes,
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'POST /api/v1/admin/services/s-2/assets': async (request) => {
+        linked = await request.json();
+        return { status: 201, body: { serviceId: 's-2', assetId: 'a-1' } };
+      },
+      'DELETE /api/v1/admin/services/s-1/assets/a-1': () => {
+        unlinked = true;
+        return { status: 204 };
+      },
+    });
+    const { user } = renderRoute('/assets/a-1');
+
+    await user.click(await screen.findByRole('button', { name: 'Bağı kaldır SAP Finans' }));
+    await waitFor(() => expect(unlinked).toBe(true));
+    await chooseOption(user, 'Bağlanacak hizmet', 'E-posta');
+    await user.click(screen.getByRole('button', { name: 'Hizmete bağla' }));
+    await waitFor(() => expect(linked).toEqual({ assetId: 'a-1' }));
   });
 });

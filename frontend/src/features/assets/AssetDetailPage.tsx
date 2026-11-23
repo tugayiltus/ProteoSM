@@ -1,6 +1,6 @@
 /**
  * @input The asset id from the route.
- * @output The asset facts and history, with lifecycle operations and edit.
+ * @output The asset facts, history and services, with lifecycle operations and edit.
  * @position `/assets/:id`, inside the app shell (IT staff and admins).
  */
 import { Button } from '@astryxdesign/core/Button';
@@ -29,6 +29,7 @@ import { Icons } from '../../shared/ui/icons';
 import { OPERATIONS_BY_STATUS, useAsset, useAssetHistory, type AssetItem, type AssetMovementItem, type AssetOperationKind } from './api';
 import { AssetFormDialog } from './AssetFormDialog';
 import { AssetOperationDialog } from './AssetOperationDialog';
+import { AssetServicesCard } from './AssetServicesCard';
 import { AssetStatusBadge } from './AssetStatusBadge';
 import { AssetQrCard } from './labels/AssetQrCard';
 
@@ -130,6 +131,7 @@ export function AssetDetailPage() {
         </HStack>
       )}
     </SectionCard>
+    <AssetServicesCard assetId={item.id} assetTag={item.assetTag} />
     <AssetQrCard assetId={item.id} assetTag={item.assetTag} />
     </VStack>
   );
