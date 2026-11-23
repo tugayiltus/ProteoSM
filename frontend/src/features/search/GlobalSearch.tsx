@@ -21,6 +21,8 @@ import { listPathForType, pathForHit } from './searchPaths';
 
 const SHORTCUT_KEY = '/';
 const NO_SELECTION = '';
+/** Hit types whose key is an id, not a readable number: the label is the title alone. */
+const TITLE_ONLY_TYPES: ReadonlySet<string> = new Set(['article', 'service']);
 /** Elements where a typed `/` is text, not a shortcut. */
 const TEXT_FIELD_SELECTOR = 'input, textarea, select, [contenteditable=""], [contenteditable="true"], [role="textbox"]';
 const DIALOG_SELECTOR = 'dialog[open], [role="dialog"], [role="alertdialog"]';
@@ -107,7 +109,7 @@ export function GlobalSearch() {
           const title = t(`groups.${group.type}`);
           for (const hit of group.hits) {
             const path = pathForHit(hit, role);
-            items.push({ id: `${group.type}:${hit.key}`, label: group.type === 'article' ? hit.title : `${hit.key} ${hit.title}`, path, auxiliaryData: { group: title } });
+            items.push({ id: `${group.type}:${hit.key}`, label: TITLE_ONLY_TYPES.has(group.type) ? hit.title : `${hit.key} ${hit.title}`, path, auxiliaryData: { group: title } });
           }
           if (group.hasMore) {
             items.push({ id: `all:${group.type}`, label: t('seeAll'), path: listPathForType(group.type, query, role), auxiliaryData: { group: title } });

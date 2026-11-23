@@ -128,6 +128,20 @@ describe('GlobalSearch', () => {
     expect(screen.queryByText(new RegExp(ARTICLE_ID))).not.toBeInTheDocument();
   });
 
+  it('labels a service hit with its name only and opens the service', async () => {
+    const SERVICE_ID = '0192f0a8-7c1e-7d3a-9b2e-5f6a7b8c9d0f';
+    mockApi({ [SEARCH_ROUTE]: { status: 200, body: { exact: null, groups: [{ type: 'service', hasMore: false, hits: [{ type: 'service', key: SERVICE_ID, title: 'SAP Finans', status: 'active' }] }] } } });
+    renderSearch();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const input = await openBox(user);
+    await user.type(input, 'sap');
+    await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
+    const item = await screen.findByText('SAP Finans');
+    expect(screen.queryByText(new RegExp(SERVICE_ID))).not.toBeInTheDocument();
+    await user.click(item);
+    await waitFor(() => expect(where()).toBe(`/services/${SERVICE_ID}`));
+  });
+
   it('opens the staff ticket list without a queue filter from Tümünü gör for IT staff', async () => {
     mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
     renderSearch();
