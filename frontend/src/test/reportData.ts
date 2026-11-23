@@ -71,6 +71,7 @@ export const ticketRow = (n: number) => ({
   assigneeName: n % 2 === 0 ? 'Can Demir' : null,
   createdAt: '2026-10-01T09:00:00Z',
   completedAt: null,
+  serviceName: null,
 });
 
 export const ticketDrilldown = (page: number, count: number, totalCount: number): DrilldownResult => ({
@@ -164,7 +165,7 @@ export const CHANGE_DRILLDOWN: DrilldownResult = {
   problems: null,
   changes: {
     items: [
-      { number: 'CHG-000001', title: 'Güvenlik duvarı güncellemesi', status: 'closed', outcome: 'rolled_back', risk: 'high', ownerTeamName: 'Ağ Ekibi', windowStart: '2026-09-10T20:00:00Z', actualEnd: '2026-09-10T22:00:00Z' },
+      { number: 'CHG-000001', title: 'Güvenlik duvarı güncellemesi', status: 'closed', outcome: 'rolled_back', risk: 'high', ownerTeamName: 'Ağ Ekibi', windowStart: '2026-09-10T20:00:00Z', actualEnd: '2026-09-10T22:00:00Z', serviceName: 'SAP' },
     ],
     page: 1,
     pageSize: 20,
@@ -221,6 +222,7 @@ export const PROBLEM_DRILLDOWN: DrilldownResult = {
         ownerTeamName: 'Ağ Ekibi',
         createdAt: '2026-09-01T08:00:00Z',
         resolvedAt: null,
+        serviceName: null,
       },
     ],
     page: 1,

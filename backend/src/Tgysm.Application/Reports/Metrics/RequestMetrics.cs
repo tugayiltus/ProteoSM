@@ -11,6 +11,7 @@ public static class RequestMetrics
     public const string ApprovalWait = "approval_wait";
     public const string RejectionRate = "rejection_rate";
     public const string ApprovalRejected = "approval_rejected";
+    public const string ByService = MetricKeys.ByService;
 
     internal static IReadOnlyList<IReportMetric> All { get; } =
     [
@@ -19,6 +20,7 @@ public static class RequestMetrics
         new ApprovalWaitMetric(),
         new RejectionRateMetric(),
         new SlaComplianceMetric(ReportName.Requests),
+        new ServiceMetric(ReportName.Requests),
         new ExcludedOutcomesMetric(
             ReportName.Requests,
             (MetricKeys.Cancelled, t => t.Status == TicketStatus.Cancelled && t.Outcome != TicketOutcome.ApprovalRejected),

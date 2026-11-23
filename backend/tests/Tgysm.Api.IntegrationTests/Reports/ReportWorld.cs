@@ -1,6 +1,7 @@
 using Tgysm.Api.IntegrationTests.Infrastructure;
 using Tgysm.Application.Abstractions;
 using Tgysm.Domain.Organization;
+using Tgysm.Domain.Services;
 using Tgysm.Domain.Tickets;
 using Tgysm.Domain.Users;
 using Tgysm.Infrastructure.Persistence;
@@ -45,6 +46,16 @@ public sealed class ReportWorld
     }
 
     public AppDbContext Db() => Factory.Database.CreateDbContext();
+
+    /// <summary>Stores an active service owned by the desk team.</summary>
+    public async Task<Service> ServiceAsync(string name)
+    {
+        var service = Service.Create(name, null, DeskTeam.Id, DateTimeOffset.UtcNow);
+        await using var db = Db();
+        db.Services.Add(service);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        return service;
+    }
 
     public async Task<Ticket> TicketAsync(Guid requesterId, Guid teamId, DateTimeOffset? createdAt = null, Action<Ticket>? change = null)
     {

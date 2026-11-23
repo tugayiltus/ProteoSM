@@ -210,6 +210,26 @@ public sealed class IncidentReportTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task By_service_counts_incidents_created_in_the_window_by_service_name()
+    {
+        var world = await ReportWorld.CreateAsync(factory);
+        var fx = new ReportFixture(world);
+        var sap = await world.ServiceAsync("SAP");
+        var vpn = await world.ServiceAsync("VPN");
+        await fx.IncidentAsync(T0, t => t.SetService(sap.Id, T0));
+        await fx.IncidentAsync(T0, t => t.SetService(sap.Id, T0));
+        await fx.IncidentAsync(T0);
+        await fx.IncidentAsync(T0.AddDays(30), t => t.SetService(vpn.Id, T0)); // outside the window
+        await fx.RequestAsync(T0, change: t => t.SetService(vpn.Id, T0)); // a request is not an incident
+
+        var result = await fx.RunAsync(ReportName.Incidents, world.Admin.Id, March10, Now);
+
+        Assert.Equal(3, Figure(result, IncidentMetrics.ByService).Value);
+        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, IncidentMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        await fx.AssertFiguresMatchRowsAsync(ReportName.Incidents, March10, Now);
+    }
+
+    [Fact]
     public async Task Every_figure_counts_exactly_the_rows_it_exposes()
     {
         var (fx, _) = await ResolvedFixtureAsync();

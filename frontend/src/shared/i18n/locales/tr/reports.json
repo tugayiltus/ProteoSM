@@ -92,7 +92,11 @@
     "known_errors_open": "Açık bilinen hatalar",
     "resolved": "Çözülen problemler",
     "by_impact": "Etkiye göre problemler",
-    "incidents_per_problem": "Problem başına arıza"
+    "incidents_per_problem": "Problem başına arıza",
+    "by_service": "Hizmete göre"
+  },
+  "serviceBuckets": {
+    "none": "Hizmet yok"
   },
   "buckets": {
     "1": "1 arıza",

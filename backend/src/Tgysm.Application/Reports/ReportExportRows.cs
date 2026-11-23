@@ -30,22 +30,23 @@ public static class ExportColumns
     public const string DueDate = "due_date";
     public const string Impact = "impact";
     public const string ResolvedAt = "resolved_at";
+    public const string Service = "service";
 
     public static readonly IReadOnlyList<string> Tickets =
-        [Number, Kind, Subject, Status, Priority, Team, Assignee, CreatedAt, CompletedAt];
+        [Number, Kind, Subject, Status, Priority, Team, Assignee, CreatedAt, CompletedAt, Service];
 
     public static readonly IReadOnlyList<string> Assets =
         [AssetTag, Type, Brand, Model, Status, Location, WarrantyEndsOn];
 
     public static readonly IReadOnlyList<string> Changes =
-        [Number, Title, Status, Outcome, Risk, Team, WindowStart, ActualEnd];
+        [Number, Title, Status, Outcome, Risk, Team, WindowStart, ActualEnd, Service];
 
     /// <summary><c>completed_at</c> is the task's closing time, shared with the ticket column and its header.</summary>
     public static readonly IReadOnlyList<string> Tasks =
         [Number, Title, Status, Priority, Team, Assignee, DueDate, CreatedAt, CompletedAt];
 
     public static readonly IReadOnlyList<string> Problems =
-        [Number, Title, Status, Impact, Team, CreatedAt, ResolvedAt];
+        [Number, Title, Status, Impact, Team, CreatedAt, ResolvedAt, Service];
 }
 
 /// <summary>Turns the ordered drill-down rows into export cells, so an export lists exactly the rows the drill-down pages through.</summary>
@@ -97,7 +98,7 @@ public static class ReportExportRows
         {
             await foreach (var c in rows.Changes!.AsAsyncEnumerable())
             {
-                yield return [c.Number, c.Title, c.Status, c.Outcome, c.Risk, c.OwnerTeamName, c.WindowStart, c.ActualEnd];
+                yield return [c.Number, c.Title, c.Status, c.Outcome, c.Risk, c.OwnerTeamName, c.WindowStart, c.ActualEnd, c.ServiceName];
             }
 
             yield break;
@@ -117,7 +118,7 @@ public static class ReportExportRows
         {
             await foreach (var p in rows.Problems!.AsAsyncEnumerable())
             {
-                yield return [p.Number, p.Title, p.Status, p.Impact, p.OwnerTeamName, p.CreatedAt, p.ResolvedAt];
+                yield return [p.Number, p.Title, p.Status, p.Impact, p.OwnerTeamName, p.CreatedAt, p.ResolvedAt, p.ServiceName];
             }
 
             yield break;
@@ -125,7 +126,7 @@ public static class ReportExportRows
 
         await foreach (var t in rows.Tickets!.AsAsyncEnumerable())
         {
-            yield return [t.Number, t.Kind, t.Subject, t.Status, t.Priority, t.TeamName, t.AssigneeName, t.CreatedAt, t.CompletedAt];
+            yield return [t.Number, t.Kind, t.Subject, t.Status, t.Priority, t.TeamName, t.AssigneeName, t.CreatedAt, t.CompletedAt, t.ServiceName];
         }
     }
 }

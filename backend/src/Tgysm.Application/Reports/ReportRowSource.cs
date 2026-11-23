@@ -23,20 +23,20 @@ public enum DrilldownKind
 
 public sealed record DrilldownTicketRow(
     string Number, TicketKind Kind, string Subject, TicketStatus Status, Priority Priority, string TeamName, string? AssigneeName,
-    DateTimeOffset CreatedAt, DateTimeOffset? CompletedAt);
+    DateTimeOffset CreatedAt, DateTimeOffset? CompletedAt, string? ServiceName);
 
 public sealed record DrilldownAssetRow(
     Guid Id, string AssetTag, AssetType Type, string Brand, string Model, AssetStatus Status, string LocationName, DateOnly? WarrantyEndsOn);
 
 public sealed record DrilldownChangeRow(
-    string Number, string Title, ChangeStatus Status, ChangeOutcome? Outcome, Level Risk, string OwnerTeamName, DateTimeOffset? WindowStart, DateTimeOffset? ActualEnd);
+    string Number, string Title, ChangeStatus Status, ChangeOutcome? Outcome, Level Risk, string OwnerTeamName, DateTimeOffset? WindowStart, DateTimeOffset? ActualEnd, string? ServiceName);
 
 public sealed record DrilldownTaskRow(
     string Number, string Title, WorkTaskStatus Status, Priority Priority, string TeamName, string? AssigneeName, DateOnly? DueDate,
     DateTimeOffset CreatedAt, DateTimeOffset? ClosedAt);
 
 public sealed record DrilldownProblemRow(
-    string Number, string Title, ProblemStatus Status, Level Impact, string OwnerTeamName, DateTimeOffset CreatedAt, DateTimeOffset? ResolvedAt);
+    string Number, string Title, ProblemStatus Status, Level Impact, string OwnerTeamName, DateTimeOffset CreatedAt, DateTimeOffset? ResolvedAt, string? ServiceName);
 
 /// <summary>The ordered rows behind one figure: exactly one list is set, the one matching <see cref="Kind"/>.</summary>
 public sealed record DrilldownRows(
@@ -124,7 +124,8 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
                 t.Number, t.Kind, t.Subject, t.Status, t.Priority,
                 db.Teams.Where(x => x.Id == t.TeamId).Select(x => x.Name).First(),
                 db.Users.Where(u => u.Id == t.AssigneeId).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefault(),
-                t.CreatedAt, t.CompletedAt));
+                t.CreatedAt, t.CompletedAt,
+                db.Services.Where(s => s.Id == t.ServiceId).Select(s => s.Name).FirstOrDefault()));
 
     private DrilldownRows OpenAssets(ReportViewer viewer, AssetReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now)
     {
@@ -158,7 +159,8 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
         return new DrilldownRows(DrilldownKind.Changes, null, null, rows.OrderBy(c => c.Number).ThenBy(c => c.Id)
             .Select(c => new DrilldownChangeRow(
                 c.Number, c.Title, c.Status, c.Outcome, c.Risk,
-                db.Teams.Where(t => t.Id == c.OwnerTeamId).Select(t => t.Name).First(), c.WindowStart, c.ActualEnd)),
+                db.Teams.Where(t => t.Id == c.OwnerTeamId).Select(t => t.Name).First(), c.WindowStart, c.ActualEnd,
+                db.Services.Where(s => s.Id == c.ServiceId).Select(s => s.Name).FirstOrDefault())),
             null, null);
     }
 
@@ -210,7 +212,8 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
         return new DrilldownRows(DrilldownKind.Problems, null, null, null, null, rows.OrderBy(p => p.Number).ThenBy(p => p.Id)
             .Select(p => new DrilldownProblemRow(
                 p.Number, p.Title, p.Status, p.Impact,
-                db.Teams.Where(t => t.Id == p.OwnerTeamId).Select(t => t.Name).First(), p.CreatedAt, p.ResolvedAt)));
+                db.Teams.Where(t => t.Id == p.OwnerTeamId).Select(t => t.Name).First(), p.CreatedAt, p.ResolvedAt,
+                db.Services.Where(s => s.Id == p.ServiceId).Select(s => s.Name).FirstOrDefault())));
     }
 
     private static IQueryable<ChangeRequest> ChangeRows(ChangeReportMetric metric, IQueryable<ChangeRequest> filtered, ReportContext context, string? bucket, ReportDrillPart part)

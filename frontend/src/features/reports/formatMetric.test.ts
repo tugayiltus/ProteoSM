@@ -89,4 +89,10 @@ describe('median line', () => {
     expect(bucketLabel('by_risk', { key: 'high', label: null })).toBe('Yüksek');
     expect(bucketLabel('by_status', { key: 'in_progress', label: null })).toBe('İşlemde');
   });
+
+  it('shows a service name as its own label and a missing service as "Hizmet yok"', () => {
+    expect(bucketLabel('by_service', { key: 'SAP', label: 'SAP' })).toBe('SAP');
+    expect(bucketLabel('by_service', { key: 'none', label: null })).toBe('Hizmet yok');
+    expect(bucketLabel('by_department', { key: 'none', label: null })).toBe('Belirtilmemiş');
+  });
 });

@@ -14,6 +14,7 @@ public static class IncidentMetrics
     public const string MttrCalendar = "mttr_calendar";
     public const string MttrSla = "mttr_sla";
     public const string ServiceRequestRequired = "service_request_required";
+    public const string ByService = MetricKeys.ByService;
 
     internal static IReadOnlyList<IReportMetric> All { get; } =
     [
@@ -23,6 +24,7 @@ public static class IncidentMetrics
         new MttrMetric(),
         new OpenBacklogMetric(),
         new SlaComplianceMetric(ReportName.Incidents),
+        new ServiceMetric(ReportName.Incidents),
         new ExcludedOutcomesMetric(
             ReportName.Incidents,
             (MetricKeys.Cancelled, t => t.Status == TicketStatus.Cancelled),

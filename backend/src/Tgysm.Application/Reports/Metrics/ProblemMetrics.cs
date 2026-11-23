@@ -17,6 +17,7 @@ public static class ProblemMetrics
     public const string ResolutionTime = "resolution_time";
     public const string ByImpact = "by_impact";
     public const string IncidentsPerProblem = "incidents_per_problem";
+    public const string ByService = MetricKeys.ByService;
 
     public const string OneIncident = "1";
     public const string TwoToFiveIncidents = "2_5";
@@ -39,7 +40,7 @@ public static class ProblemMetrics
     ];
 
     internal static IReadOnlyList<IReportMetric> All { get; } =
-        [new KnownErrorsOpenMetric(), new ResolvedMetric(), new ResolutionTimeMetric(), new ImpactMetric(), new IncidentsPerProblemMetric()];
+        [new KnownErrorsOpenMetric(), new ResolvedMetric(), new ResolutionTimeMetric(), new ImpactMetric(), new IncidentsPerProblemMetric(), new ServiceMetric()];
 
     private static ReportFigure CountFigure(string key, long count) => new(key, MetricShape.Count, count, null, null, null, MetricKeys.UnitProblems);
 
@@ -132,6 +133,31 @@ public static class ProblemMetrics
                 .Select(g => new { g.Key, Count = g.LongCount() })
                 .ToDictionaryAsync(g => g.Key, g => g.Count, cancellationToken);
             var buckets = ImpactOrder.Select(l => new ReportBucket(ReportFilter.EnumName(l), null, counts.GetValueOrDefault(l))).ToList();
+            return new ReportFigure(Key, Shape, buckets.Sum(b => b.Count), null, null, buckets, MetricKeys.UnitProblems);
+        }
+    }
+
+    /// <summary>Problems created in the period by service; the bucket key is the service name, or <c>none</c>.</summary>
+    private sealed class ServiceMetric : ProblemReportMetric
+    {
+        public override string Key => ByService;
+
+        public override ReportName Report => ReportName.Problems;
+
+        public override ReportDateBasis DateBasis => ReportDateBasis.Created;
+
+        public override MetricShape Shape => MetricShape.Distribution;
+
+        public override IQueryable<Problem> Rows(IQueryable<Problem> filtered, ReportContext context) => filtered;
+
+        public override IQueryable<Problem> BucketRows(IQueryable<Problem> filtered, ReportContext context, string bucket) =>
+            bucket == OperationsMetrics.None
+                ? filtered.Where(p => p.ServiceId == null)
+                : filtered.Where(p => context.Db.Services.Any(s => s.Id == p.ServiceId && s.Name == bucket));
+
+        public override async Task<ReportFigure> ComputeAsync(IQueryable<Problem> filtered, ReportContext context, CancellationToken cancellationToken)
+        {
+            var buckets = await ServiceBuckets.CountAsync(filtered.Select(p => p.ServiceId), context.Db, cancellationToken);
             return new ReportFigure(Key, Shape, buckets.Sum(b => b.Count), null, null, buckets, MetricKeys.UnitProblems);
         }
     }

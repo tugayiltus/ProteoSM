@@ -37,16 +37,17 @@ public sealed class ExcelReportWriterTests
         var content = new ReportExportContent(
             ReportName.Incidents, "volume", null, ReportDrillPart.Numerator, new ReportFilter(), "all",
             ExportColumns.Tickets,
-            Rows(["INC-2026-000001", TicketKind.Incident, "İŞLEM ıslak şifre çağrı", TicketStatus.InProgress, Priority.P1, "Çözüm Ekibi", null, created, null]));
+            Rows(["INC-2026-000001", TicketKind.Incident, "İŞLEM ıslak şifre çağrı", TicketStatus.InProgress, Priority.P1, "Çözüm Ekibi", null, created, null, "SAP"]));
 
         using var workbook = await WriteAsync(content);
 
         var sheet = workbook.Worksheet("Kayıtlar");
-        Assert.Equal(["Numara", "Tür", "Konu", "Durum", "Öncelik", "Ekip", "Atanan", "Oluşturulma", "Tamamlanma"], sheet.Row(1).Cells(1, 9).Select(c => c.GetString()));
+        Assert.Equal(["Numara", "Tür", "Konu", "Durum", "Öncelik", "Ekip", "Atanan", "Oluşturulma", "Tamamlanma", "Hizmet"], sheet.Row(1).Cells(1, 10).Select(c => c.GetString()));
         Assert.Equal("İŞLEM ıslak şifre çağrı", sheet.Cell(2, 3).GetString());
         Assert.Equal("Arıza", sheet.Cell(2, 2).GetString());
         Assert.Equal("İşlemde", sheet.Cell(2, 4).GetString());
         Assert.Equal("Çözüm Ekibi", sheet.Cell(2, 6).GetString());
+        Assert.Equal("SAP", sheet.Cell(2, 10).GetString());
         Assert.True(sheet.Cell(2, 7).IsEmpty());
         Assert.Equal(new DateTime(2026, 3, 11, 1, 30, 0), sheet.Cell(2, 8).GetDateTime());
         Assert.Equal("dd.MM.yyyy HH:mm", sheet.Cell(2, 8).Style.DateFormat.Format);
@@ -58,7 +59,7 @@ public sealed class ExcelReportWriterTests
         var content = new ReportExportContent(
             ReportName.Incidents, "volume", null, ReportDrillPart.Numerator, new ReportFilter(), "all",
             ExportColumns.Tickets,
-            Rows(["INC-2026-000001", TicketKind.Incident, "=HYPERLINK(\"http://x\")", TicketStatus.Open, Priority.P2, "Ekip", "Ali Veli", AssetReportFixture.Now, null]));
+            Rows(["INC-2026-000001", TicketKind.Incident, "=HYPERLINK(\"http://x\")", TicketStatus.Open, Priority.P2, "Ekip", "Ali Veli", AssetReportFixture.Now, null, null]));
 
         using var workbook = await WriteAsync(content);
 

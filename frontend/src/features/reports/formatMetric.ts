@@ -46,6 +46,7 @@ const BUCKET_NAMESPACES: Readonly<Record<string, string>> = {
   by_type: 'assets:types',
   by_status: 'assets:statuses',
   maintenance_lost_retired: 'assets:statuses',
+  by_service: 'reports:serviceBuckets',
 };
 
 /** The server's label (team, person, place) or the Turkish name of a key (ageing band, enum value, "none"). */

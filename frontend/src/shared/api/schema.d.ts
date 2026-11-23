@@ -12004,6 +12004,7 @@ export interface components {
             windowStart: null | string;
             /** Format: date-time */
             actualEnd: null | string;
+            serviceName: null | string;
         };
         /** @enum {unknown} */
         DrilldownKind: "tickets" | "assets" | "changes" | "tasks" | "problems";
@@ -12017,6 +12018,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             resolvedAt: null | string;
+            serviceName: null | string;
         };
         DrilldownResult: {
             kind: components["schemas"]["DrilldownKind"];
@@ -12052,6 +12054,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             completedAt: null | string;
+            serviceName: null | string;
         };
         EditChangeRequest: {
             /** Format: uint32 */

@@ -30,13 +30,14 @@ internal sealed class ChangeReportFixture(ReportWorld world)
 
     /// <summary>Stores a change created at <paramref name="createdAt"/> that ends as <paramref name="ending"/> at <paramref name="endedAt"/>.</summary>
     public async Task<ChangeRequest> ChangeAsync(
-        ChangeEnding ending, DateTimeOffset createdAt, DateTimeOffset? endedAt = null, Level risk = Level.Medium, Guid? teamId = null)
+        ChangeEnding ending, DateTimeOffset createdAt, DateTimeOffset? endedAt = null, Level risk = Level.Medium, Guid? teamId = null, Guid? serviceId = null)
     {
         var closedAt = endedAt ?? createdAt.AddDays(1);
         var draft = new ChangeDraft(
             $"Değişiklik {++_counter}", null, null, risk, Level.Low, createdAt.AddHours(2), createdAt.AddHours(4), "uygula", "dogrula", "geri al");
         var change = ChangeRequest.Create(
             $"CHG-2026-{_counter:D6}", draft, teamId ?? World.DeskTeam.Id, World.Desk.Id, World.Desk.Id, createdAt);
+        change.SetService(serviceId, createdAt);
         switch (ending)
         {
             case ChangeEnding.Cancelled:

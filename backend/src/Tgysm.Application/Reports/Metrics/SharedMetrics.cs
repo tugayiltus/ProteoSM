@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Tgysm.Application.Abstractions;
 using Tgysm.Domain.Reports;
 using Tgysm.Domain.Sla;
 using Tgysm.Domain.Tickets;
@@ -16,6 +17,7 @@ public static class MetricKeys
     public const string Sla = "sla";
     public const string Cancelled = "cancelled";
     public const string Median = "median";
+    public const string ByService = "by_service";
 
     public const string UnitTickets = "tickets";
     public const string UnitAssets = "assets";
@@ -51,6 +53,53 @@ internal static class TicketRules
 
     public static Task<DurationSums> ResolutionSumsAsync(IQueryable<Ticket> tickets, ReportContext context, CancellationToken cancellationToken) =>
         DurationStats.SumAsync(tickets, CalendarSeconds, SlaSeconds(context), cancellationToken);
+}
+
+/// <summary>
+/// Counting by service for the <c>by_service</c> figure of the four record reports. A bucket key is the service name (names are unique)
+/// or <see cref="OperationsMetrics.None"/> for records without a service; the label is the name, null for none (the UI translates it).
+/// </summary>
+internal static class ServiceBuckets
+{
+    public static async Task<List<ReportBucket>> CountAsync(IQueryable<Guid?> serviceIds, IAppDbContext db, CancellationToken cancellationToken)
+    {
+        var groups = await serviceIds.GroupBy(id => id)
+            .Select(g => new { g.Key, Count = g.LongCount() })
+            .ToListAsync(cancellationToken);
+        var ids = groups.Where(g => g.Key != null).Select(g => g.Key!.Value).ToList();
+        var names = await db.Services.Where(s => ids.Contains(s.Id)).ToDictionaryAsync(s => s.Id, s => s.Name, cancellationToken);
+        return groups
+            .Select(g => (Name: g.Key is { } id ? names[id] : null, g.Count))
+            .OrderByDescending(g => g.Count)
+            .ThenBy(g => g.Name ?? OperationsMetrics.None, StringComparer.Ordinal)
+            .Select(g => new ReportBucket(g.Name ?? OperationsMetrics.None, g.Name, g.Count))
+            .ToList();
+    }
+}
+
+/// <summary>Tickets created in the window, by the service they are set on.</summary>
+internal sealed class ServiceMetric(ReportName report) : ReportMetric
+{
+    public override string Key => MetricKeys.ByService;
+
+    public override ReportName Report => report;
+
+    public override ReportDateBasis DateBasis => ReportDateBasis.Created;
+
+    public override MetricShape Shape => MetricShape.Distribution;
+
+    public override IQueryable<Ticket> Rows(IQueryable<Ticket> filtered, ReportContext context) => filtered;
+
+    public override IQueryable<Ticket> BucketRows(IQueryable<Ticket> filtered, ReportContext context, string bucket) =>
+        bucket == OperationsMetrics.None
+            ? filtered.Where(t => t.ServiceId == null)
+            : filtered.Where(t => context.Db.Services.Any(s => s.Id == t.ServiceId && s.Name == bucket));
+
+    public override async Task<ReportFigure> ComputeAsync(IQueryable<Ticket> filtered, ReportContext context, CancellationToken cancellationToken)
+    {
+        var buckets = await ServiceBuckets.CountAsync(filtered.Select(t => t.ServiceId), context.Db, cancellationToken);
+        return new ReportFigure(Key, Shape, buckets.Sum(b => b.Count), null, null, buckets, MetricKeys.UnitTickets);
+    }
 }
 
 /// <summary>Tickets created in the window.</summary>

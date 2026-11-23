@@ -31,11 +31,12 @@ internal sealed class ProblemReportFixture(ReportWorld world)
 
     /// <summary>Stores a problem created at <paramref name="createdAt"/> that reaches <paramref name="ending"/> <paramref name="after"/> later, with linked incidents.</summary>
     public async Task<Problem> ProblemAsync(
-        ProblemEnding ending, DateTimeOffset createdAt, Level impact = Level.Medium, TimeSpan? after = null, Guid? teamId = null, int linkedIncidents = 0)
+        ProblemEnding ending, DateTimeOffset createdAt, Level impact = Level.Medium, TimeSpan? after = null, Guid? teamId = null, int linkedIncidents = 0, Guid? serviceId = null)
     {
         var endedAt = createdAt + (after ?? TimeSpan.FromHours(1));
         var problem = Problem.Create(
             $"PRB-2026-{++_counter:D6}", $"Problem {_counter}", "belirti", impact, teamId ?? World.DeskTeam.Id, null, World.Desk.Id, createdAt);
+        problem.SetService(serviceId, createdAt);
         switch (ending)
         {
             case ProblemEnding.Investigating:

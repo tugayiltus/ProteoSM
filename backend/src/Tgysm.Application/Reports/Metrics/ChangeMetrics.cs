@@ -17,6 +17,7 @@ public static class ChangeMetrics
     public const string ByRisk = "by_risk";
     public const string Cancelled = MetricKeys.Cancelled;
     public const string CausedIncidents = "caused_incidents";
+    public const string ByService = MetricKeys.ByService;
 
     private static readonly ChangeOutcome[] OutcomeOrder = [ChangeOutcome.Successful, ChangeOutcome.RolledBack, ChangeOutcome.Failed];
     private static readonly Level[] RiskOrder = [Level.Low, Level.Medium, Level.High];
@@ -31,6 +32,7 @@ public static class ChangeMetrics
         new EnumDistribution<Level>(ByRisk, ReportDateBasis.Created, c => true, c => c.Risk, RiskOrder),
         new CancelledMetric(),
         new CausedIncidentsMetric(),
+        new ServiceMetric(),
     ];
 
     /// <summary>Successful changes among those closed in the period; rolled-back and failed changes only enter the denominator.</summary>
@@ -90,6 +92,31 @@ public static class ChangeMetrics
 
         public override async Task<ReportFigure> ComputeAsync(IQueryable<ChangeRequest> filtered, ReportContext context, CancellationToken cancellationToken) =>
             new(Key, Shape, await Rows(filtered, context).LongCountAsync(cancellationToken), null, null, null, MetricKeys.UnitChanges);
+    }
+
+    /// <summary>Changes created in the period by service; the bucket key is the service name, or <c>none</c>.</summary>
+    private sealed class ServiceMetric : ChangeReportMetric
+    {
+        public override string Key => ByService;
+
+        public override ReportName Report => ReportName.Changes;
+
+        public override ReportDateBasis DateBasis => ReportDateBasis.Created;
+
+        public override MetricShape Shape => MetricShape.Distribution;
+
+        public override IQueryable<ChangeRequest> Rows(IQueryable<ChangeRequest> filtered, ReportContext context) => filtered;
+
+        public override IQueryable<ChangeRequest> BucketRows(IQueryable<ChangeRequest> filtered, ReportContext context, string bucket) =>
+            bucket == OperationsMetrics.None
+                ? filtered.Where(c => c.ServiceId == null)
+                : filtered.Where(c => context.Db.Services.Any(s => s.Id == c.ServiceId && s.Name == bucket));
+
+        public override async Task<ReportFigure> ComputeAsync(IQueryable<ChangeRequest> filtered, ReportContext context, CancellationToken cancellationToken)
+        {
+            var buckets = await ServiceBuckets.CountAsync(filtered.Select(c => c.ServiceId), context.Db, cancellationToken);
+            return new ReportFigure(Key, Shape, buckets.Sum(b => b.Count), null, null, buckets, MetricKeys.UnitChanges);
+        }
     }
 
     /// <summary>

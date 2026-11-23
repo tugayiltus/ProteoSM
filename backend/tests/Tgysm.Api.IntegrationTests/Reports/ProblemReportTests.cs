@@ -20,7 +20,7 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
 
     private static readonly DateTimeOffset T0 = ReportFixture.T0;
     private static readonly ReportFilter MarchFilter = new() { From = new DateOnly(2026, 3, 1), To = new DateOnly(2026, 3, 31) };
-    private static readonly string[] ExpectedHeaders = ["Numara", "Başlık", "Durum", "Etki", "Ekip", "Oluşturulma", "Çözülme"];
+    private static readonly string[] ExpectedHeaders = ["Numara", "Başlık", "Durum", "Etki", "Ekip", "Oluşturulma", "Çözülme", "Hizmet"];
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -185,6 +185,41 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(rows.Select(r => r.GetProperty("number").GetString()), [sheet.Cell(2, 1).GetString(), sheet.Cell(3, 1).GetString()]);
         Assert.Equal(["Bilinen hata", "Bilinen hata"], [sheet.Cell(2, 3).GetString(), sheet.Cell(3, 3).GetString()]);
         Assert.Equal(["Yüksek", "Yüksek"], [sheet.Cell(2, 4).GetString(), sheet.Cell(3, 4).GetString()]);
+    }
+
+    [Fact]
+    public async Task By_service_counts_problems_created_in_the_period_and_its_drilldown_and_export_carry_the_service()
+    {
+        var fx = new ProblemReportFixture(await ReportWorld.CreateAsync(factory));
+        var sap = await fx.World.ServiceAsync("SAP");
+        var vpn = await fx.World.ServiceAsync("VPN");
+        await fx.ProblemAsync(ProblemEnding.Open, T0, serviceId: sap.Id);
+        await fx.ProblemAsync(ProblemEnding.Investigating, T0, serviceId: sap.Id);
+        await fx.ProblemAsync(ProblemEnding.Open, T0);
+        await fx.ProblemAsync(ProblemEnding.Open, T0.AddDays(-30), serviceId: vpn.Id); // created before the period
+
+        var result = await fx.RunAsync(fx.World.Admin.Id, MarchFilter);
+
+        Assert.Equal(3, Figure(result, ProblemMetrics.ByService).Value);
+        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, ProblemMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+
+        var (admin, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.Admin, "boss@example.com");
+        var query = $"metric={ProblemMetrics.ByService}&bucket=SAP&{March}";
+        using var drill = await admin.GetAsync($"{ReportsPath}/drilldown?{query}&pageSize=100");
+        var body = await admin.ReadJsonAsync<JsonElement>(drill);
+        var rows = body.GetProperty("problems").GetProperty("items").EnumerateArray().ToList();
+        Assert.Equal(2, rows.Count);
+        Assert.All(rows, r => Assert.Equal("SAP", r.GetProperty("serviceName").GetString()));
+
+        using var export = await admin.GetAsync($"{ReportsPath}/export?{query}");
+        using var workbook = new XLWorkbook(new MemoryStream(await export.Content.ReadAsByteArrayAsync(Ct)));
+        var sheet = workbook.Worksheet(RecordsSheet);
+        Assert.Equal("Hizmet", sheet.Cell(1, ExpectedHeaders.Length).GetString());
+        Assert.Equal("SAP", sheet.Cell(2, ExpectedHeaders.Length).GetString());
+
+        using var none = await admin.GetAsync($"{ReportsPath}/drilldown?metric={ProblemMetrics.ByService}&bucket=none&{March}");
+        var noneRow = Assert.Single((await admin.ReadJsonAsync<JsonElement>(none)).GetProperty("problems").GetProperty("items").EnumerateArray());
+        Assert.Equal(JsonValueKind.Null, noneRow.GetProperty("serviceName").ValueKind);
     }
 
     [Fact]

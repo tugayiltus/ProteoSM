@@ -65,6 +65,26 @@ public sealed class RequestReportTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task By_service_counts_requests_created_in_the_window_by_service_name()
+    {
+        var world = await ReportWorld.CreateAsync(factory);
+        var fx = new ReportFixture(world);
+        var sap = await world.ServiceAsync("SAP");
+        var vpn = await world.ServiceAsync("VPN");
+        await fx.RequestAsync(T0, change: t => t.SetService(sap.Id, T0));
+        await fx.RequestAsync(T0, change: t => t.SetService(sap.Id, T0));
+        await fx.RequestAsync(T0);
+        await fx.RequestAsync(T0.AddDays(30), change: t => t.SetService(vpn.Id, T0)); // outside the window
+        await fx.IncidentAsync(T0, t => t.SetService(vpn.Id, T0)); // an incident is not a request
+
+        var result = await fx.RunAsync(ReportName.Requests, world.Admin.Id, March10, Now);
+
+        Assert.Equal(3, Figure(result, RequestMetrics.ByService).Value);
+        Assert.Equal([("SAP", 2L), ("none", 1L)], Figure(result, RequestMetrics.ByService).Buckets!.Select(b => (b.Key, b.Count)));
+        await fx.AssertFiguresMatchRowsAsync(ReportName.Requests, March10, Now);
+    }
+
+    [Fact]
     public async Task Fulfilment_time_averages_fulfilled_requests()
     {
         var fx = await FixtureAsync();

@@ -39,7 +39,8 @@
     "actual_end": "Gerçek bitiş",
     "due_date": "Bitiş tarihi",
     "impact": "Etki",
-    "resolved_at": "Çözülme"
+    "resolved_at": "Çözülme",
+    "service": "Hizmet"
   },
   "filters": {
     "from": "Başlangıç tarihi",
@@ -98,7 +99,8 @@
     "resolved": "Çözülen problemler",
     "resolution_time": "Çözüm süresi",
     "by_impact": "Etkiye göre problemler",
-    "incidents_per_problem": "Problem başına arıza"
+    "incidents_per_problem": "Problem başına arıza",
+    "by_service": "Hizmete göre"
   },
   "buckets": {
     "0-1": "0–1 gün",

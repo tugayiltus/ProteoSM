@@ -14241,7 +14241,8 @@
           "risk",
           "ownerTeamName",
           "windowStart",
-          "actualEnd"
+          "actualEnd",
+          "serviceName"
         ],
         "type": "object",
         "properties": {
@@ -14283,6 +14284,12 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "serviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -14303,7 +14310,8 @@
           "impact",
           "ownerTeamName",
           "createdAt",
-          "resolvedAt"
+          "resolvedAt",
+          "serviceName"
         ],
         "type": "object",
         "properties": {
@@ -14332,6 +14340,12 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "serviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -14466,7 +14480,8 @@
           "teamName",
           "assigneeName",
           "createdAt",
-          "completedAt"
+          "completedAt",
+          "serviceName"
         ],
         "type": "object",
         "properties": {
@@ -14504,6 +14519,12 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "serviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
