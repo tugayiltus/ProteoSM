@@ -1,6 +1,6 @@
 # Service Catalogue + Light CMDB — design
 
-Date: 2026-11-23. Owner: Tugay İLTUŞ. Status: draft, awaiting owner approval. Owner choices: the service is for IT only (an impact view, not an employee catalogue); approach A (one optional `service_id` per record, plus many-to-many service ↔ asset); the service can be set on closed records too.
+Date: 2026-11-23. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11-23. Owner choices: the service is for IT only (an impact view, not an employee catalogue); approach A (one optional `service_id` per record, plus many-to-many service ↔ asset); the service can be set on closed records too.
 
 Builder calls (owner to check): asset link blocked for `Retired`/`Lost`, existing links kept; link write under `SerializationLocks.AssetLifecycle`; `set-service` is separate from the change plan and never voids an approval; any in-scope IT staff sets it on a ticket; reports get a distribution figure only (no service filter or drill-down); search hit key is the service name.
 
