@@ -5,6 +5,7 @@ using Tgysm.Api.Endpoints.Admin;
 using Tgysm.Api.Endpoints.Assets;
 using Tgysm.Api.Endpoints.Changes;
 using Tgysm.Api.Endpoints.Problems;
+using Tgysm.Api.Endpoints.Services;
 using Tgysm.Api.Endpoints.Tasks;
 using Tgysm.Api.Endpoints.Tickets;
 using Tgysm.Api.Http;
@@ -66,6 +67,7 @@ internal static class ApiApplicationExtensions
         api.MapTicketEndpoints();
         api.MapTaskEndpoints();
         api.MapProblemEndpoints();
+        api.MapServiceEndpoints();
         api.MapChangeEndpoints();
         api.MapApprovalEndpoints();
         api.MapKnowledgeEndpoints();

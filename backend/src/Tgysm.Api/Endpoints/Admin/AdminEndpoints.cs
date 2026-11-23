@@ -12,6 +12,7 @@ internal static class AdminEndpoints
         admin.MapDepartmentEndpoints();
         admin.MapLocationEndpoints();
         admin.MapTeamEndpoints();
+        admin.MapServiceAdminEndpoints();
         admin.MapCatalogEndpoints();
         admin.MapAuditEndpoints();
         admin.MapEmailTemplateEndpoints();
