@@ -1,0 +1,40 @@
+{
+  "list": {
+    "title": "Hizmetler",
+    "search": "Hizmet ara",
+    "caption": "Hizmet listesi",
+    "empty": "Bu filtreyle hizmet yok.",
+    "all": "Tümü",
+    "open": "Aç",
+    "teamFilter": "Sahip ekip",
+    "statusFilter": "Durum",
+    "columns": {
+      "name": "Hizmet",
+      "ownerTeam": "Sahip ekip",
+      "assets": "Varlıklar",
+      "openTickets": "Açık kayıtlar",
+      "status": "Durum"
+    },
+    "counts": "{{assets}} varlık · {{tickets}} açık kayıt"
+  },
+  "detail": {
+    "back": "Listeye dön",
+    "fields": {
+      "ownerTeam": "Sahip ekip",
+      "description": "Açıklama",
+      "status": "Durum"
+    },
+    "noDescription": "Açıklama yok",
+    "sections": {
+      "assets": "Varlıklar",
+      "tickets": "Açık kayıtlar",
+      "changes": "Değişiklikler",
+      "problems": "Açık problemler"
+    },
+    "total": "Toplam {{count}}",
+    "showAll": "Tümünü göster",
+    "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor.",
+    "empty": "Kayıt yok.",
+    "notOpenable": "Açma yetkiniz yok"
+  }
+}

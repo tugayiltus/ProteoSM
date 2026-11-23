@@ -90,6 +90,8 @@ const appRoutes: RouteObject[] = [
               { id: 'assets', path: ROUTES.assets, lazy: async () => ({ Component: (await import('../features/assets/AssetsPage')).AssetsPage }) },
               { id: 'assetImport', path: ROUTES.assetImport, lazy: async () => ({ Component: (await import('../features/assets/AssetImportPage')).AssetImportPage }) },
               { id: 'assetDetail', path: `${ROUTES.assets}/:id`, lazy: async () => ({ Component: (await import('../features/assets/AssetDetailPage')).AssetDetailPage }) },
+              { id: 'services', path: ROUTES.services, lazy: async () => ({ Component: (await import('../features/services/ServicesPage')).ServicesPage }) },
+              { id: 'serviceDetail', path: `${ROUTES.services}/:id`, lazy: async () => ({ Component: (await import('../features/services/ServiceDetailPage')).ServiceDetailPage }) },
             ],
           },
           {

@@ -2,13 +2,18 @@ import { matchPath, useLocation } from 'react-router';
 
 import { ROUTE_IDS, ROUTE_META, type RouteId } from './routeMeta';
 
-/** Lists a detail page may return to with their filters (spec §4.5); anything else falls back to the default parent. */
-export const RETURNABLE_LISTS: readonly RouteId[] = ['myTickets', 'workspace', 'workspaceQueue', 'tasks', 'changes', 'changeCalendar', 'approvals', 'assets', 'myAssets', 'kbList', 'report', 'reportList'];
+/**
+ * Pages a detail page may return to with their filters (spec §4.5); anything else falls back to the default parent.
+ * The service page is a record hub: its impact rows return to it.
+ */
+export const RETURNABLE_LISTS: readonly RouteId[] = ['myTickets', 'workspace', 'workspaceQueue', 'tasks', 'changes', 'changeCalendar', 'approvals', 'assets', 'myAssets', 'kbList', 'report', 'reportList', 'serviceDetail'];
 
 export interface ReturnTarget {
   routeId: RouteId;
   href: string;
   params: Record<string, string>;
+  /** Breadcrumb text of a return page whose title comes from loaded data (a service name). */
+  label?: string;
 }
 
 /** The route id whose pattern matches a pathname; static patterns win over parameterised ones. */
@@ -40,11 +45,16 @@ export function parseReturn(state: unknown): ReturnTarget | null {
   if (match === null || !RETURNABLE_LISTS.includes(match.routeId)) {
     return null;
   }
-  return { routeId: match.routeId, href: `${url.pathname}${url.search}`, params: match.params };
+  const label = (state as { label?: unknown }).label;
+  return { routeId: match.routeId, href: `${url.pathname}${url.search}`, params: match.params, ...(typeof label === 'string' && label !== '' ? { label } : {}) };
 }
 
-/** State for a link from a list to a detail, so the detail can return to the same filtered list. */
-export const linkState = (location: { pathname: string; search: string }) => ({ from: `${location.pathname}${location.search}` });
+/**
+ * State for a link from a list to a detail, so the detail can return to the same filtered list.
+ * `label` names a return page with a data title; its breadcrumb then shows that name, not "loading".
+ */
+export const linkState = (location: { pathname: string; search: string }, label?: string): { from: string; label?: string } =>
+  label === undefined ? { from: `${location.pathname}${location.search}` } : { from: `${location.pathname}${location.search}`, label };
 
 /** Where a detail page's "back" goes: the list it came from, or `defaultTo`. */
 export function useReturnTo(defaultTo: string): string {

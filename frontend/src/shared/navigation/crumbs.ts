@@ -64,7 +64,10 @@ export function buildCrumbs(input: BuildCrumbsInput): Crumb[] {
   const parentParams = useFrom ? { ...params, ...from.params } : params;
   const crumbs = parents.map((id, index): Crumb => {
     const isReturnTarget = useFrom && index === parents.length - 1;
-    return { label: labelOf(id, { ...input, params: parentParams }), href: isReturnTarget ? from.href : hrefOf(id, parentParams) };
+    if (isReturnTarget) {
+      return { label: from.label ?? labelOf(id, { ...input, params: parentParams }), href: from.href };
+    }
+    return { label: labelOf(id, { ...input, params: parentParams }), href: hrefOf(id, parentParams) };
   });
   return [...crumbs, current];
 }

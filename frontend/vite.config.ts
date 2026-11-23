@@ -72,6 +72,7 @@ export default defineConfig({
             { name: 'feature-problems', test: /[\\/]src[\\/]features[\\/]problems[\\/]/, priority: 40 },
             { name: 'feature-tasks', test: /[\\/]src[\\/]features[\\/]tasks[\\/]/, priority: 40 },
             { name: 'feature-search', test: /[\\/]src[\\/]features[\\/]search[\\/]/, priority: 40 },
+            { name: 'feature-services', test: /[\\/]src[\\/]features[\\/]services[\\/]/, priority: 40 },
           ],
         },
       },

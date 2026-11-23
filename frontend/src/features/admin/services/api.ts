@@ -17,18 +17,20 @@ export type ServiceInput = components['schemas']['CreateServiceCommand'];
 export interface ServiceListParams {
   search: string;
   active: boolean | undefined;
+  /** Owner team; the IT services page filters by it, the admin page does not. */
+  teamId?: string;
   page: number;
   pageSize: number;
 }
 
-/** Admin pages read services through the IT read API; the admin API only writes. */
+/** The admin and IT services pages both read through the IT read API; the admin API only writes. */
 export function useAdminServices(params: ServiceListParams) {
   return useQuery({
     queryKey: [...adminKeys.services, 'list', params],
     queryFn: () =>
       unwrap(
         api.GET('/api/v1/services', {
-          params: { query: { q: params.search === '' ? undefined : params.search, active: params.active, page: params.page, pageSize: params.pageSize } },
+          params: { query: { q: params.search === '' ? undefined : params.search, active: params.active, teamId: params.teamId, page: params.page, pageSize: params.pageSize } },
         }),
       ),
     placeholderData: keepPreviousData,
