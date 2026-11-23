@@ -1,5 +1,5 @@
 /**
- * @input `queue`, `status`, `impact`, `search` and `page` in the URL query.
+ * @input `queue`, `status`, `impact`, `serviceId`, `search` and `page` in the URL query.
  * @output The problem list with filters, paging and a button that opens a new problem.
  * @position `/problems`, inside the app shell (IT staff and admins).
  */
@@ -26,9 +26,10 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { problemPath } from '../../shared/routes';
+import { problemPath, SERVICE_FILTER_PARAM } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { ServiceFilter } from '../services/ServiceFilter';
 
 import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, URL_QUEUES, useProblems, type ProblemListItem } from './api';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
@@ -37,7 +38,7 @@ import { ProblemFormDialog } from './ProblemFormDialog';
 const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
-const FILTER_KEYS = ['queue', 'status', 'impact'] as const;
+const FILTER_KEYS = ['queue', 'status', 'impact', SERVICE_FILTER_PARAM] as const;
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
 
@@ -63,7 +64,8 @@ export function ProblemListPage() {
   const status = pick(PROBLEM_STATUSES, list.filters.status);
   const impact = pick(LEVELS, list.filters.impact);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
-  const problems = useProblems({ queue, status, impact, search, page: list.page, pageSize: PAGE_SIZE });
+  const serviceId = list.filters[SERVICE_FILTER_PARAM] === '' ? undefined : list.filters[SERVICE_FILTER_PARAM];
+  const problems = useProblems({ queue, status, impact, serviceId, search, page: list.page, pageSize: PAGE_SIZE });
   const columns: DataColumn<ProblemListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
@@ -135,6 +137,7 @@ export function ProblemListPage() {
               value={option(impact)}
               onChange={(value) => list.setFilter('impact', value)}
             />
+            <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />
           </>
         }
       />

@@ -52,6 +52,8 @@ export interface ProblemListParams {
   queue: ProblemQueue | undefined;
   status: ProblemStatus | undefined;
   impact: Level | undefined;
+  /** Only problems of this service; the service page links here. */
+  serviceId?: string;
   search: string;
   page: number;
   pageSize: number;
@@ -68,6 +70,7 @@ export function useProblems(params: ProblemListParams) {
               queue: params.queue,
               status: params.status,
               impact: params.impact,
+              serviceId: params.serviceId,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,
@@ -184,6 +187,18 @@ export function useEditProblem(number: string, version: number) {
   const reload = useReloadOnConflict();
   return useMutation({
     mutationFn: (edit: ProblemEdit) => unwrap(api.PUT('/api/v1/problems/{number}', { params: { path: { number } }, body: { version, ...edit } })),
+    onSuccess: store,
+    onError: reload,
+  });
+}
+
+/** Sets or clears (`null`) the problem's service, in every problem state. */
+export function useSetProblemService(problem: Pick<ProblemDetail, 'number' | 'version'>) {
+  const store = useStoreProblem();
+  const reload = useReloadOnConflict();
+  return useMutation({
+    mutationFn: (serviceId: string | null) =>
+      unwrap(api.PUT('/api/v1/problems/{number}/service', { params: { path: { number: problem.number } }, body: { serviceId, version: problem.version } })),
     onSuccess: store,
     onError: reload,
   });

@@ -1,6 +1,6 @@
 /**
  * @input The problem number from the route.
- * @output The problem: status, impact, owner; Belirti, Kök neden, Geçici çözüm, Kalıcı çözüm; linked incidents and changes,
+ * @output The problem: status, impact, owner, service; Belirti, Kök neden, Geçici çözüm, Kalıcı çözüm; linked incidents and changes,
  *   the known error article, history with notes and the work actions.
  * @position `/problems/:number`, inside the app shell (IT staff and admins).
  */
@@ -25,8 +25,9 @@ import { SectionCard } from '../../shared/page/SectionCard';
 import { ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { Field } from '../changes/Field';
+import { ServiceField } from '../services/ServiceField';
 
-import { isClosed, useProblem, type ProblemDetail } from './api';
+import { isClosed, useProblem, useSetProblemService, type ProblemDetail } from './api';
 import { ProblemActions } from './ProblemActions';
 import { ProblemArticleBox } from './ProblemArticleBox';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
@@ -42,6 +43,7 @@ const dateTimeOrNull = (iso: string | null) => (iso === null ? null : formatDate
 function ProblemView({ problem }: { problem: ProblemDetail }) {
   const { t } = useTranslation('problems');
   const isPhone = useIsPhone();
+  const saveService = useSetProblemService(problem);
   const side = (
     <VStack gap={4}>
       <ProblemActions problem={problem} />
@@ -49,6 +51,7 @@ function ProblemView({ problem }: { problem: ProblemDetail }) {
         <MetadataList>
           <Field label={t('detail.team')} value={problem.ownerTeamName} />
           <Field label={t('detail.owner')} value={problem.ownerName} />
+          <ServiceField service={problem.service} canEdit={problem.canWork} save={saveService} />
           <Field label={t('detail.createdAt')} value={formatDateTime(problem.createdAt)} />
           <Field label={t('detail.knownErrorAt')} value={dateTimeOrNull(problem.knownErrorAt)} />
           <Field label={t('detail.resolvedAt')} value={dateTimeOrNull(problem.resolvedAt)} />

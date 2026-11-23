@@ -1,10 +1,11 @@
 /**
  * @input Nothing; the signed-in user's role limits what the server returns.
- * @output A top bar button that opens a search palette over tickets, changes, tasks, assets and articles.
+ * @output A top bar button that opens a search palette over tickets, changes, tasks, problems, assets, services and articles.
  * @position `endContent` of `AppHeader`. The `/` key opens it.
  */
 import { Button } from '@astryxdesign/core/Button';
 import { CommandPalette } from '@astryxdesign/core/CommandPalette';
+import { HStack } from '@astryxdesign/core/HStack';
 import { Icon } from '@astryxdesign/core/Icon';
 import { Text } from '@astryxdesign/core/Text';
 import type { SearchableItem, SearchSource } from '@astryxdesign/core/Typeahead';
@@ -13,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { useIsPhone } from '../../shared/list/useIsPhone';
+import { ActiveToken } from '../../shared/page/ActiveToken';
 import { Icons } from '../../shared/ui/icons';
 import { useSession } from '../auth/session';
 
@@ -23,6 +25,9 @@ const SHORTCUT_KEY = '/';
 const NO_SELECTION = '';
 /** Hit types whose key is an id, not a readable number: the label is the title alone. */
 const TITLE_ONLY_TYPES: ReadonlySet<string> = new Set(['article', 'service']);
+/** Status of a service hit whose service is inactive; the row then shows "Pasif". */
+const INACTIVE_SERVICE_STATUS = 'inactive';
+const SERVICE_TYPE = 'service';
 /** Elements where a typed `/` is text, not a shortcut. */
 const TEXT_FIELD_SELECTOR = 'input, textarea, select, [contenteditable=""], [contenteditable="true"], [role="textbox"]';
 const DIALOG_SELECTOR = 'dialog[open], [role="dialog"], [role="alertdialog"]';
@@ -30,6 +35,7 @@ const DIALOG_SELECTOR = 'dialog[open], [role="dialog"], [role="alertdialog"]';
 interface ResultItem extends SearchableItem<{ group: string }> {
   /** Route that opens when the row is chosen. */
   path: string;
+  isInactive?: boolean;
 }
 
 function isShortcutBlocked(target: EventTarget | null): boolean {
@@ -109,7 +115,13 @@ export function GlobalSearch() {
           const title = t(`groups.${group.type}`);
           for (const hit of group.hits) {
             const path = pathForHit(hit, role);
-            items.push({ id: `${group.type}:${hit.key}`, label: TITLE_ONLY_TYPES.has(group.type) ? hit.title : `${hit.key} ${hit.title}`, path, auxiliaryData: { group: title } });
+            items.push({
+              id: `${group.type}:${hit.key}`,
+              label: TITLE_ONLY_TYPES.has(group.type) ? hit.title : `${hit.key} ${hit.title}`,
+              path,
+              isInactive: group.type === SERVICE_TYPE && hit.status === INACTIVE_SERVICE_STATUS,
+              auxiliaryData: { group: title },
+            });
           }
           if (group.hasMore) {
             items.push({ id: `all:${group.type}`, label: t('seeAll'), path: listPathForType(group.type, query, role), auxiliaryData: { group: title } });
@@ -144,7 +156,16 @@ export function GlobalSearch() {
         }}
         emptySearchText={t('empty')}
         emptyBootstrapText={<Text>{t('hint')}</Text>}
-        renderItem={(item) => <Text>{item.label}</Text>}
+        renderItem={(item) =>
+          item.isInactive === true ? (
+            <HStack gap={2} vAlign="center">
+              <Text>{item.label}</Text>
+              <ActiveToken isActive={false} />
+            </HStack>
+          ) : (
+            <Text>{item.label}</Text>
+          )
+        }
       />
     </>
   );

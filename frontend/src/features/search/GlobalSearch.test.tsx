@@ -142,6 +142,22 @@ describe('GlobalSearch', () => {
     await waitFor(() => expect(where()).toBe(`/services/${SERVICE_ID}`));
   });
 
+  it('marks an inactive service hit with Pasif', async () => {
+    const hits = [
+      { type: 'service', key: 'svc-on', title: 'SAP Finans', status: 'active' },
+      { type: 'service', key: 'svc-off', title: 'Eski Muhasebe', status: 'inactive' },
+    ];
+    mockApi({ [SEARCH_ROUTE]: { status: 200, body: { exact: null, groups: [{ type: 'service', hasMore: false, hits }] } } });
+    renderSearch();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const input = await openBox(user);
+    await user.type(input, 'muhasebe');
+    await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
+    expect(await screen.findByText('Eski Muhasebe')).toBeInTheDocument();
+    expect(screen.getByText('Hizmetler')).toBeInTheDocument();
+    expect(screen.getAllByText('Pasif')).toHaveLength(1);
+  });
+
   it('opens the staff ticket list without a queue filter from Tümünü gör for IT staff', async () => {
     mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
     renderSearch();

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { mockApi } from '../../test/mockApi';
 import { PROBLEM, PROBLEM_ROW, problemRoutes } from '../../test/problemData';
 import { renderRoute } from '../../test/renderRoute';
-import { chooseOption } from '../../test/select';
+import { chooseOption, findSelect } from '../../test/select';
 
 const PAGE = { items: [PROBLEM_ROW], page: 1, pageSize: 20, totalCount: 1 };
 
@@ -55,5 +55,14 @@ describe('ProblemListPage', () => {
     renderRoute('/problems?queue=known_errors');
 
     expect(await screen.findByText('Bu filtreyle problem yok.')).toBeInTheDocument();
+  });
+
+  it('reads the service filter from the URL and sends it', async () => {
+    const api = mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: PAGE }, 'GET /api/v1/services': { status: 200, body: { items: [{ id: 'svc-1', name: 'SAP', isActive: true, ownerTeamId: 'team-1', ownerTeamName: 'Servis Masası', assetCount: 0, openTicketCount: 0 }], page: 1, pageSize: 100, totalCount: 1 } } }) as never);
+    renderRoute('/problems?serviceId=svc-1');
+
+    expect(await screen.findAllByText(PROBLEM.title)).not.toHaveLength(0);
+    expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/problems' && new URL(c.url).searchParams.get('serviceId') === 'svc-1')).toBe(true);
+    await waitFor(async () => expect(await findSelect('Hizmet')).toHaveTextContent('SAP'));
   });
 });

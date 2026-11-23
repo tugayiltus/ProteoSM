@@ -57,8 +57,14 @@ export function useAssetHistory(id: string) {
   return useQuery({ queryKey: assetKeys.history(id), queryFn: () => unwrap(api.GET('/api/v1/assets/{id}/history', { params: { path: { id } } })) });
 }
 
+/** The services that use one asset; shared by the asset page and the ticket service suggestion. */
+export const assetServicesQuery = (tag: string) => ({
+  queryKey: assetKeys.services(tag),
+  queryFn: () => unwrap(api.GET('/api/v1/assets/{tag}/services', { params: { path: { tag } } })),
+});
+
 export function useAssetServices(tag: string) {
-  return useQuery({ queryKey: assetKeys.services(tag), queryFn: () => unwrap(api.GET('/api/v1/assets/{tag}/services', { params: { path: { tag } } })) });
+  return useQuery(assetServicesQuery(tag));
 }
 
 export function useMyAssets(enabled = true) {

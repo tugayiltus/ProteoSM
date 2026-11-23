@@ -1,5 +1,5 @@
 /**
- * @input The queue that fixes the scope (mine, team …) and whether IT work columns show.
+ * @input The queue that fixes the scope (mine, team …) and whether IT work columns (and the service filter) show.
  * @output The ticket list with search, status and priority filters in the URL, and paging.
  * @position "Kayıtlarım" and the IT queue pages.
  */
@@ -21,8 +21,9 @@ import { ListToolbar } from '../../shared/list/ListToolbar';
 import { useListParams } from '../../shared/list/useListParams';
 import { linkState } from '../../shared/navigation/returnTo';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { ticketPath } from '../../shared/routes';
+import { SERVICE_FILTER_PARAM, ticketPath } from '../../shared/routes';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { ServiceFilter } from '../services/ServiceFilter';
 
 import { PRIORITIES, TICKET_STATUSES, useTickets, type TicketListItem, type TicketQueue } from './api';
 import { SlaSummary } from './SlaBadge';
@@ -32,6 +33,9 @@ const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
 const FILTER_KEYS = ['status', 'priority'] as const;
+/** The staff list also filters by service. "Kayıtlarım" does not: employees never see services. */
+const STAFF_FILTER_KEYS = [...FILTER_KEYS, SERVICE_FILTER_PARAM] as const;
+type StaffFilterKey = (typeof STAFF_FILTER_KEYS)[number];
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
 
@@ -48,11 +52,12 @@ function OpenLink({ ticket }: { ticket: TicketListItem }) {
 export function TicketList({ queue, showWorkColumns }: { queue: TicketQueue | undefined; showWorkColumns: boolean }) {
   const { t } = useTranslation('tickets');
   const { t: tc } = useTranslation();
-  const list = useListParams(FILTER_KEYS);
+  const list = useListParams<StaffFilterKey>(showWorkColumns ? STAFF_FILTER_KEYS : FILTER_KEYS);
   const status = pick(TICKET_STATUSES, list.filters.status);
   const priority = pick(PRIORITIES, list.filters.priority);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
-  const tickets = useTickets({ queue, status, kind: undefined, priority, search, page: list.page, pageSize: PAGE_SIZE });
+  const serviceId = showWorkColumns && list.filters[SERVICE_FILTER_PARAM] !== '' ? list.filters[SERVICE_FILTER_PARAM] : undefined;
+  const tickets = useTickets({ queue, status, kind: undefined, priority, serviceId, search, page: list.page, pageSize: PAGE_SIZE });
 
   const columns: DataColumn<TicketListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
@@ -121,6 +126,7 @@ export function TicketList({ queue, showWorkColumns }: { queue: TicketQueue | un
                 onChange={(value) => list.setFilter('priority', value)}
               />
             )}
+            {showWorkColumns && <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />}
           </>
         }
       />

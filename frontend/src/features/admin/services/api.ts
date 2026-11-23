@@ -52,12 +52,21 @@ export function useServiceImpact(id: string) {
   });
 }
 
-/** Active services, for the asset page picker. */
+/** Active services, for the asset page picker and the record service picker. Only an active service can be set. */
 export function useActiveServiceOptions(enabled: boolean): SelectOption[] {
   const services = useQuery({
     queryKey: [...adminKeys.services, 'options'],
     queryFn: () => unwrap(api.GET('/api/v1/services', { params: { query: { active: true, pageSize: REFERENCE_PAGE_SIZE } } })),
     enabled,
+  });
+  return useMemo(() => (services.data?.items ?? []).filter((s) => s.isActive).map((s) => ({ value: s.id, label: s.name })), [services.data]);
+}
+
+/** Every service, also inactive ones, for the list filters: old records keep an inactive service. */
+export function useServiceFilterOptions(): SelectOption[] {
+  const services = useQuery({
+    queryKey: [...adminKeys.services, 'filterOptions'],
+    queryFn: () => unwrap(api.GET('/api/v1/services', { params: { query: { pageSize: REFERENCE_PAGE_SIZE } } })),
   });
   return useMemo(() => (services.data?.items ?? []).map((s) => ({ value: s.id, label: s.name })), [services.data]);
 }

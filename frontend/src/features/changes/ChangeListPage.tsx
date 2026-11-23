@@ -1,5 +1,5 @@
 /**
- * @input `queue`, `status`, `risk`, `search` and `page` in the URL query.
+ * @input `queue`, `status`, `risk`, `serviceId`, `search` and `page` in the URL query.
  * @output The change list with filters, paging and a button that opens a new change.
  * @position `/changes`, inside the app shell (IT staff and admins).
  */
@@ -26,9 +26,10 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { changePath, ROUTES } from '../../shared/routes';
+import { changePath, ROUTES, SERVICE_FILTER_PARAM } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { ServiceFilter } from '../services/ServiceFilter';
 
 import { CHANGE_QUEUES, CHANGE_STATUSES, LEVELS, useChanges, type ChangeListItem } from './api';
 import { ChangeOutcomeBadge, ChangeStatusBadge, RiskBadge } from './ChangeBadges';
@@ -38,7 +39,7 @@ import { WindowText } from './WindowText';
 const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
-const FILTER_KEYS = ['queue', 'status', 'risk'] as const;
+const FILTER_KEYS = ['queue', 'status', 'risk', SERVICE_FILTER_PARAM] as const;
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
 
@@ -71,7 +72,8 @@ export function ChangeListPage() {
   const status = pick(CHANGE_STATUSES, list.filters.status);
   const risk = pick(LEVELS, list.filters.risk);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
-  const changes = useChanges({ queue, status, risk, search, page: list.page, pageSize: PAGE_SIZE });
+  const serviceId = list.filters[SERVICE_FILTER_PARAM] === '' ? undefined : list.filters[SERVICE_FILTER_PARAM];
+  const changes = useChanges({ queue, status, risk, serviceId, search, page: list.page, pageSize: PAGE_SIZE });
   const columns: DataColumn<ChangeListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
@@ -148,6 +150,7 @@ export function ChangeListPage() {
               value={option(risk)}
               onChange={(value) => list.setFilter('risk', value)}
             />
+            <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />
           </>
         }
       />

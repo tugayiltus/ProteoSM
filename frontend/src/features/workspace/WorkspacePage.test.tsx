@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
+import { findSelect } from '../../test/select';
 import { LIST_ITEM } from '../../test/ticketData';
 
 const COUNTS: Record<string, number> = { assigned_to_me: 2, team: 5, unassigned: 3, on_hold: 1, sla_risk: 4 };
@@ -69,5 +70,19 @@ describe('WorkspacePage', () => {
 
     await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe('/workspace/queue?queue=sla_risk'));
     expect(await screen.findByRole('heading', { name: 'SLA Riski' })).toBeInTheDocument();
+  });
+
+  it('filters the staff ticket list by the service in the URL', async () => {
+    const api = mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: IT_ME },
+      'GET /api/v1/tickets': { status: 200, body: { items: [LIST_ITEM], page: 1, pageSize: 20, totalCount: 1 } },
+      'GET /api/v1/services': { status: 200, body: { items: [{ id: 'svc-1', name: 'SAP', isActive: true, ownerTeamId: 'team-1', ownerTeamName: 'Servis Masası', assetCount: 0, openTicketCount: 0 }], page: 1, pageSize: 100, totalCount: 1 } },
+    });
+    const { user } = renderRoute('/workspace/queue?queue=all&serviceId=svc-1');
+
+    await waitFor(async () => expect(await findSelect('Hizmet')).toHaveTextContent('SAP'));
+    await waitFor(() => expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/tickets' && new URL(c.url).searchParams.get('serviceId') === 'svc-1')).toBe(true));
+    await user.click(screen.getByRole('button', { name: 'Temizle' }));
+    await waitFor(() => expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/tickets' && !new URL(c.url).searchParams.has('serviceId'))).toBe(true));
   });
 });

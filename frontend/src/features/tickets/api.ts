@@ -58,6 +58,8 @@ export interface TicketListParams {
   status: TicketStatus | undefined;
   kind: TicketKind | undefined;
   priority: Priority | undefined;
+  /** Only tickets of this service (staff list only; the service page links here). */
+  serviceId?: string;
   search: string;
   page: number;
   pageSize: number;
@@ -75,6 +77,7 @@ export function useTickets(params: TicketListParams) {
               status: params.status,
               kind: params.kind,
               priority: params.priority,
+              serviceId: params.serviceId,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,
@@ -218,6 +221,19 @@ function runAction(ticket: TicketDetail, action: TicketAction) {
 export function useTicketAction(ticket: TicketDetail) {
   const invalidate = useInvalidateTickets();
   return useMutation({ mutationFn: (action: TicketAction) => unwrap(runAction(ticket, action)), onSuccess: invalidate });
+}
+
+/**
+ * Sets or clears (`null`) the ticket's service with the version the page shows. Any answer reloads the ticket,
+ * so the next try after a 409 sends the current version.
+ */
+export function useSetTicketService(ticket: Pick<TicketDetail, 'number' | 'version'>) {
+  const invalidate = useInvalidateTickets();
+  return useMutation({
+    mutationFn: (serviceId: string | null) =>
+      unwrap(api.PUT('/api/v1/tickets/{number}/service', { params: { path: { number: ticket.number } }, body: { serviceId, version: ticket.version } })),
+    onSettled: invalidate,
+  });
 }
 
 export function useCreateRelatedRequest(number: string) {

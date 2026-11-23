@@ -1,6 +1,6 @@
 /**
  * @input The ticket number from the route.
- * @output The ticket: status, description, links, articles, comments, history, actions, SLA and details.
+ * @output The ticket: status, description, links, articles, comments, history, actions, SLA and details (IT staff also see the service).
  * @position `/tickets/:number`, inside the app shell.
  */
 import { Banner } from '@astryxdesign/core/Banner';
@@ -11,6 +11,7 @@ import { Icon } from '@astryxdesign/core/Icon';
 import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useParams } from 'react-router';
 
@@ -26,8 +27,9 @@ import { SectionCard } from '../../shared/page/SectionCard';
 import { ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { isItStaffOrAdmin, useSession } from '../auth/session';
+import { ServiceField } from '../services/ServiceField';
 
-import { useComments, useTicket, useTimeline, type TicketDetail } from './api';
+import { useComments, useSetTicketService, useTicket, useTicketAssets, useTimeline, type TicketDetail } from './api';
 import { CommentBox, CommentList } from './Comments';
 import { SlaSummary } from './SlaBadge';
 import { TicketActions } from './TicketActions';
@@ -79,6 +81,14 @@ function ApprovalBox({ ticket }: { ticket: TicketDetail }) {
   );
 }
 
+/** IT staff only: the linked assets feed the service suggestion. Employees never get the service in the DTO. */
+function TicketServiceField({ ticket }: { ticket: TicketDetail }) {
+  const save = useSetTicketService(ticket);
+  const assets = useTicketAssets(ticket.number);
+  const tags = useMemo(() => (assets.data ?? []).map((asset) => asset.assetTag), [assets.data]);
+  return <ServiceField service={ticket.service ?? null} canEdit save={save} suggestionTags={tags} />;
+}
+
 /** Navigation state from the new-ticket page when the files could not be uploaded. */
 export interface TicketDetailState {
   /** Set when the ticket was just created, so the form's leave guard lets this navigation through. */
@@ -127,6 +137,7 @@ function TicketDetail({ number }: { number: string }) {
           <Field label={t('detail.assignee')} value={item.assigneeName} />
           <Field label={t('detail.category')} value={item.categoryName} />
           <Field label={t('detail.location')} value={item.locationName} />
+          {isItStaffOrAdmin(me.role) && <TicketServiceField ticket={item} />}
           {item.kind === 'request' && <Field label={t('detail.requestType')} value={item.requestTypeName} />}
           <Field label={t('detail.createdAt')} value={formatDateTime(item.createdAt)} />
         </MetadataList>

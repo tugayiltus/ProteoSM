@@ -233,4 +233,14 @@ describe('ReportsPage', () => {
 
     expect(await screen.findByText(/Rapor filtresi geçersiz/)).toBeInTheDocument();
   });
+
+  it('shows the by-service figure with the Hizmet yok bucket', async () => {
+    const withService = { ...PROBLEM_REPORT, figures: [...PROBLEM_REPORT.figures, { ...PROBLEM_REPORT.figures[0], metric: 'by_service', shape: 'distribution', value: 3, buckets: [{ key: 'svc-1', label: 'SAP', count: 2 }, { key: 'none', label: null, count: 1 }] }] };
+    mockApi({ ...routes(), 'GET /api/v1/reports/problems': { status: 200, body: withService } } as never);
+    renderRoute('/reports/problems');
+
+    const figure = await screen.findByRole('article', { name: 'Hizmete göre' });
+    expect(within(figure).getByText('SAP')).toBeInTheDocument();
+    expect(within(figure).getByText('Hizmet yok')).toBeInTheDocument();
+  });
 });

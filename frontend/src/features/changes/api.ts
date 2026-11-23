@@ -45,6 +45,8 @@ export interface ChangeListParams {
   queue: ChangeQueue | undefined;
   status: ChangeStatus | undefined;
   risk: Level | undefined;
+  /** Only changes of this service; the service page links here. */
+  serviceId?: string;
   search: string;
   page: number;
   pageSize: number;
@@ -61,6 +63,7 @@ export function useChanges(params: ChangeListParams) {
               queue: params.queue,
               status: params.status,
               risk: params.risk,
+              serviceId: params.serviceId,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,
@@ -135,6 +138,22 @@ export function useEditChange(number: string, version: number) {
   return useMutation({
     mutationFn: (input: EditChangeInput) =>
       unwrap(api.PUT('/api/v1/changes/{number}', { params: { path: { number } }, body: { version, ...input } })),
+    onSuccess: async (updated) => {
+      queryClient.setQueryData(changeKeys.detail(updated.number), fullView(updated));
+      await invalidate();
+    },
+    onError: reload,
+  });
+}
+
+/** Sets or clears (`null`) the change's service. It never touches the plan or the approval. */
+export function useSetChangeService(change: Pick<ChangeDetail, 'number' | 'version'>) {
+  const queryClient = useQueryClient();
+  const invalidate = useInvalidateChanges();
+  const reload = useReloadOnError();
+  return useMutation({
+    mutationFn: (serviceId: string | null) =>
+      unwrap(api.PUT('/api/v1/changes/{number}/service', { params: { path: { number: change.number } }, body: { serviceId, version: change.version } })),
     onSuccess: async (updated) => {
       queryClient.setQueryData(changeKeys.detail(updated.number), fullView(updated));
       await invalidate();

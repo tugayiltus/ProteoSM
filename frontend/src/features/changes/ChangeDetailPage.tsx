@@ -1,6 +1,6 @@
 /**
  * @input The change number from the route.
- * @output The change: summary, plan, assets, tasks by phase, approval, history and actions; or the read-only working summary.
+ * @output The change: summary, service, plan, assets, tasks by phase, approval, history and actions; or the read-only working summary.
  * @position `/changes/:number`, inside the app shell (IT staff and admins).
  */
 import { Button } from '@astryxdesign/core/Button';
@@ -26,8 +26,9 @@ import { SectionCard } from '../../shared/page/SectionCard';
 import { assetPath, ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { NotFoundPage } from '../../shared/ui/NotFoundPage';
+import { ServiceField } from '../services/ServiceField';
 
-import { useChange, type ChangeDetail } from './api';
+import { useChange, useSetChangeService, type ChangeDetail } from './api';
 import { ChangeActions } from './ChangeActions';
 import { ChangeApprovalBox } from './ChangeApprovalBox';
 import { ChangeOutcomeBadge, ChangeStatusBadge, RiskBadge } from './ChangeBadges';
@@ -73,6 +74,7 @@ function AssetsList({ change }: { change: ChangeDetail }) {
 function FullView({ change }: { change: ChangeDetail }) {
   const { t } = useTranslation('changes');
   const isPhone = useIsPhone();
+  const saveService = useSetChangeService(change);
   const side = (
     <VStack gap={4}>
       <ChangeActions change={change} />
@@ -80,6 +82,7 @@ function FullView({ change }: { change: ChangeDetail }) {
         <MetadataList>
           <Field label={t('detail.team')} value={change.ownerTeamName} />
           <Field label={t('detail.owner')} value={change.ownerName} />
+          <ServiceField service={change.service} canEdit={change.canWork} save={saveService} />
           <Field label={t('detail.createdBy')} value={change.createdByName} />
           <Field label={t('detail.createdAt')} value={formatDateTime(change.createdAt)} />
           <Field label={t('detail.actualStart')} value={dateTimeOrNull(change.actualStart)} />

@@ -36,5 +36,17 @@
     "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor.",
     "empty": "Kayıt yok.",
     "notOpenable": "Açma yetkiniz yok"
+  },
+  "field": {
+    "label": "Hizmet",
+    "none": "Hizmet yok",
+    "choose": "Hizmet seç",
+    "change": "Hizmeti değiştir",
+    "clear": "Hizmeti kaldır",
+    "suggested": "Önerilen: {{name}}"
+  },
+  "filter": {
+    "label": "Hizmet",
+    "all": "Tümü"
   }
 }

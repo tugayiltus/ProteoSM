@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { CHANGE, CHANGE_ROW, changeRoutes } from '../../test/changeData';
 import { mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
-import { chooseOption } from '../../test/select';
+import { chooseOption, findSelect } from '../../test/select';
 
 const PAGE = { items: [CHANGE_ROW], page: 1, pageSize: 20, totalCount: 1 };
 
@@ -46,5 +46,16 @@ describe('ChangeListPage', () => {
     renderRoute('/changes?queue=pending_approval');
 
     expect(await screen.findByText('Bu filtreyle değişiklik yok.')).toBeInTheDocument();
+  });
+
+  it('reads the service filter from the URL, sends it and offers the Hizmet filter', async () => {
+    const api = mockApi(changeRoutes(CHANGE, { 'GET /api/v1/changes': { status: 200, body: PAGE }, 'GET /api/v1/services': { status: 200, body: { items: [{ id: 'svc-1', name: 'SAP', isActive: true, ownerTeamId: 'team-1', ownerTeamName: 'Servis Masası', assetCount: 0, openTicketCount: 0 }], page: 1, pageSize: 100, totalCount: 1 } } }) as never);
+    const { user, router } = renderRoute('/changes?serviceId=svc-1');
+
+    expect(await screen.findAllByText(CHANGE.title)).not.toHaveLength(0);
+    expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/changes' && new URL(c.url).searchParams.get('serviceId') === 'svc-1')).toBe(true);
+    await waitFor(async () => expect(await findSelect('Hizmet')).toHaveTextContent('SAP'));
+    await user.click(screen.getByRole('button', { name: 'Temizle' }));
+    await waitFor(() => expect(router.state.location.search).not.toContain('serviceId'));
   });
 });
