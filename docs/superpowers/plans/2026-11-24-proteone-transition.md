@@ -79,10 +79,10 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
 10. Wrong behavior
     - Done: stale version on unchanged values is a conflict; import and asset duplicates report the serial; `approval_requested` event on related and voided requests; record numbers use the company year; article link race is 409; article errors and stale article choice; a failed approvals list no longer hides the other one.
     - Closed after a check: cancelled requests are logged as debug; admin cache leaves on 401; a superseded search releases its spinner.
-    - Open: empty audit row of an unchanged update; malformed uploads (500) and 413 (400); owner decision: a transfer to a team leaves an in-progress ticket without assignee.
-    - Phase 8, 11: dialogs keep the old version after a 409 (changes, tasks); dead task links for owner-team colleagues.
-    - Phase 10: a short query shows "Sonuç bulunamadı".
-    - Phase 12: deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20; asset list has no service filter; link form on retired and lost assets; inactive service not marked in the filter; chosen service outside the first page shows blank.
+    - Done: a truncated upload form is 400 and a too large body 413; the next task action after a 409 sends the current version; no new service link on retired and lost assets; inactive services are marked in the list filter.
+    - Closed: a JSON body never reaches the comment route; the open task dialog keeps its version on purpose (the user must see the conflict); a chosen service outside the first page needs more than 100 services.
+    - Parked: empty audit row of an unchanged update; dead task links for owner-team colleagues (404, follows `TaskScope`); short search shows the empty text; deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20 and the asset list has no service filter (a service can be unlinked from the asset page).
+    - Owner decision (step 19): a transfer to a team leaves an in-progress ticket without assignee.
 11. Scale and performance: audit indexes and paging; silent location cap (2000); unbounded `/approvals/mine`; global problem link lock; `tools/perf-measure.sh` with the problems and service reports.
 12. Accessibility and small code notes: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers listed in the ledgers.
 13. ADR-0036 and the `by_service` drill-down: the approved design has none, the code has one. Owner decision.

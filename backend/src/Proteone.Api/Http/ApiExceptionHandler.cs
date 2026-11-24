@@ -18,6 +18,9 @@ internal sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) :
             case ValidationException validation:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status400BadRequest, ErrorCodes.ValidationFailed, ValidationErrorMapper.ToFieldCodes(validation.Errors));
                 break;
+            case BadHttpRequestException { StatusCode: StatusCodes.Status413PayloadTooLarge }:
+                await ApiProblem.WriteAsync(context, StatusCodes.Status413PayloadTooLarge, ErrorCodes.ValidationFailed);
+                break;
             case BadHttpRequestException:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status400BadRequest, ErrorCodes.ValidationFailed);
                 break;

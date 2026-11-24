@@ -1,8 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, unwrap } from '../../shared/api/client';
-import { ApiError } from '../../shared/api/errors';
 import type { components } from '../../shared/api/schema';
+import { useReloadOnConflict } from '../../shared/api/useReloadOnConflict';
 import { ROUTES } from '../../shared/routes';
 import { changeKeys } from '../changes/api';
 import { ticketKeys } from '../tickets/api';
@@ -29,7 +29,6 @@ export const LEVELS: readonly Level[] = ['low', 'medium', 'high'];
 /** A resolved or cancelled problem is read-only: no edits, state changes or new links. */
 export const CLOSED_STATUSES: readonly ProblemStatus[] = ['resolved', 'cancelled'];
 const QUEUE_PARAM = 'queue';
-const HTTP_CONFLICT = 409;
 
 export const isClosed = (status: ProblemStatus) => CLOSED_STATUSES.includes(status);
 
@@ -144,19 +143,6 @@ function useStoreProblem() {
   };
 }
 
-/**
- * A 409 means the page shows an old state: a stale version, or a state another person already changed.
- * Reload the problem, so the next try sends the current version instead of the same 409 again.
- */
-function useReloadOnConflict() {
-  const queryClient = useQueryClient();
-  return (error: Error) => {
-    if (error instanceof ApiError && error.status === HTTP_CONFLICT) {
-      void queryClient.invalidateQueries({ queryKey: problemKeys.all });
-    }
-  };
-}
-
 export interface NewProblemInput {
   title: string;
   description: string;
@@ -169,7 +155,7 @@ export interface NewProblemInput {
 /** A 409 from a create with an incident can mean the incident got a problem meanwhile, so the ticket card reloads. */
 export function useCreateProblem() {
   const invalidate = useInvalidateProblems();
-  const reload = useReloadOnConflict();
+  const reload = useReloadOnConflict(problemKeys.all);
   return useMutation({ mutationFn: (body: NewProblemInput) => unwrap(api.POST('/api/v1/problems', { body })), onSuccess: invalidate, onError: reload });
 }
 
@@ -184,7 +170,7 @@ export interface ProblemEdit {
 /** `version` is the one the dialog opened with, so a background refetch does not skip the conflict check. */
 export function useEditProblem(number: string, version: number) {
   const store = useStoreProblem();
-  const reload = useReloadOnConflict();
+  const reload = useReloadOnConflict(problemKeys.all);
   return useMutation({
     mutationFn: (edit: ProblemEdit) => unwrap(api.PUT('/api/v1/problems/{number}', { params: { path: { number } }, body: { version, ...edit } })),
     onSuccess: store,
@@ -195,7 +181,7 @@ export function useEditProblem(number: string, version: number) {
 /** Sets or clears (`null`) the problem's service, in every problem state. */
 export function useSetProblemService(problem: Pick<ProblemDetail, 'number' | 'version'>) {
   const store = useStoreProblem();
-  const reload = useReloadOnConflict();
+  const reload = useReloadOnConflict(problemKeys.all);
   return useMutation({
     mutationFn: (serviceId: string | null) =>
       unwrap(api.PUT('/api/v1/problems/{number}/service', { params: { path: { number: problem.number } }, body: { serviceId, version: problem.version } })),
@@ -238,7 +224,7 @@ function runAction(problem: Pick<ProblemDetail, 'number' | 'version'>, action: P
 
 export function useProblemAction(problem: Pick<ProblemDetail, 'number' | 'version'>) {
   const store = useStoreProblem();
-  const reload = useReloadOnConflict();
+  const reload = useReloadOnConflict(problemKeys.all);
   return useMutation({ mutationFn: (action: ProblemAction) => unwrap(runAction(problem, action)), onSuccess: store, onError: reload });
 }
 
@@ -261,7 +247,7 @@ export function useLinkProblemTicket(number: string) {
 /** Links one incident to the problem whose number the user types, from the incident's side. */
 export function useLinkIncidentToProblem(ticketNumber: string) {
   const invalidate = useInvalidateProblems();
-  const reload = useReloadOnConflict();
+  const reload = useReloadOnConflict(problemKeys.all);
   return useMutation({
     mutationFn: (problemNumber: string) =>
       unwrap(api.POST('/api/v1/problems/{number}/tickets', { params: { path: { number: problemNumber } }, body: { ticketNumber } })),

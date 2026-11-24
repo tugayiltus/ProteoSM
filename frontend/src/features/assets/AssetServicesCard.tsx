@@ -27,7 +27,7 @@ import { useAssetServices } from './api';
 
 const NO_SELECTION = '';
 
-export function AssetServicesCard({ assetId, assetTag }: { assetId: string; assetTag: string }) {
+export function AssetServicesCard({ assetId, assetTag, canLink }: { assetId: string; assetTag: string; canLink: boolean }) {
   const { t } = useTranslation('assets');
   const { t: tc } = useTranslation();
   const canEdit = ADMIN_ONLY.includes(useSession().role);
@@ -84,7 +84,7 @@ export function AssetServicesCard({ assetId, assetTag }: { assetId: string; asse
             ))}
           </List>
         )}
-        {canEdit && (
+        {canEdit && canLink && (
           <form onSubmit={linkSelected}>
             <HStack gap={2} vAlign="end" wrap="wrap">
               <Selector label={t('services.toLink')} value={selected} options={options} placeholder={tc('none')} onChange={setSelected} />

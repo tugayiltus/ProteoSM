@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { adminKeys } from '../../shared/api/adminKeys';
 import { api, unwrap } from '../../shared/api/client';
@@ -64,11 +65,12 @@ export function useActiveServiceOptions(enabled: boolean): SelectOption[] {
 
 /** Every service, also inactive ones, for the list filters: old records keep an inactive service. */
 export function useServiceFilterOptions(): SelectOption[] {
+  const { t } = useTranslation('services');
   const services = useQuery({
     queryKey: [...adminKeys.services, 'filterOptions'],
     queryFn: () => unwrap(api.GET('/api/v1/services', { params: { query: { pageSize: REFERENCE_PAGE_SIZE } } })),
   });
-  return useMemo(() => (services.data?.items ?? []).map((s) => ({ value: s.id, label: s.name })), [services.data]);
+  return useMemo(() => (services.data?.items ?? []).map((s) => ({ value: s.id, label: s.isActive ? s.name : t('filter.inactive', { name: s.name }) })), [services.data, t]);
 }
 
 /** Active teams; only these can own a service. */

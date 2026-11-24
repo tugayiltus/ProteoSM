@@ -162,6 +162,14 @@ describe('AssetDetailPage services card', () => {
     expect(screen.queryByRole('button', { name: 'Hizmete bağla' })).not.toBeInTheDocument();
   });
 
+  it.each(['retired', 'lost'])('offers no new link for a %s asset, but keeps unlinking', async (status) => {
+    mockApi({ ...detailRoutes({ ...LAPTOP, status } as typeof LAPTOP), ...servicesRoutes, 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME } });
+    renderRoute('/assets/a-1');
+
+    expect(await screen.findByRole('button', { name: 'Bağı kaldır SAP Finans' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Hizmete bağla' })).not.toBeInTheDocument();
+  });
+
   it('lets an admin link the asset to a service and unlink it', async () => {
     let linked: unknown;
     let unlinked = false;

@@ -131,7 +131,7 @@ export function AssetDetailPage() {
         </HStack>
       )}
     </SectionCard>
-    <AssetServicesCard assetId={item.id} assetTag={item.assetTag} />
+    <AssetServicesCard assetId={item.id} assetTag={item.assetTag} canLink={item.status !== 'retired' && item.status !== 'lost'} />
     <AssetQrCard assetId={item.id} assetTag={item.assetTag} />
     </VStack>
   );

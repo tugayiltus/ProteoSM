@@ -145,6 +145,29 @@ describe('TaskDetailPage', () => {
     expect(await screen.findByText(/başka biri tarafından değiştirildi/)).toBeInTheDocument();
   });
 
+  it('sends the current version on the next try after a conflict', async () => {
+    const versions: number[] = [];
+    let current = TASK;
+    mockApi(
+      taskRoutes(TASK, {
+        [`GET ${BASE}`]: () => ({ status: 200, body: current }),
+        [`POST ${BASE}/start`]: async (request: Request) => {
+          const { version } = (await request.json()) as { version: number };
+          versions.push(version);
+          current = { ...TASK, version: TASK.version + 1 };
+          return version === current.version ? { status: 200, body: current } : { status: 409, body: { code: 'concurrency.conflict' } };
+        },
+      }) as never,
+    );
+    const { user } = renderRoute(`/tasks/${TASK.number}`);
+    await user.click(await screen.findByRole('button', { name: 'Başla' }));
+    await screen.findByText(/başka biri tarafından değiştirildi/);
+    await waitFor(async () => {
+      await user.click(screen.getByRole('button', { name: 'Başla' }));
+      expect(versions.at(-1)).toBe(TASK.version + 1);
+    });
+  });
+
   it('offers only Yeniden aç on a completed task and no actions without work access', async () => {
     mockApi(taskRoutes({ ...TASK, status: 'completed', resultNote: 'Bitti', assigneeId: 'u-2' }) as never);
     renderRoute(`/tasks/${TASK.number}`);

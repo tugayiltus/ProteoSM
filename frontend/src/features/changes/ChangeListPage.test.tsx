@@ -49,12 +49,12 @@ describe('ChangeListPage', () => {
   });
 
   it('reads the service filter from the URL, sends it and offers the Hizmet filter', async () => {
-    const api = mockApi(changeRoutes(CHANGE, { 'GET /api/v1/changes': { status: 200, body: PAGE }, 'GET /api/v1/services': { status: 200, body: { items: [{ id: 'svc-1', name: 'SAP', isActive: true, ownerTeamId: 'team-1', ownerTeamName: 'Servis Masası', assetCount: 0, openTicketCount: 0 }], page: 1, pageSize: 100, totalCount: 1 } } }) as never);
+    const api = mockApi(changeRoutes(CHANGE, { 'GET /api/v1/changes': { status: 200, body: PAGE }, 'GET /api/v1/services': { status: 200, body: { items: [{ id: 'svc-1', name: 'SAP', isActive: false, ownerTeamId: 'team-1', ownerTeamName: 'Servis Masası', assetCount: 0, openTicketCount: 0 }], page: 1, pageSize: 100, totalCount: 1 } } }) as never);
     const { user, router } = renderRoute('/changes?serviceId=svc-1');
 
     expect(await screen.findAllByText(CHANGE.title)).not.toHaveLength(0);
     expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/changes' && new URL(c.url).searchParams.get('serviceId') === 'svc-1')).toBe(true);
-    await waitFor(async () => expect(await findSelect('Hizmet')).toHaveTextContent('SAP'));
+    await waitFor(async () => expect(await findSelect('Hizmet')).toHaveTextContent('SAP (Pasif)'));
     await user.click(screen.getByRole('button', { name: 'Temizle' }));
     await waitFor(() => expect(router.state.location.search).not.toContain('serviceId'));
   });

@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 
 import { api, unwrap } from '../../shared/api/client';
 import type { components } from '../../shared/api/schema';
+import { useReloadOnConflict } from '../../shared/api/useReloadOnConflict';
 import { ROUTES } from '../../shared/routes';
 import { ticketKeys, type HoldReason, type Priority, type TransferReason } from '../tickets/api';
 
@@ -166,7 +167,9 @@ function runAction(task: TaskDetail, action: TaskAction) {
 export function useTaskAction(task: TaskDetail) {
   const queryClient = useQueryClient();
   const invalidate = useInvalidateWork();
+  const reload = useReloadOnConflict(taskKeys.all);
   return useMutation({
+    onError: reload,
     mutationFn: (action: TaskAction) => unwrap(runAction(task, action)),
     // The answer carries the new version: store it at once, so the next action does not send the old one and get 409.
     onSuccess: async (updated) => {

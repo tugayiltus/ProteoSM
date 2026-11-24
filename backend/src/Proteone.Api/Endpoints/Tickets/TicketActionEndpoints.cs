@@ -31,12 +31,25 @@ internal static partial class TicketEndpoints
 {
     private static async Task<Created<CommentItem>> AddCommentAsync(string number, HttpRequest request, AddCommentHandler handler, CancellationToken cancellationToken)
     {
-        var form = await request.ReadFormAsync(cancellationToken);
+        var form = await ReadFormAsync(request, cancellationToken);
         var visibility = QueryParsing.ParseEnum<Visibility>(form[VisibilityField].FirstOrDefault(), VisibilityField);
         var files = form.Files.GetFiles(AddCommentHandler.FilesField)
             .Select(f => new UploadedFile(f.FileName, f.Length, f.OpenReadStream)).ToList();
         var item = await handler.HandleAsync(new AddCommentCommand(number, form[BodyField].FirstOrDefault(), visibility, files), cancellationToken);
         return TypedResults.Created($"{ApiRoutes.V1}{ApiRoutes.Tickets}/{number}/comments/{item.Id}", item);
+    }
+
+    /// <summary>A body that is not a readable form is the client's error, not a server failure.</summary>
+    private static async Task<IFormCollection> ReadFormAsync(HttpRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await request.ReadFormAsync(cancellationToken);
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException and not BadHttpRequestException)
+        {
+            throw new BadHttpRequestException("The body is not a valid form.", exception);
+        }
     }
 
     private const string NumberRoute = "/{number}";

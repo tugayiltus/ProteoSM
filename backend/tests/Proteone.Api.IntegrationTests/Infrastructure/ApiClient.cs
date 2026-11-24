@@ -127,6 +127,19 @@ public sealed class ApiClient
         return await Http.SendAsync(request, Ct);
     }
 
+    /// <summary>Posts a body as it is, also a malformed one.</summary>
+    public async Task<HttpResponseMessage> SendContentAsync(string url, HttpContent content)
+    {
+        if (_csrfToken is null)
+        {
+            await RefreshCsrfAsync();
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
+        request.Headers.Add(CsrfHeader, _csrfToken);
+        return await Http.SendAsync(request, Ct);
+    }
+
     /// <summary>Logs in and refreshes the antiforgery token, which is bound to the signed-in user.</summary>
     public async Task LoginAsync(string email, string password = TestUsers.DefaultPassword)
     {
