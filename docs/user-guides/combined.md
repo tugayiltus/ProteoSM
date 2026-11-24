@@ -782,6 +782,46 @@ Problem **Bilinen hata** veya **Çözüldü** durumundayken **Bilinen hata makal
 - Problemleri ana menüdeki **Ara** ile de bulabilirsiniz; tam `PRB-` numarası problemi doğrudan açar.
 - Problem sayıları ve çözüm süreleri **Raporlar** sayfasındaki **Problemler** sekmesindedir (bkz. [Raporlar](#raporlar)).
 
+# Sürümler
+
+Bu sayfa IT personeli ve yöneticiler içindir. Sürüm, birlikte yayına çıkan değişiklikleri tek kayıtta toplar. Sürümün onayı yoktur; her değişiklik kendi onayı, penceresi ve görevleriyle yürür.
+
+## Sürüm listesi
+
+Menüde **Sürümler** sayfasını açın. Liste durumu, sahip ekibi, hedef aralığı ve değişiklik sayısını gösterir.
+
+![Sürüm listesi](images/releases-list-desktop.png)
+
+## Sürüm açma
+
+1. **Yeni sürüm** düğmesine basın.
+2. **Başlık**, **Açıklama** ve **Sahip ekip** alanlarını doldurun. Sahip, hedef aralık ve not isteğe bağlıdır.
+3. **Oluştur** düğmesine basın.
+
+Sahip ekip, üyesi olduğunuz bir ekip olmalıdır; yöneticiler her aktif ekibi seçebilir.
+
+## Değişiklik ekleme ve çıkarma
+
+1. Sürüm sayfasında **Değişiklik ekle** düğmesine basın, numarayı yazın.
+2. Yanlış eklenen değişikliği **Çıkar** ile sürümden çıkarın.
+
+![Sürüm sayfası](images/release-detail-desktop.png)
+
+- Bir değişiklik tek sürümde olabilir. Kapalı veya iptal edilmiş değişiklik eklenmez.
+- Değişikliği ekleyen kişi hem sürümde hem değişiklikte çalışabilmelidir.
+- Sürüme eklemek değişikliğin planını, onayını ve durumunu değiştirmez. Değişiklik sayfasında **Sürüm** alanı görünür.
+- Görme yetkiniz olmayan değişikliğin yalnızca numarası, başlığı, durumu ve ekibi çıkar.
+
+## Yürütme
+
+| Düğme | Ne yapar |
+|---|---|
+| **Başlat** | Sürümü **Sürüyor** durumuna alır. |
+| **Tamamla** | En az bir değişiklik varsa ve hepsi kapalı veya iptalse sürümü kapatır. |
+| **Sürümü iptal et** | Neden ister; değişiklikler sürümden çıkar, kendi durumlarını korur. |
+
+Bu düğmeleri yöneticiler ve sahip ekibin üyeleri görür. **Geçmiş** bölümü her adımı gösterir.
+
 # Hizmetler
 
 Bu sayfa IT personeli ve yöneticiler içindir. Çalışanlar hizmetleri görmez; kayıtlarında da **Hizmet** alanı çıkmaz.
@@ -859,6 +899,64 @@ Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cih
 
 - Yaygın bir kesintide önce hizmet sayfasına bakın; aynı nedenli arızaları ve o gün uygulanan değişikliği birlikte görürsünüz.
 - Cihaz bağlarını güncel tutun; hizmet önerisi bu bağlardan gelir.
+
+# Yazılım ve lisanslar
+
+Çalışanlar yalnızca kendi yazılımlarını görür. Yazılım, lisans ve atamaları IT personeli ve yöneticiler yönetir.
+
+## Yazılımlarım
+
+Menüden **Yazılımlarım** sayfasını açın. Size veya üzerinizdeki cihaza atanmış yazılımların adı ve üreticisi listelenir. Eksik bir yazılım için [talep oluşturun](#arıza-bildirme-ve-talep-oluşturma).
+
+## Yazılım tanımlama
+
+1. **Lisanslar** sayfasında **Yazılımlar** düğmesine basın.
+2. **Yeni yazılım** düğmesine basın, **Üretici** ve **Yazılım** alanlarını doldurun.
+3. **Oluştur** düğmesine basın.
+
+Aynı üretici ve adla ikinci yazılım açılmaz. Kullanılmayan yazılımı **Düzenle** ile pasife alın; pasif yazılıma yeni lisans eklenmez, eski lisanslar kalır.
+
+## Lisans listesi
+
+**Lisanslar** sayfası her lisansın türünü, kullanımını, sahip ekibini ve bitiş tarihini gösterir. **Yazılım**, **Sahip ekip**, **Tür** ve **Durum** ile listeyi daraltın.
+
+![Lisans listesi](images/licences-list-desktop.png)
+
+## Lisans ekleme
+
+1. **Yeni lisans** düğmesine basın.
+2. Yazılımı **Yazılım ara** ile bulup seçin. **Tür** alanında lisansın kullanıcı başına mı cihaz başına mı olduğunu seçin; bu ikisi sonradan değişmez.
+3. **Lisans** adını, **Adet** ve **Sahip ekip** alanlarını doldurun. Süreli lisansta **Bitiş tarihi** girin.
+4. **Oluştur** düğmesine basın.
+
+## Atama
+
+1. Lisansı açın, **Ata** düğmesine basın.
+2. Kullanıcıyı veya cihazı arayıp seçin, **Ata** düğmesine basın.
+
+![Lisans sayfası](images/licence-detail-desktop.png)
+
+- Boş hak kalmadıysa veya süre bittiyse yeni atama yapılamaz. Var olan atamalar kalır.
+- Pasif kullanıcıya, kullanım dışı veya kayıp cihaza atama yapılamaz. Sonradan bu duruma düşen atamanın yanında **Kullanılamıyor** yazar; **Atamayı kaldır** ile hakkı boşaltın.
+- **Adet**, kullanılan hak sayısından az olamaz.
+- Cihazın lisansları cihaz sayfasındaki **Lisanslar** kartında da görünür.
+
+## Bitiş e-postası
+
+Bitişe 30 gün kala sahip ekibin aktif üyelerine bir e-posta gider. Süre daha azsa e-posta hemen gider. Bitiş tarihi değişirse yeni tarih için yeniden gider.
+
+## Lisans anahtarı (yönetici)
+
+Yönetici lisans sayfasında **Anahtar ekle** ile anahtarı kaydeder, **Anahtarı göster** ile görür. Her görüntüleme denetim kaydına yazılır. Anahtar listelerde, aramada, raporlarda ve Excel dosyalarında yer almaz.
+
+## Rapor
+
+**Raporlar** sayfasının **Lisanslar** sekmesi tüm, dolu, süresi biten ve 30, 60, 90 gün içinde bitecek lisansları sayar. Rakama basınca lisanslar ve kullanımları listelenir; liste Excel'e aktarılabilir.
+
+## İpuçları
+
+- Ayrılan kişinin atamalarını kaldırın; boşalan hak hemen yeniden kullanılabilir.
+- Bitiş tarihini boş bırakırsanız lisans **Süresiz** görünür ve e-posta gitmez.
 
 # Envanter
 
@@ -1354,6 +1452,23 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 - Tablo boşsa (**Henüz çalışan iş kaydı yok.**) arka plan hizmeti hiç çalışmamıştır.
 
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
+
+## İzleme kaynakları
+
+İzleme aracı (örneğin sunucu izleme) imzalı istekle kendiliğinden arıza açabilir.
+
+![İzleme kaynakları](images/admin-monitoring-desktop.png)
+
+1. **İzleme kaynakları** sayfasında **Yeni kaynak** düğmesine basın.
+2. **Ad**, **Ekip** ve **Talep sahibi** alanlarını doldurun; **Etki** ve **Aciliyet** seçin. **Hizmet** ve **Kategori** isteğe bağlıdır. Talep sahibi aktif IT personeli veya yönetici olmalıdır.
+3. **Oluştur** düğmesine basın ve gösterilen anahtarı kopyalayın. Anahtar bir daha gösterilmez.
+4. Adresi ve anahtarı izleme aracına girin. İmza örneğini sistem yöneticinize sorun.
+
+- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur.
+- Aynı uyarı açık bir arıza varken yeniden gelirse arızaya iç not düşer. Uyarı düzelince de yalnızca iç not düşer; arızayı IT kapatır.
+- Bir kaynak saatte en fazla 30 yeni arıza açar.
+- **Reddedilen istek** sayısı artıyorsa anahtarı, aracın saatini ve kaynağın aktif olduğunu kontrol edin.
+- Bu yolla açılan arızada IT için **İzleme** alanı görünür.
 
 ## İpuçları
 
