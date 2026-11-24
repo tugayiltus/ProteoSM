@@ -9,5 +9,5 @@ readonly API_URL="http://localhost:5311"
 tools/db-up.sh
 tools/migrate.sh || echo "[dev-api] migrate failed; starting with the current schema" >&2
 
-exec tools/dev-dotnet-host.sh api backend/src/Tgysm.Api Tgysm.Api \
+exec tools/dev-dotnet-host.sh api backend/src/Proteone.Api Proteone.Api \
   ASPNETCORE_ENVIRONMENT=Development "ASPNETCORE_URLS=$API_URL"

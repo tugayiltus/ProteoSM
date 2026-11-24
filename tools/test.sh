@@ -7,10 +7,10 @@ cd "$(dirname "$0")/.."
 readonly MIN_LINE_COVERAGE=80
 readonly RESULTS_DIR="backend/TestResults"
 readonly SUMMARY_FILE="$RESULTS_DIR/report/Summary.txt"
-readonly COVERED_ASSEMBLIES="+Tgysm.Domain;+Tgysm.Application"
+readonly COVERED_ASSEMBLIES="+Proteone.Domain;+Proteone.Application"
 
 rm -rf "$RESULTS_DIR"
-dotnet test --solution backend/Tgysm.slnx --results-directory "$PWD/$RESULTS_DIR" --coverlet --coverlet-output-format cobertura
+dotnet test --solution backend/Proteone.slnx --results-directory "$PWD/$RESULTS_DIR" --coverlet --coverlet-output-format cobertura
 (cd backend && dotnet tool run reportgenerator \
   "-reports:TestResults/coverage.cobertura.*.xml" \
   "-targetdir:TestResults/report" \

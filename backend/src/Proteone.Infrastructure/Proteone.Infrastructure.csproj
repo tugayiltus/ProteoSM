@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Proteone.Application\Proteone.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- PasswordHasher<T> (Microsoft.Extensions.Identity.Core), Data Protection (account-link tokens, ADR-0017)
+         and configuration abstractions. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <!-- Pin: Design (build-only) pulls Relational 10.0.12, Npgsql alone resolves an older one at runtime. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- SMTP transport (ADR-0015); MimeKit arrives as its transitive dependency. -->
+    <PackageReference Include="MailKit" />
+    <!-- Managed LDAP client for Active Directory sign-in; no native library in the Linux image (ADR-0030). -->
+    <PackageReference Include="Novell.Directory.Ldap.NETStandard" />
+    <!-- Excel report export (spec §7.3). -->
+    <PackageReference Include="ClosedXML" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The only server-side Turkish text (spec §7.3): Excel column headers and enum values. WithCulture=false: ".tr." in the name would otherwise build a satellite assembly. -->
+    <EmbeddedResource Include="Reports\ExportHeaders.tr.json" WithCulture="false" LogicalName="Proteone.Infrastructure.Reports.ExportHeaders.tr.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Proteone.Api.IntegrationTests" />
+  </ItemGroup>
+</Project>

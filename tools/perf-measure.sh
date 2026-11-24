@@ -27,7 +27,7 @@ readonly DEV_API_PORT=5311
 readonly API_URL="http://localhost:$API_PORT"
 readonly READY_PATH="/api/v1/auth/csrf"
 readonly READY_TIMEOUT_SECONDS=60
-readonly API_BIN_DIR="backend/src/Tgysm.Api/bin/Release/net11.0"
+readonly API_BIN_DIR="backend/src/Proteone.Api/bin/Release/net11.0"
 readonly LOG_DIR="frontend/e2e-logs"
 readonly OUTPUT_FILE="docs/release/performance.md"
 readonly DEFAULT_RUNS=5
@@ -78,13 +78,13 @@ if [[ -z "$base_url" ]]; then
     exit 1
   fi
   mkdir -p "$LOG_DIR"
-  dotnet build backend/src/Tgysm.Api -c Release --nologo -v quiet
+  dotnet build backend/src/Proteone.Api -c Release --nologo -v quiet
   export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
   export ASPNETCORE_ENVIRONMENT="Development"
   export Files__RootPath="$temp_dir/files"
   export Email__Mode="Pickup"
   export Email__PickupFolder="$temp_dir/pickup"
-  (cd "$API_BIN_DIR" && exec dotnet Tgysm.Api.dll --urls "$API_URL") >"$LOG_DIR/api-perf.log" 2>&1 &
+  (cd "$API_BIN_DIR" && exec dotnet Proteone.Api.dll --urls "$API_URL") >"$LOG_DIR/api-perf.log" 2>&1 &
   api_pid=$!
   wait_for "$API_URL$READY_PATH"
   base_url="$API_URL"

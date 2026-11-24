@@ -9,5 +9,5 @@ if [[ $# -ne 1 ]]; then
 fi
 
 dotnet tool run dotnet-ef migrations add "$1" \
-  --project src/Tgysm.Infrastructure --startup-project src/Tgysm.Infrastructure \
+  --project src/Proteone.Infrastructure --startup-project src/Proteone.Infrastructure \
   --output-dir Persistence/Migrations

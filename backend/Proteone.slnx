@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Proteone.Api/Proteone.Api.csproj" />
+    <Project Path="src/Proteone.Application/Proteone.Application.csproj" />
+    <Project Path="src/Proteone.Domain/Proteone.Domain.csproj" />
+    <Project Path="src/Proteone.Infrastructure/Proteone.Infrastructure.csproj" />
+    <Project Path="src/Proteone.Worker/Proteone.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Proteone.Api.IntegrationTests/Proteone.Api.IntegrationTests.csproj" />
+    <Project Path="tests/Proteone.Application.Tests/Proteone.Application.Tests.csproj" />
+    <Project Path="tests/Proteone.ArchitectureTests/Proteone.ArchitectureTests.csproj" />
+    <Project Path="tests/Proteone.Domain.Tests/Proteone.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

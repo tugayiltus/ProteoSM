@@ -3,9 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly MIGRATIONS_DIR="backend/src/Tgysm.Infrastructure/Persistence/Migrations"
+readonly MIGRATIONS_DIR="backend/src/Proteone.Infrastructure/Persistence/Migrations"
 
-dotnet format backend/Tgysm.slnx --verify-no-changes --exclude "$MIGRATIONS_DIR"
+dotnet format backend/Proteone.slnx --verify-no-changes --exclude "$MIGRATIONS_DIR"
 (cd frontend && npm run lint && npm run typecheck)
 # Astryx doctor is a hard gate: any [fail] check stops the lint, and so does a growing count of purity findings.
 # The budget covers the known, reasoned exceptions: native download links (the router must not handle a file URL),

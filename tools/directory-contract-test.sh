@@ -14,11 +14,11 @@ cd "$(dirname "$0")/.."
 readonly COMPOSE_FILE=deploy/test-directory/compose.yaml
 # Only the project that holds the contract classes: with the whole solution, the other test projects run zero
 # tests under the class filter and Microsoft.Testing.Platform fails them with exit code 8.
-readonly TEST_PROJECT=backend/tests/Tgysm.Api.IntegrationTests
-readonly LDAP_TEST_CLASS=Tgysm.Api.IntegrationTests.Auth.NovellLdapDirectoryTests
-readonly LDAP_API_TEST_CLASS=Tgysm.Api.IntegrationTests.Auth.LdapApiContractTests
-readonly LDAP_OUTAGE_TEST_CLASS=Tgysm.Api.IntegrationTests.Auth.LdapOutageContractTests
-readonly OIDC_TEST_CLASS=Tgysm.Api.IntegrationTests.Auth.OidcContractTests
+readonly TEST_PROJECT=backend/tests/Proteone.Api.IntegrationTests
+readonly LDAP_TEST_CLASS=Proteone.Api.IntegrationTests.Auth.NovellLdapDirectoryTests
+readonly LDAP_API_TEST_CLASS=Proteone.Api.IntegrationTests.Auth.LdapApiContractTests
+readonly LDAP_OUTAGE_TEST_CLASS=Proteone.Api.IntegrationTests.Auth.LdapOutageContractTests
+readonly OIDC_TEST_CLASS=Proteone.Api.IntegrationTests.Auth.OidcContractTests
 readonly LDAP_SERVICE=openldap
 readonly OIDC_SERVICE=oidc
 readonly RUNNER_SERVICE=ldap-tests

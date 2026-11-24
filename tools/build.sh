@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 tools/lint.sh
 tools/test.sh
-dotnet build backend/Tgysm.slnx -c Release --nologo
+dotnet build backend/Proteone.slnx -c Release --nologo
 (cd frontend && npm run build)
 
 echo "Frontend chunks:"

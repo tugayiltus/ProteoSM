@@ -10,4 +10,4 @@ readonly DB_USER="${TGYSM_DB_USER:-tgysm}"
 
 tools/migrate.sh
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
-dotnet run --project backend/src/Tgysm.Api --no-launch-profile -- reset-password "$@"
+dotnet run --project backend/src/Proteone.Api --no-launch-profile -- reset-password "$@"

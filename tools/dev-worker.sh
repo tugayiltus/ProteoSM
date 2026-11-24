@@ -13,5 +13,5 @@ readonly WORKER_CONNECTION="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
 # Absolute: Email:PickupFolder is the only Worker setting whose development default is a relative path.
 readonly PICKUP_FOLDER="$ROOT/tmp/email-pickup"
 
-exec tools/dev-dotnet-host.sh worker backend/src/Tgysm.Worker Tgysm.Worker \
+exec tools/dev-dotnet-host.sh worker backend/src/Proteone.Worker Proteone.Worker \
   "ConnectionStrings__Default=$WORKER_CONNECTION" DOTNET_ENVIRONMENT=Development "Email__PickupFolder=$PICKUP_FOLDER"

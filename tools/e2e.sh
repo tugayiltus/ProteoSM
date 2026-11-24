@@ -12,8 +12,8 @@ readonly PREVIEW_URL="http://localhost:5312"
 readonly READY_PATH="/api/v1/auth/csrf"
 readonly READY_TIMEOUT_SECONDS=60
 readonly ADMIN_EMAIL="e2e-admin@example.com"
-readonly API_BIN_DIR="backend/src/Tgysm.Api/bin/Debug/net11.0"
-readonly WORKER_BIN_DIR="backend/src/Tgysm.Worker/bin/Debug/net11.0"
+readonly API_BIN_DIR="backend/src/Proteone.Api/bin/Debug/net11.0"
+readonly WORKER_BIN_DIR="backend/src/Proteone.Worker/bin/Debug/net11.0"
 readonly LOG_DIR="frontend/e2e-logs"
 readonly TEMP_PASSWORD_PREFIX="Temporary password (shown once): "
 readonly E2E_JOB_INTERVAL_SECONDS=2
@@ -70,8 +70,8 @@ for port in "${API_URL##*:}" "${PREVIEW_URL##*:}"; do
 done
 
 mkdir -p "$LOG_DIR"
-dotnet build backend/src/Tgysm.Api --nologo -v quiet
-dotnet build backend/src/Tgysm.Worker --nologo -v quiet
+dotnet build backend/src/Proteone.Api --nologo -v quiet
+dotnet build backend/src/Proteone.Worker --nologo -v quiet
 (cd frontend && npm run build >/dev/null)
 
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
@@ -99,7 +99,7 @@ for project in "${PROJECTS[@]}"; do
   psql -h "$DB_HOST" -d "$ADMIN_DB" -qc "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\""
   TGYSM_DB_NAME="$DB_NAME" tools/migrate.sh >/dev/null
 
-  setup_output="$(cd "$API_BIN_DIR" && dotnet Tgysm.Api.dll setup-admin --email "$ADMIN_EMAIL" --first-name E2E --last-name Yönetici)"
+  setup_output="$(cd "$API_BIN_DIR" && dotnet Proteone.Api.dll setup-admin --email "$ADMIN_EMAIL" --first-name E2E --last-name Yönetici)"
   temp_password="$(sed -n "s/^${TEMP_PASSWORD_PREFIX}//p" <<<"$setup_output")"
   if [[ -z "$temp_password" ]]; then
     echo "setup-admin did not print a temporary password" >&2
@@ -107,9 +107,9 @@ for project in "${PROJECTS[@]}"; do
   fi
 
   # exec keeps $! pointing at the real server process, so kill stops it.
-  (cd "$API_BIN_DIR" && exec dotnet Tgysm.Api.dll --urls "$API_URL") >"$LOG_DIR/api-$project.log" 2>&1 &
+  (cd "$API_BIN_DIR" && exec dotnet Proteone.Api.dll --urls "$API_URL") >"$LOG_DIR/api-$project.log" 2>&1 &
   api_pid=$!
-  (cd "$WORKER_BIN_DIR" && exec dotnet Tgysm.Worker.dll) >"$LOG_DIR/worker-$project.log" 2>&1 &
+  (cd "$WORKER_BIN_DIR" && exec dotnet Proteone.Worker.dll) >"$LOG_DIR/worker-$project.log" 2>&1 &
   worker_pid=$!
   (cd frontend && exec node node_modules/vite/bin/vite.js preview) >"$LOG_DIR/preview-$project.log" 2>&1 &
   preview_pid=$!

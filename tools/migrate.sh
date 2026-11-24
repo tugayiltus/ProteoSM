@@ -10,4 +10,4 @@ readonly DB_USER="${TGYSM_DB_USER:-tgysm}"
 
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
 export ASPNETCORE_ENVIRONMENT="Development"
-dotnet run --project src/Tgysm.Api --no-launch-profile -v quiet -- migrate
+dotnet run --project src/Proteone.Api --no-launch-profile -v quiet -- migrate

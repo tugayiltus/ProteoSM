@@ -1,0 +1,52 @@
+using Microsoft.EntityFrameworkCore;
+using Proteone.Application.Common;
+using Proteone.Infrastructure.Persistence;
+using Proteone.Infrastructure.Persistence.PostMigration;
+
+namespace Proteone.Api.Cli;
+
+/// <summary>
+/// <c>Proteone.Api migrate</c>: applies pending EF Core migrations and exits. The deployment runs it once before the API
+/// and the Worker start, so the images need no EF tooling. <c>migrate --print-latest</c> prints the newest migration
+/// this build knows, without a database (restore refuses archives from a newer build, ADR-0025).
+/// </summary>
+internal static class MigrateCommand
+{
+    public const string Name = "migrate";
+
+    public const string PrintLatestOption = "--print-latest";
+
+    private const int Success = 0;
+    private const int Failure = 1;
+
+    public static async Task<int> RunAsync(IServiceProvider services, IReadOnlyList<string> args, TextWriter output, TextWriter error)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        if (args is [PrintLatestOption])
+        {
+            await output.WriteLineAsync(db.Database.GetMigrations().Last());
+            return Success;
+        }
+
+        try
+        {
+            var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
+            await db.Database.MigrateAsync();
+            var latest = (await db.Database.GetAppliedMigrationsAsync()).LastOrDefault() ?? "none";
+            await output.WriteLineAsync(pending.Count == 0
+                ? $"Database is up to date ({latest})."
+                : $"Applied {pending.Count} migration(s); latest {latest}.");
+            foreach (var step in await PostMigrationRunner.RunPendingAsync(db, scope.ServiceProvider.GetRequiredService<ICompanyClock>().Zone, CancellationToken.None))
+            {
+                await output.WriteLineAsync($"Post-migration step done: {step}.");
+            }
+            return Success;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            await error.WriteLineAsync($"Migration failed: {exception.Message}");
+            return Failure;
+        }
+    }
+}

@@ -1,0 +1,128 @@
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
+using Proteone.Domain.Changes;
+using Proteone.Domain.Notifications;
+
+namespace Proteone.Application.Notifications;
+
+/// <summary>
+/// Builds the `{{name}}` values for one recipient's rendering of one <see cref="OutboxEvent"/> (spec §3.4),
+/// restricted to <see cref="TemplateVariables.AllowedFor"/> that event — a value computed for a variable the event
+/// does not allow is simply never set, so <see cref="TemplateRenderer.Render"/> cannot leak it even if a future
+/// template edit mistakenly referenced it. <c>actionUrl</c> is deliberately never set here: it carries the token
+/// from the event's <c>protected_secret</c>, decrypted only at send time (<c>SendDueEmailsHandler</c>). The link's
+/// <c>expiresAt</c> is not secret and comes from the payload.
+/// </summary>
+public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock clock, IOptionsMonitor<AppOptions> options)
+{
+    private const string TicketUrlPathFormat = "/tickets/{0}";
+    private const string TaskUrlPathFormat = "/tasks/{0}";
+    private const string ChangeUrlPathFormat = "/changes/{0}";
+    private const string DateFormat = "dd.MM.yyyy";
+
+    public async Task<IReadOnlyDictionary<string, string>> LoadAsync(OutboxEvent outboxEvent, Recipient recipient, CancellationToken cancellationToken)
+    {
+        var allowed = TemplateVariables.AllowedFor(outboxEvent.EventType);
+        var values = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        void Set(string name, string? value)
+        {
+            if (value is not null && allowed.Contains(name))
+            {
+                values[name] = value;
+            }
+        }
+
+        Set(TemplateVariables.RecipientName, recipient.FullName);
+
+        if (outboxEvent.TicketId is { } ticketId)
+        {
+            var ticket = await db.Tickets.AsNoTracking().SingleAsync(t => t.Id == ticketId, cancellationToken);
+            Set(TemplateVariables.TicketNumber, ticket.Number);
+            Set(TemplateVariables.Subject, ticket.Subject);
+            Set(TemplateVariables.Status, TicketStatusLabels.Of(ticket.Status));
+            Set(TemplateVariables.TicketUrl, TicketUrl(ticket.Number));
+            Set(TemplateVariables.Resolution, ticket.Resolution);
+            Set(TemplateVariables.CompletedAt, ticket.CompletedAt is { } completedAt ? clock.Format(completedAt) : null);
+        }
+
+        if (outboxEvent.SubjectType == OutboxSubjectTypes.Task && outboxEvent.SubjectId is { } taskId)
+        {
+            var task = await db.WorkTasks.AsNoTracking().SingleAsync(t => t.Id == taskId, cancellationToken);
+            Set(TemplateVariables.TaskNumber, task.Number);
+            Set(TemplateVariables.Subject, task.Title);
+            Set(TemplateVariables.Status, TaskStatusLabels.Of(task.Status));
+            Set(TemplateVariables.TeamName, await db.Teams.Where(t => t.Id == task.TeamId).Select(t => t.Name).SingleAsync(cancellationToken));
+            // A task without a due date renders an empty value, not a placeholder.
+            Set(TemplateVariables.DueDate, task.DueDate?.ToString(DateFormat, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty);
+            Set(TemplateVariables.TaskUrl, PublicUrl(TaskUrlPathFormat, task.Number));
+        }
+
+        if (outboxEvent.SubjectType == OutboxSubjectTypes.Change && outboxEvent.SubjectId is { } changeId)
+        {
+            var change = await db.ChangeRequests.AsNoTracking().SingleAsync(c => c.Id == changeId, cancellationToken);
+            Set(TemplateVariables.ChangeNumber, change.Number);
+            Set(TemplateVariables.Subject, change.Title);
+            Set(TemplateVariables.WindowStart, change.WindowStart is { } start ? clock.Format(start) : string.Empty);
+            Set(TemplateVariables.WindowEnd, change.WindowEnd is { } end ? clock.Format(end) : string.Empty);
+            Set(TemplateVariables.Risk, ChangeLabels.Of(change.Risk));
+            Set(TemplateVariables.ChangeUrl, PublicUrl(ChangeUrlPathFormat, change.Number));
+            // A decision mail describes the decided row: the status it led to and the reason the approver typed. The
+            // reason is free text, so it is read from the row, never copied into the outbox payload.
+            var decision = outboxEvent.EventType == NotificationEventTypes.ChangeApprovalDecided
+                && PayloadString(outboxEvent, OutboxEvent.ApprovalIdKey) is { } approvalKey && Guid.TryParse(approvalKey, out var approvalId)
+                ? await db.ChangeApprovals.AsNoTracking()
+                    .Where(a => a.Id == approvalId && a.ChangeId == changeId)
+                    .Select(a => new { a.Status, a.Reason })
+                    .SingleOrDefaultAsync(cancellationToken)
+                : null;
+            var status = decision is null ? change.Status : ChangeStatusAfter(decision.Status, change.Status);
+            Set(TemplateVariables.Status, ChangeLabels.Of(status));
+            Set(TemplateVariables.Reason, decision?.Reason ?? string.Empty);
+        }
+
+        // sla_warning/sla_breached: metric and due time come from the event's own payload (ids and reason codes
+        // only, per OutboxEvent.Payload) once the SLA monitor (a later task) starts writing them.
+        Set(TemplateVariables.SlaMetric, PayloadString(outboxEvent, OutboxEvent.SlaMetricKey) is { } metricKey ? SlaMetricLabels.LabelOfKey(metricKey) : null);
+        var dueAt = PayloadDate(outboxEvent, OutboxEvent.SlaDueAtKey);
+        Set(TemplateVariables.DueAt, dueAt is { } due ? clock.Format(due) : null);
+
+        // account_activation/password_reset: the link's expiry, written by PasswordTokenIssuer.
+        var expiresAt = PayloadDate(outboxEvent, OutboxEvent.LinkExpiresAtKey);
+        Set(TemplateVariables.ExpiresAt, expiresAt is { } expiry ? clock.Format(expiry) : null);
+
+        return values;
+    }
+
+    /// <summary>The change status a decision led to: approved schedules the change, rejected and returned send it to draft.</summary>
+    private static ChangeStatus ChangeStatusAfter(ChangeApprovalStatus decision, ChangeStatus current) => decision switch
+    {
+        ChangeApprovalStatus.Approved => ChangeStatus.Scheduled,
+        ChangeApprovalStatus.Rejected or ChangeApprovalStatus.Returned => ChangeStatus.Draft,
+        _ => current,
+    };
+
+    private string TicketUrl(string number) => PublicUrl(TicketUrlPathFormat, number);
+
+    private string PublicUrl(string pathFormat, string number) =>
+        options.CurrentValue.PublicBaseUrl.TrimEnd('/') + string.Format(System.Globalization.CultureInfo.InvariantCulture, pathFormat, number);
+
+    private static string? PayloadString(OutboxEvent outboxEvent, string key)
+    {
+        using var payload = JsonDocument.Parse(outboxEvent.Payload);
+        return payload.RootElement.TryGetProperty(key, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+    }
+
+    private static DateTimeOffset? PayloadDate(OutboxEvent outboxEvent, string key)
+    {
+        var raw = PayloadString(outboxEvent, key);
+        return raw is not null && DateTimeOffset.TryParse(raw, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var parsed)
+            ? parsed
+            : null;
+    }
+}

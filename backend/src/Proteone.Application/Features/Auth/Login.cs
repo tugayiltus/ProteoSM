@@ -1,0 +1,114 @@
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
+using Proteone.Application.Security;
+using Proteone.Domain.Audit;
+using Proteone.Domain.Auth;
+using Proteone.Domain.Common;
+using Proteone.Domain.Users;
+
+namespace Proteone.Application.Features.Auth;
+
+public sealed record LoginCommand(string Email, string Password);
+
+internal sealed class LoginValidator : AbstractValidator<LoginCommand>
+{
+    public LoginValidator()
+    {
+        // Format check keeps mistyped passwords (typed into the email box) out of the audit trail.
+        RuleFor(c => c.Email).NotEmpty().MaximumLength(User.EmailMaxLength).EmailAddress();
+        RuleFor(c => c.Password).NotEmpty().MaximumLength(PasswordRules.MaxLength);
+    }
+}
+
+/// <summary>
+/// Verifies credentials. Every failure throws <see cref="AuthenticationFailedException"/> so callers cannot tell
+/// unknown, inactive, locked and wrong-password accounts apart.
+/// </summary>
+public sealed class LoginHandler(
+    IAppDbContext db,
+    IValidator<LoginCommand> validator,
+    IPasswordService passwords,
+    IAuditLog audit,
+    TimeProvider clock)
+{
+    public async Task<SessionUser> HandleAsync(LoginCommand command, CancellationToken cancellationToken)
+    {
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        var now = clock.GetUtcNow();
+        var normalizedEmail = User.NormalizeEmail(command.Email);
+        var user = await db.Users.SingleOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
+
+        if (user is null)
+        {
+            // Same hashing cost as a real check, so response time does not reveal unknown emails.
+            passwords.Verify(passwords.DummyHash, command.Password);
+            audit.Record(AuditActions.LoginFailed, AuditEntityTypes.User, entityId: null, newValues: new { Email = normalizedEmail });
+            await db.SaveChangesAsync(cancellationToken);
+            throw new AuthenticationFailedException();
+        }
+
+        // Under a directory method only admins keep a local password login (break-glass, ADR-0030); a directory-only
+        // user has no local password at all. Both fail like a wrong password, without counting towards lockout.
+        var method = await db.AuthSettings.AsNoTracking().Select(s => s.Method).SingleAsync(cancellationToken);
+        if (!user.HasLocalPassword || (method != LoginMethod.Local && user.Role != UserRole.Admin))
+        {
+            passwords.Verify(passwords.DummyHash, command.Password);
+            audit.Record(AuditActions.LoginFailed, AuditEntityTypes.User, user.Id, newValues: new { Method = method });
+            await db.SaveChangesAsync(cancellationToken);
+            throw new AuthenticationFailedException();
+        }
+
+        if (!user.CanSignIn(now))
+        {
+            // Same hashing cost as a real check: locked or inactive accounts must not answer faster.
+            passwords.Verify(user.PasswordHash, command.Password);
+            audit.Record(AuditActions.LoginFailed, AuditEntityTypes.User, user.Id);
+            await db.SaveChangesAsync(cancellationToken);
+            throw new AuthenticationFailedException();
+        }
+
+        if (!passwords.Verify(user.PasswordHash, command.Password))
+        {
+            var lockedNow = await RegisterFailedSignInAsync(user.Id, now, cancellationToken);
+            audit.Record(AuditActions.LoginFailed, AuditEntityTypes.User, user.Id);
+            if (lockedNow)
+            {
+                audit.Record(AuditActions.LockedOut, AuditEntityTypes.User, user.Id);
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+            throw new AuthenticationFailedException();
+        }
+
+        await db.Users.Where(u => u.Id == user.Id).ExecuteUpdateAsync(
+            setters => setters
+                .SetProperty(u => u.AccessFailedCount, 0)
+                .SetProperty(u => u.LockoutEnd, (DateTimeOffset?)null)
+                .SetProperty(u => u.UpdatedAt, now),
+            cancellationToken);
+        audit.Record(AuditActions.LoginSucceeded, AuditEntityTypes.User, user.Id, actorUserId: user.Id);
+        await db.SaveChangesAsync(cancellationToken);
+        return SessionUser.From(user);
+    }
+
+    /// <summary>
+    /// Counts a failed sign-in in one UPDATE, so parallel attempts cannot overwrite each other's count
+    /// (the tracked entity would lose updates). Returns true when this attempt started the lockout.
+    /// </summary>
+    private async Task<bool> RegisterFailedSignInAsync(Guid userId, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        const int lockThreshold = User.MaxFailedSignInAttempts - 1;
+        var lockoutEnd = StoredTime.TruncateToMicroseconds(now + User.LockoutDuration);
+
+        await db.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(
+            setters => setters
+                .SetProperty(u => u.LockoutEnd, u => u.AccessFailedCount >= lockThreshold ? lockoutEnd : u.LockoutEnd)
+                .SetProperty(u => u.AccessFailedCount, u => u.AccessFailedCount >= lockThreshold ? 0 : u.AccessFailedCount + 1)
+                .SetProperty(u => u.UpdatedAt, now),
+            cancellationToken);
+
+        return await db.Users.AsNoTracking().AnyAsync(u => u.Id == userId && u.LockoutEnd == lockoutEnd, cancellationToken);
+    }
+}
