@@ -102,6 +102,10 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
 21. Host sizing after the pilot.
 22. Software and licence asset types, then light Release, then the monitoring webhook. Each needs a design, an ADR and owner approval before code.
 
+### E. Last step
+
+23. Owner decision (2026-11-24): after all other work the project folder becomes `~/claude/Proteone`. Nothing moves before that. Steps: check for uncommitted work, branches and worktrees; move or clone with the git-ignored files that are still needed (`deploy/.env`, certificates, `tmp/db-backup-20261124`, `.superpowers`); reinstall the dev services from the new path; move the assistant memory to the new project path; compare commit, branches and remotes; run lint and tests there. The old folder is deleted only with a separate approval.
+
 ## Acceptance
 
 - No `tgysm` outside an allow list that a test guards.
