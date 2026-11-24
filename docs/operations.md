@@ -137,7 +137,7 @@ The product was named TGYSM until November 2026 (ADR-0037). An installation move
 5. `tools/deploy.sh --skip-gates`. It refuses to start empty beside `tgysm_pgdata`; after the restore it runs normally.
 6. Check `/api/v1/health`, sign in, `/admin/system`, and the sign-in method in `/admin`. When the address changes, update the redirect URI in Microsoft Entra ID.
 
-What users notice: they sign in once again. Waiting account links and stored directory secrets keep working. Sent emails and audit rows keep the old name as history.
+What users notice: they sign in once again. Waiting account links and stored directory secrets keep working. A session ends 24 hours after sign-in (`Security:MaxSessionHours`). The move replaces the old name in email templates, sent emails and audit rows; web addresses, directory paths and text written by users stay.
 
 Rollback: `tools/compose.sh down` on the Proteone checkout, then `tools/compose.sh up -d` on the TGYSM checkout. Everything written after the move is lost. Delete the old volumes only when no rollback is needed any more.
 

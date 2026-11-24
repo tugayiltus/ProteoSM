@@ -29,4 +29,5 @@ public static class AuditEntityTypes
     public const string Report = "report";
     public const string ExportJob = "export_job";
     public const string AuthSettings = "auth_settings";
+    public const string Audit = "audit";
 }

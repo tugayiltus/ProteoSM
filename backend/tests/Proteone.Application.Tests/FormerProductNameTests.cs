@@ -21,6 +21,7 @@ public sealed partial class FormerProductNameTests
         // Applied migration, and the one that replaces the name in stored templates.
         Migrations + "20260928065946_EmailTemplates.cs",
         Migrations + "20261124115906_ProteoneBrand.cs",
+        Migrations + "20261124135355_ProteoneHistory.cs",
         "backend/tests/Proteone.Api.IntegrationTests/Persistence/ProteoneBrandMigrationTests.cs",
         // Upgrade of an existing installation and of browser settings.
         "deploy/backup/backup.sh",

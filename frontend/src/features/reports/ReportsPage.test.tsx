@@ -242,5 +242,6 @@ describe('ReportsPage', () => {
     const figure = await screen.findByRole('article', { name: 'Hizmete göre' });
     expect(within(figure).getByText('SAP')).toBeInTheDocument();
     expect(within(figure).getByText('Hizmet yok')).toBeInTheDocument();
+    expect(within(figure).queryByRole('link')).not.toBeInTheDocument();
   });
 });

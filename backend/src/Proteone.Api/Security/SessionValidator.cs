@@ -15,7 +15,7 @@ internal static class SessionValidator
     {
         var principal = context.Principal;
         var stamp = principal?.FindFirstValue(SessionClaims.SecurityStamp);
-        if (stamp is null || !Guid.TryParse(principal?.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+        if (SessionLifetime.IsOver(context.Properties, context.HttpContext.RequestServices) || stamp is null || !Guid.TryParse(principal?.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
         {
             await RejectAsync(context);
             return;

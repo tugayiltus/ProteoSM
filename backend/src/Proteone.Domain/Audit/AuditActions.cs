@@ -145,6 +145,9 @@ public static class AuditActions
     public const string TicketArticleLinked = "tickets.article_linked";
     public const string TicketArticleUnlinked = "tickets.article_unlinked";
 
+    /// <summary>Written by the migration that replaced the former product name (ADR-0037).</summary>
+    public const string ProductNameReplaced = "audit.product_name_replaced";
+
     public const string ReportExported = "reports.exported";
     public const string ReportExportRequested = "reports.export_requested";
     public const string ReportExportDownloaded = "reports.export_downloaded";

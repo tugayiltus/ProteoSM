@@ -30,11 +30,15 @@ export interface FigureCardProps {
   filter: ReportFilterValues;
 }
 
+/** The service figure only shows counts; the record lists have their own service filter (ADR-0036). */
+const WITHOUT_LIST: ReadonlySet<string> = new Set(['by_service']);
+
 export function FigureCard({ report, figure, filter }: FigureCardProps) {
   const { t } = useTranslation('reports');
   const view = describeFigure(figure);
   const period = periodText(filter, companyToday());
   const title = metricLabel(figure.metric);
+  const hasList = !WITHOUT_LIST.has(figure.metric);
   const titleId = useId();
   const headlineId = useId();
   const bars = figure.shape === 'distribution' ? (figure.buckets ?? []).map((b) => ({ key: b.key, label: bucketLabel(figure.metric, b), count: b.count })) : [];
@@ -45,7 +49,7 @@ export function FigureCard({ report, figure, filter }: FigureCardProps) {
       <article aria-labelledby={titleId} aria-describedby={view.headline !== null ? headlineId : undefined}>
         <VStack gap={2}>
           <Heading level={2} id={titleId}>
-            {view.isEmpty ? title : <Link href={figureListHref(report, figure.metric, filter)}>{title}</Link>}
+            {view.isEmpty || !hasList ? title : <Link href={figureListHref(report, figure.metric, filter)}>{title}</Link>}
           </Heading>
           {view.isEmpty && <Text type="supporting">{period === null ? t('figure.empty') : t('figure.emptyForPeriod', { period })}</Text>}
           {view.headline !== null && (
@@ -77,7 +81,7 @@ export function FigureCard({ report, figure, filter }: FigureCardProps) {
                 {bars.map((bar) => (
                   <ListItem
                     key={bar.key}
-                    label={<Link href={figureListHref(report, figure.metric, filter, bar.key)}>{bar.label}</Link>}
+                    label={hasList ? <Link href={figureListHref(report, figure.metric, filter, bar.key)}>{bar.label}</Link> : bar.label}
                     endContent={
                       <HStack>
                         <Text type="code">{formatNumber(bar.count)}</Text>

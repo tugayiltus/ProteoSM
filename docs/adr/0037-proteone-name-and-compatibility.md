@@ -12,7 +12,7 @@ The product continues under the name Proteone. The former name TGYSM was in name
 
 - Rename the code, projects, images, settings, database, role, cookies, claims and tools to Proteone (`00063a9`, `4207497`). Migration ids do not change.
 - Keep three literal values: the Data Protection application name `Tgysm` and the purposes `Tgysm.AuthSettings` and `Tgysm.Notifications.AccountLinkToken`. Tests pin them (`8da9759`).
-- Replace the name in stored email templates with the migration `ProteoneBrand`. Applied migrations are not edited.
+- Replace the name in stored email templates with the migration `ProteoneBrand`. Applied migrations are not edited. `ProteoneHistory` does the same for sent emails, the pilot category and audit rows; the append-only trigger is off only inside that transaction.
 - Move an installation by backup and restore into a new stack. Restore accepts archives of either name. `tools/deploy.sh` refuses an empty start beside `tgysm_pgdata` unless `--fresh-install` is given.
 - Read the old browser keys, `TGYSM_SUBNET` and `TGYSM_DEPLOYMENT` while the new ones are missing. Backup retention also removes expired `tgysm-` archives.
 - `FormerProductNameTests` fails when the old name appears outside an allow list.
@@ -42,7 +42,8 @@ The product continues under the name Proteone. The former name TGYSM was in name
 
 ### Negative
 - Every user signs in once after the move.
-- Accepted ADRs, earlier plans, sent emails and audit rows keep the old name as history.
+- The migration `ProteoneHistory` replaces the name also in sent emails and audit rows (owner decision). These rows no longer show the exact words of their time; the replacement leaves its own audit row. Names in directory paths and web addresses stay.
+- Accepted ADRs and earlier plans keep the old name. Free text of users (tickets, comments, articles) is not changed.
 
 ### Risks
 - Data written after the move is lost in a rollback to the old stack. Mitigation: move in a short, announced window.

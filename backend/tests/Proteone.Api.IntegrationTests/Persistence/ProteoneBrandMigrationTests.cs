@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Proteone.Api.IntegrationTests.Infrastructure;
+using Proteone.Domain.Audit;
 
 namespace Proteone.Api.IntegrationTests.Persistence;
 
@@ -28,5 +29,27 @@ public sealed class ProteoneBrandMigrationTests(PostgresDatabase database) : ICl
         var edited = await db.EmailTemplates.AsNoTracking().SingleAsync(t => t.EventType == "account_activation", Ct);
         Assert.Equal("Proteone: {{subject}}", edited.Subject);
         Assert.Equal("Proteone hesabı, {{actionUrl}}", edited.Body);
+    }
+
+    [Fact]
+    public async Task The_former_name_leaves_history_but_directory_paths_stay_and_the_audit_trail_is_closed_again()
+    {
+        await using var db = database.CreateDbContext();
+        var migrator = db.GetService<IMigrator>();
+        await migrator.MigrateAsync("ProteoneBrand", Ct);
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            INSERT INTO audit_events (id, occurred_at, action, entity_type, reason, new_values, correlation_id) VALUES
+            (gen_random_uuid(), now(), 'categories.created', 'category', 'TGYSM için', '{{"name": "TGYSM Pilot", "filter": "(memberOf=CN=TGYSM,DC=x)"}}', 'c');
+            """, Ct);
+
+        await migrator.MigrateAsync(cancellationToken: Ct);
+
+        var changed = await db.AuditEvents.AsNoTracking().SingleAsync(a => a.Action == "categories.created", Ct);
+        Assert.Equal("Proteone için", changed.Reason);
+        Assert.Contains("Proteone Pilot", changed.NewValues!, StringComparison.Ordinal);
+        Assert.Contains("CN=TGYSM", changed.NewValues!, StringComparison.Ordinal);
+        Assert.Equal(1, await db.AuditEvents.CountAsync(a => a.Action == AuditActions.ProductNameReplaced, Ct));
+        await Assert.ThrowsAsync<Npgsql.PostgresException>(() => db.Database.ExecuteSqlRawAsync("UPDATE audit_events SET reason = 'x'", Ct));
     }
 }

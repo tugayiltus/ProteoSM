@@ -46,6 +46,23 @@ public sealed class TicketTests
     }
 
     [Fact]
+    public void A_transfer_to_a_team_opens_work_in_progress_and_keeps_a_hold()
+    {
+        var ticket = Incident();
+        ticket.Assign(Team, Agent, Now);
+        ticket.Start(Now);
+
+        ticket.Assign(OtherTeam, Agent, Now);
+        Assert.Equal(TicketStatus.InProgress, ticket.Status);
+        ticket.Assign(OtherTeam, null, Now);
+        Assert.Equal((TicketStatus.Open, (Guid?)null), (ticket.Status, ticket.AssigneeId));
+
+        ticket.Hold(HoldReason.Vendor, null, Now);
+        ticket.Assign(Team, null, Now);
+        Assert.Equal(TicketStatus.OnHold, ticket.Status);
+    }
+
+    [Fact]
     public void Work_moves_through_start_hold_resume_and_complete()
     {
         var ticket = Incident();

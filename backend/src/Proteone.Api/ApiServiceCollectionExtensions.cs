@@ -28,7 +28,7 @@ internal static class ApiServiceCollectionExtensions
     {
         services.AddOptions<SecurityOptions>()
             .Bind(configuration.GetSection(SecurityOptions.SectionName))
-            .Validate(o => o.LoginPermitLimitPerMinute > 0 && o.ForgotPasswordPermitLimitPerMinute > 0 && o.SetPasswordPermitLimitPerMinute > 0 && o.SessionHours > 0, "Security limits must be positive.")
+            .Validate(o => o.LoginPermitLimitPerMinute > 0 && o.ForgotPasswordPermitLimitPerMinute > 0 && o.SetPasswordPermitLimitPerMinute > 0 && o.SessionHours > 0 && o.MaxSessionHours >= o.SessionHours, "Security limits must be positive, and MaxSessionHours at least SessionHours.")
             .ValidateOnStart();
         services.AddOptions<AppOptions>()
             .Bind(configuration.GetSection(AppOptions.SectionName))
@@ -71,6 +71,7 @@ internal static class ApiServiceCollectionExtensions
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.Cookie.Path = "/";
                 options.SlidingExpiration = true;
+                options.Events.OnSigningIn = SessionLifetime.StampAsync;
                 options.Events.OnValidatePrincipal = SessionValidator.ValidateAsync;
                 options.Events.OnRedirectToLogin = context => ApiProblem.WriteAsync(context.HttpContext, StatusCodes.Status401Unauthorized, ErrorCodes.Unauthenticated);
                 options.Events.OnRedirectToAccessDenied = context => ApiProblem.WriteAsync(context.HttpContext, StatusCodes.Status403Forbidden, ErrorCodes.Forbidden);

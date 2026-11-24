@@ -413,7 +413,7 @@ Relationships: all foreign keys are `RESTRICT`; records are deactivated or close
 
 ## Auth & permissions
 
-- Session cookie `__Host-proteone` (Secure, HttpOnly, SameSite=Strict, 8-hour sliding). Every request re-reads the user: inactive users and changed security stamps end the session. Role change, (de)activation, password change and admin reset rotate the stamp.
+- Session cookie `__Host-proteone` (Secure, HttpOnly, SameSite=Strict, 8-hour sliding, at most 24 hours after sign-in). Every request re-reads the user: inactive users and changed security stamps end the session. Role change, (de)activation, password change and admin reset rotate the stamp.
 - Antiforgery token required in `X-CSRF-TOKEN` on every unsafe `/api` request, including login and uploads.
 - Lockout: 5 failed logins → 15 minutes; the counter is updated atomically. Inactive and locked accounts cost the same hash check as others.
 - Password: 12–128 characters with a letter and a digit. Temporary passwords: 16 random characters, shown once.
@@ -520,7 +520,7 @@ Relationships: all foreign keys are `RESTRICT`; records are deactivated or close
 - **User guide:** `tools/guide-screenshots.sh` shoots the pages in `frontend/guide/manifest.ts` at 390×844 and 1280×800 from the seeded pilot database; `tools/build-user-guide.sh` builds `docs/user-guides/combined.md` and the A4 `combined.pdf` and checks anchors and images.
 - **Name and upgrade (ADR-0037):** Proteone was TGYSM until November 2026. Data Protection keeps the former name, the migration `ProteoneBrand` replaces it in email templates, a TGYSM archive restores into a Proteone stack, and old browser settings are read once.
 - **Two entry pages (ADR-0038):** one build, `index.html` and `admin/index.html`; a link between the areas loads the page, sign-in returns to the admin page through the local `from` parameter.
-- **Fixes of November 2026:** record numbers use the company year; a stale version is a conflict also when no value changes; only the creator commits an import job, and jobs leave after 30 days; duplicate serials report `assets.serial_taken`; a truncated upload is 400 and a too large body 413; password changes share the per-client login limit.
+- **Fixes of November 2026:** record numbers use the company year; a stale version is a conflict also when no value changes; only the creator commits an import job, and jobs leave after 30 days; duplicate serials report `assets.serial_taken`; a truncated upload is 400 and a too large body 413; password changes share the per-client login limit; a ticket in progress that is transferred without an assignee becomes open; the "Hizmete göre" figure has no record links.
 
 <!-- DOC-BASELINE: 8d39bd7 -->
 _Documentation baseline: current as of commit 8d39bd7 (2026-11-24). Refresh with `git log --oneline 8d39bd7..HEAD`._

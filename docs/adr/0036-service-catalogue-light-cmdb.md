@@ -51,3 +51,7 @@ When SAP, e-mail or VPN failed, IT could not see in one place which devices carr
 ### Risks
 - The links go stale when devices change and nobody updates them. Mitigation: the impact view shows the asset status, and a retired or lost asset stays visible on the service until an admin removes it.
 - Staff may skip the field, so the per-service report undercounts. Mitigation: the picker suggests the service of the linked device.
+
+## Amendment 2026-11-24
+
+The figure "Hizmete göre" shows counts only; it has no links to record lists, as designed. The API keeps the rows behind the figure, because exports and the consistency check of figures use them. The record lists have their own service filter.

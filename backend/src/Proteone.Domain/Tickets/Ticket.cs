@@ -99,6 +99,12 @@ public sealed class Ticket : Entity
         var record = TicketAssignment.Record(Id, TeamId, teamId, AssigneeId, assigneeId, reason, note, actorUserId, now);
         TeamId = teamId;
         AssigneeId = assigneeId;
+        if (assigneeId is null && Status == TicketStatus.InProgress)
+        {
+            // Nobody works on it until someone in the team takes it.
+            Status = TicketStatus.Open;
+        }
+
         Touch(now);
         return record;
     }

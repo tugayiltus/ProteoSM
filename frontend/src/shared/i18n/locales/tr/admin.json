@@ -177,6 +177,7 @@
     "knowledge_article": "Bilgi bankası makalesi",
     "report": "Rapor",
     "export_job": "Rapor dışa aktarımı",
+    "audit": "Denetim kaydı",
     "auth_settings": "Giriş yöntemi ayarları",
     "brand": "Marka",
     "asset_model": "Model",
@@ -301,6 +302,9 @@
       "archived": "Makale arşivlendi",
       "restored": "Makale taslağa geri alındı",
       "visibility_changed": "Makale görünürlüğü değişti"
+    },
+    "audit": {
+      "product_name_replaced": "Eski kayıtlarda ürün adı değiştirildi"
     },
     "reports": {
       "exported": "Rapor Excel olarak dışa aktarıldı",
