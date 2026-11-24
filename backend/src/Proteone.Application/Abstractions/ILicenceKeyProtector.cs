@@ -5,5 +5,6 @@ public interface ILicenceKeyProtector
 {
     string Protect(string key);
 
-    string Unprotect(string protectedKey);
+    /// <summary>Null when the stored value cannot be opened, e.g. after the key ring was lost.</summary>
+    string? TryUnprotect(string protectedKey);
 }

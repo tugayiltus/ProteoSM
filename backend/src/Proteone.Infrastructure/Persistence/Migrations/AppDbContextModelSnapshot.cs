@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261124205829_AddMonitoring";
+    public override string LastMigrationId => "20261124223303_SoftwareKeyAndAlertResolvedTime";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1465,6 +1465,12 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("character varying(150)")
                     .HasColumnName("name");
 
+                b.Property<string>("NormalizedKey")
+                    .IsRequired()
+                    .HasMaxLength(251)
+                    .HasColumnType("character varying(251)")
+                    .HasColumnName("normalized_key");
+
                 b.Property<string>("SearchText")
                     .IsRequired()
                     .HasMaxLength(251)
@@ -1490,9 +1496,9 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.HasKey("Id")
                     .HasName("pk_software");
 
-                b.HasIndex("SearchText")
+                b.HasIndex("NormalizedKey")
                     .IsUnique()
-                    .HasDatabaseName("ux_software_search_text");
+                    .HasDatabaseName("ux_software_normalized_key");
 
                 var index = b.HasIndex(new[] { "SearchText" }, "ix_software_search_text_trgm")
                     .HasDatabaseName("ix_software_search_text");
@@ -1526,6 +1532,10 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.Property<DateTimeOffset>("LastFiringAt")
                     .HasColumnType("timestamp with time zone")
                     .HasColumnName("last_firing_at");
+
+                b.Property<DateTimeOffset?>("LastResolvedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_resolved_at");
 
                 b.Property<Guid>("SourceId")
                     .HasColumnType("uuid")

@@ -278,6 +278,62 @@ public sealed class MonitoringWebhookTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Firing_after_resolved_is_always_noted_and_a_flapping_alert_stays_bounded()
+    {
+        var source = await SourceAsync();
+        await AcceptedAsync(source, Event("e-1"));
+        await AcceptedAsync(source, Event("e-2", "resolved", description: ""));
+        await AcceptedAsync(source, Event("e-3"));
+        var notes = await CommentsAsync();
+        Assert.Equal(2, notes.Count);
+        Assert.Contains("yeniden geldi", notes[1].Body, StringComparison.Ordinal);
+        for (var i = 4; i < 10; i++)
+        {
+            await AcceptedAsync(source, Event($"e-{i}", i % 2 == 0 ? "resolved" : "firing"));
+        }
+
+        Assert.Equal(2, (await CommentsAsync()).Count);
+    }
+
+    [Fact]
+    public async Task A_long_note_is_cut_between_characters()
+    {
+        var source = await SourceAsync();
+        await AcceptedAsync(source, Event("e-1"));
+        // Two lengths of filler, so that in one of them the cut falls inside a character of two halves.
+        foreach (var (id, filler) in new[] { ("e-2", ""), ("e-3", "x") })
+        {
+            var description = filler + string.Concat(Enumerable.Repeat("\U0001F525", (Ticket.DescriptionMaxLength - 1) / 2));
+            // Written by hand: the serializer would escape every character and pass the size limit.
+            await AcceptedAsync(source, Event(id, id == "e-2" ? "resolved" : "firing", description: "@").Replace("@", description, StringComparison.Ordinal));
+        }
+
+        var notes = await CommentsAsync();
+        Assert.Equal(2, notes.Count);
+        Assert.All(notes, n => Assert.True(n.Body.Length >= TicketComment.BodyMaxLength - 1 && !char.IsHighSurrogate(n.Body[^1])));
+    }
+
+    [Fact]
+    public async Task A_session_cookie_on_the_request_leaves_no_trace()
+    {
+        var source = await SourceAsync();
+        for (var i = 0; i < MonitoringLimits.IncidentsPerHour; i++)
+        {
+            await AcceptedAsync(source, Event($"e-{i}", alertKey: $"k-{i}"));
+        }
+
+        var (timestamp, body) = (Now(), Event("late", alertKey: "late"));
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"/api/v1/monitoring/{source.Id}/events") { Content = new StringContent(body, new MediaTypeHeaderValue("application/json")) };
+        request.Headers.Add("X-Proteone-Timestamp", timestamp);
+        request.Headers.Add("X-Proteone-Signature", Sign(source.Secret, timestamp, body));
+        using var limited = await _world.Admin.Http.SendAsync(request, Ct);
+        Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
+        await using var db = factory.Database.CreateDbContext();
+        Assert.Null((await db.AuditEvents.SingleAsync(e => e.Action == AuditActions.MonitoringLimitReached, Ct)).ActorUserId);
+        Assert.Equal(1, (await ItemAsync(source.Id)).GetProperty("failedCount").GetInt32());
+    }
+
+    [Fact]
     public async Task Resolved_without_an_open_incident_has_no_effect()
     {
         var source = await SourceAsync();

@@ -90,8 +90,12 @@ public sealed class UpdateReleaseHandler(IAppDbContext db, IValidator<ReleaseDra
 
             var before = Values(release);
             release.Edit(command.Draft, now);
-            work.Record(release, ReleaseEventKind.Updated, viewer.UserId, now);
-            audit.Record(AuditActions.ReleaseUpdated, AuditEntityTypes.Release, release.Id, before, Values(release));
+            var after = Values(release);
+            if (!before.Equals(after))
+            {
+                work.Record(release, ReleaseEventKind.Updated, viewer.UserId, now);
+                audit.Record(AuditActions.ReleaseUpdated, AuditEntityTypes.Release, release.Id, before, after);
+            }
         }, cancellationToken);
     }
 

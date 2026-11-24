@@ -96,6 +96,8 @@ public sealed class LicenceEndpointTests(ApiFactory factory) : IAsyncLifetime
         await AssertProblemAsync(
             await _tech.PostAsync(SoftwarePath, new { name = "istatistik", vendor = "YAZILIM" }), HttpStatusCode.Conflict, ErrorCodes.SoftwareNameTaken);
         await SoftwareAsync("İstatistik", "Başka");
+        await SoftwareAsync("Office 365", "Microsoft");
+        await SoftwareAsync("365", "Microsoft Office");
 
         var updated = await JsonAsync(_tech, await _tech.PutAsync(
             $"{SoftwarePath}/{Id(first)}", new { version = Version(first), name = "İstatistik", vendor = "Yazılım", isActive = false }));
@@ -266,6 +268,9 @@ public sealed class LicenceEndpointTests(ApiFactory factory) : IAsyncLifetime
             Assert.DoesNotContain(events, e => $"{e.OldValues}{e.NewValues}".Contains(SecretKey, StringComparison.Ordinal));
         }
 
+        await TestData.SaveAsync(factory, db => db.Licences.Single().SetProtectedKey("broken", DateTimeOffset.UtcNow));
+        await AssertProblemAsync(await _admin.PostAsync($"{keyUrl}/reveal"), HttpStatusCode.Conflict, ErrorCodes.LicenceKeyUnreadable);
+        detail = await JsonAsync(_tech, await _tech.GetAsync($"{LicencesPath}/{Id(licence)}"));
         var cleared = await JsonAsync(_admin, await _admin.PutAsync(keyUrl, new { version = Version(detail), key = " " }));
         Assert.False(cleared.GetProperty("hasKey").GetBoolean());
     }

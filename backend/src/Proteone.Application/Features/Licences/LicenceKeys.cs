@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Domain.Audit;
+using Proteone.Domain.Common;
 using Proteone.Domain.Licences;
 
 namespace Proteone.Application.Features.Licences;
@@ -57,7 +58,8 @@ public sealed class RevealLicenceKeyHandler(IAppDbContext db, ICurrentActor acto
         var protectedKey = await db.Licences.AsNoTracking().Where(l => l.Id == command.LicenceId).Select(l => l.ProtectedKey)
             .SingleOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException(AuditEntityTypes.Licence);
-        var key = protector.Unprotect(protectedKey);
+        var key = protector.TryUnprotect(protectedKey)
+            ?? throw new DomainException(ErrorCodes.LicenceKeyUnreadable, "The stored key cannot be opened with the current key ring.");
         audit.Record(AuditActions.LicenceKeyShown, AuditEntityTypes.Licence, command.LicenceId);
         await db.SaveChangesAsync(cancellationToken);
         return new LicenceKeyResult(key);

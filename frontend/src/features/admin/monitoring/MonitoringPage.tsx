@@ -22,6 +22,7 @@ import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { ActiveToken } from '../../../shared/page/ActiveToken';
 import { Icons } from '../../../shared/ui/icons';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
+import { useCloseOnConflict } from '../../changes/useCloseOnConflict';
 
 import { useMonitoringSources, useReplaceMonitoringSecret, type MonitoringSource } from './api';
 import { MonitoringSourceFormDialog } from './MonitoringSourceFormDialog';
@@ -36,6 +37,7 @@ interface ShownSecret {
 function ReplaceSecretDialog({ source, onSecret, onClose }: { source: MonitoringSource; onSecret: (shown: ShownSecret) => void; onClose: () => void }) {
   const { t } = useTranslation('admin');
   const replace = useReplaceMonitoringSecret();
+  const closeOnConflict = useCloseOnConflict(onClose);
   return (
     <ConfirmDialog
       title={t('monitoring.replace')}
@@ -44,7 +46,7 @@ function ReplaceSecretDialog({ source, onSecret, onClose }: { source: Monitoring
       variant="danger"
       isPending={replace.isPending}
       error={replace.error}
-      onConfirm={() => replace.mutate({ id: source.id, version: source.version }, { onSuccess: (result) => onSecret({ name: result.source.name, secret: result.secret }) })}
+      onConfirm={() => replace.mutate({ id: source.id, version: source.version }, { onSuccess: (result) => onSecret({ name: result.source.name, secret: result.secret }), onError: closeOnConflict })}
       onCancel={onClose}
     />
   );
@@ -58,6 +60,8 @@ export function MonitoringPage() {
   const [replacing, setReplacing] = useState<MonitoringSource | null>(null);
   const [shown, setShown] = useState<ShownSecret | null>(null);
   const lastEvent = (x: MonitoringSource) => (x.lastEventAt === null ? t('monitoring.never') : formatDateTime(x.lastEventAt));
+  const failed = (x: MonitoringSource) =>
+    x.failedCount > 0 && x.lastFailedAt !== null ? t('monitoring.failedAt', { count: x.failedCount, date: formatDateTime(x.lastFailedAt) }) : String(x.failedCount);
   const actions = (x: MonitoringSource) => (
     <HStack gap={2} wrap="wrap">
       <Button label={tc('actions.edit')} aria-label={recordActionLabel(tc('actions.edit'), x.name)} size="sm" variant="secondary" onClick={() => setForm({ source: x })} />
@@ -82,7 +86,7 @@ export function MonitoringPage() {
     },
     { key: 'team', header: t('monitoring.fields.team'), renderCell: (x) => x.teamName },
     { key: 'last', header: t('monitoring.lastEvent'), renderCell: lastEvent },
-    { key: 'failed', header: t('monitoring.failed'), renderCell: (x) => x.failedCount },
+    { key: 'failed', header: t('monitoring.failed'), renderCell: failed },
     { key: 'status', header: t('monitoring.status'), renderCell: (x) => <ActiveToken isActive={x.isActive} /> },
     { key: 'actions', header: t('monitoring.actions'), renderCell: actions },
   ];
@@ -95,7 +99,7 @@ export function MonitoringPage() {
         <ActiveToken isActive={x.isActive} />
       </HStack>
       {address(x)}
-      <Text type="supporting">{t('monitoring.cardMeta', { team: x.teamName, last: lastEvent(x), failed: x.failedCount })}</Text>
+      <Text type="supporting">{t('monitoring.cardMeta', { team: x.teamName, last: lastEvent(x), failed: failed(x) })}</Text>
       {actions(x)}
     </VStack>
   );

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection;
 using Proteone.Application.Abstractions;
 
@@ -11,5 +12,15 @@ internal sealed class LicenceKeyProtector(IDataProtectionProvider provider) : IL
 
     public string Protect(string key) => _protector.Protect(key);
 
-    public string Unprotect(string protectedKey) => _protector.Unprotect(protectedKey);
+    public string? TryUnprotect(string protectedKey)
+    {
+        try
+        {
+            return _protector.Unprotect(protectedKey);
+        }
+        catch (CryptographicException)
+        {
+            return null;
+        }
+    }
 }

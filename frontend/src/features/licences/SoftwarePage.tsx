@@ -33,6 +33,7 @@ import { ActiveToken } from '../../shared/page/ActiveToken';
 import { softwareLicencesPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { useCloseOnConflict } from '../changes/useCloseOnConflict';
 
 import { useCreateSoftware, useSoftware, useUpdateSoftware, type SoftwareItem } from './api';
 
@@ -61,6 +62,7 @@ function SoftwareFormDialog({ software, onClose }: { software: SoftwareItem | nu
   const create = useCreateSoftware();
   const update = useUpdateSoftware();
   const mutation = software === null ? create : update;
+  const closeOnConflict = useCloseOnConflict(onClose);
   const {
     control,
     handleSubmit,
@@ -71,7 +73,11 @@ function SoftwareFormDialog({ software, onClose }: { software: SoftwareItem | nu
     defaultValues: { name: software?.name ?? '', vendor: software?.vendor ?? '', isActive: software?.isActive ?? true },
   });
   const onSubmit = handleSubmit(({ name, vendor, isActive }) => {
-    const callbacks = { onSuccess: onClose, onError: (error: unknown) => applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS) };
+    const onError = (error: unknown) => {
+      closeOnConflict(error);
+      applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS);
+    };
+    const callbacks = { onSuccess: onClose, onError };
     if (software === null) {
       create.mutate({ name, vendor }, callbacks);
     } else {

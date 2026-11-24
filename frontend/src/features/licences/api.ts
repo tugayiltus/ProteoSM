@@ -105,10 +105,10 @@ export function useSoftwareSearch(search: string) {
 }
 
 /** Every write refreshes lists and details; a conflict does too, because the page then shows an old state. */
-function useLicenceWrite<TInput, TResult>(mutationFn: (input: TInput) => Promise<TResult>) {
+function useLicenceWrite<TInput, TResult>(mutationFn: (input: TInput) => Promise<TResult>, gcTime?: number) {
   const queryClient = useQueryClient();
   const reload = useReloadOnConflict(licenceKeys.all);
-  return useMutation({ mutationFn, onSuccess: () => queryClient.invalidateQueries({ queryKey: licenceKeys.all }), onError: reload });
+  return useMutation({ mutationFn, gcTime, onSuccess: () => queryClient.invalidateQueries({ queryKey: licenceKeys.all }), onError: reload });
 }
 
 export const useCreateSoftware = () =>
@@ -134,15 +134,19 @@ export const useReleaseLicence = () =>
     unwrap(api.DELETE('/api/v1/licences/{id}/assignments/{assignmentId}', { params: { path: { id, assignmentId } } })),
   );
 
+/** The key is in the mutation's variables, so they leave the cache with the dialog. */
+const NO_CACHE = 0;
+
 export const useSetLicenceKey = () =>
-  useLicenceWrite(({ id, version, key }: { id: string; version: number; key: string | null }) =>
-    unwrap(api.PUT('/api/v1/licences/{id}/key', { params: { path: { id } }, body: { version, key } })),
+  useLicenceWrite(
+    ({ id, version, key }: { id: string; version: number; key: string | null }) => unwrap(api.PUT('/api/v1/licences/{id}/key', { params: { path: { id } }, body: { version, key } })),
+    NO_CACHE,
   );
 
 /** Not a query on purpose: the key is never cached, and it is gone when the dialog closes (gcTime 0). */
 export function useRevealLicenceKey() {
   return useMutation({
     mutationFn: (id: string) => unwrap(api.POST('/api/v1/licences/{id}/key/reveal', { params: { path: { id } } })),
-    gcTime: 0,
+    gcTime: NO_CACHE,
   });
 }

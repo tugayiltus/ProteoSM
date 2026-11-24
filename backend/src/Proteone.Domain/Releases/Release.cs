@@ -113,8 +113,8 @@ public sealed class Release : Entity
         Description = draft.Description.Trim();
         OwnerTeamId = draft.OwnerTeamId;
         OwnerId = draft.OwnerId;
-        WindowStart = draft.WindowStart;
-        WindowEnd = draft.WindowEnd;
+        WindowStart = draft.WindowStart?.ToUniversalTime();
+        WindowEnd = draft.WindowEnd?.ToUniversalTime();
         Notes = string.IsNullOrWhiteSpace(draft.Notes) ? null : draft.Notes.Trim();
         UpdatedAt = now;
     }

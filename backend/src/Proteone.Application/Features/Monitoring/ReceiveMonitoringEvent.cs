@@ -88,6 +88,11 @@ public sealed class ReceiveMonitoringEventHandler(
         {
             var result = MonitoringEventResult.Accepted;
             await db.RunSerializedAsync(LockKeyOf(source.Id), async ct => result = await ApplyAsync(source, alert, ct), cancellationToken);
+            if (result != MonitoringEventResult.Accepted)
+            {
+                await CountFailureAsync(source.Id, now, cancellationToken);
+            }
+
             return result;
         }
         catch (DomainException unusable) when (unusable.Code == ErrorCodes.MonitoringSourceUnusable)
@@ -134,12 +139,14 @@ public sealed class ReceiveMonitoringEventHandler(
             ResolvedState => MonitoringState.Resolved,
             _ => throw Invalid(nameof(Payload.State), ErrorCodes.InvalidValue),
         };
+        var title = Text(payload.Title, Ticket.SubjectMaxLength, nameof(Payload.Title));
         return new Alert(
             Text(payload.EventId, MonitoringLimits.EventIdMaxLength, nameof(Payload.EventId)),
             Text(payload.AlertKey, MonitoringLimits.AlertKeyMaxLength, nameof(Payload.AlertKey)),
             state,
-            Text(payload.Title, Ticket.SubjectMaxLength, nameof(Payload.Title)),
-            Text(payload.Description, Ticket.DescriptionMaxLength, nameof(Payload.Description), keepLines: true));
+            title,
+            // Optional: many tools send no text with "resolved".
+            Text(string.IsNullOrWhiteSpace(payload.Description) ? title : payload.Description, Ticket.DescriptionMaxLength, nameof(Payload.Description), keepLines: true));
     }
 
     /// <summary>Plain text: control characters (also NUL, which the database refuses) become spaces, line breaks stay in a description.</summary>
@@ -221,23 +228,32 @@ public sealed class ReceiveMonitoringEventHandler(
     private async Task NoteAsync(MonitoringSource source, MonitoringAlert record, Ticket ticket, Alert alert, DateTimeOffset now, CancellationToken cancellationToken)
     {
         var firing = alert.State == MonitoringState.Firing;
-        if (!(firing ? record.FireAgain(now) : record.Resolve()))
+        if (!(firing ? record.FireAgain(now) : record.Resolve(now)))
         {
             return;
         }
 
         var text = $"{(firing ? FiringNote : ResolvedNote)}\n{alert.Title}\n{alert.Description}";
-        var body = text.Length <= TicketComment.BodyMaxLength ? text : text[..TicketComment.BodyMaxLength];
-        var comment = TicketComment.Create(ticket.Id, source.RequesterId, body, Visibility.Internal, now);
+        var comment = TicketComment.Create(ticket.Id, source.RequesterId, Cut(text, TicketComment.BodyMaxLength), Visibility.Internal, now);
         db.TicketComments.Add(comment);
         TicketTimeline.Record(db, ticket, TicketEventKind.InternalNote, Visibility.Internal, source.RequesterId, now, new { commentId = comment.Id, files = 0 });
         await TicketActivity.TouchAsync(db, ticket.Id, now, cancellationToken);
     }
 
+    /// <summary>Never cuts between the two halves of a character such as an emoji: the database refuses a lone half.</summary>
+    private static string Cut(string text, int maxLength) =>
+        text.Length <= maxLength ? text : text[..(char.IsHighSurrogate(text[maxLength - 1]) ? maxLength - 1 : maxLength)];
+
     private async Task OpenIncidentAsync(MonitoringSource source, Alert alert, DateTimeOffset now, CancellationToken cancellationToken)
     {
         await EnsureUsableAsync(source, cancellationToken);
         var categoryId = await db.Categories.Where(c => c.Id == source.CategoryId && c.IsActive).Select(c => (Guid?)c.Id).SingleOrDefaultAsync(cancellationToken);
+        if (source.ServiceId is not null)
+        {
+            // Deactivation takes the same lock, so no incident gets a service that is being deactivated.
+            await db.LockAsync(SerializationLocks.ServiceCatalog, cancellationToken);
+        }
+
         var serviceId = await db.Services.Where(s => s.Id == source.ServiceId && s.IsActive).Select(s => (Guid?)s.Id).SingleOrDefaultAsync(cancellationToken);
         var year = companyClock.YearOf(now);
         var ticket = Ticket.CreateIncident(

@@ -11,11 +11,11 @@ A monitoring tool could not open an incident without a person. `proteone.md` §2
 ## Decision
 
 - **Sources.** An admin creates sources in `/admin` → "İzleme kaynakları": team, requester (active IT user), optional service and category, impact, urgency. The secret (32 random bytes as 64 hex characters) is shown once, stored with the purpose `Proteone.MonitoringSecret`, and replaceable; the former one stops at once, also for a request that waits for the lock.
-- **Signature.** `POST /api/v1/monitoring/{sourceId}/events`, at most 16 KB. `X-Proteone-Timestamp` (Unix seconds, at most 5 minutes off) and `X-Proteone-Signature`: lower-case hex HMAC-SHA256 of `timestamp.body`, keyed with the text of the secret, compared in constant time. Nothing is parsed before it. Unknown or inactive source, bad time and bad signature give the same 401 body; an unknown source costs the same HMAC.
-- **Antiforgery.** Only this endpoint carries `SkipCsrfMetadata`; a test names it as the only one. A session cookie gives the request no rights: records carry the requester of the source.
+- **Signature.** `POST /api/v1/monitoring/{sourceId}/events`, at most 16 KB. `X-Proteone-Timestamp` (Unix seconds, at most 5 minutes off) and `X-Proteone-Signature`: lower-case hex HMAC-SHA256 of `timestamp.body`, keyed with the text of the secret, compared in constant time. Nothing is parsed before it. Unknown or inactive source, bad time and bad signature give the same 401 body; an unknown source costs the same HMAC. A known source also counts the failure, which is measurable; the id is a random UUID, so this is accepted.
+- **Antiforgery.** Only this endpoint carries `SkipCsrfMetadata`; a test names it as the only one. A session cookie is dropped before the request is handled: records carry the requester of the source, never a user.
 - **Replay and races.** (`source`, `eventId`) is unique; a repeat is 200 without effect, and event ids leave after 30 days. One advisory lock per source, so parallel events open one incident.
 - **Limits.** 60 requests a minute per client address before any check (`Security:MonitoringPermitLimitPerMinute`), 30 new incidents an hour per source (429, one audit row per hour; the event id stays unused, so the tool may retry).
-- **Effects.** `firing` opens an incident in the team of the source, or adds an internal note to the open one of the same alert, at most one in 5 minutes. `resolved` adds one internal note; IT closes the incident. Control characters become spaces; the text is never rendered as HTML.
+- **Effects.** `firing` opens an incident in the team of the source, or adds an internal note to the open one of the same alert, at most one in 5 minutes, but always after a "resolved" note, so an incident never reads as resolved while its alert fires. `resolved` adds one internal note in 5 minutes; IT closes the incident. `description` is optional (the title then stands for it). Control characters become spaces; the text is never rendered as HTML.
 - **Counters apart.** Last event and refused requests live in `monitoring_source_statuses`, so an event never makes an admin's edit fail. They show on the list; the mark "İzleme" on an incident is for IT only.
 
 ## Alternatives Considered
@@ -42,7 +42,7 @@ A monitoring tool could not open an incident without a person. `proteone.md` §2
 
 ### Negative
 - Tools without HMAC support need a small script (`docs/operations.md`).
-- An alert that flaps within 5 minutes may show "resolved" last until the next firing note.
+- An alert that flaps within 5 minutes may miss a "resolved" note; the incident then reads as firing.
 
 ### Risks
 - The secret is readable to whoever holds the database and the key ring. A lost key ring makes every source answer 401 until its secret is replaced.

@@ -196,8 +196,11 @@ public sealed class ReleaseEndpointTests(ApiFactory factory) : IAsyncLifetime
             windowEnd = end,
         };
         await AssertProblemAsync(_world.Desk.PutAsync(PathOf(release), Body(VersionOf(release), "2026-12-02T19:00:00Z")), HttpStatusCode.BadRequest);
-        var edited = await JsonAsync(_world.Desk, _world.Desk.PutAsync(PathOf(release), Body(VersionOf(release), "2026-12-02T23:00:00Z")));
+        var edited = await JsonAsync(_world.Desk, _world.Desk.PutAsync(PathOf(release), Body(VersionOf(release), "2026-12-03T02:00:00+03:00")));
         Assert.Equal("Yeni ad", edited.GetProperty("title").GetString());
+        await JsonAsync(_world.Desk, _world.Desk.PutAsync(PathOf(release), Body(VersionOf(edited), "2026-12-02T23:00:00Z")));
+        var kinds = (await TicketWorld.ReadAsync(_world.Desk, PathOf(release, "timeline"))).EnumerateArray().Select(e => e.GetProperty("kind").GetString());
+        Assert.Single(kinds, "updated");
         await AssertProblemAsync(_world.Desk.PutAsync(PathOf(release), Body(VersionOf(release), null)), HttpStatusCode.Conflict, ErrorCodes.ConcurrencyConflict);
     }
 

@@ -675,6 +675,7 @@
     "secretMessage": "Anahtar yalnızca bir kez gösterilir. Şimdi kopyalayıp izleme aracına girin.",
     "never": "Olay gelmedi",
     "lastEvent": "Son olay",
+    "failedAt": "{{count}} · {{date}}",
     "failed": "Reddedilen istek",
     "status": "Durum",
     "actions": "İşlemler",

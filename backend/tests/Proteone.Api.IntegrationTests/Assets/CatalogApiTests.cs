@@ -92,6 +92,11 @@ public sealed class CatalogApiTests(ApiFactory factory) : IAsyncLifetime
         var updated = await it.ReadJsonAsync<JsonElement>(update);
         Assert.Equal((modelId, "Dell", "Latitude", "Yeni not"),
             (updated.GetProperty("modelId").GetGuid(), updated.GetProperty("brand").GetString(), updated.GetProperty("model").GetString(), updated.GetProperty("notes").GetString()));
+
+        // Notes, warranty and purchase date are changes too: each is an audit row of its own.
+        await using var db = factory.Database.CreateDbContext();
+        var row = await db.AuditEvents.SingleAsync(e => e.Action == AuditActions.AssetUpdated, TestContext.Current.CancellationToken);
+        Assert.Contains("Yeni not", JsonDocument.Parse(row.NewValues!).RootElement.GetProperty("notes").GetString(), StringComparison.Ordinal);
     }
 
     [Fact]

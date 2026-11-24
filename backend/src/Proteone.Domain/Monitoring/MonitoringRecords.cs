@@ -50,15 +50,19 @@ public sealed class MonitoringAlert
     public Guid TicketId { get; private init; }
     public DateTimeOffset CreatedAt { get; private init; }
     public DateTimeOffset LastFiringAt { get; private set; }
+    public DateTimeOffset? LastResolvedAt { get; private set; }
     public bool IsResolved { get; private set; }
 
     public static MonitoringAlert Open(Guid sourceId, string alertKey, Guid ticketId, DateTimeOffset now) =>
         new() { SourceId = sourceId, AlertKey = alertKey, TicketId = ticketId, CreatedAt = now, LastFiringAt = now };
 
-    /// <summary>True when the incident gets a note: at most one in <see cref="MonitoringLimits.NoteInterval"/>.</summary>
+    /// <summary>
+    /// True when the incident gets a note: at most one in <see cref="MonitoringLimits.NoteInterval"/>, but always when the
+    /// last note said "resolved", so an incident never reads as resolved while its alert is firing.
+    /// </summary>
     public bool FireAgain(DateTimeOffset now)
     {
-        if (now - LastFiringAt < MonitoringLimits.NoteInterval)
+        if (!IsResolved && now - LastFiringAt < MonitoringLimits.NoteInterval)
         {
             return false;
         }
@@ -68,14 +72,15 @@ public sealed class MonitoringAlert
         return true;
     }
 
-    /// <summary>True when the incident gets a note; a repeated "resolved" does not.</summary>
-    public bool Resolve()
+    /// <summary>True when the incident gets a note; a repeated "resolved" does not, nor a second one within the note interval.</summary>
+    public bool Resolve(DateTimeOffset now)
     {
-        if (IsResolved)
+        if (IsResolved || now - LastResolvedAt < MonitoringLimits.NoteInterval)
         {
             return false;
         }
 
+        LastResolvedAt = now;
         IsResolved = true;
         return true;
     }

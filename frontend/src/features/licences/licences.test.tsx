@@ -107,6 +107,33 @@ describe('licences', () => {
     expect(await bodyOf(api.calls.filter((c) => c.method === 'PUT').at(-1))).toEqual({ version: 4, key: null });
   });
 
+  it('never overwrites a change made while the edit dialog was open', async () => {
+    let version = DETAIL.version;
+    const api = mockApi(
+      routes(IT_ME, {
+        'GET /api/v1/licences/lic-1': () => ({ status: 200, body: { ...DETAIL, version } }),
+        'PUT /api/v1/licences/lic-1': () => {
+          version += 1;
+          return { status: 409, body: { code: 'concurrency.conflict' } };
+        },
+      }),
+    );
+    const { user } = renderRoute('/licences/lic-1');
+    await user.click(await screen.findByRole('button', { name: 'Düzenle' }));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Kaydet' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(api.calls.filter((c) => c.method === 'PUT')).toHaveLength(1);
+    expect(await bodyOf(api.calls.find((c) => c.method === 'PUT'))).toMatchObject({ version: 4 });
+  });
+
+  it('finds software of a long list by text', async () => {
+    const api = mockApi(routes());
+    const { user } = renderRoute('/licences');
+    await user.click(await screen.findByRole('button', { name: 'Yeni lisans' }));
+    await user.type(within(await screen.findByRole('dialog')).getByRole('searchbox', { name: 'Yazılım ara' }), 'zoom');
+    await waitFor(() => expect(api.calls.some((c) => new URL(c.url).pathname === '/api/v1/software' && new URL(c.url).searchParams.get('q') === 'zoom')).toBe(true));
+  });
+
   it('edits software and shows a taken name at the field', async () => {
     const api = mockApi(routes(IT_ME, { 'PUT /api/v1/software/sw-1': { status: 409, body: { code: 'licences.software_name_taken' } } }));
     const { user } = renderRoute('/software');

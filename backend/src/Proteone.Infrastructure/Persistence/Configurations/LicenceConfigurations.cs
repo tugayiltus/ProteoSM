@@ -17,7 +17,8 @@ internal sealed class SoftwareConfiguration : IEntityTypeConfiguration<Software>
         builder.Property(s => s.Name).HasMaxLength(LicenceLimits.NameMaxLength).IsRequired();
         builder.Property(s => s.Vendor).HasMaxLength(LicenceLimits.VendorMaxLength).IsRequired();
         builder.Property(s => s.SearchText).HasMaxLength(LicenceLimits.SearchTextMaxLength).IsRequired();
-        builder.HasIndex(s => s.SearchText).IsUnique().HasDatabaseName("ux_software_search_text");
+        builder.Property(s => s.NormalizedKey).HasMaxLength(LicenceLimits.SearchTextMaxLength).IsRequired();
+        builder.HasIndex(s => s.NormalizedKey).IsUnique().HasDatabaseName("ux_software_normalized_key");
         builder.HasIndex(s => s.SearchText, "ix_software_search_text_trgm").HasMethod(TrigramIndex.Method).HasOperators(TrigramIndex.Operators);
     }
 }

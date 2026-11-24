@@ -3,8 +3,9 @@
  * @output The licence form; software and kind are fixed after creation.
  * @position Opened from the licence list and detail.
  */
+import { TextInput } from '@astryxdesign/core/TextInput';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -12,8 +13,10 @@ import { z } from 'zod';
 import { applyServerErrors, describeError, isHandledByFields } from '../../shared/api/errorMessage';
 import { ERROR_CODES } from '../../shared/api/errors';
 import { FormDialog } from '../../shared/feedback/FormDialog';
-import { FormDateInput, FormNumberInput, FormSelector, FormTextArea, FormTextInput } from '../../shared/form/formFields';
+import { FormDateInput, FormNumberInput, FormSelector, FormTextArea, FormTextInput, type SelectOption } from '../../shared/form/formFields';
+import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { withCurrentOption } from '../../shared/reference/referenceOptions';
+import { useCloseOnConflict } from '../changes/useCloseOnConflict';
 import { useReferenceTeams } from '../tickets/api';
 
 import { useCreateLicence, useSoftwareSearch, useUpdateLicence, type LicenceDetail } from './api';
@@ -23,6 +26,7 @@ const NAME_MAX_LENGTH = 150;
 const NOTES_MAX_LENGTH = 2000;
 const MIN_QUANTITY = 1;
 const MAX_QUANTITY = 100_000;
+const SEARCH_DEBOUNCE_MS = 300;
 
 const schema = z.object({
   softwareId: z.string().min(1, ERROR_CODES.required),
@@ -48,12 +52,20 @@ export function LicenceFormDialog({ licence, onClose }: { licence: LicenceDetail
   const update = useUpdateLicence();
   const mutation = licence === null ? create : update;
   const teams = useReferenceTeams(true);
-  const software = useSoftwareSearch('');
+  // The version the user saw when opening the dialog; a background refetch must not skip the conflict check.
+  const [openedVersion] = useState(licence?.version ?? 0);
+  const closeOnConflict = useCloseOnConflict(onClose);
+  const [softwareSearch, setSoftwareSearch] = useState('');
+  const [chosenSoftware, setChosenSoftware] = useState<SelectOption | null>(null);
+  const software = useSoftwareSearch(useDebouncedValue(softwareSearch.trim(), SEARCH_DEBOUNCE_MS));
   const teamOptions = useMemo(
     () => withCurrentOption((teams.data ?? []).map((x) => ({ value: x.id, label: x.name })), licence?.ownerTeamId, licence?.ownerTeamName),
     [teams.data, licence],
   );
-  const softwareOptions = useMemo(() => (software.data?.items ?? []).map((x) => ({ value: x.id, label: `${x.vendor} ${x.name}` })), [software.data]);
+  const softwareOptions = useMemo(
+    () => withCurrentOption((software.data?.items ?? []).map((x) => ({ value: x.id, label: `${x.vendor} ${x.name}` })), chosenSoftware?.value, chosenSoftware?.label),
+    [software.data, chosenSoftware],
+  );
   const {
     control,
     handleSubmit,
@@ -73,11 +85,15 @@ export function LicenceFormDialog({ licence, onClose }: { licence: LicenceDetail
   });
   const onSubmit = handleSubmit(({ softwareId, kind, expiresOn, notes, ...rest }) => {
     const body = { ...rest, expiresOn: expiresOn === '' ? null : expiresOn, notes: notes === '' ? null : notes };
-    const callbacks = { onSuccess: onClose, onError: (error: unknown) => applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS) };
+    const onError = (error: unknown) => {
+      closeOnConflict(error);
+      applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS);
+    };
+    const callbacks = { onSuccess: onClose, onError };
     if (licence === null) {
       create.mutate({ softwareId, kind, ...body }, callbacks);
     } else {
-      update.mutate({ id: licence.id, version: licence.version, ...body }, callbacks);
+      update.mutate({ id: licence.id, version: openedVersion, ...body }, callbacks);
     }
   });
   const alert = mutation.error && !isHandledByFields(mutation.error, FORM_FIELDS, CODE_FIELDS) ? describeError(mutation.error) : null;
@@ -93,7 +109,16 @@ export function LicenceFormDialog({ licence, onClose }: { licence: LicenceDetail
     >
       {licence === null && (
         <>
-          <FormSelector control={control} name="softwareId" label={t('columns.software')} options={softwareOptions} placeholder={tc('none')} isRequired />
+          <TextInput type="search" label={t('software.search')} value={softwareSearch} onChange={setSoftwareSearch} />
+          <FormSelector
+            control={control}
+            name="softwareId"
+            label={t('columns.software')}
+            options={softwareOptions}
+            placeholder={tc('none')}
+            onValueChange={(value) => setChosenSoftware(softwareOptions.find((option) => option.value === value) ?? null)}
+            isRequired
+          />
           <FormSelector
             control={control}
             name="kind"

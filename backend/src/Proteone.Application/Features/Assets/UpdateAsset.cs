@@ -54,13 +54,13 @@ public sealed class UpdateAssetHandler(
         {
             // A model deactivated after this asset was registered stays valid for the asset itself.
             var model = await AssetModelResolver.ResolveAsync(db, command.ModelId, keepInactiveId: asset.ModelId, ct);
-            var before = new { asset.AssetTag, asset.Type, asset.Brand, asset.Model, asset.SerialNumber, asset.LocationId, asset.DepartmentId };
+            var before = new { asset.AssetTag, asset.Type, asset.Brand, asset.Model, asset.SerialNumber, asset.LocationId, asset.DepartmentId, asset.WarrantyEndsOn, asset.PurchasedOn, asset.Notes };
             var movement = asset.Update(
                 model, command.SerialNumber, command.LocationId,
                 command.DepartmentId, command.WarrantyEndsOn, command.PurchasedOn, command.Notes, actorId, clock.GetUtcNow());
             db.AssetMovements.Add(movement);
             audit.Record(AuditActions.AssetUpdated, AuditEntityTypes.Asset, asset.Id, before,
-                new { asset.AssetTag, asset.Type, asset.Brand, asset.Model, asset.SerialNumber, asset.LocationId, asset.DepartmentId });
+                new { asset.AssetTag, asset.Type, asset.Brand, asset.Model, asset.SerialNumber, asset.LocationId, asset.DepartmentId, asset.WarrantyEndsOn, asset.PurchasedOn, asset.Notes });
             await db.SaveTranslatingDuplicateAsync(ErrorCodes.AssetSerialTaken, AssetRules.SerialTakenMessage, ct);
         }, cancellationToken);
         return await AssetQueries.LoadItemAsync(db, asset.Id, cancellationToken);

@@ -30,12 +30,11 @@ export function useLocationOptions(): SelectOption[] {
 
 /** Active IT staff and admins: the only roles allowed in teams. */
 export function useTeamCandidateOptions(): SelectOption[] {
-  const users = useActiveUsers(undefined);
-  return useMemo(
-    () =>
-      (users.data?.items ?? [])
-        .filter((u) => u.role !== 'employee')
-        .map((u) => ({ value: u.id, label: `${u.firstName} ${u.lastName} (${u.email})` })),
-    [users.data],
-  );
+  const staff = useActiveUsers('it_staff');
+  const admins = useActiveUsers('admin');
+  return useMemo(() => {
+    const users = [...(staff.data?.items ?? []), ...(admins.data?.items ?? [])].filter((u) => u.role !== 'employee');
+    const unique = [...new Map(users.map((u) => [u.id, u])).values()];
+    return unique.map((u) => ({ value: u.id, label: `${u.firstName} ${u.lastName} (${u.email})` }));
+  }, [staff.data, admins.data]);
 }

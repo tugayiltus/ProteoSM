@@ -6,6 +6,7 @@ namespace Proteone.Domain.Licences;
 public sealed class Software : Entity
 {
     private const string SearchSeparator = " ";
+    private const string KeySeparator = "\n";
 
     private Software()
     {
@@ -14,8 +15,11 @@ public sealed class Software : Entity
     public string Name { get; private set; } = string.Empty;
     public string Vendor { get; private set; } = string.Empty;
 
-    /// <summary>Turkish-insensitive key of vendor and name: uniqueness and search.</summary>
+    /// <summary>Turkish-insensitive key of vendor and name, for search.</summary>
     public string SearchText { get; private set; } = string.Empty;
+
+    /// <summary>The same with a line break between the two: unique, so "A B" + "C" and "A" + "B C" stay two products.</summary>
+    public string NormalizedKey { get; private set; } = string.Empty;
 
     public bool IsActive { get; private set; }
     public DateTimeOffset CreatedAt { get; private init; }
@@ -35,6 +39,7 @@ public sealed class Software : Entity
         Name = LicenceText.Required(name, LicenceLimits.NameMaxLength, nameof(name));
         Vendor = LicenceText.Required(vendor, LicenceLimits.VendorMaxLength, nameof(vendor));
         SearchText = SearchKey(Name, Vendor);
+        NormalizedKey = TurkishText.ToSearchKey(Vendor) + KeySeparator + TurkishText.ToSearchKey(Name);
         IsActive = isActive;
         UpdatedAt = now;
     }

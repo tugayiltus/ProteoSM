@@ -10,7 +10,7 @@ IT could not see in Proteone which software the company may use, how many seats 
 
 ## Decision
 
-- **Own records.** `software` (vendor and name, unique ignoring Turkish case), `licences` (kind per user or per device, quantity, owner team, optional end date) and `licence_assignments` (exactly one of user and asset, released rows stay). Partial unique indexes allow one active seat per licence and target. Commits `0889f5d`, `6764008`.
+- **Own records.** `software` (vendor and name, unique together, ignoring Turkish case), `licences` (kind per user or per device, quantity, owner team, optional end date) and `licence_assignments` (exactly one of user and asset, released rows stay). Partial unique indexes allow one active seat per licence and target. Commits `0889f5d`, `6764008`.
 - **Seats under one lock.** Assignments, releases, quantity changes and the expiry sweep run under `SerializationLocks.LicenceSeats` (7_013). A full or ended licence, or a quantity below the used seats, answers 409. A user deactivated or an asset retired later keeps the seat and is marked, so IT releases it.
 - **Keys.** Stored as Data Protection ciphertext with the purpose `Proteone.LicenceKey`. Only an admin sets, clears or shows a key. Showing saves the audit row `licences.key_shown` before the key is returned, and the response is `no-store`. Lists, details, exports, search, audit values and logs never hold the key.
 - **Access.** `/api/v1/software` and `/api/v1/licences` are for IT staff and admins; employees get 404. `GET /api/v1/me/software` returns vendor and name of the software the caller has, by an own seat or by a seat of a device assigned to them.
@@ -42,6 +42,7 @@ IT could not see in Proteone which software the company may use, how many seats 
 
 ### Negative
 - Seats are kept by hand; nothing discovers installed software.
+- The expiry notice changes the row version once per end date, so a form open at that moment gets a conflict.
 - All seat writes of the company share one lock; the writes are short.
 
 ### Risks

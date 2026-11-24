@@ -14,6 +14,7 @@ import { ERROR_CODES } from '../../../shared/api/errors';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
 import { FormSelector, FormSwitch, FormTextInput } from '../../../shared/form/formFields';
 import { withCurrentOption } from '../../../shared/reference/referenceOptions';
+import { useCloseOnConflict } from '../../changes/useCloseOnConflict';
 import { useActiveServiceOptions, useOwnerTeamOptions } from '../../services/serviceApi';
 import { useCategories } from '../catalog/api';
 import { useTeamCandidateOptions } from '../shared/referenceOptions';
@@ -52,6 +53,7 @@ export function MonitoringSourceFormDialog({ source, onSecret, onClose }: Monito
   const create = useCreateMonitoringSource();
   const update = useUpdateMonitoringSource();
   const mutation = source === null ? create : update;
+  const closeOnConflict = useCloseOnConflict(onClose);
   const teams = withCurrentOption(useOwnerTeamOptions(), source?.teamId, source?.teamName);
   const requesters = withCurrentOption(useTeamCandidateOptions(), source?.requesterId, source?.requesterName);
   const services = withCurrentOption(useActiveServiceOptions(true), source?.serviceId, source?.serviceName);
@@ -86,7 +88,10 @@ export function MonitoringSourceFormDialog({ source, onSecret, onClose }: Monito
   });
   const onSubmit = handleSubmit(({ serviceId, categoryId, ...rest }) => {
     const body = { ...rest, serviceId: orNull(serviceId), categoryId: orNull(categoryId) };
-    const onError = (error: unknown) => applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS);
+    const onError = (error: unknown) => {
+      closeOnConflict(error);
+      applyServerErrors(error, setError, FORM_FIELDS, CODE_FIELDS);
+    };
     if (source === null) {
       create.mutate(body, { onSuccess: (result) => onSecret(result.source.name, result.secret), onError });
     } else {

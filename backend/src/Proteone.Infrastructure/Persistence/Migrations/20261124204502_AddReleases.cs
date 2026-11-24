@@ -163,6 +163,9 @@ public partial class AddReleases : Migration
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+        // The narrower check below refuses rows of this feature.
+        migrationBuilder.Sql("DELETE FROM change_events WHERE kind IN ('release_set', 'release_cleared');");
+
         migrationBuilder.DropForeignKey(
             name: "fk_change_requests_releases_release_id",
             table: "change_requests");

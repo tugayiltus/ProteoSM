@@ -23,6 +23,9 @@ public partial class WidenExportJobsReportConstraintForLicences : Migration
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+        // The narrower check below refuses rows of this feature.
+        migrationBuilder.Sql("DELETE FROM export_jobs WHERE report = 'licences';");
+
         migrationBuilder.DropCheckConstraint(
             name: "ck_export_jobs_report",
             table: "export_jobs");

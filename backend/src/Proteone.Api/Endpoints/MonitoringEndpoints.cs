@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Proteone.Api.Http;
 using Proteone.Api.Security;
 using Proteone.Application.Features.Monitoring;
@@ -26,6 +27,8 @@ internal static class MonitoringEndpoints
     /// <summary>Writes the problem itself: no trace id or other part of the answer may differ between refusals.</summary>
     private static async Task ReceiveAsync(Guid sourceId, HttpContext context, ReceiveMonitoringEventHandler handler, CancellationToken cancellationToken)
     {
+        // A session cookie on the request means nothing here: no record may carry its user.
+        context.User = new ClaimsPrincipal(new ClaimsIdentity());
         var request = context.Request;
         if (await ReadBodyAsync(request, cancellationToken) is not { } body)
         {

@@ -199,6 +199,7 @@
     "software_name_taken": "Bu üretici ve adla başka bir yazılım var.",
     "software_inactive": "Pasif yazılıma yeni lisans eklenemez.",
     "owner_team_inactive": "Sahip ekip aktif olmalı.",
+    "key_unreadable": "Kayıtlı anahtar açılamıyor. Anahtarı yeniden girin.",
     "full": "Lisansta boş hak kalmadı.",
     "expired": "Süresi biten lisans atanamaz.",
     "quantity_below_use": "Adet, kullanılan hak sayısından az olamaz.",
