@@ -1,6 +1,6 @@
 # Başlarken
 
-Bu sayfa herkes içindir: TGYSM'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
+Bu sayfa herkes içindir: Proteone'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
 
 ## Hesabınız ve rolünüz
 
@@ -29,7 +29,7 @@ Bağlantı sınırlı bir süre geçerlidir. Süresi dolduysa giriş ekranındak
 
 ## Giriş yapma
 
-1. Tarayıcınızda TGYSM adresini açın. **Giriş yap** ekranı gelir.
+1. Tarayıcınızda Proteone adresini açın. **Giriş yap** ekranı gelir.
 2. **E-posta** alanına iş e-posta adresinizi, **Şifre** alanına şifrenizi yazın.
 3. **Giriş yap** düğmesine basın.
 
@@ -82,7 +82,7 @@ Telefonda menü gizlidir. Sol üstteki **Menüyü aç** düğmesine basın; men�
 
 ![Telefonda ana sayfa](images/home-mobile.png)
 
-Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekranlarından uygulamaya **Uygulamaya dön** bağlantısıyla geri dönülür.
+Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ayrı bir sayfa olarak açılır; kaydetmediğiniz bir form varsa tarayıcı çıkmadan önce sorar. Yönetim ekranlarından uygulamaya **Uygulamaya dön** bağlantısıyla geri dönülür.
 
 ## Sayfa yolu
 
@@ -1029,7 +1029,7 @@ Dışa aktarım durumları: **Sırada**, **Hazırlanıyor**, **Hazır**, **Başa
 
 # İlk kurulum
 
-Bu sayfa yöneticiler içindir: TGYSM'yi ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
+Bu sayfa yöneticiler içindir: Proteone'yi ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
 
 İlk yönetici hesabını sistemi kuran kişi açar ve size e-posta adresinizi ve geçici şifrenizi verir. Giriş yapıp şifrenizi değiştirin (bkz. [Başlarken](#başlarken)), sonra üst çubuktaki **Yönetim** bağlantısına basın.
 
@@ -1065,7 +1065,7 @@ Kullanıcılar, cihazlar ve kayıtlar bir lokasyona bağlanır; önce lokasyon a
 
 1. **Kategoriler** sayfasında ana kategorileri ve alt kategorileri ekleyin (en fazla iki seviye).
 2. Her kategorinin **Kullanım** alanını seçin: **Arıza**, **Talep** veya **Arıza ve talep**.
-3. Pilot dönemi için "TGYSM Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](#sorun-bildirme-ve-geri-bildirim)).
+3. Pilot dönemi için "Proteone Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](#sorun-bildirme-ve-geri-bildirim)).
 
 ## Adım 7: Talep tipleri
 
@@ -1362,7 +1362,7 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 
 # Sorun bildirme ve geri bildirim
 
-Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. TGYSM'nin kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu TGYSM üzerinden bildirin.
+Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. Proteone'nin kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu Proteone üzerinden bildirin.
 
 ## Ne bildirilir
 
@@ -1371,7 +1371,7 @@ Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. TGYSM'nin kendisiyle i
 - Bir işlem çok yavaş.
 - Bir şeyi yapmanın daha kolay bir yolu olmalı (öneri).
 
-Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "TGYSM Pilot" kategorisi yalnızca TGYSM'nin kendisi içindir.
+Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "Proteone Pilot" kategorisi yalnızca Proteone'nin kendisi içindir.
 
 ## Nasıl bildirilir
 
@@ -1383,18 +1383,18 @@ Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her
    - Ne oldu, ne olmasını bekliyordunuz?
    - Ekranda bir hata mesajı çıktıysa tam metni.
    - Hangi cihazı ve tarayıcıyı kullandınız (örneğin "telefon, Safari" veya "bilgisayar, Chrome").
-4. **Kategori** listesinden "TGYSM Pilot" seçin.
+4. **Kategori** listesinden "Proteone Pilot" seçin.
 5. **Lokasyon** seçin.
 6. Mümkünse ekran görüntüsünü **Dosya ekle (en fazla 5, her biri en fazla 10 MB)** alanından ekleyin.
 7. **Gönder** düğmesine basın.
 
-![TGYSM Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
+![Proteone Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
 
 ## Sonra ne olur
 
 Bildiriminiz diğer kayıtlar gibi IT ekibine düşer. Durumunu **Kayıtlarım** sayfasından izleyebilir, soru gelirse **Yazışmalar** bölümünden yanıtlayabilirsiniz (bkz. [Kayıtlarım](#kayıtlarım)).
 
-## TGYSM'ye hiç giremiyorsanız
+## Proteone'ye hiç giremiyorsanız
 
 Giriş yapamıyor veya kayıt açamıyorsanız IT ekibine telefonla veya e-postayla ulaşın. Önce [Sorun giderme](#sorun-giderme) sayfasına bakın.
 
