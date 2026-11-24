@@ -74,6 +74,18 @@ describe('ApprovalsPage', () => {
     await waitFor(() => expect(posted).toEqual({ approverId: 'adm-2', reason: 'Departman onaylayıcısı yok' }));
   });
 
+  it('keeps the request approvals when the change list fails', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/approvals/mine': { status: 200, body: [ITEM] },
+      'GET /api/v1/change-approvals': { status: 500, body: { code: 'unexpected' } },
+    });
+    renderRoute('/approvals');
+
+    expect(await screen.findByRole('button', { name: 'Tekrar dene' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: ITEM.subject })).toBeInTheDocument();
+  });
+
   it('lists request and change approvals with kind tokens and decides a change with the approval version', async () => {
     const posted: Record<string, unknown> = {};
     mockApi({

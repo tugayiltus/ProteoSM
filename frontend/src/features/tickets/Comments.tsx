@@ -11,7 +11,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { TextArea } from '@astryxdesign/core/TextArea';
 import { Token } from '@astryxdesign/core/Token';
 import { VStack } from '@astryxdesign/core/VStack';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormAlert } from '../../shared/feedback/FormAlert';
@@ -77,6 +77,7 @@ export function CommentBox({ ticket }: { ticket: TicketDetail }) {
   const { t } = useTranslation('tickets');
   const add = useAddComment();
   const [visibility, setVisibility] = useState<Visibility>('public');
+  const panelId = useId();
   const [body, setBody] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [formKey, setFormKey] = useState(0);
@@ -106,10 +107,11 @@ export function CommentBox({ ticket }: { ticket: TicketDetail }) {
         {ticket.canWork && (
           <TabList role="tablist" aria-label={t('comment.tabs')} value={visibility} onChange={(value) => isVisibility(value) && setVisibility(value)}>
             {VISIBILITIES.map((tab) => (
-              <Tab key={tab} value={tab} label={t(`comment.${tab}`)} />
+              <Tab key={tab} value={tab} label={t(`comment.${tab}`)} panelId={panelId} />
             ))}
           </TabList>
         )}
+        <VStack gap={3} id={ticket.canWork ? panelId : undefined} role={ticket.canWork ? 'tabpanel' : undefined} aria-label={ticket.canWork ? t(`comment.${visibility}`) : undefined}>
         <FormAlert message={add.error ? describeCommentError(add.error) : null} />
         {/* Locked while sending: the success handler clears the box, which would drop anything typed meanwhile. */}
         <TextArea label={t('comment.body')} value={body} isDisabled={add.isPending} onChange={setBody} />
@@ -118,6 +120,7 @@ export function CommentBox({ ticket }: { ticket: TicketDetail }) {
         <HStack>
           <Button type="submit" label={t('comment.send')} variant="primary" isDisabled={body.trim() === '' && files.length === 0} isLoading={add.isPending} />
         </HStack>
+        </VStack>
       </VStack>
     </form>
   );

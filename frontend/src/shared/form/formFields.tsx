@@ -71,7 +71,7 @@ export type FormSelectorProps<T extends FieldValues> = Bound<T> &
 const NO_VALUE = '';
 
 export function FormSelector<T extends FieldValues>({ control, name, options, isClearable = false, onValueChange, ...props }: FormSelectorProps<T>) {
-  const { value, onChange: setValue, status } = useBoundField({ control, name });
+  const { ref, value, onChange: setValue, status } = useBoundField({ control, name });
   const onChange = (next: string) => {
     setValue(next);
     onValueChange?.(next);
@@ -81,6 +81,7 @@ export function FormSelector<T extends FieldValues>({ control, name, options, is
     return (
       <Selector
         {...props}
+        ref={ref}
         options={[...options]}
         hasClear
         value={current === NO_VALUE ? null : current}
@@ -89,7 +90,7 @@ export function FormSelector<T extends FieldValues>({ control, name, options, is
       />
     );
   }
-  return <Selector {...props} options={[...options]} value={current} onChange={onChange} status={status} />;
+  return <Selector {...props} ref={ref} options={[...options]} value={current} onChange={onChange} status={status} />;
 }
 
 export type FormCheckboxProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof CheckboxInput>, Supplied>;
@@ -102,34 +103,34 @@ export function FormCheckbox<T extends FieldValues>({ control, name, ...props }:
 export type FormSwitchProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof Switch>, Supplied>;
 
 export function FormSwitch<T extends FieldValues>({ control, name, ...props }: FormSwitchProps<T>) {
-  const { value, onChange } = useBoundField({ control, name });
-  return <Switch {...props} value={Boolean(value)} onChange={onChange} />;
+  const { ref, value, onChange } = useBoundField({ control, name });
+  return <Switch {...props} ref={ref} value={Boolean(value)} onChange={onChange} />;
 }
 
 export type FormNumberInputProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof NumberInput>, Supplied | 'hasClear'>;
 
 export function FormNumberInput<T extends FieldValues>({ control, name, ...props }: FormNumberInputProps<T>) {
-  const { value, onChange, status } = useBoundField({ control, name });
-  return <NumberInput {...props} value={value as number | null} onChange={onChange} status={status} />;
+  const { ref, value, onChange, status } = useBoundField({ control, name });
+  return <NumberInput {...props} ref={ref} value={value as number | null} onChange={onChange} status={status} />;
 }
 
 export type FormDateInputProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof DateInput>, Supplied | 'changeAction'>;
 
 /** The form keeps `''` for "no date"; Astryx uses `undefined`. */
 export function FormDateInput<T extends FieldValues>({ control, name, ...props }: FormDateInputProps<T>) {
-  const { value, onChange, status } = useBoundField({ control, name });
+  const { ref, value, onChange, status } = useBoundField({ control, name });
   const current = (value as string | undefined) ?? NO_VALUE;
   // The schema keeps the value in the API's YYYY-MM-DD form, which is Astryx's ISO date string.
   const date = current === NO_VALUE ? undefined : (current as ComponentProps<typeof DateInput>['value']);
-  return <DateInput {...props} hasClear value={date} onChange={(next) => onChange(next ?? NO_VALUE)} status={status} />;
+  return <DateInput {...props} ref={ref} hasClear value={date} onChange={(next) => onChange(next ?? NO_VALUE)} status={status} />;
 }
 
 export type FormDateTimeInputProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof DateTimeInput>, Supplied | 'changeAction'>;
 
 /** The form keeps `''` for "no time"; Astryx uses `undefined`. The value is the local `YYYY-MM-DDTHH:mm` form of Astryx's ISO string. */
 export function FormDateTimeInput<T extends FieldValues>({ control, name, ...props }: FormDateTimeInputProps<T>) {
-  const { value, onChange, status } = useBoundField({ control, name });
+  const { ref, value, onChange, status } = useBoundField({ control, name });
   const current = (value as string | undefined) ?? NO_VALUE;
   const moment = current === NO_VALUE ? undefined : (current as ComponentProps<typeof DateTimeInput>['value']);
-  return <DateTimeInput {...props} hasClear value={moment} onChange={(next) => onChange(next ?? NO_VALUE)} status={status} />;
+  return <DateTimeInput {...props} ref={ref} hasClear value={moment} onChange={(next) => onChange(next ?? NO_VALUE)} status={status} />;
 }

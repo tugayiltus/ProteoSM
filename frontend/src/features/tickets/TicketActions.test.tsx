@@ -224,7 +224,12 @@ describe('TicketActions', () => {
     const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
 
     const box = await screen.findByRole('form', { name: 'Yazışmalar' });
-    await user.click(within(box).getByRole('tab', { name: 'İç not' }));
+    const reply = within(box).getByRole('tab', { name: 'Yanıt' });
+    expect(reply).toHaveAttribute('aria-controls', within(box).getByRole('tabpanel', { name: 'Yanıt' }).id);
+    reply.focus();
+    await user.keyboard('{ArrowRight}{Enter}');
+    expect(within(box).getByRole('tab', { name: 'İç not' })).toHaveAttribute('aria-selected', 'true');
+    expect(within(box).getByRole('tabpanel', { name: 'İç not' })).toBeInTheDocument();
     await user.type(within(box).getByLabelText('Mesajınız'), 'Not');
     await user.click(within(box).getByRole('button', { name: 'Gönder' }));
     await waitFor(() => expect(sent).toHaveLength(1));

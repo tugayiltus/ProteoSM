@@ -1,3 +1,4 @@
+using Proteone.Domain.Tickets;
 using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
@@ -114,6 +115,29 @@ public sealed class TicketArticleTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Conflict, duplicate.StatusCode);
         Assert.Equal(ErrorCodes.KnowledgeArticleAlreadyLinked, await ApiClient.ReadCodeAsync(duplicate));
         Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task A_lost_link_race_is_409_and_writes_one_link()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var ticket = await TicketWorld.CreateIncidentAsync(world.Employee);
+        var article = await ArticleApiTests.PublishedAsync(world.Desk);
+        await using var other = factory.Database.CreateDbContext();
+        await using var transaction = await other.Database.BeginTransactionAsync(Ct);
+        var number = ticket.GetProperty("number").GetString()!;
+        var row = await other.Tickets.SingleAsync(t => t.Number == number, Ct);
+        other.TicketArticles.Add(TicketArticle.Create(row.Id, IdOf(article), row.RequesterId, DateTimeOffset.UtcNow));
+        await other.SaveChangesAsync(Ct);
+
+        var call = LinkAsync(world.Desk, ticket, IdOf(article));
+        await AdvisoryLocks.WaitUntilBlockedOrDoneAsync(factory, call, Ct);
+        await transaction.CommitAsync(Ct);
+
+        using var lost = await call;
+        Assert.Equal(HttpStatusCode.Conflict, lost.StatusCode);
+        Assert.Equal(ErrorCodes.KnowledgeArticleAlreadyLinked, await ApiClient.ReadCodeAsync(lost));
+        Assert.Equal(1, await other.TicketArticles.CountAsync(l => l.TicketId == row.Id, Ct));
     }
 
     [Fact]

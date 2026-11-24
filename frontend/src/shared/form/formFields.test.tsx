@@ -1,3 +1,4 @@
+import { Button } from '@astryxdesign/core/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,7 +8,7 @@ import { z } from 'zod';
 
 import { AstryxProvider } from '../ui/AstryxProvider';
 
-import { FormCheckbox, FormNumberInput, FormSelector, FormSwitch, FormTextArea, FormTextInput } from './formFields';
+import { FormCheckbox, FormDateInput, FormDateTimeInput, FormNumberInput, FormSelector, FormSwitch, FormTextArea, FormTextInput } from './formFields';
 
 const REQUIRED = 'validation.required';
 const REQUIRED_TEXT = 'Bu alan zorunludur.';
@@ -29,6 +30,23 @@ const schema = z.object({
 });
 type Values = z.infer<typeof schema>;
 const EMPTY: Values = { title: '', body: '', priority: 'low', urgent: false, notify: false, minutes: DEFAULT_MINUTES };
+
+const FOCUS_FIELDS = ['priority', 'notify', 'minutes', 'day', 'moment'] as const;
+
+/** Sets a server error on one field, as `applyServerErrors` does. */
+function FocusHarness({ field }: { field: (typeof FOCUS_FIELDS)[number] }) {
+  const { control, setError } = useForm({ defaultValues: { priority: 'low', notify: false, minutes: DEFAULT_MINUTES, day: '', moment: '' } });
+  return (
+    <AstryxProvider>
+      <FormSelector control={control} name="priority" label="Öncelik" options={PRIORITIES} />
+      <FormSwitch control={control} name="notify" label="Bildir" />
+      <FormNumberInput control={control} name="minutes" label="Süre" />
+      <FormDateInput control={control} name="day" label="Gün" />
+      <FormDateTimeInput control={control} name="moment" label="Zaman" />
+      <Button label="Hata" onClick={() => setError(field, { type: 'server', message: REQUIRED }, { shouldFocus: true })} />
+    </AstryxProvider>
+  );
+}
 
 function Harness({ onSubmit, resetTo }: { onSubmit: (values: Values) => void; resetTo?: Partial<Values> }) {
   const { control, handleSubmit, reset } = useForm<Values>({ resolver: zodResolver(schema), defaultValues: EMPTY });
@@ -86,6 +104,16 @@ describe('form fields', () => {
     const input = await screen.findByRole('textbox', { name: new RegExp(LONG_TURKISH_LABEL) });
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(input).toHaveAccessibleDescription(new RegExp(REQUIRED_TEXT));
+  });
+
+  it.each(FOCUS_FIELDS)('moves the focus to %s when the server refuses it', async (field) => {
+    const user = userEvent.setup();
+    render(<FocusHarness field={field} />);
+    const button = screen.getByRole('button', { name: 'Hata' });
+    await user.click(button);
+    const names = { priority: /Öncelik/, notify: /Bildir/, minutes: /Süre/, day: /Gün/, moment: /Zaman/ };
+    await waitFor(() => expect(button).not.toHaveFocus());
+    expect(document.activeElement).toHaveAccessibleName(names[field]);
   });
 
   it('marks a required field for assistive tech', () => {
