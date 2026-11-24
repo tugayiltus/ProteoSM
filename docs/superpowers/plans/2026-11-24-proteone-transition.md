@@ -100,7 +100,7 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
 
 20. Directory sign-in against a real Entra tenant and a real Active Directory (by hand; needs the owner's environment).
 21. Host sizing after the pilot.
-22. Software and licence asset types, then light Release, then the monitoring webhook. Each needs a design, an ADR and owner approval before code.
+22. Approved on 2026-11-24, branch `feature/notes-and-modules`, design `docs/superpowers/specs/2026-11-24-licences-releases-monitoring-design.md`. Order: deferred notes, licences (ADR-0039), light Release (ADR-0040), monitoring webhook (ADR-0041), then one independent review with a security focus on the webhook and the licence keys, all tests (shortest first), documents, push, CI and fast-forward merge (approved). Build and `tools/lint.sh` per commit.
 
 ### E. Last step
 

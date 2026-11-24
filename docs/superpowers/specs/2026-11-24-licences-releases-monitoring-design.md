@@ -1,6 +1,6 @@
 # Licences, Light Release and Monitoring Webhook — design
 
-Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: draft, awaiting owner approval.
+Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11-24 (all three modules and all deferred notes; one independent review at the end).
 
 Order: deferred notes, licences, releases, monitoring. Reviews and full tests run once, after all code. Each module gets its ADR (0039–0041) and updates `proteone.md` §2 and §19.
 
