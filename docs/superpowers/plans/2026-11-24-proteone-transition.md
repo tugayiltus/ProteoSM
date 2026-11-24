@@ -27,7 +27,15 @@ Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 | Migrations' content, audit and event values, record number prefixes, user-secrets id, OIDC callback path | keep |
 | Accepted ADRs, earlier specs and plans, release records | keep (history) |
 
-## Steps
+## Earlier phases
+
+Phases 0–12 are complete and on `master` (`docs/status.md`): 0 design, 1 foundation, 2 assets, 3 support, 4 SLA and email, 5 knowledge and reports, 6 first release, 7 tasks, 8 changes, 9 calendar and reports, 10 related records and search, 11 problems, 12 service catalogue. They are not rebuilt. Their deferred review notes and the open work below join the queue.
+
+## Queue
+
+Order: rename first (every path changes), then fixes of earlier phases, then one review and one test pass, then documents, then approvals. New modules follow.
+
+### A. Proteone code
 
 1. This plan.
 2. Tests that pin the Data Protection values.
@@ -37,10 +45,39 @@ Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 6. Brand assets and surfaces from one shared source.
 7. Imports between the user app and the admin folder removed.
 8. Admin entry point, API fallback, tests.
-9. ADR-0037 (name and compatibility), ADR-0038 (admin entry, partly replaces ADR-0003), requirements §4.
-10. One review of the whole diff; fixes.
-11. Tests: unit and lint, integration, E2E and UI QA, Docker images, backup, restore and upgrade drills.
-12. Guide, screenshots, PDF, operator manual, README, capabilities, SECURITY. Repository links after the new repository is verified.
+
+### B. Open work of earlier phases
+
+The notes come from the phase ledgers. Some may be fixed already: check each against the code first, close it with a reason when it no longer applies, and prove each behavior fix with a failing test.
+
+9. Security and data safety
+   - Phase 1: wrong current password on change-password is not counted or rate limited; no absolute session lifetime; first-admin set-up race; `TRUNCATE` on `audit_events`.
+   - Phase 2–3: CSV template and export without formula neutralisation; any IT user can commit another user's import job; missing foreign keys on `asset_assignments` and `asset_movements`; import rows kept after commit.
+10. Wrong behavior
+    - Phase 1: updates without a change skip the version check and write an empty audit row; a cancelled request is logged as error 500.
+    - Phase 2–3: malformed uploads return 500 and 413 becomes 400; a transfer to a team only leaves an in-progress ticket without assignee; missing `approval_requested` event; ticket year from UTC on 1 January; duplicate serial reported as `tag_taken`.
+    - Phase 5: duplicate article link race returns 500; a failed article query shows "no articles"; stale article choice after a search change.
+    - Phase 8, 11: dialogs keep the old version after a 409 (changes, tasks); one failing approvals query hides both lists; dead task links for owner-team colleagues.
+    - Phase 10: a superseded search can leave the spinner; a short query shows "Sonuç bulunamadı".
+    - Phase 12: deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20; asset list has no service filter; link form on retired and lost assets; inactive service not marked in the filter; chosen service outside the first page shows blank.
+11. Scale and performance: audit indexes and paging; silent location cap (2000); unbounded `/approvals/mine`; global problem link lock; `tools/perf-measure.sh` with the problems and service reports.
+12. Accessibility and small code notes: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers listed in the ledgers.
+13. ADR-0036 and the `by_service` drill-down: the approved design has none, the code has one. Owner decision.
+14. Remaining parts of `SECURITY.md` checked against the code.
+
+### C. Close
+
+15. ADR-0037 (name and compatibility), ADR-0038 (admin entry, partly replaces ADR-0003), requirements §4.
+16. One review of the whole diff; fixes.
+17. Tests: unit and lint, integration, E2E and UI QA, Docker images, backup, restore and upgrade drills, performance.
+18. Documents: guide, screenshots, PDF, operator manual, README, capabilities, SECURITY, `CLAUDE.md`, `docs/status.md`. Repository links after the new repository is verified.
+19. One approval list: SDK 11 on the development machine, secret scan result, new repository, push, CI and deployment move, open Dependabot pull requests, switch of active development, archive of TGYSM.
+
+### D. After the transition
+
+20. Directory sign-in against a real Entra tenant and a real Active Directory (by hand; needs the owner's environment).
+21. Host sizing after the pilot.
+22. Software and licence asset types, then light Release, then the monitoring webhook. Each needs a design, an ADR and owner approval before code.
 
 ## Acceptance
 
