@@ -20,8 +20,8 @@ import { ActiveToken } from '../../shared/page/ActiveToken';
 import { SectionCard } from '../../shared/page/SectionCard';
 import { servicePath } from '../../shared/routes';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
-import { useActiveServiceOptions, useLinkServiceAsset, useUnlinkServiceAsset } from '../admin/services/api';
 import { ADMIN_ONLY, useSession } from '../auth/session';
+import { useActiveServiceOptions, useLinkServiceAsset, useUnlinkServiceAsset } from '../services/serviceApi';
 
 import { useAssetServices } from './api';
 

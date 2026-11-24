@@ -23,6 +23,7 @@ import { ERROR_CODES } from '../../shared/api/errors';
 import { FormAlert } from '../../shared/feedback/FormAlert';
 import { FormTextInput } from '../../shared/form/formFields';
 import { AuthCard } from '../../shared/layout/AuthCard';
+import { isLocalPath, RETURN_PARAM } from '../../shared/navigation/area';
 import { ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 
@@ -37,16 +38,10 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 const EMPTY_LOGIN: LoginValues = { email: '', password: '' };
 
-function redirectTarget(state: unknown): string {
-  if (typeof state === 'object' && state !== null && 'from' in state) {
-    const from = (state as { from: unknown }).from;
-    // "//host" and "/\\host" are protocol-relative: never follow them.
-    const isLocalPath = typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') && !from.startsWith('/\\');
-    if (isLocalPath && from !== ROUTES.login) {
-      return from;
-    }
-  }
-  return ROUTES.home;
+/** From the router state, or from the query when another entry sent the visitor here. */
+function redirectTarget(state: unknown, returnParam: string | null): string {
+  const from: unknown = typeof state === 'object' && state !== null && 'from' in state ? state.from : returnParam;
+  return isLocalPath(from) && from !== ROUTES.login ? from : ROUTES.home;
 }
 
 /** Microsoft sign-in leaves the SPA: the API redirects to Microsoft, so this is a full page load, not a router link. */
@@ -102,7 +97,7 @@ export function LoginPage() {
 
   // Single redirect point: after login the refreshed session lands here and goes where the user was heading.
   if (me.data) {
-    return <Navigate to={redirectTarget(location.state)} replace />;
+    return <Navigate to={redirectTarget(location.state, params.get(RETURN_PARAM))} replace />;
   }
 
   // Under a directory method, local passwords are for admins only (break-glass, ADR-0030).

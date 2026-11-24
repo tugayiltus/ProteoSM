@@ -12,7 +12,7 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
 import { FormSelector, FormTextInput } from '../../../shared/form/formFields';
-import { withCurrentOption } from '../shared/referenceOptions';
+import { withCurrentOption } from '../../../shared/reference/referenceOptions';
 
 import { useCreateLocation, useUpdateLocation } from './api';
 import { collectSubtreeIds, findLocationNode, flattenLocationTree, type LocationNode } from './locationTree';

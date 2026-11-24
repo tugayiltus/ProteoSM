@@ -26,10 +26,10 @@ import { ActiveToken } from '../../../shared/page/ActiveToken';
 import { RecordActions } from '../../../shared/page/RecordActions';
 import { Icons } from '../../../shared/ui/icons';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
+import { useAdminServices, useServiceDetail, useSetServiceActive, type ServiceListItem } from '../../services/serviceApi';
 import { readStatusFilter, STATUS_FILTER_KEY } from '../shared/statusFilter';
 import { StatusFilterSelector } from '../shared/StatusFilterSelector';
 
-import { useAdminServices, useServiceDetail, useSetServiceActive, type ServiceListItem } from './api';
 import { ServiceAssetsDialog } from './ServiceAssetsDialog';
 import { ServiceFormDialog } from './ServiceFormDialog';
 

@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, type Connect, type Plugin } from 'vite';
 
 const API_TARGET = process.env.PROTEONE_API_URL ?? 'http://localhost:5311';
 const DEV_PORT = 5310;
@@ -25,14 +25,30 @@ const ASTRYX_DATA = astryxFolders('Table|List|Item|MetadataList|Pagination|Token
 const ASTRYX_OVERLAYS = astryxFolders('Dialog|AlertDialog|Drawer|DropdownMenu|BottomSheet|Popover|Toast|Tooltip|HoverCard|MoreMenu');
 const apiProxy = { '/api': { target: API_TARGET, changeOrigin: false, headers: { [FORWARDED_PROTO_HEADER]: 'https' } } };
 
+/** The API serves `admin/index.html` for every page below `/admin` (ADR-0038); the dev and preview servers do the same. */
+const ADMIN_ENTRY = '/admin/index.html';
+const ADMIN_PAGE = /^\/admin(\/[^.?]*)?(\?.*)?$/;
+const toAdminEntry: Connect.NextHandleFunction = (request, _response, next) => {
+  if (request.url !== undefined && ADMIN_PAGE.test(request.url)) {
+    request.url = ADMIN_ENTRY;
+  }
+  next();
+};
+const adminEntry: Plugin = {
+  name: 'admin-entry',
+  configureServer: (server) => void server.middlewares.use(toAdminEntry),
+  configurePreviewServer: (server) => void server.middlewares.use(toAdminEntry),
+};
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), adminEntry],
   resolve: { dedupe: ['react', 'react-dom'] },
   server: { port: DEV_PORT, strictPort: true, proxy: apiProxy },
   preview: { port: PREVIEW_PORT, strictPort: true, proxy: apiProxy },
   build: {
     chunkSizeWarningLimit: CHUNK_WARNING_LIMIT_KB,
     rolldownOptions: {
+      input: { app: 'index.html', admin: 'admin/index.html' },
       output: {
         codeSplitting: {
           groups: [
@@ -58,9 +74,9 @@ export default defineConfig({
             // swallow shared code and leftover packages, and the entry chunk would import (and preload) that feature chunk.
             { name: 'vendor-other', test: /node_modules/, priority: 60 },
             { name: 'app-shared', test: /[\\/]src[\\/]shared[\\/]/, priority: 50 },
-            // Feature modules other features import (article picker, asset queries, admin reference options, service writes): kept apart so a ticket page
+            // Feature modules other features import (article picker, asset queries, service queries): kept apart so a ticket page
             // does not load the knowledge base's Markdown renderer or the admin screens.
-            { name: 'feature-common', test: /[\\/]src[\\/]features[\\/](kb[\\/]api\.ts|assets[\\/]api\.ts|admin[\\/]shared[\\/]|admin[\\/]services[\\/]api\.ts)/, priority: 45 },
+            { name: 'feature-common', test: /[\\/]src[\\/]features[\\/](kb[\\/]api\.ts|assets[\\/]api\.ts|services[\\/]serviceApi\.ts)/, priority: 45 },
             // App code; everything else falls to the entry chunk.
             { name: 'feature-admin', test: /[\\/]src[\\/]features[\\/]admin[\\/]/, priority: 40 },
             { name: 'feature-assets', test: /[\\/]src[\\/]features[\\/]assets[\\/]/, priority: 40 },
@@ -89,6 +105,8 @@ export default defineConfig({
         'src/**/*.test.{ts,tsx}',
         'src/test/**',
         'src/main.tsx',
+        'src/admin.tsx',
+        'src/app/mount.tsx',
         'src/vite-env.d.ts',
         'src/shared/api/schema.d.ts',
         'src/shared/i18n/i18next.d.ts',

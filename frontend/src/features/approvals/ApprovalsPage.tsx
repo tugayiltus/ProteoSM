@@ -26,10 +26,10 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
+import { useAdminOptions } from '../../shared/reference/referenceOptions';
 import { ticketPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
-import { useAdminOptions } from '../admin/shared/referenceOptions';
 import { useChangeApprovals } from '../changes/api';
 import { useDecideApproval, useMyApprovals, useReassignApprover, type MyApprovalItem } from '../tickets/api';
 

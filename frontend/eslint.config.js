@@ -48,6 +48,12 @@ export default tseslint.config(
     },
   },
   {
+    // The admin entry is its own page (ADR-0038): shared code lives in src/shared or in the owning feature, never in the admin folder.
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/features/admin/**', 'src/app/adminRouter.tsx'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [{ group: ['../admin/*', '../admin/**', '**/features/admin/**'], message: 'Only the admin entry imports the admin folder (ADR-0038).' }] }] },
+  },
+  {
     files: ['vite.config.ts', 'playwright.config.ts', 'e2e/**/*.ts', 'perf/**/*.ts', 'guide/**/*.ts', 'eslint.config.js'],
     languageOptions: { globals: { ...globals.node } },
   },

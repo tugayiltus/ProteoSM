@@ -17,6 +17,8 @@ namespace Proteone.Api;
 internal static class ApiApplicationExtensions
 {
     private const string SpaIndexFile = "index.html";
+    private const string AdminIndexFile = "admin/index.html";
+    private const string AdminPagesPattern = "/admin/{*path:nonfile}";
     private const string ApiFallbackPattern = ApiRoutes.ApiPrefix + "/{**path}";
     private const string TestingEnvironment = "Testing";
 
@@ -39,7 +41,7 @@ internal static class ApiApplicationExtensions
             app.UseHttpsRedirection();
         }
 
-        app.UseDefaultFiles();
+        app.UseDefaultFiles(new DefaultFilesOptions { RedirectToAppendTrailingSlash = false });
         app.UseStaticFiles();
         app.UseRouting();
         app.UseRateLimiter();
@@ -78,7 +80,9 @@ internal static class ApiApplicationExtensions
         app.MapFallback(ApiFallbackPattern, context => ApiProblem.WriteAsync(context, StatusCodes.Status404NotFound, ErrorCodes.NotFound))
             .AllowAnonymous();
 
-        // Production serves the built SPA from wwwroot (ADR-0003).
+        // Production serves both entry pages of the build from wwwroot (ADR-0003, ADR-0038). The pages hold no data: every
+        // admin endpoint checks the role itself.
+        app.MapFallbackToFile(AdminPagesPattern, AdminIndexFile).AllowAnonymous();
         app.MapFallbackToFile(SpaIndexFile).AllowAnonymous();
         return api;
     }

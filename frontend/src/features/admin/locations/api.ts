@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { adminKeys } from '../../../shared/api/adminKeys';
 import { api, unwrap } from '../../../shared/api/client';
 import type { components } from '../../../shared/api/schema';
-import { adminKeys } from '../shared/queryKeys';
 
 export type LocationItem = components['schemas']['LocationItem'];
 

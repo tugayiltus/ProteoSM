@@ -7,12 +7,15 @@ import { LoginPage } from '../features/auth/LoginPage';
 import { ADMIN_ONLY, IT_STAFF_OR_ADMIN } from '../features/auth/session';
 import { SetPasswordPage } from '../features/auth/SetPasswordPage';
 import { ProfilePage } from '../features/profile/ProfilePage';
-import { LoadingState } from '../shared/feedback/States';
 import { AppLayout } from '../shared/layout/AppLayout';
 import { ROUTES } from '../shared/routes';
 import { NotFoundPage } from '../shared/ui/NotFoundPage';
 
-const appRoutes: RouteObject[] = [
+import { LeaveArea } from './LeaveArea';
+import { withRoot } from './withRoot';
+
+/** Every page of the user application; the admin pages are the other entry (ADR-0038). */
+export const userPages: RouteObject[] = [
   { path: ROUTES.login, element: <LoginPage /> },
   { path: ROUTES.setPassword, element: <SetPasswordPage /> },
   { path: ROUTES.forgotPassword, element: <ForgotPasswordPage /> },
@@ -110,46 +113,8 @@ const appRoutes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: ROUTES.admin,
-        element: (
-          <RequireRole roles={ADMIN_ONLY}>
-            <Outlet />
-          </RequireRole>
-        ),
-        children: [
-          {
-            // Lazy like the admin pages: a static import would put the whole feature-admin chunk on every page's preload list.
-            lazy: async () => ({ Component: (await import('../shared/layout/AdminLayout')).AdminLayout }),
-            children: [
-              { id: 'adminOverview', index: true, lazy: async () => ({ Component: (await import('../features/admin/overview/AdminOverviewPage')).AdminOverviewPage }) },
-              { id: 'adminUsers', path: ROUTES.adminUsers, lazy: async () => ({ Component: (await import('../features/admin/users/UsersPage')).UsersPage }) },
-              { id: 'adminDepartments', path: ROUTES.adminDepartments, lazy: async () => ({ Component: (await import('../features/admin/departments/DepartmentsPage')).DepartmentsPage }) },
-              { id: 'adminLocations', path: ROUTES.adminLocations, lazy: async () => ({ Component: (await import('../features/admin/locations/LocationsPage')).LocationsPage }) },
-              { id: 'adminTeams', path: ROUTES.adminTeams, lazy: async () => ({ Component: (await import('../features/admin/teams/TeamsPage')).TeamsPage }) },
-              { id: 'adminServices', path: ROUTES.adminServices, lazy: async () => ({ Component: (await import('../features/admin/services/ServicesAdminPage')).ServicesAdminPage }) },
-              { id: 'adminCategories', path: ROUTES.adminCategories, lazy: async () => ({ Component: (await import('../features/admin/catalog/CategoriesPage')).CategoriesPage }) },
-              { id: 'adminRequestTypes', path: ROUTES.adminRequestTypes, lazy: async () => ({ Component: (await import('../features/admin/catalog/RequestTypesPage')).RequestTypesPage }) },
-              { id: 'adminBrands', path: ROUTES.adminBrands, lazy: async () => ({ Component: (await import('../features/admin/deviceCatalog/BrandsPage')).BrandsPage }) },
-              { id: 'adminModels', path: ROUTES.adminModels, lazy: async () => ({ Component: (await import('../features/admin/deviceCatalog/ModelsPage')).ModelsPage }) },
-              { id: 'adminEmailTemplates', path: ROUTES.adminEmailTemplates, lazy: async () => ({ Component: (await import('../features/admin/email/EmailTemplatesPage')).EmailTemplatesPage }) },
-              { id: 'adminEmailDeliveries', path: ROUTES.adminEmailDeliveries, lazy: async () => ({ Component: (await import('../features/admin/email/EmailDeliveriesPage')).EmailDeliveriesPage }) },
-              { id: 'adminSlaCalendar', path: ROUTES.adminSlaCalendar, lazy: async () => ({ Component: (await import('../features/admin/sla/SlaCalendarPage')).SlaCalendarPage }) },
-              { id: 'adminSlaPolicy', path: ROUTES.adminSlaPolicy, lazy: async () => ({ Component: (await import('../features/admin/sla/SlaPolicyPage')).SlaPolicyPage }) },
-              { id: 'adminLoginMethod', path: ROUTES.adminLoginMethod, lazy: async () => ({ Component: (await import('../features/admin/auth/LoginMethodPage')).LoginMethodPage }) },
-              { id: 'adminSystem', path: ROUTES.adminSystem, lazy: async () => ({ Component: (await import('../features/admin/system/SystemPage')).SystemPage }) },
-              { id: 'adminAudit', path: ROUTES.adminAudit, lazy: async () => ({ Component: (await import('../features/admin/audit/AuditPage')).AuditPage }) },
-            ],
-          },
-        ],
-      },
     ],
   },
-  { path: '*', element: <NotFoundPage /> },
 ];
 
-/**
- * A pathless root gives every route a hydration fallback: the first load of a lazy page renders the loading state
- * instead of nothing (and React Router's HydrateFallback warning, UX-16).
- */
-export const routes: RouteObject[] = [{ id: 'root', HydrateFallback: LoadingState, children: appRoutes }];
+export const routes: RouteObject[] = withRoot([...userPages, { path: `${ROUTES.admin}/*`, element: <LeaveArea /> }, { path: '*', element: <NotFoundPage /> }]);

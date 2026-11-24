@@ -21,8 +21,7 @@ import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/S
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
 import { useAssets, type AssetStatus } from '../../assets/api';
-
-import { useLinkServiceAsset, useServiceImpact, useUnlinkServiceAsset } from './api';
+import { useLinkServiceAsset, useServiceImpact, useUnlinkServiceAsset } from '../../services/serviceApi';
 
 const NO_SELECTION = '';
 const DIALOG_WIDTH = 560;

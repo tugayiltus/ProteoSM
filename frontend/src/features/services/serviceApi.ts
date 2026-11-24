@@ -1,12 +1,12 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { api, unwrap } from '../../../shared/api/client';
-import type { components } from '../../../shared/api/schema';
-import type { SelectOption } from '../../../shared/form/formFields';
-import { assetKeys } from '../../assets/api';
-import { adminKeys } from '../shared/queryKeys';
-import { REFERENCE_PAGE_SIZE } from '../shared/referenceOptions';
+import { adminKeys } from '../../shared/api/adminKeys';
+import { api, unwrap } from '../../shared/api/client';
+import type { components } from '../../shared/api/schema';
+import type { SelectOption } from '../../shared/form/formFields';
+import { REFERENCE_PAGE_SIZE } from '../../shared/reference/referenceOptions';
+import { assetKeys } from '../assets/api';
 
 export type ServiceListItem = components['schemas']['ServiceListItem'];
 export type ServiceDetail = components['schemas']['ServiceDetail'];

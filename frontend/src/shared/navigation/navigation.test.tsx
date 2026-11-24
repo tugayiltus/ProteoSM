@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import { createMemoryRouter, Link, Outlet, RouterProvider, useLocation, type RouteObject } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
-import { routes as appRoutes } from '../../app/router';
+import { allRoutes as appRoutes } from '../../test/allRoutes';
 import { EMPLOYEE_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
 import { stubPhoneViewport } from '../../test/viewport';

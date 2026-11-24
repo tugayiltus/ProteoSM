@@ -14,8 +14,9 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
 import { FormSelector, FormTextInput } from '../../../shared/form/formFields';
+import { withCurrentOption } from '../../../shared/reference/referenceOptions';
 import { useLoginMethod } from '../../auth/api';
-import { useDepartmentOptions, useLocationOptions, withCurrentOption } from '../shared/referenceOptions';
+import { useDepartmentOptions, useLocationOptions } from '../shared/referenceOptions';
 
 import { DEFAULT_DELIVERY, useCreateUser, useUpdateUser, type CredentialDelivery, type UserListItem } from './api';
 import { DeliveryChoice } from './DeliveryChoice';

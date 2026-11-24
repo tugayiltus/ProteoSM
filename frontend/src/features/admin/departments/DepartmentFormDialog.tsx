@@ -12,7 +12,7 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
 import { FormSelector, FormTextInput } from '../../../shared/form/formFields';
-import { useAdminOptions, withCurrentOption } from '../shared/referenceOptions';
+import { useAdminOptions, withCurrentOption } from '../../../shared/reference/referenceOptions';
 
 import { useCreateDepartment, useUpdateDepartment, type DepartmentItem } from './api';
 

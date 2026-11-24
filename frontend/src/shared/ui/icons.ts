@@ -6,6 +6,8 @@ import {
   Users, UsersRound,
 } from 'lucide-react';
 
+import { BrandMark } from '../brand/BrandMark';
+
 /**
  * App icons for Astryx components (ADR-0027): Astryx semantic names where one exists, so the theme can restyle
  * them, else Lucide glyphs (the neutral theme's own set). One concept, one icon across the app.
@@ -14,6 +16,7 @@ export const Icons = {
   arrowLeft: ArrowLeft,
   bell: Bell,
   book: BookOpen,
+  brand: BrandMark,
   building: Building2,
   calendar: 'calendar',
   changes: GitCompareArrows,

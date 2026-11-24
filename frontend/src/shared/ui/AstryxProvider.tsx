@@ -10,7 +10,8 @@ import { Theme } from '@astryxdesign/core/theme';
 import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+
+import { AreaLink } from '../navigation/AreaLink';
 
 import { useColorMode } from './colorMode';
 
@@ -39,7 +40,7 @@ export function AstryxProvider({ children }: { children: ReactNode }) {
   return (
     <InternationalizationProvider locale={ASTRYX_LOCALE} messages={ASTRYX_MESSAGES} overrides={overrides}>
       <Theme theme={neutralTheme} mode={resolved}>
-        <LinkProvider component={Link}>{children}</LinkProvider>
+        <LinkProvider component={AreaLink}>{children}</LinkProvider>
       </Theme>
     </InternationalizationProvider>
   );

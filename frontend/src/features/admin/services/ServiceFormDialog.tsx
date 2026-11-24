@@ -13,9 +13,8 @@ import { ERROR_CODES } from '../../../shared/api/errors';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
 import { ErrorState, LoadingState } from '../../../shared/feedback/States';
 import { FormSelector, FormTextArea, FormTextInput } from '../../../shared/form/formFields';
-import { withCurrentOption } from '../shared/referenceOptions';
-
-import { useCreateService, useOwnerTeamOptions, useServiceDetail, useUpdateService, type ServiceDetail } from './api';
+import { withCurrentOption } from '../../../shared/reference/referenceOptions';
+import { useCreateService, useOwnerTeamOptions, useServiceDetail, useUpdateService, type ServiceDetail } from '../../services/serviceApi';
 
 /** Mirrors backend Service.NameMaxLength and Service.DescriptionMaxLength. */
 const SERVICE_NAME_MAX_LENGTH = 100;

@@ -38,7 +38,7 @@ export function AppSidebar({ area, label, title, isCollapsed, onCollapsedChange,
     <SideNav
       aria-label={label}
       collapsible={{ isCollapsed, onCollapsedChange }}
-      header={<SideNavHeading heading={title} headingHref={AREA_HOME[area]} icon={<Icon icon={Icons.devices} size="sm" />} />}
+      header={<SideNavHeading heading={title} headingHref={AREA_HOME[area]} icon={<Icon icon={Icons.brand} size="sm" />} />}
     >
       {groups.map((group) => (
         <SideNavSection key={group.id} title={translateOr(`menuGroups.${group.id}`, group.id)}>

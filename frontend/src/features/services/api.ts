@@ -7,8 +7,9 @@
 import { useQueries } from '@tanstack/react-query';
 
 import type { components } from '../../shared/api/schema';
-import type { ServiceRef } from '../admin/services/api';
 import { assetServicesQuery } from '../assets/api';
+
+import type { ServiceRef } from './serviceApi';
 
 export {
   useAdminServices as useServices,
@@ -20,7 +21,7 @@ export {
   type ServiceListItem,
   type ServiceListParams,
   type ServiceRef,
-} from '../admin/services/api';
+} from './serviceApi';
 
 export type ServiceImpact = components['schemas']['ServiceImpact'];
 export type ImpactRecord = components['schemas']['ImpactRecord'];

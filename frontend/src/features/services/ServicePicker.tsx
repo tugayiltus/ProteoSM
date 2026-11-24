@@ -9,9 +9,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionDialog } from '../../shared/feedback/ActionDialog';
-import { useActiveServiceOptions } from '../admin/services/api';
 
 import type { ServiceRef } from './api';
+import { useActiveServiceOptions } from './serviceApi';
+
 
 const NO_SELECTION = '';
 

@@ -26,8 +26,8 @@ import { UnsavedChangesGuard } from '../../shared/feedback/UnsavedChangesGuard';
 import { useDiscardGuard } from '../../shared/feedback/useDiscardGuard';
 import { FormDateInput, FormSelector, FormTextInput } from '../../shared/form/formFields';
 import { TURKISH_LOCALE } from '../../shared/lib/turkish';
+import { withCurrentOption } from '../../shared/reference/referenceOptions';
 import { ROUTES } from '../../shared/routes';
-import { withCurrentOption } from '../admin/shared/referenceOptions';
 import { useSession } from '../auth/session';
 
 import { ASSET_TYPES, useAssetCatalog, useCreateAsset, useReferenceDepartments, useReferenceLocations, useUpdateAsset, type AssetItem } from './api';
