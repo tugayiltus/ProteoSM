@@ -45,7 +45,7 @@ Ad, veritabanı ve dağıtım taşındı, `/admin` kendi giriş sayfasını ald�
 
 ## Açık işler
 
-- Yeni genel GitHub reposu, aktif geliştirmenin geçişi ve TGYSM reposunun arşivlenmesi sahibin onayını bekler.
+- Aktif geliştirme `tugayiltus/Proteone` reposunda (geçiş noktası `e8b1317`, CI yeşil). TGYSM reposunun arşivlenmesi ve gerçek kurulumun taşınması sahibin onayını bekler. SDK 11 kurulumu ertelendi.
 - SSO canlıya almadan önce gerçek Entra kiracısı ve gerçek AD ile `PROTEONE_TEST_LDAP_*` sözleşme testi ve elle giriş gerekir. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
 - Ertelenen küçük notlar plandaki "Parked" maddelerindedir.
 - Sıradaki: yazılım/lisans varlık türleri (tasarım, ADR ve onay ister).

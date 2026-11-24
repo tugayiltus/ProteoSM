@@ -25,7 +25,7 @@ Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 | CI, test and local tool variables, launchd label | rename |
 | Backup prefix | `proteone-`; retention also cleans `tgysm-` archives; restore accepts both |
 | Database (owner decision 2026-11-24: no TGYSM left there) | database, role and test database names become `proteone*`; a new migration replaces the name in `email_templates`; schema objects already carry no brand; Data Protection purposes are not stored as text |
-| Audit rows and sent emails that hold the old name or address | history; rewriting or deleting them is a separate owner approval in step 19 (audit is append-only) |
+| Audit rows and sent emails that hold the old name | replaced by the migration `ProteoneHistory` (owner decision); addresses and directory paths stay |
 | Applied migrations' content, event kinds, record number prefixes, user-secrets id, OIDC callback path | keep |
 | Accepted ADRs, earlier specs and plans, release records | keep (history) |
 
@@ -75,26 +75,26 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
    - Done: change-password has the per-client limit; first-admin set-up runs serialized; only the creator commits an import job.
    - Closed after a check: `TRUNCATE` on `audit_events` is blocked (`audit_events_no_truncate`); no CSV export exists and the template holds fixed text.
    - Done: import jobs leave after 30 days. Closed: foreign keys on asset actor columns (users are never deleted, and a failing validation could stop the upgrade of an existing installation).
-   - Owner decision (step 19): an absolute session lifetime and its length; today an active session slides without an end.
+   - Done (owner decision): a session ends 24 hours after sign-in.
 10. Wrong behavior
     - Done: stale version on unchanged values is a conflict; import and asset duplicates report the serial; `approval_requested` event on related and voided requests; record numbers use the company year; article link race is 409; article errors and stale article choice; a failed approvals list no longer hides the other one.
     - Closed after a check: cancelled requests are logged as debug; admin cache leaves on 401; a superseded search releases its spinner.
     - Done: a truncated upload form is 400 and a too large body 413; the next task action after a 409 sends the current version; no new service link on retired and lost assets; inactive services are marked in the list filter.
     - Closed: a JSON body never reaches the comment route; the open task dialog keeps its version on purpose (the user must see the conflict); a chosen service outside the first page needs more than 100 services.
     - Parked: empty audit row of an unchanged update; dead task links for owner-team colleagues (404, follows `TaskScope`); short search shows the empty text; deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20 and the asset list has no service filter (a service can be unlinked from the asset page).
-    - Owner decision (step 19): a transfer to a team leaves an in-progress ticket without assignee.
+    - Done (owner decision): a transfer without assignee opens a ticket in progress.
 11. Scale: closed for a single company. Audit has indexes for time, actor and entity; 2000 locations, the approvals list and the problem link lock are far from their limits. `tools/perf-measure.sh` runs in step 17.
 12. Parked: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers from the ledgers. No behavior depends on them.
-13. ADR-0036 and the `by_service` drill-down: the approved design has none, the code has one. Owner decision.
+13. ADR-0036 and the `by_service` drill-down: done (owner decision): the figure has no links; ADR-0036 amendment.
 14. Done in part: PKCE and code flow, guest and domain rules, lockout, plan fingerprint, self-approval and task scope match the code. The other `SECURITY.md` lines are checked with the document step.
 
 ### C. Close
 
 15. Done: ADR-0037 (name and compatibility), ADR-0038 (admin entry, partly replaces ADR-0003), requirements §4.
-16. One review of the whole diff; fixes.
-17. Tests: unit and lint, integration, E2E and UI QA, Docker images, backup, restore and upgrade drills, performance.
-18. Documents: guide, screenshots, PDF, operator manual, README, capabilities, SECURITY, `CLAUDE.md`, `docs/status.md`. Repository links after the new repository is verified.
-19. One approval list: SDK 11 on the development machine, secret scan result, new repository, push, CI and deployment move, open Dependabot pull requests, switch of active development, archive of TGYSM.
+16. Done by the author of the change; no separate reviewer.
+17. Done. CI of `e8b1317` in the new repository is green. Tests: unit and lint, integration, E2E and UI QA, Docker images, backup, restore and upgrade drills, performance.
+18. Done, except the remaining `SECURITY.md` lines of step 14. Documents: guide, screenshots, PDF, operator manual, README, capabilities, SECURITY, `CLAUDE.md`, `docs/status.md`. Repository links after the new repository is verified.
+19. Done on 2026-11-24: new public repository, push, switch of active development, local database and role rename, name in history. SDK 11 is postponed by the owner. Open: archive of TGYSM, move of the real installation. List: SDK 11 on the development machine, secret scan result, new repository, push, CI and deployment move, open Dependabot pull requests, switch of active development, archive of TGYSM.
 
 ### D. After the transition
 
