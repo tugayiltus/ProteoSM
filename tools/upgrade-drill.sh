@@ -6,6 +6,7 @@
 #
 #   tools/upgrade-drill.sh <tgysm image tag> [git ref of the TGYSM scripts]
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 cd "$(dirname "$0")/.."
 
 readonly USAGE="usage: tools/upgrade-drill.sh <tgysm image tag> [git ref]"

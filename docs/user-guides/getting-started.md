@@ -1,6 +1,6 @@
 # Başlarken
 
-Bu sayfa herkes içindir: TGYSM'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
+Bu sayfa herkes içindir: Proteone'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
 
 ## Hesabınız ve rolünüz
 
@@ -29,7 +29,7 @@ Bağlantı sınırlı bir süre geçerlidir. Süresi dolduysa giriş ekranındak
 
 ## Giriş yapma
 
-1. Tarayıcınızda TGYSM adresini açın. **Giriş yap** ekranı gelir.
+1. Tarayıcınızda Proteone adresini açın. **Giriş yap** ekranı gelir.
 2. **E-posta** alanına iş e-posta adresinizi, **Şifre** alanına şifrenizi yazın.
 3. **Giriş yap** düğmesine basın.
 
@@ -82,7 +82,7 @@ Telefonda menü gizlidir. Sol üstteki **Menüyü aç** düğmesine basın; men�
 
 ![Telefonda ana sayfa](images/home-mobile.png)
 
-Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekranlarından uygulamaya **Uygulamaya dön** bağlantısıyla geri dönülür.
+Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ayrı bir sayfa olarak açılır; kaydetmediğiniz bir form varsa tarayıcı çıkmadan önce sorar. Yönetim ekranlarından uygulamaya **Uygulamaya dön** bağlantısıyla geri dönülür.
 
 ## Sayfa yolu
 

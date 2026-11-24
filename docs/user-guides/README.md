@@ -1,6 +1,6 @@
-# TGYSM Kullanıcı Rehberi
+# Proteone Kullanıcı Rehberi
 
-TGYSM, şirket içi IT destek platformudur: arıza bildirme, talep oluşturma, zimmetli cihazlar, bilgi bankası, IT ekibinin iş takibi, görevler ve değişiklikler, problemler, hizmetler, envanter, raporlar ve yönetim ekranları.
+Proteone, şirket içi IT destek platformudur: arıza bildirme, talep oluşturma, zimmetli cihazlar, bilgi bankası, IT ekibinin iş takibi, görevler ve değişiklikler, problemler, hizmetler, envanter, raporlar ve yönetim ekranları.
 
 Sayfalar aşağıdaki sırayla okunabilir. Her sayfanın başında kimin için olduğu yazar.
 

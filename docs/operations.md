@@ -27,7 +27,7 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
 - Inbound TCP on `HTTP_PORT` and `HTTPS_PORT`. Outbound access to the SMTP relay (`SMTP_HOST:SMTP_PORT`).
 - A DNS name for the host that matches the certificate and `PUBLIC_BASE_URL`.
 - The subnet `PROTEONE_SUBNET` (default `172.28.0.0/24`) must not overlap a network the host already uses.
-- Running the quality gates on the host (`tools/deploy.sh` without `--skip-gates`) additionally needs the development toolchain: .NET 10 SDK, Node 22 and a PostgreSQL 17 for the tests. A production host normally deploys with `--skip-gates` a commit whose CI run (`.github/workflows/ci.yml`) is green.
+- Running the quality gates on the host (`tools/deploy.sh` without `--skip-gates`) additionally needs the development toolchain: .NET 11 SDK, Node 26 and a PostgreSQL 17 for the tests. A production host normally deploys with `--skip-gates` a commit whose CI run (`.github/workflows/ci.yml`) is green.
 - CPU, memory and disk sizing: TODO: decide after the pilot. Reference measurement: `docs/release/performance.md` (2,000 tickets, 500 assets).
 - On macOS with Colima (development machines only), Docker shares only the home folder with containers: keep the repository and any archive you restore under your home folder.
 
@@ -125,6 +125,21 @@ Images of earlier builds stay on the host under their Git short hash until remov
   Everything written after that backup is lost. `tools/restore.sh` asks the pinned image for its newest migration (`migrate --print-latest`), so pin the tag before restoring; an archive from a newer build is refused (exit 3).
 
 The next `tools/deploy.sh` overwrites `deploy/.version` with its own hash, so `tools/compose.sh` and `tools/restore.sh` always use the images that run. Do not set `PROTEONE_VERSION` in `deploy/.env`: `deploy/.version` overrides it.
+
+## Moving a TGYSM installation
+
+The product was named TGYSM until November 2026 (ADR-0037). An installation moves by backup and restore into a new stack; the old volumes stay for a rollback. Rehearsal on throw-away stacks: `tools/upgrade-drill.sh <tgysm image tag>`.
+
+1. On the TGYSM checkout: `tools/backup.sh`, copy the archive out of the `backups` volume (or `BACKUP_HOST_DIR`) and keep a copy off the host. Note the running tag in `deploy/.version`.
+2. Stop it without removing volumes: `tools/compose.sh down`. Never add `-v`.
+3. On the Proteone checkout: create `deploy/.env` from `deploy/.env.example`. Copy your values. New key names: `PROTEONE_SUBNET` and `PROTEONE_DEPLOYMENT` (the `TGYSM_` names still work). Set a new `POSTGRES_PASSWORD` and the sender name in `EMAIL_FROM`. Copy the certificate to `deploy/certs/proteone.crt` and `deploy/certs/proteone.key`.
+4. `tools/docker-build.sh`, then `tools/restore.sh <archive>`. The database becomes `proteone` with the user `proteone`; `migrate` runs after the restore.
+5. `tools/deploy.sh --skip-gates`. It refuses to start empty beside `tgysm_pgdata`; after the restore it runs normally.
+6. Check `/api/v1/health`, sign in, `/admin/system`, and the sign-in method in `/admin`. When the address changes, update the redirect URI in Microsoft Entra ID.
+
+What users notice: they sign in once again. Waiting account links and stored directory secrets keep working. Sent emails and audit rows keep the old name as history.
+
+Rollback: `tools/compose.sh down` on the Proteone checkout, then `tools/compose.sh up -d` on the TGYSM checkout. Everything written after the move is lost. Delete the old volumes only when no rollback is needed any more.
 
 ## Backups
 

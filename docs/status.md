@@ -1,8 +1,8 @@
-# TGYSM — durum özeti
+# Proteone — durum özeti
 
-Biten faz ve işlerin tek sayfalık özeti. Ayrıntı her satırdaki plan, spec ve ADR'de; planlar yerinde kalır. Faz tablosu: `tgysm.md` (Faz 0–6 = ilk sürüm).
+Biten faz ve işlerin tek sayfalık özeti. Ayrıntı her satırdaki plan, spec ve ADR'de; planlar yerinde kalır. Faz tablosu: `proteone.md` (Faz 0–6 = ilk sürüm).
 
-Güncel: 2026-11-23.
+Güncel: 2026-11-24. Ürünün adı bu tarihe kadar TGYSM idi (ADR-0037).
 
 ## Biten fazlar (ilk sürüm)
 
@@ -39,11 +39,13 @@ Güncel: 2026-11-23.
 | 11 — Problem | Hafif problem yönetimi (`PRB-`): Açık → İnceleniyor → Bilinen hata → Çözüldü / İptal, kök neden, geçici ve kalıcı çözüm, arıza ve düzelten değişiklik bağlantıları, "Makale oluştur" (iç taslak bilinen hata makalesi), arızada Problem kartı, değişiklikte "İlgili problemler", merkezi aramada problemler, Problemler rapor sekmesi, İş listem kartı "Ekibimin problemleri", pilot veri; ayrıca dizin girişi sözleşme testi (Görev 10) | `docs/superpowers/plans/2026-11-20-phase-11-problem-management.md` (10 görev) | 0034 | `master` (`489b680`, CI yeşil) |
 | 12 — Hizmet kataloğu | Hafif hizmet kataloğu ve CMDB: `/admin` → "Hizmetler" (oluşturma, düzenleme, pasifleştirme, varlık bağlama; kullanım dışı veya kayıp varlık bağlanmaz), IT'ye "Hizmetler" listesi ve hizmet sayfası (Varlıklar, Açık kayıtlar, Değişiklikler, Açık problemler), arıza/talep, değişiklik ve problemde "Hizmet" alanı (kapalı kayıtta da; bağlı cihazdan öneri) ve liste filtresi, varlık sayfasında "Hizmetler" kartı, raporlarda hizmet dağılımı, merkezi aramada hizmetler, pilot veri (8 hizmet); çalışan hizmet görmez | `docs/superpowers/plans/2026-11-23-phase-12-service-catalogue.md` (10 görev) | 0036 | `feature/service-catalogue` (birleştirme sahibin onayını bekliyor) |
 
+## Proteone geçişi
+
+Ad, veritabanı ve dağıtım taşındı, `/admin` kendi giriş sayfasını aldı (ADR-0037, ADR-0038); eski fazların ertelenmiş notlarından hata olanlar düzeltildi. Plan ve tek iş listesi: `docs/superpowers/plans/2026-11-24-proteone-transition.md`. Yükseltme provası: `tools/upgrade-drill.sh`.
+
 ## Açık işler
 
-- Dizin sözleşme testi yerelde tamam: `tools/directory-contract-test.sh` (OpenLDAP + sahte OIDC, LDAPS ve StartTLS, kesinti), sonuç `docs/release/directory-contract-test.md`. SSO canlıya almadan önce hâlâ gerekli: gerçek Entra kiracısı ve gerçek AD ile `TGYSM_TEST_LDAP_*` sözleşme testi ve elle giriş. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
-- `SECURITY.md` QR, `ASSET-` etiketi, SSO, görevler ve değişiklikler için eski; sahibin isteğiyle güncellenir. `README.md` ve `capabilities.md` `8866fdd` itibarıyla güncel.
-- Kullanıcı rehberinin tüm ekran görüntüleri Astryx arayüzünde yeniden çekildi (görevler, değişiklikler, bakım takvimi, merkezi arama, Değişiklikler/Görevler/Problemler rapor sekmeleri dahil); hepsi kapanmış değişiklikleri de içeren tek pilot veriyle çekildi; `master` (`016f97f`).
-- Bekleyen Dependabot PR'ları.
-- `frontend/perf/measure.ts` artık Problemler raporunu da ölçüyor; sayısı `docs/release/performance.md`'ye bir sonraki `tools/perf-measure.sh` çalışmasında girer.
+- Yeni genel GitHub reposu, aktif geliştirmenin geçişi ve TGYSM reposunun arşivlenmesi sahibin onayını bekler.
+- SSO canlıya almadan önce gerçek Entra kiracısı ve gerçek AD ile `PROTEONE_TEST_LDAP_*` sözleşme testi ve elle giriş gerekir. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
+- Ertelenen küçük notlar plandaki "Parked" maddelerindedir.
 - Sıradaki: yazılım/lisans varlık türleri (tasarım, ADR ve onay ister).
