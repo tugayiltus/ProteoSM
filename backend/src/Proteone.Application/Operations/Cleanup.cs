@@ -7,11 +7,11 @@ using Proteone.Domain.Reports;
 namespace Proteone.Application.Operations;
 
 /// <summary>Rows removed by one <see cref="CleanupHandler"/> run, plus the export files it deleted.</summary>
-public sealed record CleanupResult(int PasswordTokens, int OutboxEvents, int Heartbeats, int ExportFiles);
+public sealed record CleanupResult(int PasswordTokens, int OutboxEvents, int Heartbeats, int ExportFiles, int ImportJobs);
 
 /// <summary>
 /// Retention sweep (ADR-0014, ADR-0015, ADR-0017): deletes password tokens expired, finished outbox events and
-/// worker heartbeats last run more than <see cref="Retention"/> ago. Email deliveries of a deleted event go with it
+/// worker heartbeats last run, and asset import jobs, more than <see cref="Retention"/> ago. Email deliveries of a deleted event go with it
 /// (FK cascade). Pending and failed events are kept (failed ones stay visible to admins); an event that still has
 /// an unfinished delivery is kept. <c>password_reset_requested</c> events carry a requested email address and never
 /// have deliveries, so they are removed once old whatever their status, except while still pending. Ready export files whose
@@ -50,9 +50,14 @@ public sealed class CleanupHandler(IAppDbContext db, IFileStore files, TimeProvi
             .Where(h => h.LastRunAt < cutoff)
             .ExecuteDeleteAsync(cancellationToken);
 
+        // The audit event of a commit stays; the job only holds the uploaded rows.
+        var importJobs = await db.AssetImportJobs
+            .Where(j => (j.CommittedAt ?? j.CreatedAt) < cutoff)
+            .ExecuteDeleteAsync(cancellationToken);
+
         var exportFiles = await ExpireExportsAsync(cancellationToken);
 
-        return new CleanupResult(tokens, events, heartbeats, exportFiles);
+        return new CleanupResult(tokens, events, heartbeats, exportFiles, importJobs);
     }
 
     /// <summary>

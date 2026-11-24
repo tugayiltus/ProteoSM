@@ -126,8 +126,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     }
 
     public void SetExpectedVersion<TEntity>(TEntity entity, uint expectedVersion)
-        where TEntity : Entity =>
-        Entry(entity).Property(e => e.Version).OriginalValue = expectedVersion;
+        where TEntity : Entity
+    {
+        var version = Entry(entity).Property(e => e.Version);
+        // An update that changes nothing sends no statement, so the save alone would not notice a stale version.
+        if (version.CurrentValue != expectedVersion)
+        {
+            throw new ConcurrencyException();
+        }
+
+        version.OriginalValue = expectedVersion;
+    }
 
     public void SetExpectedVersion(AuthSettings settings, uint expectedVersion) =>
         Entry(settings).Property(s => s.Version).OriginalValue = expectedVersion;

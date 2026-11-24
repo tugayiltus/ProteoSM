@@ -91,6 +91,20 @@ public sealed class DepartmentAdminTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Stale_version_returns_conflict_even_when_the_values_are_unchanged()
+    {
+        var admin = await AdminAsync();
+        var created = await CreateAsync(admin, "Hukuk");
+        var path = $"{DepartmentsPath}/{created.GetProperty("id").GetGuid()}";
+        var version = created.GetProperty("version").GetUInt32();
+        using var first = await admin.PutAsync(path, new { version, name = "Hukuk Müşavirliği" });
+
+        using var same = await admin.PutAsync(path, new { version, name = "Hukuk Müşavirliği" });
+
+        Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(same));
+    }
+
+    [Fact]
     public async Task Deactivate_and_reactivate_are_audited()
     {
         var admin = await AdminAsync();

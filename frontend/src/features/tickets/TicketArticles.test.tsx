@@ -35,6 +35,14 @@ describe('TicketArticles', () => {
     expect(await screen.findByText('Bu kayda bağlı makale yok.')).toBeInTheDocument();
   });
 
+  it('shows the failure instead of an empty list', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...detailRoutes(INCIDENT), [`GET ${ARTICLES_ROUTE}`]: { status: 403, body: { code: 'common.forbidden' } } } as never);
+    renderRoute(`/tickets/${INCIDENT.number}`);
+
+    expect(await findAlert()).toBeInTheDocument();
+    expect(screen.queryByText('Bu kayda bağlı makale yok.')).not.toBeInTheDocument();
+  });
+
   it('lets IT staff link a published article and marks internal ones', async () => {
     let posted: unknown;
     const api = mockApi({

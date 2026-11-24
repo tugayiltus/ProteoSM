@@ -13,6 +13,9 @@ public interface ICompanyClock
     /// <summary>The company calendar's time zone; report day ranges are whole days in it.</summary>
     TimeZoneInfo Zone { get; }
 
+    /// <summary>The calendar year in the company zone: record numbers change at the company's New Year, not at the UTC one.</summary>
+    int YearOf(DateTimeOffset instant) => TimeZoneInfo.ConvertTime(instant, Zone).Year;
+
     /// <summary>Converts <paramref name="instant"/> to the company zone and renders it as <c>dd.MM.yyyy HH:mm</c>, Turkish-formatted.</summary>
     string Format(DateTimeOffset instant);
 }

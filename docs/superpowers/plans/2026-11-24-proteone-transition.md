@@ -74,14 +74,14 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
 9. Security and data safety
    - Done: change-password has the per-client limit; first-admin set-up runs serialized; only the creator commits an import job.
    - Closed after a check: `TRUNCATE` on `audit_events` is blocked (`audit_events_no_truncate`); no CSV export exists and the template holds fixed text.
-   - Open: foreign keys on the actor columns of `asset_movements` and `asset_assignments`; import rows kept after commit.
+   - Done: import jobs leave after 30 days. Closed: foreign keys on asset actor columns (users are never deleted, and a failing validation could stop the upgrade of an existing installation).
    - Owner decision (step 19): an absolute session lifetime and its length; today an active session slides without an end.
 10. Wrong behavior
-    - Phase 1: updates without a change skip the version check and write an empty audit row; a cancelled request is logged as error 500.
-    - Phase 2–3: malformed uploads return 500 and 413 becomes 400; a transfer to a team only leaves an in-progress ticket without assignee; missing `approval_requested` event; ticket year from UTC on 1 January; duplicate serial reported as `tag_taken`.
-    - Phase 5: duplicate article link race returns 500; a failed article query shows "no articles"; stale article choice after a search change.
-    - Phase 8, 11: dialogs keep the old version after a 409 (changes, tasks); one failing approvals query hides both lists; dead task links for owner-team colleagues.
-    - Phase 10: a superseded search can leave the spinner; a short query shows "Sonuç bulunamadı".
+    - Done: stale version on unchanged values is a conflict; import and asset duplicates report the serial; `approval_requested` event on related and voided requests; record numbers use the company year; article link race is 409; article errors and stale article choice; a failed approvals list no longer hides the other one.
+    - Closed after a check: cancelled requests are logged as debug; admin cache leaves on 401; a superseded search releases its spinner.
+    - Open: empty audit row of an unchanged update; malformed uploads (500) and 413 (400); owner decision: a transfer to a team leaves an in-progress ticket without assignee.
+    - Phase 8, 11: dialogs keep the old version after a 409 (changes, tasks); dead task links for owner-team colleagues.
+    - Phase 10: a short query shows "Sonuç bulunamadı".
     - Phase 12: deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20; asset list has no service filter; link form on retired and lost assets; inactive service not marked in the filter; chosen service outside the first page shows blank.
 11. Scale and performance: audit indexes and paging; silent location cap (2000); unbounded `/approvals/mine`; global problem link lock; `tools/perf-measure.sh` with the problems and service reports.
 12. Accessibility and small code notes: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers listed in the ledgers.

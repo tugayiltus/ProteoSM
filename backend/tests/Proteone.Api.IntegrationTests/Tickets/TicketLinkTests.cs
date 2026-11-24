@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Proteone.Api.IntegrationTests.Assets;
 using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Domain.Common;
@@ -44,6 +45,8 @@ public sealed class TicketLinkTests(ApiFactory factory) : IAsyncLifetime
             (request.GetProperty("subject").GetString(), request.GetProperty("description").GetString(), request.GetProperty("requesterName").GetString()));
         Assert.Equal(world.Office.Id, request.GetProperty("locationId").GetGuid());
         Assert.Equal("pending", request.GetProperty("approval").GetProperty("status").GetString());
+        await using var db = factory.Database.CreateDbContext();
+        Assert.Equal(1, await db.TicketEvents.CountAsync(e => e.Kind == Domain.Tickets.TicketEventKind.ApprovalRequested, TestContext.Current.CancellationToken));
         Assert.Equal(0, requestComments.GetArrayLength());
         Assert.Equal(TicketWorld.NumberOf(request), incidentView.GetProperty("relatedTickets")[0].GetProperty("number").GetString());
         Assert.Equal(TicketWorld.NumberOf(incident), request.GetProperty("relatedTickets")[0].GetProperty("number").GetString());

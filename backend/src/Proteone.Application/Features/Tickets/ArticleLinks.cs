@@ -59,7 +59,15 @@ public sealed class LinkArticleHandler(IAppDbContext db, TicketScope scope, IAud
         var now = clock.GetUtcNow();
         db.TicketArticles.Add(TicketArticle.Create(ticket.Id, command.ArticleId, viewer.UserId, now));
         audit.Record(AuditActions.TicketArticleLinked, AuditEntityTypes.Ticket, ticket.Id, newValues: new { command.ArticleId });
-        await TicketArticleQueries.SaveWithActivityAsync(db, ticket.Id, now, cancellationToken);
+        try
+        {
+            await TicketArticleQueries.SaveWithActivityAsync(db, ticket.Id, now, cancellationToken);
+        }
+        catch (DomainException lostRace) when (lostRace.Code == ErrorCodes.Duplicate)
+        {
+            throw new DomainException(ErrorCodes.KnowledgeArticleAlreadyLinked, "The article is already linked.", lostRace);
+        }
+
         return await TicketArticleQueries.ListAsync(db, ticket.Id, viewer, cancellationToken);
     }
 }

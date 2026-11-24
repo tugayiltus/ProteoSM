@@ -137,6 +137,7 @@ public sealed class InvalidateApprovalHandler(IAppDbContext db, IValidator<Inval
             var approver = await ApprovalRules.ApproverForAsync(db, ticket.RequesterId, cancellationToken);
             db.Approvals.Add(Approval.Request(ticket.Id, approver, now.AddTicks(1)));
             TicketTimeline.Record(db, ticket, TicketEventKind.ApprovalVoided, Visibility.Public, viewer.UserId, now, new { reason = approved.Reason });
+            TicketTimeline.Record(db, ticket, TicketEventKind.ApprovalRequested, Visibility.Public, viewer.UserId, now);
             audit.Record(AuditActions.ApprovalVoided, AuditEntityTypes.Approval, approved.Id, reason: approved.Reason);
             outbox.Add(NotificationEventTypes.ApprovalRequested, ticket.Id, approver);
         }, cancellationToken);

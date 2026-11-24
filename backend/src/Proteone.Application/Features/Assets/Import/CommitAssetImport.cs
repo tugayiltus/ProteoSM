@@ -54,7 +54,7 @@ public sealed class CommitAssetImportHandler(IAppDbContext db, ICurrentActor act
             }
 
             audit.Record(AuditActions.AssetsImported, AuditEntityTypes.AssetImport, job.Id, newValues: new { job.FileName, Count = rows.Count });
-            await db.SaveTranslatingDuplicateAsync(ErrorCodes.AssetTagTaken, AssetRules.TagTakenMessage, ct);
+            await db.SaveTranslatingDuplicateAsync(ErrorCodes.AssetSerialTaken, AssetRules.SerialTakenMessage, ct);
         }, cancellationToken);
 
         return AssetImportJson.ToItem(job!);

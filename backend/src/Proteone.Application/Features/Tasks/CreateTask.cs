@@ -1,5 +1,6 @@
 using FluentValidation;
 using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
 using Proteone.Application.Features.Changes;
 using Proteone.Application.Features.Tickets;
 using Proteone.Domain.Audit;
@@ -39,7 +40,7 @@ internal sealed class CreateTaskValidator : AbstractValidator<CreateTaskCommand>
 /// </summary>
 public sealed class CreateTaskHandler(
     IAppDbContext db, IValidator<CreateTaskCommand> validator, ITicketNumberGenerator numbers, TaskScope scope, TicketScope tickets,
-    ChangeScope changes, ChangeApprovalFlow flow, TaskWork work, IAuditLog audit, INotificationOutbox outbox, TimeProvider clock)
+    ChangeScope changes, ChangeApprovalFlow flow, TaskWork work, IAuditLog audit, INotificationOutbox outbox, ICompanyClock companyClock, TimeProvider clock)
 {
     public async Task<TaskDetail> HandleAsync(CreateTaskCommand command, CancellationToken cancellationToken)
     {
@@ -70,7 +71,7 @@ public sealed class CreateTaskHandler(
             }
 
             var now = clock.GetUtcNow();
-            var number = TaskNumber.Format(now.Year, await numbers.NextAsync(TaskNumber.CounterKind, now.Year, ct));
+            var number = TaskNumber.Format(companyClock.YearOf(now), await numbers.NextAsync(TaskNumber.CounterKind, companyClock.YearOf(now), ct));
             task = WorkTask.Create(
                 number, command.Title, command.Description, command.TeamId, command.AssigneeId, command.Priority, command.DueDate,
                 ticketId, change?.Id, change is null ? null : command.Phase, viewer.UserId, now);

@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { describeError } from '../../shared/api/errorMessage';
 import { ActionDialog } from '../../shared/feedback/ActionDialog';
 import { FormAlert } from '../../shared/feedback/FormAlert';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { SectionCard } from '../../shared/page/SectionCard';
 import { articlePath } from '../../shared/routes';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
@@ -29,6 +30,11 @@ function LinkArticleDialog({ ticketNumber, onClose, onLinked }: { ticketNumber: 
   const [search, setSearch] = useState('');
   const [articleId, setArticleId] = useState('');
   const options = usePublishedArticleOptions(search, '');
+  // Another search shows other articles: the earlier choice would be linked without being seen.
+  const changeSearch = (next: string) => {
+    setSearch(next);
+    setArticleId('');
+  };
   return (
     <ActionDialog
       title={t('ticket.link')}
@@ -38,7 +44,7 @@ function LinkArticleDialog({ ticketNumber, onClose, onLinked }: { ticketNumber: 
       onConfirm={() => link.mutate(articleId, { onSuccess: onLinked })}
       onClose={onClose}
     >
-      <TextInput type="search" label={t('ticket.search')} value={search} onChange={setSearch} />
+      <TextInput type="search" label={t('ticket.search')} value={search} onChange={changeSearch} />
       <Selector label={t('ticket.pick')} placeholder={t('ticket.select')} options={[...options]} value={articleId} onChange={setArticleId} />
     </ActionDialog>
   );
@@ -56,7 +62,9 @@ export function TicketArticles({ ticket }: { ticket: TicketDetail }) {
   return (
     <SectionCard title={t('ticket.title')}>
       <FormAlert message={unlink.error ? describeError(unlink.error) : null} />
-      {items.length === 0 ? (
+      {articles.isError && <ErrorState error={articles.error} onRetry={() => void articles.refetch()} />}
+      {articles.isPending && <LoadingState />}
+      {articles.isSuccess && items.length === 0 ? (
         <Text type="supporting">{t('ticket.empty')}</Text>
       ) : (
         <List hasDividers density="compact" aria-label={t('ticket.title')}>

@@ -44,7 +44,7 @@ internal sealed class CreateChangeValidator : AbstractValidator<CreateChangeComm
 /// </summary>
 public sealed class CreateChangeHandler(
     IAppDbContext db, IValidator<CreateChangeCommand> validator, IValidator<ChangeDraft> draftValidator, ITicketNumberGenerator numbers,
-    ChangeScope scope, ChangeWork work, IAuditLog audit, TimeProvider clock)
+    ChangeScope scope, ChangeWork work, IAuditLog audit, ICompanyClock companyClock, TimeProvider clock)
 {
     public async Task<ChangeDetail> HandleAsync(CreateChangeCommand command, CancellationToken cancellationToken)
     {
@@ -64,7 +64,7 @@ public sealed class CreateChangeHandler(
         await db.RunInTransactionAsync(async ct =>
         {
             var now = clock.GetUtcNow();
-            var number = ChangeNumber.Format(now.Year, await numbers.NextAsync(ChangeNumber.CounterKind, now.Year, ct));
+            var number = ChangeNumber.Format(companyClock.YearOf(now), await numbers.NextAsync(ChangeNumber.CounterKind, companyClock.YearOf(now), ct));
             change = ChangeRequest.Create(number, command.Draft, command.OwnerTeamId, command.OwnerId, viewer.UserId, now);
             db.ChangeRequests.Add(change);
             await ChangeAssetLinks.SyncAsync(db, change, assetIds, now, ct);

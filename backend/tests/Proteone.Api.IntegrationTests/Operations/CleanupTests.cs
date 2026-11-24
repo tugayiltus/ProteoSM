@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Operations;
+using Proteone.Domain.Assets;
 using Proteone.Domain.Notifications;
 using Proteone.Domain.Operations;
 using Proteone.Domain.Reports;
@@ -69,6 +70,27 @@ public sealed class CleanupTests(FakeClockApiFactory factory) : IClassFixture<Fa
         job.Start(finished);
         job.Complete(key, 1, finished);
         return job;
+    }
+
+    [Fact]
+    public async Task Old_import_jobs_go_and_recent_ones_stay()
+    {
+        var user = await TestUsers.CreateAsync(factory, UserRole.ItStaff, "it@example.com");
+        await using (var db = factory.Database.CreateDbContext())
+        {
+            foreach (var age in new[] { Old, Recent })
+            {
+                db.AssetImportJobs.Add(AssetImportJob.Create("cihazlar.csv", 0, 0, 0, "[]", "[]", user.Id, Today - age));
+            }
+
+            await db.SaveChangesAsync(Ct);
+        }
+
+        var result = await RunAsync();
+
+        Assert.Equal(1, result.ImportJobs);
+        await using var after = factory.Database.CreateDbContext();
+        Assert.Equal(Today - Recent, (await after.AssetImportJobs.SingleAsync(Ct)).CreatedAt);
     }
 
     private static string Payload(string email) => JsonSerializer.Serialize(new Dictionary<string, string> { [OutboxEvent.RequestedEmailKey] = email });

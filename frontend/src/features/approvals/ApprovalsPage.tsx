@@ -148,6 +148,7 @@ export function ApprovalsPage() {
   const ticketItems = approvals.data ?? [];
   const changeItems = changeApprovals.data ?? [];
   const loaded = approvals.data !== undefined && changeApprovals.data !== undefined;
+  const count = ticketItems.length + changeItems.length;
   const retry = () => {
     void approvals.refetch();
     void changeApprovals.refetch();
@@ -159,8 +160,9 @@ export function ApprovalsPage() {
       <Card padding={0}>
         {isPending && !error && <LoadingState rows={SKELETON_ROWS} />}
         {error && <ErrorState error={error} onRetry={retry} />}
-        {loaded && ticketItems.length + changeItems.length === 0 && <EmptyState message={t('approvals.empty')} />}
-        {loaded && ticketItems.length + changeItems.length > 0 && (
+        {loaded && count === 0 && <EmptyState message={t('approvals.empty')} />}
+        {/* A failed list must not hide the decisions of the other one. */}
+        {count > 0 && (
           <List hasDividers aria-label={t('approvals.title')}>
             {ticketItems.map((item) => (
               <ApprovalRow key={item.id} item={item} onDecide={setPending} />

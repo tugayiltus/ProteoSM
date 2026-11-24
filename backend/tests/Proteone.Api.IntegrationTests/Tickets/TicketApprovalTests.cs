@@ -111,6 +111,8 @@ public sealed class TicketApprovalTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal("pending", ApprovalOf(after).GetProperty("status").GetString());
         await using var db = factory.Database.CreateDbContext();
         Assert.Equal(1, await db.Approvals.CountAsync(a => a.Status == Domain.Tickets.ApprovalStatus.Void, Ct));
+        // The first request and the new one after the void.
+        Assert.Equal(2, await db.TicketEvents.CountAsync(e => e.Kind == Domain.Tickets.TicketEventKind.ApprovalRequested, Ct));
     }
 
     [Fact]

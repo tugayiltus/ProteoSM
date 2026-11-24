@@ -53,6 +53,7 @@ public sealed class CreateRelatedRequestHandler(
             {
                 var approver = await ApprovalRules.ApproverForAsync(db, requester, cancellationToken);
                 db.Approvals.Add(Approval.Request(request.Id, approver, now));
+                TicketTimeline.Record(db, request, TicketEventKind.ApprovalRequested, Visibility.Public, viewer.UserId, now);
                 outbox.Add(NotificationEventTypes.ApprovalRequested, request.Id, approver);
             }
 

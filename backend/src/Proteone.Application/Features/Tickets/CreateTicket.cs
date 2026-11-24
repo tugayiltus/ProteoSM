@@ -37,7 +37,7 @@ internal sealed class CreateRequestValidator : AbstractValidator<CreateRequestCo
 
 /// <summary>Shared creation steps: references, intake team, number, events, audit — one transaction.</summary>
 public sealed class TicketFactory(
-    IAppDbContext db, ITicketNumberGenerator numbers, ICurrentActor actor, IAuditLog audit, INotificationOutbox outbox, TicketScope scope, SlaTracker sla, TicketSlaReader slaReader, TimeProvider clock)
+    IAppDbContext db, ITicketNumberGenerator numbers, ICurrentActor actor, IAuditLog audit, INotificationOutbox outbox, TicketScope scope, SlaTracker sla, TicketSlaReader slaReader, ICompanyClock companyClock, TimeProvider clock)
 {
     private const string InactiveReferenceMessage = "A selected category, location or request type is inactive or does not apply.";
 
@@ -57,7 +57,7 @@ public sealed class TicketFactory(
         await db.RunInTransactionAsync(async ct =>
         {
             var now = clock.GetUtcNow();
-            var number = TicketNumber.Format(kind, now.Year, await numbers.NextAsync(kind, now.Year, ct));
+            var number = TicketNumber.Format(kind, companyClock.YearOf(now), await numbers.NextAsync(kind, companyClock.YearOf(now), ct));
             ticket = await build(number, requester, teamId, now);
             db.Tickets.Add(ticket);
             await sla.OnCreatedAsync(ticket, ct);

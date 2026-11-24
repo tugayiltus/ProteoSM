@@ -55,7 +55,7 @@ public sealed class CreateAssetHandler(
             db.Assets.Add(asset);
             db.AssetMovements.Add(movement);
             audit.Record(AuditActions.AssetCreated, AuditEntityTypes.Asset, asset.Id, newValues: new { asset.AssetTag, asset.Type, asset.Status });
-            await db.SaveTranslatingDuplicateAsync(ErrorCodes.AssetTagTaken, AssetRules.TagTakenMessage, ct);
+            await db.SaveTranslatingDuplicateAsync(ErrorCodes.AssetSerialTaken, AssetRules.SerialTakenMessage, ct);
         }, cancellationToken);
         return await AssetQueries.LoadItemAsync(db, asset!.Id, cancellationToken);
     }
