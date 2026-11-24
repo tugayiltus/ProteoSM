@@ -16,9 +16,9 @@ public sealed class MigrateCommandTests(ApiFactory factory) : IAsyncLifetime
     private const int CliFailure = 1;
     private const string AdminDatabase = "postgres";
     private const string LocalHost = "localhost";
-    private const string UnreachableHost = "tgysm-no-such-host.invalid";
+    private const string UnreachableHost = "proteone-no-such-host.invalid";
 
-    private readonly string _databaseName = "tgysm_migrate_" + Guid.NewGuid().ToString("N");
+    private readonly string _databaseName = "proteone_migrate_" + Guid.NewGuid().ToString("N");
     private string _adminConnectionString = string.Empty;
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;

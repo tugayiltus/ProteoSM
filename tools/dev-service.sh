@@ -14,7 +14,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 readonly ROOT="$(pwd)"
-readonly LABEL_PREFIX="com.tgysm.dev"
+readonly LABEL_PREFIX="com.proteone.dev"
 readonly SERVICES=(api worker web)
 readonly AGENTS_DIR="$HOME/Library/LaunchAgents"
 readonly LOG_DIR="$ROOT/tmp/logs"
@@ -23,7 +23,7 @@ readonly DOMAIN="gui/$(id -u)"
 readonly RESTART_THROTTLE_SECONDS=10
 readonly LOG_TAIL_LINES=30
 readonly API_HEALTH_URL="http://localhost:5311/api/v1/health"
-readonly WEB_URL="http://tgysm.localhost:5310"
+readonly WEB_URL="http://proteone.localhost:5310"
 readonly HTTP_TIMEOUT_SECONDS=3
 
 # launchd starts agents with a minimal PATH; give them the toolchain this shell uses.

@@ -4,54 +4,54 @@
 # objectGUID values are the little-endian bytes of d3a1c0de-000N-4e5f-8a6b-7c8d9e0f1a2b (N = 1, 2), as AD stores them.
 # Passwords are plain text: OpenLDAP compares them on bind; this directory only lives inside the test run.
 
-dn: dc=tgysm-test,dc=example
+dn: dc=proteone-test,dc=example
 objectClass: dcObject
 objectClass: organization
-dc: tgysm-test
-o: TGYSM Test Directory
+dc: proteone-test
+o: Proteone Test Directory
 
-dn: ou=service-accounts,dc=tgysm-test,dc=example
+dn: ou=service-accounts,dc=proteone-test,dc=example
 objectClass: organizationalUnit
 ou: service-accounts
 
-dn: ou=people,dc=tgysm-test,dc=example
+dn: ou=people,dc=proteone-test,dc=example
 objectClass: organizationalUnit
 ou: people
 
-# The service account TGYSM binds as to find users (TGYSM_TEST_LDAP_BIND_DN / _BIND_PASSWORD).
-dn: cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
+# The service account Proteone binds as to find users (PROTEONE_TEST_LDAP_BIND_DN / _BIND_PASSWORD).
+dn: cn=svc-proteone,ou=service-accounts,dc=proteone-test,dc=example
 objectClass: inetOrgPerson
-cn: svc-tgysm
-sn: svc-tgysm
+cn: svc-proteone
+sn: svc-proteone
 userPassword: Svc-test-pass-2026
 
-# Signs in by Windows user name (TGYSM_TEST_LDAP_USER / _PASSWORD).
-dn: cn=Deniz Test,ou=people,dc=tgysm-test,dc=example
+# Signs in by Windows user name (PROTEONE_TEST_LDAP_USER / _PASSWORD).
+dn: cn=Deniz Test,ou=people,dc=proteone-test,dc=example
 objectClass: user
 cn: Deniz Test
 givenName: Deniz
 sn: Test
 sAMAccountName: deniz.test
-userPrincipalName: deniz.test@tgysm-test.example
-mail: deniz.test@tgysm-test.example
+userPrincipalName: deniz.test@proteone-test.example
+mail: deniz.test@proteone-test.example
 objectGUID:: 3sCh0wEAX06Ka3yNng8aKw==
 userPassword: Deniz-test-pass-2026
 
 # Signs in by email; the Windows user name differs from the mail local part on purpose.
-dn: cn=Ece Deneme,ou=people,dc=tgysm-test,dc=example
+dn: cn=Ece Deneme,ou=people,dc=proteone-test,dc=example
 objectClass: user
 cn: Ece Deneme
 givenName: Ece
 sn: Deneme
 sAMAccountName: edeneme
-userPrincipalName: edeneme@tgysm-test.example
-mail: ece.deneme@tgysm-test.example
+userPrincipalName: edeneme@proteone-test.example
+mail: ece.deneme@proteone-test.example
 objectGUID:: 3sCh0wIAX06Ka3yNng8aKw==
 userPassword: Ece-test-pass-2026
 
 # An address-book entry, not a user account: the (objectClass=user) filter must never return it.
-dn: cn=Rehber Kisi,ou=people,dc=tgysm-test,dc=example
+dn: cn=Rehber Kisi,ou=people,dc=proteone-test,dc=example
 objectClass: inetOrgPerson
 cn: Rehber Kisi
 sn: Kisi
-mail: rehber.kisi@tgysm-test.example
+mail: rehber.kisi@proteone-test.example

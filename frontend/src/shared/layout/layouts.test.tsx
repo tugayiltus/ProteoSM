@@ -19,7 +19,7 @@ const ADMIN_DATA = {
 };
 
 const mainNav = () => screen.findByRole('navigation', { name: 'Ana menü' });
-const APP_BRAND = 'TGYSM';
+const APP_BRAND = 'Proteone';
 /** Menu item names; the brand link at the top of the side navigation is not a menu item. */
 const linkNames = (nav: HTMLElement) =>
   within(nav)
@@ -96,7 +96,7 @@ describe('sidebar width', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME } });
     const { user } = renderRoute('/profile');
     await user.click(await screen.findByRole('button', { name: 'Menüyü daralt' }));
-    expect(window.localStorage.getItem('tgysm.sidebar.narrow')).toBe('true');
+    expect(window.localStorage.getItem('proteone.sidebar.narrow')).toBe('true');
     expect(screen.getByRole('button', { name: 'Menüyü genişlet' })).toBeInTheDocument();
   });
 
@@ -224,7 +224,7 @@ describe('ThemeMenu', () => {
     await user.click(screen.getByRole('menuitemradio', { name: 'Koyu' }));
     expect(document.documentElement.style.colorScheme).toBe('dark');
     expect(document.querySelector('[data-astryx-theme]')).toHaveAttribute('data-theme', 'dark');
-    expect(window.localStorage.getItem('tgysm-theme')).toBe('dark');
+    expect(window.localStorage.getItem('proteone-theme')).toBe('dark');
     expect(screen.getByRole('button', { name: /Görünüm: Koyu/ })).toBeInTheDocument();
   });
 });

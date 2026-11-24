@@ -19,8 +19,8 @@ namespace Proteone.Api.IntegrationTests.Auth;
 /// <summary>
 /// Microsoft Entra sign-in end to end against a local OpenID Connect server (mock-oauth2-server,
 /// deploy/test-directory/compose.yaml): the real handler runs the code flow with PKCE, redeems the code over the network
-/// and validates the signed token; refusals must end at the login page (ADR-0030). Skipped unless TGYSM_TEST_OIDC_URL
-/// and TGYSM_TEST_OIDC_TENANT are set (tools/directory-contract-test.sh): CI has no such server.
+/// and validates the signed token; refusals must end at the login page (ADR-0030). Skipped unless PROTEONE_TEST_OIDC_URL
+/// and PROTEONE_TEST_OIDC_TENANT are set (tools/directory-contract-test.sh): CI has no such server.
 /// </summary>
 public sealed partial class OidcContractTests(OidcContractFixture fixture) : IClassFixture<OidcContractFixture>, IAsyncLifetime
 {
@@ -34,15 +34,15 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
     private const string NoServer = "No local OIDC server configured (tools/directory-contract-test.sh).";
 
     // Client ids and identities shaped by the oidc service's JSON_CONFIG in deploy/test-directory/compose.yaml.
-    private const string MemberClient = "tgysm-member";
-    private const string OtherTenantClient = "tgysm-other-tenant";
-    private const string ForeignDomainClient = "tgysm-foreign-domain";
-    private const string MemberEmail = "deniz.test@tgysm-test.example";
+    private const string MemberClient = "proteone-member";
+    private const string OtherTenantClient = "proteone-other-tenant";
+    private const string ForeignDomainClient = "proteone-foreign-domain";
+    private const string MemberEmail = "deniz.test@proteone-test.example";
     private const string ForeignDomainEmail = "deniz.test@baska-alan.example";
-    private const string AllowedDomain = "tgysm-test.example";
+    private const string AllowedDomain = "proteone-test.example";
     private const string ForeignDomain = "baska-alan.example";
     private const string ClientSecret = "test-client-secret";
-    private const string AdminEmail = "yonetici@tgysm-test.example";
+    private const string AdminEmail = "yonetici@proteone-test.example";
 
     /// <summary>Nothing listens on port 1 (tcpmux) on a developer machine: the connection is refused at once.</summary>
     private static readonly Uri WrongAuthority = new("http://127.0.0.1:1/");
@@ -62,7 +62,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     [Fact]
-    public async Task A_member_signs_in_with_the_code_flow_and_pkce_and_holds_a_tgysm_session()
+    public async Task A_member_signs_in_with_the_code_flow_and_pkce_and_holds_a_proteone_session()
     {
         var factory = Factory();
         await UseEntraAsync(factory, MemberClient);
@@ -228,7 +228,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
     }
 
     /// <summary>
-    /// The token passed the handler's validation (signature, issuer, audience, nonce, PKCE redemption) and TGYSM's own
+    /// The token passed the handler's validation (signature, issuer, audience, nonce, PKCE redemption) and Proteone's own
     /// checks refused it. Any earlier failure, such as a broken token exchange, fails here instead of passing as a refusal.
     /// </summary>
     private static ClaimsPrincipal AssertValidTokenRefusedByProteone(OidcContractFactory factory)
@@ -237,7 +237,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
         return Assert.IsType<ClaimsPrincipal>(factory.Outcome.ValidatedPrincipal);
     }
 
-    /// <summary>The handler rejected the token itself, for exactly this reason; TGYSM's checks never saw it.</summary>
+    /// <summary>The handler rejected the token itself, for exactly this reason; Proteone's checks never saw it.</summary>
     private static void AssertTokenRejectedFor<TException>(OidcContractFactory factory)
         where TException : Exception
     {

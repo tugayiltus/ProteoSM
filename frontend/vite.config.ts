@@ -2,7 +2,7 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-const API_TARGET = process.env.TGYSM_API_URL ?? 'http://localhost:5311';
+const API_TARGET = process.env.PROTEONE_API_URL ?? 'http://localhost:5311';
 const DEV_PORT = 5310;
 const PREVIEW_PORT = 5312;
 const CHUNK_WARNING_LIMIT_KB = 500;

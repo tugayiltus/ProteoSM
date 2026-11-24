@@ -7,8 +7,8 @@ namespace Proteone.Api.Security;
 
 internal static class SessionClaims
 {
-    public const string SecurityStamp = "tgysm:security_stamp";
-    public const string MustChangePassword = "tgysm:must_change_password";
+    public const string SecurityStamp = "proteone:security_stamp";
+    public const string MustChangePassword = "proteone:must_change_password";
 
     public static ClaimsPrincipal CreatePrincipal(SessionUser session)
     {

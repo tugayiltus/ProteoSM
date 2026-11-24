@@ -21,7 +21,7 @@ public sealed class ExportReportHandler(
     ReportScope scope, ReportRowSource rows, IReportFileWriter writer, IAuditLog audit, IAppDbContext db, TimeProvider clock, ICompanyClock companyClock)
 {
     public const string XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    private const string FileNameFormat = "tgysm-{0}-{1}-{2}.xlsx";
+    private const string FileNameFormat = "proteone-{0}-{1}-{2}.xlsx";
     private const string FileStampFormat = "yyyyMMddHHmm";
 
     public async Task<ReportExportFile> HandleAsync(ExportReportQuery query, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public sealed class ExportReportHandler(
         return new ReportExportFile(fileName, XlsxContentType, (output, ct) => writer.WriteAsync(content, output, ct));
     }
 
-    /// <summary>"tgysm-{report}-{metric}-{yyyyMMddHHmm}.xlsx", stamped in the company time zone; shared with background export downloads.</summary>
+    /// <summary>"proteone-{report}-{metric}-{yyyyMMddHHmm}.xlsx", stamped in the company time zone; shared with background export downloads.</summary>
     public static string FileNameOf(ReportName report, string metric, DateTimeOffset at, TimeZoneInfo zone)
     {
         var stamp = TimeZoneInfo.ConvertTime(at, zone).ToString(FileStampFormat, CultureInfo.InvariantCulture);

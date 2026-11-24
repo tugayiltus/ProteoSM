@@ -20,7 +20,7 @@ public sealed class DataProtectionKeysTests : IDisposable
     private const UnixFileMode ReadAndExecuteOnly =
         UnixFileMode.UserRead | UnixFileMode.UserExecute | UnixFileMode.GroupRead | UnixFileMode.GroupExecute;
 
-    private readonly string _folder = Path.Combine(Path.GetTempPath(), "tgysm-keys-" + Guid.NewGuid().ToString("N"));
+    private readonly string _folder = Path.Combine(Path.GetTempPath(), "proteone-keys-" + Guid.NewGuid().ToString("N"));
 
     private sealed class Environment(string name) : IHostEnvironment
     {

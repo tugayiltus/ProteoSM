@@ -10,7 +10,7 @@ using Proteone.Api.Security;
 namespace Proteone.Api.IntegrationTests.Auth;
 
 /// <summary>
-/// The step after Microsoft validated the token: the cookie must carry the TGYSM session principal, never Microsoft's,
+/// The step after Microsoft validated the token: the cookie must carry the Proteone session principal, never Microsoft's,
 /// and a refusal must end at the login page (ADR-0030).
 /// </summary>
 [Collection(ApiCollection.Name)]
@@ -34,7 +34,7 @@ public sealed class EntraCallbackTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task A_company_sign_in_stores_the_tgysm_session_principal()
+    public async Task A_company_sign_in_stores_the_proteone_session_principal()
     {
         await LoginMethods.EnableEntraAsync(factory);
 

@@ -16,21 +16,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      TGYSM_DB_HOST: localhost
-      TGYSM_DB_USER: tgysm
+      PROTEONE_DB_HOST: localhost
+      PROTEONE_DB_USER: proteone
       # Throw-away CI database password; the service container is not reachable from outside the runner.
-      PGPASSWORD: tgysm-ci
-      TGYSM_TEST_ADMIN_CONNECTION: Host=localhost;Database=postgres;Username=tgysm;Password=tgysm-ci
+      PGPASSWORD: proteone-ci
+      PROTEONE_TEST_ADMIN_CONNECTION: Host=localhost;Database=postgres;Username=proteone;Password=proteone-ci
     services:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: tgysm
-          POSTGRES_PASSWORD: tgysm-ci
+          POSTGRES_USER: proteone
+          POSTGRES_PASSWORD: proteone-ci
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U tgysm"
+          --health-cmd "pg_isready -U proteone"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -75,10 +75,10 @@ jobs:
         run: tools/e2e.sh
 
       - name: Build API image
-        run: docker build --target api -t tgysm-api:ci .
+        run: docker build --target api -t proteone-api:ci .
 
       - name: Build Worker image
-        run: docker build --target worker -t tgysm-worker:ci .
+        run: docker build --target worker -t proteone-worker:ci .
 
       - name: Upload test artifacts
         if: failure()

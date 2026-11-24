@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 
 readonly DEFAULT_DOCS=(README.md capabilities.md SECURITY.md CLAUDE.md docs/operations.md docs/release/acceptance.md)
 # Created on the host (from deploy/.env.example, by tools/deploy.sh, or the operator's certificate); git-ignored.
-readonly RUNTIME_PATHS=(deploy/.env deploy/.version deploy/certs/tgysm.crt deploy/certs/tgysm.key)
+readonly RUNTIME_PATHS=(deploy/.env deploy/.version deploy/certs/proteone.crt deploy/certs/proteone.key)
 # A path starts at tools/ or deploy/ not preceded by a path or word character.
 readonly PATH_PATTERN='(^|[^A-Za-z0-9_./-])(tools|deploy)/[A-Za-z0-9._/-]*'
 

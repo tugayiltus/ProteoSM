@@ -26,7 +26,7 @@ public sealed class LocalFileStore(IOptions<FileStorageOptions> options, IHostEn
     private const string KeyFormat = "N";
     private const int ShardLength = 2;
     private const int KeyLength = 32;
-    private const string DefaultFolder = "tgysm";
+    private const string DefaultFolder = "proteone";
     private const string FilesFolder = "files";
 
     private static readonly string MissingRootMessage =

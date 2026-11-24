@@ -29,19 +29,19 @@ readonly READY_DELAY_SECONDS=2
 readonly LDAP_HOST_IN_COMPOSE=openldap
 readonly LDAPS_PORT=636
 readonly STARTTLS_PORT=389
-readonly LDAP_BASE_DN="dc=tgysm-test,dc=example"
-readonly LDAP_BIND_DN="cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example"
+readonly LDAP_BASE_DN="dc=proteone-test,dc=example"
+readonly LDAP_BIND_DN="cn=svc-proteone,ou=service-accounts,dc=proteone-test,dc=example"
 readonly LDAP_BIND_PASSWORD="Svc-test-pass-2026"
 readonly LDAP_USER="deniz.test"
 readonly LDAP_PASSWORD="Deniz-test-pass-2026"
-readonly LDAP_EMAIL="deniz.test@tgysm-test.example"
+readonly LDAP_EMAIL="deniz.test@proteone-test.example"
 
 # mock-oauth2-server on the host port published in compose.yaml; the issuer id doubles as the tenant id.
 readonly OIDC_URL="http://127.0.0.1:8089"
 readonly OIDC_TENANT="3c0f7a2e-5b1d-4e8a-9c6f-2d4b8e1a7f30"
 readonly OIDC_METADATA_PATH="/.well-known/openid-configuration"
 
-export TGYSM_TEST_OIDC_TENANT="$OIDC_TENANT"
+export PROTEONE_TEST_OIDC_TENANT="$OIDC_TENANT"
 
 colima_started_here=false
 
@@ -107,7 +107,7 @@ wait_for "OIDC mock metadata" curl --silent --fail "$OIDC_URL/$OIDC_TENANT$OIDC_
 # both test accounts are there before any test runs.
 echo "==> Checking the seed"
 # Captured first, then searched: `ldapsearch | grep -q` under pipefail can fail with SIGPIPE when grep exits early.
-for account in "(sAMAccountName=$LDAP_USER)" "(mail=ece.deneme@tgysm-test.example)"; do
+for account in "(sAMAccountName=$LDAP_USER)" "(mail=ece.deneme@proteone-test.example)"; do
   found=$(compose exec -T "$LDAP_SERVICE" ldapsearch -x -LLL -H "ldaps://$LDAP_HOST_IN_COMPOSE:$LDAPS_PORT" -D "$LDAP_BIND_DN" \
     -w "$LDAP_BIND_PASSWORD" -b "$LDAP_BASE_DN" "$account" dn)
   if ! grep -q '^dn:' <<<"$found"; then
@@ -117,28 +117,28 @@ for account in "(sAMAccountName=$LDAP_USER)" "(mail=ece.deneme@tgysm-test.exampl
 done
 
 echo "==> OIDC contract against the mock (local PostgreSQL)"
-export TGYSM_TEST_OIDC_URL="$OIDC_URL"
+export PROTEONE_TEST_OIDC_URL="$OIDC_URL"
 tools/with-db.sh dotnet test --project "$TEST_PROJECT" --filter-class "$OIDC_TEST_CLASS" --fail-skips on
 
-export TGYSM_TEST_LDAP_HOST="$LDAP_HOST_IN_COMPOSE"
-export TGYSM_TEST_LDAP_BASE_DN="$LDAP_BASE_DN"
-export TGYSM_TEST_LDAP_BIND_DN="$LDAP_BIND_DN"
-export TGYSM_TEST_LDAP_BIND_PASSWORD="$LDAP_BIND_PASSWORD"
-export TGYSM_TEST_LDAP_USER="$LDAP_USER"
-export TGYSM_TEST_LDAP_PASSWORD="$LDAP_PASSWORD"
-export TGYSM_TEST_LDAP_EMAIL="$LDAP_EMAIL"
+export PROTEONE_TEST_LDAP_HOST="$LDAP_HOST_IN_COMPOSE"
+export PROTEONE_TEST_LDAP_BASE_DN="$LDAP_BASE_DN"
+export PROTEONE_TEST_LDAP_BIND_DN="$LDAP_BIND_DN"
+export PROTEONE_TEST_LDAP_BIND_PASSWORD="$LDAP_BIND_PASSWORD"
+export PROTEONE_TEST_LDAP_USER="$LDAP_USER"
+export PROTEONE_TEST_LDAP_PASSWORD="$LDAP_PASSWORD"
+export PROTEONE_TEST_LDAP_EMAIL="$LDAP_EMAIL"
 
 echo "==> LDAP contract over LDAPS (port $LDAPS_PORT)"
-export TGYSM_TEST_LDAP_PORT="$LDAPS_PORT" TGYSM_TEST_LDAP_SECURITY=Ldaps
+export PROTEONE_TEST_LDAP_PORT="$LDAPS_PORT" PROTEONE_TEST_LDAP_SECURITY=Ldaps
 compose --profile runner run --rm "$RUNNER_SERVICE" --filter-class "$LDAP_TEST_CLASS" --filter-class "$LDAP_API_TEST_CLASS"
 
 echo "==> LDAP contract over StartTLS (port $STARTTLS_PORT)"
-export TGYSM_TEST_LDAP_PORT="$STARTTLS_PORT" TGYSM_TEST_LDAP_SECURITY=StartTls
+export PROTEONE_TEST_LDAP_PORT="$STARTTLS_PORT" PROTEONE_TEST_LDAP_SECURITY=StartTls
 compose --profile runner run --rm "$RUNNER_SERVICE" --filter-class "$LDAP_TEST_CLASS" --filter-class "$LDAP_API_TEST_CLASS"
 
 echo "==> LDAP outage: OpenLDAP stopped, the API must answer 503"
 compose stop "$LDAP_SERVICE"
-export TGYSM_TEST_LDAP_PORT="$LDAPS_PORT" TGYSM_TEST_LDAP_SECURITY=Ldaps TGYSM_TEST_LDAP_STOPPED=1
+export PROTEONE_TEST_LDAP_PORT="$LDAPS_PORT" PROTEONE_TEST_LDAP_SECURITY=Ldaps PROTEONE_TEST_LDAP_STOPPED=1
 # --no-deps: the runner would otherwise start the stopped directory again (PostgreSQL is still up from the runs above).
 compose --profile runner run --rm --no-deps "$RUNNER_SERVICE" --filter-class "$LDAP_OUTAGE_TEST_CLASS"
 

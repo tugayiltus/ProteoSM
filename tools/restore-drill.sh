@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Restore drill (tgysm.md §20 item 19, ADR-0025). Self-contained: starts a throw-away source stack, creates data
+# Restore drill (proteone.md §20 item 19, ADR-0025). Self-contained: starts a throw-away source stack, creates data
 # (attachment, background export, deactivated user, a signed-in session), backs it up, then restores the archive into a
 # second throw-away stack and checks it. Never touches the production stack or its volumes. Needs the images from
 # tools/docker-build.sh and a certificate pair in deploy/certs/. Writes docs/release/restore-drill.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly SOURCE_PROJECT="tgysm-drill-source"
-readonly TARGET_PROJECT="tgysm-drill-target"
+readonly SOURCE_PROJECT="proteone-drill-source"
+readonly TARGET_PROJECT="proteone-drill-target"
 readonly SOURCE_HTTPS_PORT=9443
 readonly TARGET_HTTPS_PORT=9444
 readonly SOURCE_HTTP_PORT=9080
@@ -24,7 +24,7 @@ readonly EXIT_NOT_ARCHIVE=2
 readonly EXIT_NEWER_ARCHIVE=3
 readonly EXIT_NOT_EMPTY=4
 # The drill tests the images tools/docker-build.sh tagged "latest", not the tag a deployment recorded in deploy/.version.
-export TGYSM_VERSION="${TGYSM_VERSION:-latest}"
+export PROTEONE_VERSION="${PROTEONE_VERSION:-latest}"
 
 # Under the repository (git-ignored tmp/): Docker on macOS (Colima) shares only the home folder with containers.
 mkdir -p tmp
@@ -35,7 +35,7 @@ failures=0
 compose_for() {
   local project="$1" env_file="$2"
   shift 2
-  COMPOSE_PROJECT_NAME="$project" TGYSM_ENV_FILE="$env_file" tools/compose.sh "$@"
+  COMPOSE_PROJECT_NAME="$project" PROTEONE_ENV_FILE="$env_file" tools/compose.sh "$@"
 }
 source_compose() { compose_for "$SOURCE_PROJECT" "$work/source.env" "$@"; }
 target_compose() { compose_for "$TARGET_PROJECT" "$work/target.env" "$@"; }
@@ -61,7 +61,7 @@ write_env() {
       -e "s#^PUBLIC_BASE_URL=.*#PUBLIC_BASE_URL=https://localhost:$https_port#" \
       -e "s/^HTTPS_PORT=.*/HTTPS_PORT=$https_port/" \
       -e "s/^HTTP_PORT=.*/HTTP_PORT=$http_port/" \
-      -e "s#^TGYSM_SUBNET=.*#TGYSM_SUBNET=$subnet#" \
+      -e "s#^PROTEONE_SUBNET=.*#PROTEONE_SUBNET=$subnet#" \
       -e "s/^EMAIL_MODE=.*/EMAIL_MODE=Pickup/" \
       -e "s/^BACKUP_HOST_DIR=.*/BACKUP_HOST_DIR=/" \
       deploy/.env.example > "$file"
@@ -77,9 +77,9 @@ wait_healthy() {
   return 1
 }
 
-table_count() { target_compose exec -T postgres psql -U tgysm -d tgysm -XtAc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'"; }
+table_count() { target_compose exec -T postgres psql -U proteone -d proteone -XtAc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'"; }
 
-for file in deploy/certs/tgysm.crt deploy/certs/tgysm.key; do
+for file in deploy/certs/proteone.crt deploy/certs/proteone.key; do
   if [[ ! -f "$file" ]]; then echo "Missing $file (tools/gen-self-signed-cert.sh for a test host)" >&2; exit 1; fi
 done
 write_env "$work/source.env" "$SOURCE_HTTPS_PORT" "$SOURCE_HTTP_PORT" "$SOURCE_SUBNET"
@@ -90,7 +90,7 @@ source_compose up -d >/dev/null
 wait_healthy source_compose
 setup="$(source_compose run --rm -T api setup-admin --email "$ADMIN_EMAIL" --first-name Drill --last-name Admin 2>/dev/null)"
 temporary="$(sed -n "s/^${TEMP_PASSWORD_PREFIX}//p" <<<"$setup")"
-python3 tools/lib/tgysm_drill.py seed "https://localhost:$SOURCE_HTTPS_PORT" "$work/state.json" "$ADMIN_EMAIL" "$temporary"
+python3 tools/lib/proteone_drill.py seed "https://localhost:$SOURCE_HTTPS_PORT" "$work/state.json" "$ADMIN_EMAIL" "$temporary"
 
 echo "== Backup"
 archive_path="$(source_compose exec -T backup bash /backup/backup.sh | sed -n 's/^Backup written: //p')"
@@ -113,34 +113,34 @@ printf 'x' >> "$work/tampered/db.dump"
 COPYFILE_DISABLE=1 tar -czf "$work/tampered-archive/tampered.tar.gz" -C "$work/tampered" db.dump manifest.json files keys
 target_compose up -d postgres >/dev/null
 code=0
-TGYSM_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$work/future-archive/future.tar.gz" >/dev/null 2>&1 || code=$?
+PROTEONE_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$work/future-archive/future.tar.gz" >/dev/null 2>&1 || code=$?
 record "archive from a newer build is refused (exit code)" "$EXIT_NEWER_ARCHIVE" "$code"
 code=0
-TGYSM_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$work/tampered-archive/tampered.tar.gz" >/dev/null 2>&1 || code=$?
+PROTEONE_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$work/tampered-archive/tampered.tar.gz" >/dev/null 2>&1 || code=$?
 record "archive whose db.dump differs from the manifest checksum is refused (exit code)" "$EXIT_NOT_ARCHIVE" "$code"
 record "refused restores wrote no table" "0" "$(table_count | tr -d '[:space:]')"
 
 echo "== Restore"
-if TGYSM_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive"; then
+if PROTEONE_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive"; then
   record "restore with row counts equal to the manifest" "exit 0" "exit 0"
 else
   record "restore with row counts equal to the manifest" "exit 0" "failed"
 fi
 code=0
-TGYSM_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive" >/dev/null 2>&1 || code=$?
+PROTEONE_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive" >/dev/null 2>&1 || code=$?
 record "restore into a non-empty database without --force is refused (exit code)" "$EXIT_NOT_EMPTY" "$code"
 code=0
-TGYSM_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive" --force >/dev/null 2>&1 || code=$?
+PROTEONE_ENV_FILE="$work/target.env" COMPOSE_PROJECT_NAME="$TARGET_PROJECT" tools/restore.sh "$archive" --force >/dev/null 2>&1 || code=$?
 record "forced restore over a non-empty database (exit code)" "0" "$code"
 record "forced restore took a safety backup first (archives in the target's backups volume)" "1" \
-  "$(target_compose run --rm --no-deps -T --entrypoint bash backup -c 'ls /backups/tgysm-*.tar.gz | wc -l' 2>/dev/null | tr -d '[:space:]')"
+  "$(target_compose run --rm --no-deps -T --entrypoint bash backup -c 'ls /backups/proteone-*.tar.gz | wc -l' 2>/dev/null | tr -d '[:space:]')"
 wait_healthy target_compose
 
 echo "== Checks on the restored stack"
 # The check script prints one JSON row per check as it goes; its exit code and the number of rows are checks too, so
 # an unreachable stack or a crash can never pass with fewer rows.
 check_code=0
-python3 tools/lib/tgysm_drill.py check "https://localhost:$TARGET_HTTPS_PORT" "$work/state.json" > "$work/checks.jsonl" || check_code=$?
+python3 tools/lib/proteone_drill.py check "https://localhost:$TARGET_HTTPS_PORT" "$work/state.json" > "$work/checks.jsonl" || check_code=$?
 rows=0
 while IFS= read -r line; do
   rows=$((rows + 1))
@@ -149,15 +149,15 @@ while IFS= read -r line; do
   actual="$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["actual"])' "$line")"
   record "$check" "$expected" "$actual"
 done < "$work/checks.jsonl"
-record "post-restore checks reported" "$(python3 tools/lib/tgysm_drill.py check-count)" "$rows"
+record "post-restore checks reported" "$(python3 tools/lib/proteone_drill.py check-count)" "$rows"
 record "post-restore check script (exit code)" "0" "$check_code"
 
 mkdir -p "$(dirname "$REPORT")"
 {
   echo "# Restore drill"
   echo
-  echo "Run by \`tools/restore-drill.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\` (images \`$(docker image inspect "tgysm-api:$TGYSM_VERSION" --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^APP_VERSION=//p')\`)."
-  echo "Archive: \`$(basename "$archive")\` ($(du -h "$archive" | cut -f1 | tr -d ' ')). Acceptance criterion 19 of \`tgysm.md\` §20; ADR-0025."
+  echo "Run by \`tools/restore-drill.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\` (images \`$(docker image inspect "proteone-api:$PROTEONE_VERSION" --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^APP_VERSION=//p')\`)."
+  echo "Archive: \`$(basename "$archive")\` ($(du -h "$archive" | cut -f1 | tr -d ' ')). Acceptance criterion 19 of \`proteone.md\` §20; ADR-0025."
   echo
   echo "| Check | Expected | Actual | Result |"
   echo "|---|---|---|---|"

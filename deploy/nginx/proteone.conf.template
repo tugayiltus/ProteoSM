@@ -1,4 +1,4 @@
-# TLS termination for TGYSM (ADR-0024). Certificate and key: deploy/certs/tgysm.crt and deploy/certs/tgysm.key.
+# TLS termination for Proteone (ADR-0024). Certificate and key: deploy/certs/proteone.crt and deploy/certs/proteone.key.
 # The largest request is a ticket comment: 5 files of 10 MB plus 1 MB of form data; the API enforces the exact limit.
 
 server {
@@ -12,19 +12,19 @@ server {
     http2 on;
     server_name _;
 
-    ssl_certificate     /etc/nginx/certs/tgysm.crt;
-    ssl_certificate_key /etc/nginx/certs/tgysm.key;
+    ssl_certificate     /etc/nginx/certs/proteone.crt;
+    ssl_certificate_key /etc/nginx/certs/proteone.key;
     ssl_protocols       TLSv1.2 TLSv1.3;
-    ssl_session_cache   shared:tgysm_tls:10m;
+    ssl_session_cache   shared:proteone_tls:10m;
 
     client_max_body_size 52m;
 
     # Docker's DNS, re-read every 10 s: a recreated api container gets a new address.
     resolver 127.0.0.11 valid=10s ipv6=off;
-    set $tgysm_api http://api:8080;
+    set $proteone_api http://api:8080;
 
     location / {
-        proxy_pass $tgysm_api;
+        proxy_pass $proteone_api;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

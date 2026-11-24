@@ -1,5 +1,5 @@
 # Local stand-ins for the company directory in the directory sign-in contract test (Phase 11 Task 10, ADR-0030).
-# Run only through tools/directory-contract-test.sh: it sets TGYSM_TEST_OIDC_TENANT, starts and stops everything.
+# Run only through tools/directory-contract-test.sh: it sets PROTEONE_TEST_OIDC_TENANT, starts and stops everything.
 # Everything here is fake test data and listens on 127.0.0.1 only.
 #
 #   test-ca     one-shot: throw-away CA + server certificate for "openldap" into the directory-certs volume
@@ -13,11 +13,11 @@
 # (tid, oid, preferred_username) into the token per client id. Keycloak would need a realm import and still could
 # not issue the Entra-only claims without custom mappers. Interactive login is off: the authorize endpoint answers at
 # once, so the test needs no browser.
-name: tgysm-test-directory
+name: proteone-test-directory
 
 x-openldap-image: &openldap-image
   build: ./openldap
-  image: tgysm-test-openldap:local
+  image: proteone-test-openldap:local
 
 services:
   test-ca:
@@ -49,10 +49,10 @@ services:
       test:
         - CMD-SHELL
         - >-
-          ldapsearch -x -LLL -H ldaps://openldap:636 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
-          -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example '(sAMAccountName=deniz.test)' dn | grep -q '^dn:'
-          && ldapsearch -x -ZZ -LLL -H ldap://openldap:389 -D cn=svc-tgysm,ou=service-accounts,dc=tgysm-test,dc=example
-          -w Svc-test-pass-2026 -b dc=tgysm-test,dc=example -s base dn | grep -q '^dn:'
+          ldapsearch -x -LLL -H ldaps://openldap:636 -D cn=svc-proteone,ou=service-accounts,dc=proteone-test,dc=example
+          -w Svc-test-pass-2026 -b dc=proteone-test,dc=example '(sAMAccountName=deniz.test)' dn | grep -q '^dn:'
+          && ldapsearch -x -ZZ -LLL -H ldap://openldap:389 -D cn=svc-proteone,ou=service-accounts,dc=proteone-test,dc=example
+          -w Svc-test-pass-2026 -b dc=proteone-test,dc=example -s base dn | grep -q '^dn:'
       interval: 2s
       timeout: 5s
       retries: 30
@@ -65,50 +65,50 @@ services:
       SERVER_PORT: "8080"
       # The issuer id is the tenant id, so the issuer is http://127.0.0.1:8089/<tenant>. Tokens are shaped per client
       # id; the client ids and claims must match OidcContractTests (backend/tests/Proteone.Api.IntegrationTests/Auth).
-      #   tgysm-member          member of the configured tenant with an allowed domain: signs in
-      #   tgysm-other-tenant    tid of another tenant (9e2d4c6b-...): refused
-      #   tgysm-foreign-domain  configured tenant, sign-in name outside the allowed domains: refused
+      #   proteone-member          member of the configured tenant with an allowed domain: signs in
+      #   proteone-other-tenant    tid of another tenant (9e2d4c6b-...): refused
+      #   proteone-foreign-domain  configured tenant, sign-in name outside the allowed domains: refused
       JSON_CONFIG: >-
         {
           "interactiveLogin": false,
           "tokenCallbacks": [
             {
-              "issuerId": "${TGYSM_TEST_OIDC_TENANT:?run through tools/directory-contract-test.sh}",
+              "issuerId": "${PROTEONE_TEST_OIDC_TENANT:?run through tools/directory-contract-test.sh}",
               "tokenExpiry": 300,
               "requestMappings": [
                 {
                   "requestParam": "client_id",
-                  "match": "tgysm-member",
+                  "match": "proteone-member",
                   "claims": {
                     "sub": "deniz-test-subject",
-                    "aud": ["tgysm-member"],
-                    "tid": "${TGYSM_TEST_OIDC_TENANT}",
+                    "aud": ["proteone-member"],
+                    "tid": "${PROTEONE_TEST_OIDC_TENANT}",
                     "oid": "0b7e3c1a-4d2f-4a6b-9c8d-1e2f3a4b5c6d",
-                    "preferred_username": "deniz.test@tgysm-test.example",
+                    "preferred_username": "deniz.test@proteone-test.example",
                     "given_name": "Deniz",
                     "family_name": "Test"
                   }
                 },
                 {
                   "requestParam": "client_id",
-                  "match": "tgysm-other-tenant",
+                  "match": "proteone-other-tenant",
                   "claims": {
                     "sub": "other-tenant-subject",
-                    "aud": ["tgysm-other-tenant"],
+                    "aud": ["proteone-other-tenant"],
                     "tid": "9e2d4c6b-8a1f-4b3e-a5d7-1c3e5f7a9b20",
                     "oid": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d",
-                    "preferred_username": "deniz.test@tgysm-test.example",
+                    "preferred_username": "deniz.test@proteone-test.example",
                     "given_name": "Deniz",
                     "family_name": "Test"
                   }
                 },
                 {
                   "requestParam": "client_id",
-                  "match": "tgysm-foreign-domain",
+                  "match": "proteone-foreign-domain",
                   "claims": {
                     "sub": "foreign-domain-subject",
-                    "aud": ["tgysm-foreign-domain"],
-                    "tid": "${TGYSM_TEST_OIDC_TENANT}",
+                    "aud": ["proteone-foreign-domain"],
+                    "tid": "${PROTEONE_TEST_OIDC_TENANT}",
                     "oid": "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
                     "preferred_username": "deniz.test@baska-alan.example",
                     "given_name": "Deniz",
@@ -143,18 +143,18 @@ services:
     entrypoint: ["/bin/bash", "/repo/deploy/test-directory/ldap-tests-in-container.sh"]
     environment:
       # Passed through from tools/directory-contract-test.sh (NovellLdapDirectoryTests reads these names).
-      - TGYSM_TEST_LDAP_HOST
-      - TGYSM_TEST_LDAP_PORT
-      - TGYSM_TEST_LDAP_SECURITY
-      - TGYSM_TEST_LDAP_BASE_DN
-      - TGYSM_TEST_LDAP_BIND_DN
-      - TGYSM_TEST_LDAP_BIND_PASSWORD
-      - TGYSM_TEST_LDAP_USER
-      - TGYSM_TEST_LDAP_PASSWORD
-      - TGYSM_TEST_LDAP_EMAIL
-      - TGYSM_TEST_LDAP_STOPPED
+      - PROTEONE_TEST_LDAP_HOST
+      - PROTEONE_TEST_LDAP_PORT
+      - PROTEONE_TEST_LDAP_SECURITY
+      - PROTEONE_TEST_LDAP_BASE_DN
+      - PROTEONE_TEST_LDAP_BIND_DN
+      - PROTEONE_TEST_LDAP_BIND_PASSWORD
+      - PROTEONE_TEST_LDAP_USER
+      - PROTEONE_TEST_LDAP_PASSWORD
+      - PROTEONE_TEST_LDAP_EMAIL
+      - PROTEONE_TEST_LDAP_STOPPED
       # PostgresDatabase creates its throw-away databases through this admin connection.
-      - TGYSM_TEST_ADMIN_CONNECTION=Host=postgres;Database=postgres;Username=postgres;Password=test-only-pg-pass
+      - PROTEONE_TEST_ADMIN_CONNECTION=Host=postgres;Database=postgres;Username=postgres;Password=test-only-pg-pass
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
       - DOTNET_NOLOGO=1
     volumes:

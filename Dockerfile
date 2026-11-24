@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# TGYSM images (ADR-0024): target "api" (API + SPA in wwwroot) and target "worker". No secrets in any layer;
+# Proteone images (ADR-0024): target "api" (API + SPA in wwwroot) and target "worker". No secrets in any layer;
 # configuration comes from the environment at run time (deploy/.env).
 
 FROM node:26-bookworm-slim AS frontend-build

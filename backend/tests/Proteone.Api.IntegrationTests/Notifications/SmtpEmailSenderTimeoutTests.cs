@@ -34,7 +34,7 @@ public sealed class SmtpEmailSenderTimeoutTests
         var options = new EmailOptions
         {
             Mode = EmailModes.Smtp,
-            From = "TGYSM <no-reply@tgysm.local>",
+            From = "Proteone <no-reply@proteone.local>",
             Smtp = new SmtpOptions { Host = IPAddress.Loopback.ToString(), Port = port, UseStartTls = false, TimeoutSeconds = TimeoutSeconds },
         };
         var sender = new SmtpEmailSender(new FixedOptionsMonitor(options));

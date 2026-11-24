@@ -24,7 +24,9 @@ Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 | `TGYSM_VERSION`, `TGYSM_SUBNET`, `TGYSM_DEPLOYMENT` | `PROTEONE_*` first, the old name as fallback |
 | CI, test and local tool variables, launchd label | rename |
 | Backup prefix | `proteone-`; retention also cleans `tgysm-` archives; restore accepts both |
-| Migrations' content, audit and event values, record number prefixes, user-secrets id, OIDC callback path | keep |
+| Database (owner decision 2026-11-24: no TGYSM left there) | database, role and test database names become `proteone*`; a new migration replaces the name in `email_templates`; schema objects already carry no brand; Data Protection purposes are not stored as text |
+| Audit rows and sent emails that hold the old name or address | history; rewriting or deleting them is a separate owner approval in step 19 (audit is append-only) |
+| Applied migrations' content, event kinds, record number prefixes, user-secrets id, OIDC callback path | keep |
 | Accepted ADRs, earlier specs and plans, release records | keep (history) |
 
 ## Earlier phases

@@ -194,14 +194,14 @@ public sealed class EmailSenderTests(ApiFactory factory) : IAsyncLifetime
     [Fact]
     public async Task Pickup_mode_writes_one_eml_with_utf8_turkish_subject()
     {
-        var folder = Path.Combine(Path.GetTempPath(), "tgysm-pickup-" + Guid.NewGuid().ToString("N"));
+        var folder = Path.Combine(Path.GetTempPath(), "proteone-pickup-" + Guid.NewGuid().ToString("N"));
         try
         {
             var services = new ServiceCollection();
             services.AddOptions<EmailOptions>().Configure(o =>
             {
                 o.Mode = EmailModes.Pickup;
-                o.From = "TGYSM <no-reply@tgysm.local>";
+                o.From = "Proteone <no-reply@proteone.local>";
                 o.PickupFolder = folder;
             });
             await using var provider = services.BuildServiceProvider();

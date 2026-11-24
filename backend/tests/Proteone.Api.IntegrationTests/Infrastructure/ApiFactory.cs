@@ -20,13 +20,13 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public PostgresDatabase Database { get; } = new();
 
     /// <summary>Attachment storage of this host; removed on dispose.</summary>
-    public string FilesRoot { get; } = Path.Combine(Path.GetTempPath(), "tgysm-test-files-" + Guid.NewGuid().ToString("N"));
+    public string FilesRoot { get; } = Path.Combine(Path.GetTempPath(), "proteone-test-files-" + Guid.NewGuid().ToString("N"));
 
     /// <summary>Data Protection key ring; required outside Development (ADR-0024), so the Testing host gets its own folder.</summary>
-    public string KeysRoot { get; } = Path.Combine(Path.GetTempPath(), "tgysm-test-keys-" + Guid.NewGuid().ToString("N"));
+    public string KeysRoot { get; } = Path.Combine(Path.GetTempPath(), "proteone-test-keys-" + Guid.NewGuid().ToString("N"));
 
     /// <summary><c>Email:Mode=Pickup</c>'s <c>.eml</c> folder for this host; removed on dispose.</summary>
-    public string EmailPickupFolder { get; } = Path.Combine(Path.GetTempPath(), "tgysm-test-email-" + Guid.NewGuid().ToString("N"));
+    public string EmailPickupFolder { get; } = Path.Combine(Path.GetTempPath(), "proteone-test-email-" + Guid.NewGuid().ToString("N"));
 
     /// <summary>
     /// Replaces the real <c>IEmailSender</c> (Infrastructure) for every test in the collection, so
@@ -87,7 +87,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         // handler_resolves still resolves EmailOptions-dependent types, and a real PickupFolderEmailSender is
         // exercised directly (not through DI) by the pickup-mode .eml test.
         builder.UseSetting("Email:Mode", "Pickup");
-        builder.UseSetting("Email:From", "TGYSM <no-reply@tgysm.local>");
+        builder.UseSetting("Email:From", "Proteone <no-reply@proteone.local>");
         builder.UseSetting("Email:PickupFolder", EmailPickupFolder);
         builder.ConfigureTestServices(services =>
         {

@@ -30,7 +30,7 @@ chmod +x "$work/git" "$work/docker"
 run_build() { : > "$work/docker.log"; PATH="$work:$PATH" STUB_DIRTY="$1" tools/docker-build.sh "${@:2}" >/dev/null 2>&1; }
 
 if run_build false; then pass "clean tree: exit 0"; else fail "clean tree: exit 0"; fi
-for image in tgysm-api tgysm-worker; do
+for image in proteone-api proteone-worker; do
   if grep -q -- "-t $image:$STUB_HASH " "$work/docker.log"; then pass "clean tree: $image:$STUB_HASH"; else fail "clean tree: $image:$STUB_HASH"; fi
   if grep -q -- "-t $image:latest" "$work/docker.log"; then pass "clean tree: $image:latest"; else fail "clean tree: $image:latest"; fi
 done
@@ -39,7 +39,7 @@ if run_build true; then fail "dirty tree without --allow-dirty: refused"; else p
 if [[ ! -s "$work/docker.log" ]]; then pass "refused build runs no docker"; else fail "refused build runs no docker"; fi
 
 if run_build true --allow-dirty; then pass "--allow-dirty: exit 0"; else fail "--allow-dirty: exit 0"; fi
-for image in tgysm-api tgysm-worker; do
+for image in proteone-api proteone-worker; do
   if grep -q -- "-t $image:$STUB_HASH-dirty" "$work/docker.log"; then pass "--allow-dirty: $image:$STUB_HASH-dirty"; else fail "--allow-dirty: $image:$STUB_HASH-dirty"; fi
 done
 if grep -q ":latest" "$work/docker.log"; then fail "--allow-dirty: latest not moved"; else pass "--allow-dirty: latest not moved"; fi

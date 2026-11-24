@@ -5,9 +5,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 readonly ROOT="$(pwd)"
-readonly DB_HOST="${TGYSM_DB_HOST:-localhost}"
-readonly DB_NAME="${TGYSM_DB_NAME:-tgysm_dev}"
-readonly DB_USER="${TGYSM_DB_USER:-tgysm}"
+readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_dev}"
+readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
 # The Worker has no user secrets of its own, so it gets the API's connection string through the environment.
 readonly WORKER_CONNECTION="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
 # Absolute: Email:PickupFolder is the only Worker setting whose development default is a relative path.

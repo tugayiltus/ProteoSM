@@ -6,12 +6,12 @@ using Proteone.Infrastructure.Identity;
 namespace Proteone.Api.IntegrationTests.Auth;
 
 /// <summary>
-/// The real LDAP client against a directory given by environment variables (TGYSM_TEST_LDAP_HOST, _PORT, _SECURITY,
+/// The real LDAP client against a directory given by environment variables (PROTEONE_TEST_LDAP_HOST, _PORT, _SECURITY,
 /// _BASE_DN, _BIND_DN, _BIND_PASSWORD, _USER, _PASSWORD). Without them the tests are skipped: CI has no directory (ADR-0030).
 /// </summary>
 public sealed class NovellLdapDirectoryTests
 {
-    private const string Prefix = "TGYSM_TEST_LDAP_";
+    private const string Prefix = "PROTEONE_TEST_LDAP_";
 
     private static string? Env(string name) => Environment.GetEnvironmentVariable(Prefix + name);
 

@@ -2,7 +2,7 @@ namespace Proteone.Application.Tests;
 
 internal static class RepositoryPaths
 {
-    private const string MarkerFile = "tgysm.md";
+    private const string MarkerFile = "proteone.md";
 
     public static string Root { get; } = FindRoot();
 

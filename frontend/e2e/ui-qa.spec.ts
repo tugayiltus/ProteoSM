@@ -14,7 +14,7 @@ import { adminSession, seedChange, seedChangeTask, seedIncidents, seedPublishedA
 
 const OUT = requiredEnv('UI_QA_OUT');
 const MODES = ['light', 'dark'] as const;
-const COLOR_MODE_STORAGE_KEY = 'tgysm-theme';
+const COLOR_MODE_STORAGE_KEY = 'proteone-theme';
 const SWEEP_TIMEOUT_MS = 600_000;
 const SETTLE_MS = 800;
 const OVERFLOW_TOLERANCE_PX = 1;

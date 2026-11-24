@@ -28,7 +28,7 @@ export function AccountMenu() {
     >
       <DropdownMenuGroup title={fullName}>
         <DropdownMenuItem label={ta('shell.profile')} href={ROUTES.profile} />
-        {/* A company-account user has no TGYSM password to change (ADR-0030). */}
+        {/* A company-account user has no Proteone password to change (ADR-0030). */}
         {me.hasLocalPassword && <DropdownMenuItem label={t('routes.changePassword')} href={ROUTES.changePassword} />}
       </DropdownMenuGroup>
       <DropdownMenuDivider />

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# docker compose for the TGYSM stack: always deploy/compose.yaml with deploy/.env (ADR-0024). The image tag is the one
-# tools/deploy.sh recorded in deploy/.version; TGYSM_VERSION in the environment overrides it.
+# docker compose for the Proteone stack: always deploy/compose.yaml with deploy/.env (ADR-0024). The image tag is the one
+# tools/deploy.sh recorded in deploy/.version; PROTEONE_VERSION in the environment overrides it.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 readonly COMPOSE_FILE="deploy/compose.yaml"
-readonly ENV_FILE="${TGYSM_ENV_FILE:-deploy/.env}"
+readonly ENV_FILE="${PROTEONE_ENV_FILE:-deploy/.env}"
 readonly VERSION_FILE="deploy/.version"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -13,9 +13,9 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-if [[ -z "${TGYSM_VERSION:-}" && -s "$VERSION_FILE" ]]; then
-  TGYSM_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
-  export TGYSM_VERSION
+if [[ -z "${PROTEONE_VERSION:-}" && -s "$VERSION_FILE" ]]; then
+  PROTEONE_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+  export PROTEONE_VERSION
 fi
 
 exec docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" "$@"

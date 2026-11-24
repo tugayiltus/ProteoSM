@@ -2,14 +2,14 @@
 # Pilot seed data (spec §5.1) through the API's "seed-pilot" command: users, organisation, catalog, assets, articles
 # and tickets over the past 90 days, written by the application handlers. Prints the pilot password once.
 #
-#   tools/seed-pilot.sh [--scale <factor>]            local: seed TGYSM_DB_NAME (default tgysm_pilot), Development
+#   tools/seed-pilot.sh [--scale <factor>]            local: seed PROTEONE_DB_NAME (default proteone_pilot), Development
 #   tools/seed-pilot.sh --fresh [--scale <factor>]    local: drop and recreate the database, migrate, then seed
 #   tools/seed-pilot.sh --drop                        local: drop the pilot database and stop
 #   tools/seed-pilot.sh --compose [--scale <factor>]  deployed stack: one-off api container in the Pilot environment
 #
 # The command refuses outside Development/Pilot and once the database has a ticket. --fresh and --drop only touch
-# databases whose name starts with tgysm_pilot. --compose sets the Pilot environment itself, so it is guarded by the
-# host's env file instead: it refuses unless deploy/.env (TGYSM_ENV_FILE) has TGYSM_DEPLOYMENT=pilot. A seeded host is
+# databases whose name starts with proteone_pilot. --compose sets the Pilot environment itself, so it is guarded by the
+# host's env file instead: it refuses unless deploy/.env (PROTEONE_ENV_FILE) has PROTEONE_DEPLOYMENT=pilot. A seeded host is
 # never promoted to production.
 #
 # Mail: the notifications the seed queues are closed (never sent), but the Worker's SLA monitor later raises breach
@@ -21,16 +21,18 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly DB_HOST="${TGYSM_DB_HOST:-localhost}"
-readonly DB_NAME="${TGYSM_DB_NAME:-tgysm_pilot}"
-readonly DB_USER="${TGYSM_DB_USER:-tgysm}"
+readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_pilot}"
+readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
 readonly ADMIN_DB="postgres"
-readonly PILOT_DB_PREFIX="tgysm_pilot"
+readonly PILOT_DB_PREFIX="proteone_pilot"
 readonly COMMAND="seed-pilot"
 readonly PILOT_ENVIRONMENT="Pilot"
 readonly PILOT_EMAIL_DOMAIN="pilot.example.com"
-readonly ENV_FILE="${TGYSM_ENV_FILE:-deploy/.env}"
-readonly DEPLOYMENT_KEY="TGYSM_DEPLOYMENT"
+readonly ENV_FILE="${PROTEONE_ENV_FILE:-deploy/.env}"
+readonly DEPLOYMENT_KEY="PROTEONE_DEPLOYMENT"
+# Env files from before the rename; read only while the new key is missing.
+readonly LEGACY_DEPLOYMENT_KEY="TGYSM_DEPLOYMENT"
 readonly PILOT_DEPLOYMENT="pilot"
 source tools/lib/env-file.sh
 
@@ -57,6 +59,7 @@ echo "Note: SLA breach notifications for open seeded tickets will go to @$PILOT_
 
 if [[ "$mode" == "compose" ]]; then
   deployment="$(env_value "$ENV_FILE" "$DEPLOYMENT_KEY")"
+  deployment="${deployment:-$(env_value "$ENV_FILE" "$LEGACY_DEPLOYMENT_KEY")}"
   if [[ "$deployment" != "$PILOT_DEPLOYMENT" ]]; then
     echo "Refused: --compose seeds only a pilot host, and $ENV_FILE has ${DEPLOYMENT_KEY}=${deployment:-<unset>}." >&2
     echo "On a pilot host set ${DEPLOYMENT_KEY}=${PILOT_DEPLOYMENT} in $ENV_FILE; never on a production host." >&2
@@ -83,7 +86,7 @@ if [[ "$mode" == "fresh" ]]; then
   drop_database
   psql -h "$DB_HOST" -d "$ADMIN_DB" -v ON_ERROR_STOP=1 -qc "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\""
   echo "Database $DB_NAME created."
-  TGYSM_DB_HOST="$DB_HOST" TGYSM_DB_NAME="$DB_NAME" TGYSM_DB_USER="$DB_USER" tools/migrate.sh
+  PROTEONE_DB_HOST="$DB_HOST" PROTEONE_DB_NAME="$DB_NAME" PROTEONE_DB_USER="$DB_USER" tools/migrate.sh
 fi
 
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"

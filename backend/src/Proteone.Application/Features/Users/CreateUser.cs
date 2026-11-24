@@ -60,7 +60,7 @@ public sealed class CreateUserHandler(
         await references.EnsureActiveAsync(command.DepartmentId, command.LocationId, cancellationToken);
 
         // Under a directory method the user signs in with the company account and is linked by email on first sign-in:
-        // no password and no email from TGYSM (ADR-0030).
+        // no password and no email from Proteone (ADR-0030).
         var method = await db.AuthSettings.AsNoTracking().Select(s => s.Method).SingleAsync(cancellationToken);
         if (method != LoginMethod.Local)
         {

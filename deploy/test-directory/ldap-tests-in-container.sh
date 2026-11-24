@@ -7,7 +7,7 @@
 set -euo pipefail
 
 readonly CA_SOURCE=/certs/ca.crt
-readonly CA_TARGET=/usr/local/share/ca-certificates/tgysm-test-directory-ca.crt
+readonly CA_TARGET=/usr/local/share/ca-certificates/proteone-test-directory-ca.crt
 readonly REPO=/repo
 readonly WORK=/work
 # Only the project with the contract class: other test projects would run zero tests and fail with exit code 8.

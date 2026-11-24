@@ -9,8 +9,8 @@ namespace Proteone.Api.IntegrationTests.Infrastructure;
 /// <summary>Creates a throw-away database on local PostgreSQL 17, applies migrations, drops it at the end.</summary>
 public sealed class PostgresDatabase : IAsyncLifetime
 {
-    public const string AdminConnectionEnvironmentVariable = "TGYSM_TEST_ADMIN_CONNECTION";
-    private const string DatabaseNamePrefix = "tgysm_test_";
+    public const string AdminConnectionEnvironmentVariable = "PROTEONE_TEST_ADMIN_CONNECTION";
+    private const string DatabaseNamePrefix = "proteone_test_";
     private const string AdminDatabase = "postgres";
     private const string LocalHost = "localhost";
 

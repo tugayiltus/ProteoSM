@@ -153,7 +153,7 @@ async function render(markdown: string): Promise<string> {
   });
   const body = await renderer.parse(markdown);
   const base = pathToFileURL(`${GUIDE_DIR}/`).href;
-  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><base href="${base}"><title>TGYSM Kullanıcı Rehberi</title><style>${PRINT_CSS}</style></head><body>${body}</body></html>`;
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><base href="${base}"><title>Proteone Kullanıcı Rehberi</title><style>${PRINT_CSS}</style></head><body>${body}</body></html>`;
 }
 
 /** Every in-document link target (from the lexer, code excluded) is an `id` of the rendered HTML. */
@@ -217,7 +217,7 @@ function checkLabels(markdown: string, labels: { exact: Set<string>; patterns: R
 }
 
 async function writePdf(html: string): Promise<void> {
-  const work = await mkdtemp(join(tmpdir(), 'tgysm-guide-'));
+  const work = await mkdtemp(join(tmpdir(), 'proteone-guide-'));
   const browser = await chromium.launch();
   try {
     const htmlFile = join(work, 'combined.html');

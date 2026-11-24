@@ -21,7 +21,7 @@ public sealed class EmailOptions
     /// <summary>One of <see cref="EmailModes"/>.</summary>
     public string? Mode { get; set; }
 
-    /// <summary>The envelope "From" address (and optional display name), e.g. <c>"TGYSM &lt;no-reply@tgysm.local&gt;"</c>.</summary>
+    /// <summary>The envelope "From" address (and optional display name), e.g. <c>"Proteone &lt;no-reply@proteone.local&gt;"</c>.</summary>
     public string From { get; set; } = string.Empty;
 
     public SmtpOptions Smtp { get; set; } = new();

@@ -39,7 +39,7 @@ public sealed class TurkishCharactersExportTests(ApiFactory factory) : IAsyncLif
     private const string Header = "Demirbaş No,Tür,Marka,Model,Seri No,Konum,Departman,Durum,Garanti Bitiş,Satın Alma,Notlar";
     private const string RecordsSheet = "Kayıtlar";
     private const string DayFormat = "yyyy-MM-dd";
-    private const string PickupFrom = "TGYSM <no-reply@tgysm.local>";
+    private const string PickupFrom = "Proteone <no-reply@proteone.local>";
     private const string EmlPattern = "*.eml";
     private const int Batch = 50;
 
@@ -116,7 +116,7 @@ public sealed class TurkishCharactersExportTests(ApiFactory factory) : IAsyncLif
 
         var rendered = Assert.Single(factory.EmailSender.Sent);
         Assert.Contains(Subject, rendered.Body, StringComparison.Ordinal);
-        var folder = Path.Combine(Path.GetTempPath(), "tgysm-turkish-" + Guid.NewGuid().ToString("N"));
+        var folder = Path.Combine(Path.GetTempPath(), "proteone-turkish-" + Guid.NewGuid().ToString("N"));
         try
         {
             var services = new ServiceCollection();

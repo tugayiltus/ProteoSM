@@ -17,7 +17,7 @@ public sealed class AccountLinkProtectorSharingTests : IDisposable
     private readonly string _workerRoot = TempFolder("worker-root");
     private readonly string _keyFolder = TempFolder("keys");
 
-    private static string TempFolder(string name) => Path.Combine(Path.GetTempPath(), $"tgysm-dp-{name}-{Guid.NewGuid():N}");
+    private static string TempFolder(string name) => Path.Combine(Path.GetTempPath(), $"proteone-dp-{name}-{Guid.NewGuid():N}");
 
     public void Dispose()
     {

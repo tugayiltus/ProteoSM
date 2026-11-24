@@ -10,13 +10,13 @@ using Proteone.Infrastructure.Identity;
 namespace Proteone.Api.IntegrationTests.Auth;
 
 /// <summary>
-/// The test directory named by the TGYSM_TEST_LDAP_* variables of <see cref="NovellLdapDirectoryTests"/>, plus
-/// TGYSM_TEST_LDAP_EMAIL (the mail of TGYSM_TEST_LDAP_USER). Null when any is missing.
+/// The test directory named by the PROTEONE_TEST_LDAP_* variables of <see cref="NovellLdapDirectoryTests"/>, plus
+/// PROTEONE_TEST_LDAP_EMAIL (the mail of PROTEONE_TEST_LDAP_USER). Null when any is missing.
 /// </summary>
 public sealed record LdapDirectoryServer(
     string Host, int Port, LdapSecurity Security, string BaseDn, string BindDn, string BindPassword, string User, string Password, string Email)
 {
-    private const string Prefix = "TGYSM_TEST_LDAP_";
+    private const string Prefix = "PROTEONE_TEST_LDAP_";
 
     /// <summary>Set only for the run after the directory container was stopped (tools/directory-contract-test.sh).</summary>
     public const string StoppedVariable = Prefix + "STOPPED";

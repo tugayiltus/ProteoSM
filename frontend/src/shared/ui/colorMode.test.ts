@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import indexHtml from '../../../index.html?raw';
 import { stubSystemColorScheme } from '../../test/colorMode';
 
-import { applyColorMode, COLOR_MODE_STORAGE_KEY, readStoredMode, resetColorModeForTests, resolveMode, setColorMode, THEME_COLORS, useColorMode } from './colorMode';
+import { applyColorMode, COLOR_MODE_STORAGE_KEY, LEGACY_COLOR_MODE_STORAGE_KEY, readStoredMode, resetColorModeForTests, resolveMode, setColorMode, THEME_COLORS, useColorMode } from './colorMode';
 
 describe('color mode', () => {
   beforeEach(() => {
@@ -25,6 +25,14 @@ describe('color mode', () => {
     setColorMode('dark');
     expect(window.localStorage.getItem(COLOR_MODE_STORAGE_KEY)).toBe('dark');
     expect(document.documentElement.style.colorScheme).toBe('dark');
+  });
+
+  it('keeps the mode stored under the former product name until a new choice is made', () => {
+    window.localStorage.setItem(LEGACY_COLOR_MODE_STORAGE_KEY, 'dark');
+    expect(readStoredMode()).toBe('dark');
+    setColorMode('light');
+    expect(readStoredMode()).toBe('light');
+    expect(indexHtml).toContain(`localStorage.getItem('${LEGACY_COLOR_MODE_STORAGE_KEY}')`);
   });
 
   it('ignores an unknown stored value', () => {

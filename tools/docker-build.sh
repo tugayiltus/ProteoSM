@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Builds the TGYSM images (ADR-0024): tgysm-api and tgysm-worker, tagged with the Git short hash and "latest", on fresh
+# Builds the Proteone images (ADR-0024): proteone-api and proteone-worker, tagged with the Git short hash and "latest", on fresh
 # base images (--pull). Refuses a working tree with uncommitted changes, because the hash tag would then name code the
 # image does not hold. --allow-dirty builds it anyway and tags it only <hash>-dirty (development and drills only): "latest"
 # keeps naming the last committed build.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly API_IMAGE="tgysm-api"
-readonly WORKER_IMAGE="tgysm-worker"
+readonly API_IMAGE="proteone-api"
+readonly WORKER_IMAGE="proteone-worker"
 readonly LATEST_TAG="latest"
 readonly DIRTY_SUFFIX="-dirty"
 

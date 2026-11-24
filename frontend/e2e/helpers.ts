@@ -73,19 +73,19 @@ const MAX_LONG_TASK_MS = 200;
 /** Records layout shifts and long tasks from the first byte of every document this page loads. */
 export async function recordStability(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    const w = window as unknown as { tgysmCls: number; tgysmLongTasks: number[] };
-    w.tgysmCls = 0;
-    w.tgysmLongTasks = [];
+    const w = window as unknown as { proteoneCls: number; proteoneLongTasks: number[] };
+    w.proteoneCls = 0;
+    w.proteoneLongTasks = [];
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[]) {
         if (!entry.hadRecentInput) {
-          w.tgysmCls += entry.value;
+          w.proteoneCls += entry.value;
         }
       }
     }).observe({ type: 'layout-shift', buffered: true });
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        w.tgysmLongTasks.push(entry.duration);
+        w.proteoneLongTasks.push(entry.duration);
       }
     }).observe({ type: 'longtask', buffered: true });
   });
@@ -94,8 +94,8 @@ export async function recordStability(page: Page): Promise<void> {
 /** The current document stayed within the layout-stability budget. */
 export async function expectStable(page: Page): Promise<void> {
   const { cls, longTasks } = await page.evaluate(() => {
-    const w = window as unknown as { tgysmCls: number; tgysmLongTasks: number[] };
-    return { cls: w.tgysmCls, longTasks: w.tgysmLongTasks };
+    const w = window as unknown as { proteoneCls: number; proteoneLongTasks: number[] };
+    return { cls: w.proteoneCls, longTasks: w.proteoneLongTasks };
   });
   expect(cls).toBeLessThan(MAX_CLS);
   expect(longTasks.filter((duration) => duration > MAX_LONG_TASK_MS)).toEqual([]);

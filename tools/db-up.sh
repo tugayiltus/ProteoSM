@@ -3,9 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly DB_HOST="${TGYSM_DB_HOST:-localhost}"
-readonly DB_NAME="${TGYSM_DB_NAME:-tgysm_dev}"
-readonly DB_USER="${TGYSM_DB_USER:-tgysm}"
+readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_dev}"
+readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
 readonly ADMIN_DB="postgres"
 
 # CI: the service container has no OS-named superuser, so psql connects as the configured role (password: PGPASSWORD).

@@ -1,12 +1,12 @@
 # First release acceptance evidence
 
-Acceptance criteria from `tgysm.md` §20, each mapped to the automated tests that prove it. Backend tests run against a real
-PostgreSQL 17 database (`tools/test.sh`); E2E specs run on a fresh `tgysm_e2e` database at 360 px (`mobile-360`) and desktop
+Acceptance criteria from `proteone.md` §20, each mapped to the automated tests that prove it. Backend tests run against a real
+PostgreSQL 17 database (`tools/test.sh`); E2E specs run on a fresh `proteone_e2e` database at 360 px (`mobile-360`) and desktop
 width (`tools/e2e.sh`).
 
 - Test names are `Class.Method` (backend, xUnit) or `file › test title` (frontend Vitest / Playwright).
-- Project prefixes: `Api` = `backend/tests/Tgysm.Api.IntegrationTests`, `App` = `backend/tests/Tgysm.Application.Tests`,
-  `Dom` = `backend/tests/Tgysm.Domain.Tests`, `e2e` = `frontend/e2e`, `fe` = `frontend/src`.
+- Project prefixes: `Api` = `backend/tests/Proteone.Api.IntegrationTests`, `App` = `backend/tests/Proteone.Application.Tests`,
+  `Dom` = `backend/tests/Proteone.Domain.Tests`, `e2e` = `frontend/e2e`, `fe` = `frontend/src`.
 - Commit column: the commit that added the evidence. `5163bfe` is the branch head the pre-existing evidence was verified
   on; `2897b34` (`test: acceptance evidence for the first release`) added the gap tests marked "Gap". Every gap test passed
   on first run; each was proven meaningful by temporarily breaking the production code it guards (named in the evidence),
@@ -21,7 +21,7 @@ width (`tools/e2e.sh`).
   through nginx over HTTPS → `200 {"status":"ok"}`); `tools/restore-drill.sh` exit 0 (14/14 checks pass).
 - CI (GitHub Actions): pending owner-approved push.
 
-| # | Kriter (`tgysm.md` §20) | Evidence | Result | Commit |
+| # | Kriter (`proteone.md` §20) | Evidence | Result | Commit |
 |---|---|---|---|---|
 | 1 | Anonim kullanıcı hesap açamaz; çalışan/IT kullanıcı oluşturma API'sine erişemez. | **Gap (`2897b34`):** `Api` `AnonymousAccessTests.Only_sign_in_password_link_csrf_health_and_fallback_endpoints_allow_anonymous_callers` (allowlist of every `IAllowAnonymous` endpoint; no sign-up route), `AnonymousAccessTests.Anonymous_user_creation_is_unauthenticated_and_creates_nobody` (broken by `.AllowAnonymous()` on `POST /api/v1/admin/users`: both fail). Existing: `UserAdminTests.Non_admin_roles_are_forbidden_including_direct_id_access` (employee + IT `POST` create → 403), `UserAdminTests.Anonymous_request_is_unauthenticated`. | Pass | `2897b34` |
 | 2 | Kurulum ilk yönetici oluşturulduktan sonra tekrar hesap oluşturma yolu açmaz. | `Api` `SetupFirstAdminTests.Refuses_when_any_user_exists`, `SetupFirstAdminTests.Cli_prints_temporary_password_once_and_then_refuses`, `SetupFirstAdminTests.Creates_admin_with_temporary_password_when_no_user_exists`; anonymous endpoint allowlist of criterion 1 (no setup route in the API). | Pass | `5163bfe` |

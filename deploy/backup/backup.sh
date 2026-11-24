@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One TGYSM backup (ADR-0025): pg_dump (custom format) + file store + Data Protection keys + manifest.json in
-# tgysm-YYYYMMDD-HHMMSS.tar.gz (UTC). The manifest carries the SHA-256 of db.dump and the number of files the archive
+# One Proteone backup (ADR-0025): pg_dump (custom format) + file store + Data Protection keys + manifest.json in
+# proteone-YYYYMMDD-HHMMSS.tar.gz (UTC). The manifest carries the SHA-256 of db.dump and the number of files the archive
 # holds; restore checks both before writing. Written under a temporary name and renamed when complete; expired archives
 # and day-old temporary leftovers are deleted only after a successful run. BACKUP_SKIP_RETENTION=true keeps expired
 # archives (the safety backup tools/restore.sh takes before --force: the archive being restored may be an expired one in
@@ -14,7 +14,9 @@ readonly DATA_DIR="${DATA_DIR:-/data}"
 readonly RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 readonly SKIP_RETENTION="${BACKUP_SKIP_RETENTION:-false}"
 readonly MINUTES_PER_DAY=1440
-readonly ARCHIVE_PREFIX="tgysm-"
+readonly ARCHIVE_PREFIX="proteone-"
+# Archives written before the rename; retention removes them like the current ones.
+readonly LEGACY_ARCHIVE_PREFIX="tgysm-"
 readonly PARTIAL_PREFIX=".partial-"
 # GNU tar exit code 1: a file changed while it was read (attachments are written while the backup runs).
 readonly TAR_FILE_CHANGED=1
@@ -72,7 +74,7 @@ echo "Backup written: $archive"
 if [[ "$SKIP_RETENTION" == true ]]; then
   echo "Retention skipped (BACKUP_SKIP_RETENTION=true): expired archives are kept."
 else
-  find "$BACKUP_DIR" -maxdepth 1 -name "$ARCHIVE_PREFIX*.tar.gz" -mmin "+$((RETENTION_DAYS * MINUTES_PER_DAY))" -print -delete
+  find "$BACKUP_DIR" -maxdepth 1 \( -name "$ARCHIVE_PREFIX*.tar.gz" -o -name "$LEGACY_ARCHIVE_PREFIX*.tar.gz" \) -mmin "+$((RETENTION_DAYS * MINUTES_PER_DAY))" -print -delete
 fi
 # Leftovers of runs killed before their cleanup (power loss, OOM); a day old, so never a run in progress.
 find "$BACKUP_DIR" -maxdepth 1 -name "$PARTIAL_PREFIX*" -mmin "+$MINUTES_PER_DAY" -print -delete

@@ -12,7 +12,7 @@ namespace Proteone.Api.IntegrationTests.Auth;
 /// LDAP sign-in end to end through the API against a real directory (OpenLDAP from deploy/test-directory, run by
 /// tools/directory-contract-test.sh over LDAPS and StartTLS): the admin test and switch, sign-in by Windows user name and
 /// by email, wrong passwords, the lockout and the local admin break-glass sign-in (ADR-0030). Skipped unless the
-/// TGYSM_TEST_LDAP_* variables (see <see cref="LdapDirectoryServer"/>) are set: CI has no directory.
+/// PROTEONE_TEST_LDAP_* variables (see <see cref="LdapDirectoryServer"/>) are set: CI has no directory.
 /// </summary>
 public sealed class LdapApiContractTests(LdapContractFixture fixture) : IClassFixture<LdapContractFixture>, IAsyncLifetime
 {
@@ -20,7 +20,7 @@ public sealed class LdapApiContractTests(LdapContractFixture fixture) : IClassFi
     private const string LdapLoginPath = "/api/v1/auth/login/ldap";
     private const string MethodPath = "/api/v1/auth/method";
     private const string LdapMethod = "ldap";
-    private const string AdminEmail = "yonetici@tgysm-test.example";
+    private const string AdminEmail = "yonetici@proteone-test.example";
     private const string WrongPassword = "yanlis-sifre";
     private const string NoDirectory = "No test directory configured (tools/directory-contract-test.sh).";
     private const int LockThreshold = 5;

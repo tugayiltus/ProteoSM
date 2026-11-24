@@ -5,11 +5,13 @@
  */
 import { useState } from 'react';
 
-export const SIDEBAR_STORAGE_KEY = 'tgysm.sidebar.narrow';
+export const SIDEBAR_STORAGE_KEY = 'proteone.sidebar.narrow';
+/** The key of the former product name; read while the new one is missing. */
+export const LEGACY_SIDEBAR_STORAGE_KEY = 'tgysm.sidebar.narrow';
 
 function readNarrow(): boolean {
   try {
-    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
+    return (window.localStorage.getItem(SIDEBAR_STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_SIDEBAR_STORAGE_KEY)) === 'true';
   } catch {
     // Private mode or blocked storage: start wide.
     return false;

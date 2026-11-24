@@ -10,7 +10,7 @@ namespace Proteone.Application.Tests;
 public sealed class AppOptionsValidationTests
 {
     [Theory]
-    [InlineData("https://tgysm.example.com")]
+    [InlineData("https://proteone.example.com")]
     [InlineData("http://localhost:5173")]
     public void Accepts_an_absolute_http_or_https_url(string url) =>
         Assert.True(AppOptionsValidation.IsValidPublicBaseUrl(url));
@@ -20,8 +20,8 @@ public sealed class AppOptionsValidationTests
     [InlineData("")]
     [InlineData("   ")]
     [InlineData("/tickets")]
-    [InlineData("tgysm.example.com")]
-    [InlineData("ftp://tgysm.example.com")]
+    [InlineData("proteone.example.com")]
+    [InlineData("ftp://proteone.example.com")]
     public void Rejects_blank_relative_or_non_http_urls(string? url) =>
         Assert.False(AppOptionsValidation.IsValidPublicBaseUrl(url));
 }
