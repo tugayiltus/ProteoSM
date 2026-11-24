@@ -3,6 +3,7 @@ using Proteone.Domain.Assets;
 using Proteone.Domain.Auth;
 using Proteone.Domain.Catalog;
 using Proteone.Domain.Knowledge;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Services;
@@ -55,6 +56,9 @@ public interface IAppDbContext
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceAsset> ServiceAssets { get; }
+    DbSet<Software> Software { get; }
+    DbSet<Licence> Licences { get; }
+    DbSet<LicenceAssignment> LicenceAssignments { get; }
     DbSet<TicketRelation> TicketRelations { get; }
     DbSet<TicketAsset> TicketAssets { get; }
     DbSet<TicketArticle> TicketArticles { get; }

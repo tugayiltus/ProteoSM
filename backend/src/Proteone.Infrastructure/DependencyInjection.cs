@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddProteoneDataProtection();
         services.AddSingleton<IAccountLinkProtector, AccountLinkProtector>();
         services.AddSingleton<IAuthSecretProtector, AuthSecretProtector>();
+        services.AddSingleton<ILicenceKeyProtector, LicenceKeyProtector>();
         services.AddSingleton<ILdapDirectory, Identity.NovellLdapDirectory>();
         // One client for the occasional connection test; the Worker composes this too, so it lives here, not in Proteone.Api.
         services.AddSingleton<IEntraConnectionTester>(_ => new Identity.EntraConnectionTester(new HttpClient()));

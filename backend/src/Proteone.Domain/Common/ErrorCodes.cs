@@ -44,6 +44,16 @@ public static class ErrorCodes
 
     public const string AssetInvalidTransition = "assets.invalid_transition";
     public const string AssetTagTaken = "assets.tag_taken";
+    public const string SoftwareNameTaken = "licences.software_name_taken";
+    public const string SoftwareInactive = "licences.software_inactive";
+    public const string LicenceOwnerTeamInactive = "licences.owner_team_inactive";
+    public const string LicenceFull = "licences.full";
+    public const string LicenceExpired = "licences.expired";
+    public const string LicenceQuantityBelowUse = "licences.quantity_below_use";
+    public const string LicenceKindMismatch = "licences.kind_mismatch";
+    public const string LicenceTargetNotAssignable = "licences.target_not_assignable";
+    public const string LicenceAlreadyAssigned = "licences.already_assigned";
+
     public const string AssetSerialTaken = "assets.serial_taken";
     public const string AssetUserInactive = "assets.user_inactive";
     public const string AssetRequestMismatch = "assets.request_mismatch";

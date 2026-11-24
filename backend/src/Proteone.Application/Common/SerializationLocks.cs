@@ -42,4 +42,7 @@ public static class SerializationLocks
 
     /// <summary>Creating, renaming and activating a service: two writes never reach the unique name index together.</summary>
     public const long ServiceCatalog = 7_012;
+
+    /// <summary>Licence seats: assignments, releases and quantity changes, so a licence never exceeds its quantity.</summary>
+    public const long LicenceSeats = 7_013;
 }

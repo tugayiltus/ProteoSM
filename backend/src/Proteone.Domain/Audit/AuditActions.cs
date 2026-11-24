@@ -148,6 +148,16 @@ public static class AuditActions
     /// <summary>Written by the migration that replaced the former product name (ADR-0037).</summary>
     public const string ProductNameReplaced = "audit.product_name_replaced";
 
+    public const string SoftwareCreated = "software.created";
+    public const string SoftwareUpdated = "software.updated";
+    public const string LicenceCreated = "licences.created";
+    public const string LicenceUpdated = "licences.updated";
+    public const string LicenceAssigned = "licences.assigned";
+    public const string LicenceReleased = "licences.released";
+    public const string LicenceKeySet = "licences.key_set";
+    public const string LicenceKeyCleared = "licences.key_cleared";
+    public const string LicenceKeyShown = "licences.key_shown";
+
     public const string ReportExported = "reports.exported";
     public const string ReportExportRequested = "reports.export_requested";
     public const string ReportExportDownloaded = "reports.export_downloaded";
