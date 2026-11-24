@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Tgysm.Domain.Notifications;
 using Tgysm.Infrastructure.Security;
 
 namespace Tgysm.Api.IntegrationTests.Security;
@@ -61,6 +62,18 @@ public sealed class DataProtectionKeysTests : IDisposable
 
         Assert.Equal(Secret, worker.GetRequiredService<IDataProtectionProvider>().CreateProtector(Purpose).Unprotect(protectedValue));
         Assert.NotEmpty(Directory.GetFiles(_folder));
+    }
+
+    /// <summary>
+    /// Stored directory secrets, waiting account links and restored archives were protected with these exact strings.
+    /// They keep the former product name on purpose; another value makes that data unreadable.
+    /// </summary>
+    [Fact]
+    public void The_application_name_and_purposes_keep_the_values_stored_data_was_protected_with()
+    {
+        Assert.Equal("Tgysm", KeyStorage.ApplicationName);
+        Assert.Equal("Tgysm.AuthSettings", AuthSecretProtector.Purpose);
+        Assert.Equal("Tgysm.Notifications.AccountLinkToken", OutboxEvent.ProtectedSecretPurpose);
     }
 
     [Fact]
