@@ -72,7 +72,7 @@ import proteone_drill as drill
 admin = drill.Client(sys.argv[1])
 admin.sign_in(sys.argv[2], sys.argv[3], drill.ADMIN_PASSWORD)
 admin.json("POST", "/admin/users", {"firstName": "Waiting", "lastName": "Link", "email": "waiting@example.com", "role": "employee",
-                                    "departmentId": None, "locationId": None, "delivery": "activation_link"})
+                                    "departmentId": None, "locationId": None, "delivery": "email_link"})
 PY
 archive_path="$(old exec -T backup bash /backup/backup.sh | sed -n 's/^Backup written: //p')"
 old cp "backup:$archive_path" "$work/archives/" >/dev/null 2>&1
