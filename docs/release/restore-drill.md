@@ -1,7 +1,7 @@
 # Restore drill
 
-Run by `tools/restore-drill.sh` on 2026-10-10T17:20:46Z at commit `b1412b7` (images `b1412b7`).
-Archive: `tgysm-20261010-171919.tar.gz` (32K). Acceptance criterion 19 of `tgysm.md` §20; ADR-0025.
+Run by `tools/restore-drill.sh` on 2026-11-24T13:25:18Z at commit `0d3f3a1` (images `0d3f3a1`).
+Archive: `proteone-20261124-132338.tar.gz` (40K). Acceptance criterion 19 of `proteone.md` §20; ADR-0025.
 
 | Check | Expected | Actual | Result |
 |---|---|---|---|
@@ -14,8 +14,8 @@ Archive: `tgysm-20261010-171919.tar.gz` (32K). Acceptance criterion 19 of `tgysm
 | forced restore took a safety backup first (archives in the target's backups volume) | 1 | 1 | pass |
 | health | 200 | 200 | pass |
 | session from before the backup is still valid | 200 | 200 | pass |
-| attachment downloads with the same size | 1984 | 1984 | pass |
-| export file downloads with the same size | 7722 | 7722 | pass |
+| attachment downloads with the same size | 2176 | 2176 | pass |
+| export file downloads with the same size | 7728 | 7728 | pass |
 | deactivated user cannot sign in | HTTP 401 auth.invalid_credentials | HTTP 401 auth.invalid_credentials | pass |
 | post-restore checks reported | 5 | 5 | pass |
 | post-restore check script (exit code) | 0 | 0 | pass |

@@ -31,6 +31,7 @@ public sealed partial class FormerProductNameTests
         "tools/deploy.sh",
         "tools/seed-pilot.sh",
         "tools/tests/backup-test.sh",
+        "tools/upgrade-drill.sh",
         "backend/tests/Proteone.Application.Tests/FormerProductNameTests.cs",
     ];
 
