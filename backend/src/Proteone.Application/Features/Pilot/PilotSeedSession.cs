@@ -145,6 +145,7 @@ internal sealed partial class PilotSeedSession(
         await SeedAssetsAsync();
         await SeedServicesAsync();
         await SeedLicencesAsync();
+        await SeedMonitoringAsync();
         await SeedArticlesAsync();
         await SeedTicketsAsync();
         await SeedChangesAsync();

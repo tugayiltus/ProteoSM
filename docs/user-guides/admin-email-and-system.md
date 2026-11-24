@@ -39,6 +39,23 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
 
+## İzleme kaynakları
+
+İzleme aracı (örneğin sunucu izleme) imzalı istekle kendiliğinden arıza açabilir.
+
+![İzleme kaynakları](images/admin-monitoring-desktop.png)
+
+1. **İzleme kaynakları** sayfasında **Yeni kaynak** düğmesine basın.
+2. **Ad**, **Ekip** ve **Talep sahibi** alanlarını doldurun; **Etki** ve **Aciliyet** seçin. **Hizmet** ve **Kategori** isteğe bağlıdır. Talep sahibi aktif IT personeli veya yönetici olmalıdır.
+3. **Oluştur** düğmesine basın ve gösterilen anahtarı kopyalayın. Anahtar bir daha gösterilmez.
+4. Adresi ve anahtarı izleme aracına girin. İmza örneğini sistem yöneticinize sorun.
+
+- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur.
+- Aynı uyarı açık bir arıza varken yeniden gelirse arızaya iç not düşer. Uyarı düzelince de yalnızca iç not düşer; arızayı IT kapatır.
+- Bir kaynak saatte en fazla 30 yeni arıza açar.
+- **Reddedilen istek** sayısı artıyorsa anahtarı, aracın saatini ve kaynağın aktif olduğunu kontrol edin.
+- Bu yolla açılan arızada IT için **İzleme** alanı görünür.
+
 ## İpuçları
 
 - Şablon metinlerini kısa tutun ve kaydı açan bağlantıyı silmeyin; kullanıcılar e-postadan kayda bu bağlantıyla gider.

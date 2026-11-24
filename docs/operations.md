@@ -11,7 +11,7 @@ Every command below runs from the repository root on the host. `tools/compose.sh
 | `postgres` | `postgres:17` | Database `proteone`, user `proteone`, volume `pgdata`. Not published to the host. |
 | `migrate` | `proteone-api` | One-shot `migrate` command: EF Core migrations plus post-migration data steps. `api` and `worker` start only after it exits 0. |
 | `api` | `proteone-api` | API and the web app on HTTP `8080` inside the network. Health check `GET /api/v1/health`. |
-| `worker` | `proteone-worker` | Background jobs (outbox, email, SLA monitor, exports, cleanup). No network listener. |
+| `worker` | `proteone-worker` | Background jobs (outbox, email, SLA monitor, exports, licence expiry, cleanup). No network listener. |
 | `nginx` | `nginx:stable` | TLS on `HTTPS_PORT` (default 443); `HTTP_PORT` (default 80) redirects to HTTPS; proxies to `api:8080`. |
 | `backup` | `postgres:17` | Nightly backup at `BACKUP_TIME`. |
 | `restore` | `postgres:17` | Profile `restore` only; started by `tools/restore.sh`. |
@@ -190,6 +190,23 @@ Run it after an update that changes the images or the backup scripts, and period
 - Health: `curl -fsS https://<host>/api/v1/health` answers `{"status":"ok"}`, or `degraded` when a Worker job's last heartbeat is older than three times its interval. It is anonymous and shows nothing else. Compose uses the same probe inside the network for `api`'s health status.
 - `/admin/system` (admin sign-in; Yönetim > Sistem): every Worker job with instance, last run, last error, interval and a stale flag. A stale job or a `lastError` points to `tools/compose.sh logs worker`.
 - Email: `/admin/email-deliveries` lists deliveries by status; a `failed` one can be retried there after the cause is fixed.
+
+## Monitoring webhook
+
+An admin creates a source in `/admin` → "İzleme kaynakları" and gives its address and secret to the monitoring tool (ADR-0041). Each request is signed: lower-case hex HMAC-SHA256 of `<timestamp>.<body>`, keyed with the secret text.
+
+```bash
+url="https://<host>/api/v1/monitoring/<source id>/events"
+body='{"eventId":"4711","alertKey":"srv1-disk","state":"firing","title":"Disk full on srv1","description":"/var at 95%"}'
+timestamp="$(date +%s)"
+signature="$(printf '%s.%s' "$timestamp" "$body" | openssl dgst -sha256 -hmac "$MONITORING_SECRET" -r | cut -d ' ' -f 1)"
+curl -fsS "$url" -H 'Content-Type: application/json' -H "X-Proteone-Timestamp: $timestamp" -H "X-Proteone-Signature: $signature" --data-binary "$body"
+```
+
+- `state` is `firing` or `resolved`; `eventId` must be new for each event (a repeat has no effect), `alertKey` names the alert. `description` is optional.
+- 200: accepted. 400: content. 401: address, secret, or a clock more than 5 minutes off. 409: the requester or team of the source is not active. 413: more than 16 KB. 429: more than 60 requests a minute from one address, or 30 new incidents an hour from one source; retry with the same `eventId`.
+- Keep the secret out of logs and process lists of the tool; `-hmac` puts it on the command line, so use a tool or script of its own on shared hosts. Replace it in `/admin` when in doubt.
+- To keep the endpoint inside the network, restrict `/api/v1/monitoring/` in nginx.
 
 ## Configuration changes
 

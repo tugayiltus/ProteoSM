@@ -209,6 +209,12 @@ export const MANIFEST: readonly GuideShot[] = [
   { id: 'changes-list', role: 'admin', path: '/changes?queue=open', views: DESKTOP },
   { id: 'change-detail', role: 'admin', path: '/changes?status=scheduled', setup: openConflictingChange, views: ALL_VIEWS },
   { id: 'change-calendar', role: 'admin', path: '/changes/calendar', views: ALL_VIEWS },
+  // releases
+  { id: 'releases-list', role: 'it', path: '/releases', views: DESKTOP },
+  { id: 'release-detail', role: 'admin', path: '/releases?status=in_progress', setup: openFirstRecord, views: DESKTOP },
+  // licences
+  { id: 'licences-list', role: 'it', path: '/licences', views: DESKTOP },
+  { id: 'licence-detail', role: 'admin', path: '/licences', setup: openFirstRecord, views: DESKTOP },
   // services
   { id: 'services-list', role: 'it', path: '/services', views: DESKTOP },
   { id: 'service-detail', role: 'it', path: '/services', setup: openFirstRecord, views: ALL_VIEWS },
@@ -274,5 +280,6 @@ export const MANIFEST: readonly GuideShot[] = [
   // admin-email-and-system
   { id: 'admin-email-templates', role: 'admin', path: '/admin/email-templates', views: DESKTOP },
   { id: 'admin-email-deliveries', role: 'admin', path: '/admin/email-deliveries', views: DESKTOP },
+  { id: 'admin-monitoring', role: 'admin', path: '/admin/monitoring', views: DESKTOP },
   { id: 'admin-system', role: 'admin', path: '/admin/system', views: DESKTOP },
 ];

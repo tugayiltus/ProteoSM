@@ -39,6 +39,16 @@ Güncel: 2026-11-24. Ürünün adı bu tarihe kadar TGYSM idi (ADR-0037).
 | 11 — Problem | Hafif problem yönetimi (`PRB-`): Açık → İnceleniyor → Bilinen hata → Çözüldü / İptal, kök neden, geçici ve kalıcı çözüm, arıza ve düzelten değişiklik bağlantıları, "Makale oluştur" (iç taslak bilinen hata makalesi), arızada Problem kartı, değişiklikte "İlgili problemler", merkezi aramada problemler, Problemler rapor sekmesi, İş listem kartı "Ekibimin problemleri", pilot veri; ayrıca dizin girişi sözleşme testi (Görev 10) | `docs/superpowers/plans/2026-11-20-phase-11-problem-management.md` (10 görev) | 0034 | `master` (`489b680`, CI yeşil) |
 | 12 — Hizmet kataloğu | Hafif hizmet kataloğu ve CMDB: `/admin` → "Hizmetler" (oluşturma, düzenleme, pasifleştirme, varlık bağlama; kullanım dışı veya kayıp varlık bağlanmaz), IT'ye "Hizmetler" listesi ve hizmet sayfası (Varlıklar, Açık kayıtlar, Değişiklikler, Açık problemler), arıza/talep, değişiklik ve problemde "Hizmet" alanı (kapalı kayıtta da; bağlı cihazdan öneri) ve liste filtresi, varlık sayfasında "Hizmetler" kartı, raporlarda hizmet dağılımı, merkezi aramada hizmetler, pilot veri (8 hizmet); çalışan hizmet görmez | `docs/superpowers/plans/2026-11-23-phase-12-service-catalogue.md` (10 görev) | 0036 | `feature/service-catalogue` (birleştirme sahibin onayını bekliyor) |
 
+## Kasım 2026 modülleri
+
+| Modül | İçerik | Tasarım | ADR |
+|---|---|---|---|
+| Lisanslar | Yazılım ve lisans kayıtları, kullanıcı veya cihaz atama, dolu lisans reddi, bitiş e-postası, korumalı anahtar, "Yazılımlarım", rapor sekmesi | `docs/superpowers/specs/2026-11-24-licences-releases-monitoring-design.md` | 0039 |
+| Sürümler | `REL-` kaydı, birlikte çıkan değişiklikler, onaysız | aynı | 0040 |
+| İzleme webhook'u | İmzalı istekle arıza açma, `/admin` izleme kaynakları, elle kapatma | aynı | 0041 |
+
+Ertelenmiş notlar (hizmet ekranları, arama, denetim, erişilebilirlik, testler) ve bağımsız inceleme bulguları aynı dalda düzeltildi.
+
 ## Proteone geçişi
 
 Ad, veritabanı ve dağıtım taşındı, `/admin` kendi giriş sayfasını aldı (ADR-0037, ADR-0038); eski fazların ertelenmiş notlarından hata olanlar düzeltildi. Plan ve tek iş listesi: `docs/superpowers/plans/2026-11-24-proteone-transition.md`. Yükseltme provası: `tools/upgrade-drill.sh`.
@@ -48,4 +58,3 @@ Ad, veritabanı ve dağıtım taşındı, `/admin` kendi giriş sayfasını ald�
 - Aktif geliştirme `tugayiltus/Proteone` reposunda (geçiş noktası `e8b1317`, CI yeşil). TGYSM reposunun arşivlenmesi ve gerçek kurulumun taşınması sahibin onayını bekler. SDK 11 kurulumu ertelendi.
 - SSO canlıya almadan önce gerçek Entra kiracısı ve gerçek AD ile `PROTEONE_TEST_LDAP_*` sözleşme testi ve elle giriş gerekir. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
 - Ertelenen küçük notlar plandaki "Parked" maddelerindedir.
-- Sıradaki: yazılım/lisans varlık türleri (tasarım, ADR ve onay ister).
