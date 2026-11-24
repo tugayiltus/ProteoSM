@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Organization;
+using Proteone.Domain.Releases;
 using Proteone.Domain.Services;
 using Proteone.Domain.Tickets;
 using Proteone.Domain.Users;
@@ -46,6 +47,8 @@ internal sealed class ChangeRequestConfiguration : IEntityTypeConfiguration<Chan
         builder.HasOne<Team>().WithMany().HasForeignKey(c => c.OwnerTeamId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<User>().WithMany().HasForeignKey(c => c.OwnerId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<User>().WithMany().HasForeignKey(c => c.CreatedById).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(c => c.ReleaseId).HasDatabaseName("ix_change_requests_release_id");
+        builder.HasOne<Release>().WithMany().HasForeignKey(c => c.ReleaseId).OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(c => c.ServiceId).HasDatabaseName("ix_change_requests_service_id");
         builder.HasOne<Service>().WithMany().HasForeignKey(c => c.ServiceId).OnDelete(DeleteBehavior.Restrict);
     }

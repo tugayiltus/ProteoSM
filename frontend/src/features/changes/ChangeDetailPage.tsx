@@ -23,7 +23,7 @@ import { linkState, useReturnTo } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { SectionCard } from '../../shared/page/SectionCard';
-import { assetPath, ROUTES } from '../../shared/routes';
+import { assetPath, releasePath, ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { NotFoundPage } from '../../shared/ui/NotFoundPage';
 import { ServiceField } from '../services/ServiceField';
@@ -47,6 +47,21 @@ const MAIN_SPAN = 2;
 const META_SEPARATOR = ' · ';
 
 const dateTimeOrNull = (iso: string | null) => (iso === null ? null : formatDateTime(iso));
+
+function ReleaseField({ release }: { release: ChangeDetail['release'] }) {
+  const { t } = useTranslation('changes');
+  const { t: tc } = useTranslation();
+  const location = useLocation();
+  return (
+    <NodeField label={t('detail.release')}>
+      {release === null ? (
+        <Text type="supporting">{tc('none')}</Text>
+      ) : (
+        <StateLink href={releasePath(release.number)} state={linkState(location)}>{`${release.number} · ${release.title}`}</StateLink>
+      )}
+    </NodeField>
+  );
+}
 
 function AssetsList({ change }: { change: ChangeDetail }) {
   const { t } = useTranslation('changes');
@@ -83,6 +98,7 @@ function FullView({ change }: { change: ChangeDetail }) {
           <Field label={t('detail.team')} value={change.ownerTeamName} />
           <Field label={t('detail.owner')} value={change.ownerName} />
           <ServiceField service={change.service} canEdit={change.canWork} save={saveService} />
+          <ReleaseField release={change.release} />
           <Field label={t('detail.createdBy')} value={change.createdByName} />
           <Field label={t('detail.createdAt')} value={formatDateTime(change.createdAt)} />
           <Field label={t('detail.actualStart')} value={dateTimeOrNull(change.actualStart)} />

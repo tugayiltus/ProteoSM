@@ -15,6 +15,7 @@ export const ROUTES = {
   tasks: '/tasks',
   problems: '/problems',
   services: '/services',
+  releases: '/releases',
   licences: '/licences',
   software: '/software',
   mySoftware: '/software/mine',
@@ -65,6 +66,7 @@ export const OPEN_FILTER_PARAM = 'open';
 export const OPEN_FILTER_ON = 'true';
 /** A record list filtered to one service ("Tümünü göster" on the service page). */
 export const serviceFilteredPath = (listPath: string, serviceId: string, openOnly = false) => `${listPath}?${new URLSearchParams({ [SERVICE_FILTER_PARAM]: serviceId, ...(openOnly ? { [OPEN_FILTER_PARAM]: OPEN_FILTER_ON } : {}) }).toString()}`;
+export const releasePath = (number: string) => `${ROUTES.releases}/${number}`;
 export const licencePath = (id: string) => `${ROUTES.licences}/${id}`;
 /** Query parameter of the licence list that keeps one software's licences. */
 export const SOFTWARE_FILTER_PARAM = 'software';

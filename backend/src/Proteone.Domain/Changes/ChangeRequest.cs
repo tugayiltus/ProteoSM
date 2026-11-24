@@ -69,6 +69,9 @@ public sealed class ChangeRequest : Entity
     /// <summary>The IT service this record belongs to; any state may set or clear it (Phase 12).</summary>
     public Guid? ServiceId { get; private set; }
 
+    /// <summary>The release this change goes live with (ADR-0040); never part of the plan fingerprint.</summary>
+    public Guid? ReleaseId { get; private set; }
+
     public bool IsOpen => Status is not (ChangeStatus.Closed or ChangeStatus.Cancelled);
 
     /// <summary>From implementing on, the fingerprint fields cannot change.</summary>
@@ -245,6 +248,29 @@ public sealed class ChangeRequest : Entity
         ServiceId = serviceId;
         Touch(now);
         return true;
+    }
+
+    /// <summary>Puts the change into a release. A finished change, or one that already has a release, is refused.</summary>
+    public void AddToRelease(Guid releaseId, DateTimeOffset now)
+    {
+        if (Status is ChangeStatus.Closed or ChangeStatus.Cancelled)
+        {
+            throw new DomainException(ErrorCodes.ReleaseChangeFinished, "A closed or cancelled change cannot join a release.");
+        }
+
+        if (ReleaseId is not null)
+        {
+            throw new DomainException(ErrorCodes.ReleaseChangeTaken, "The change already belongs to a release.");
+        }
+
+        ReleaseId = releaseId;
+        Touch(now);
+    }
+
+    public void LeaveRelease(DateTimeOffset now)
+    {
+        ReleaseId = null;
+        Touch(now);
     }
 
     private void RequireSuccessful(ChangeClosing closing, ChangeTaskTally tasks)

@@ -187,7 +187,8 @@
     "problem": "Problem",
     "service": "Hizmet",
     "software": "Yazılım",
-    "licence": "Lisans"
+    "licence": "Lisans",
+    "release": "Sürüm"
   },
   "auditActions": {
     "setup": {
@@ -378,6 +379,13 @@
       "key_set": "Lisans anahtarı kaydedildi",
       "key_cleared": "Lisans anahtarı silindi",
       "key_shown": "Lisans anahtarı görüntülendi"
+    },
+    "releases": {
+      "created": "Sürüm oluşturuldu",
+      "updated": "Sürüm güncellendi",
+      "status_changed": "Sürüm durumu değişti",
+      "change_added": "Sürüme değişiklik eklendi",
+      "change_removed": "Sürümden değişiklik çıkarıldı"
     }
   },
   "emailEvents": {

@@ -61,6 +61,8 @@ public enum ChangeEventKind
     ProblemUnlinked,
     ServiceSet,
     ServiceCleared,
+    ReleaseSet,
+    ReleaseCleared,
 }
 
 /// <summary>Why a ticket is tied to a change: the ticket led to the change, or the change led to the ticket.</summary>

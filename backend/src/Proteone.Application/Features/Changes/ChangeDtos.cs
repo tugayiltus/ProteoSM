@@ -1,3 +1,4 @@
+using Proteone.Application.Features.Releases;
 using Proteone.Application.Features.Services;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Changes;
@@ -58,7 +59,8 @@ public sealed record ChangeDetail(
     bool HasEligibleApprover,
     bool CanWork,
     uint Version,
-    ServiceRef? Service);
+    ServiceRef? Service,
+    ReleaseRef? Release);
 
 /// <summary>
 /// Working summary for people who only have a task on the change: the plan of their phase, never approvals, history,

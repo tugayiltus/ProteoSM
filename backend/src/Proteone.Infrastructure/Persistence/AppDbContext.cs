@@ -9,6 +9,7 @@ using Proteone.Domain.Knowledge;
 using Proteone.Domain.Licences;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Problems;
+using Proteone.Domain.Releases;
 using Proteone.Domain.Services;
 using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
@@ -58,6 +59,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ProblemChangeLink> ProblemChangeLinks => Set<ProblemChangeLink>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceAsset> ServiceAssets => Set<ServiceAsset>();
+    public DbSet<Release> Releases => Set<Release>();
+    public DbSet<ReleaseEvent> ReleaseEvents => Set<ReleaseEvent>();
     public DbSet<Software> Software => Set<Software>();
     public DbSet<Licence> Licences => Set<Licence>();
     public DbSet<LicenceAssignment> LicenceAssignments => Set<LicenceAssignment>();

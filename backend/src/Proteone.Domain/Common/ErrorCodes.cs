@@ -44,6 +44,14 @@ public static class ErrorCodes
 
     public const string AssetInvalidTransition = "assets.invalid_transition";
     public const string AssetTagTaken = "assets.tag_taken";
+    public const string ReleaseInvalidTransition = "releases.invalid_transition";
+    public const string ReleaseClosed = "releases.closed";
+    public const string ReleaseOpenChanges = "releases.open_changes";
+    public const string ReleaseChangeFinished = "releases.change_finished";
+    public const string ReleaseChangeTaken = "releases.change_taken";
+    public const string ReleaseOwnerTeamNotAllowed = "releases.owner_team_not_allowed";
+    public const string ReleaseOwnerNotInTeam = "releases.owner_not_in_team";
+
     public const string SoftwareNameTaken = "licences.software_name_taken";
     public const string SoftwareInactive = "licences.software_inactive";
     public const string LicenceOwnerTeamInactive = "licences.owner_team_inactive";

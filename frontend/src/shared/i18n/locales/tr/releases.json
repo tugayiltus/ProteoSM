@@ -1,0 +1,71 @@
+{
+  "statuses": {
+    "planned": "Planlandı",
+    "in_progress": "Sürüyor",
+    "completed": "Tamamlandı",
+    "cancelled": "İptal edildi"
+  },
+  "columns": {
+    "number": "Numara",
+    "title": "Başlık",
+    "status": "Durum",
+    "team": "Sahip ekip",
+    "window": "Hedef aralık",
+    "changes": "Değişiklik sayısı"
+  },
+  "list": {
+    "title": "Sürümler",
+    "search": "Sürüm ara",
+    "caption": "Sürüm listesi",
+    "empty": "Bu filtreyle sürüm yok.",
+    "all": "Tümü",
+    "open": "Aç",
+    "cardMeta": "{{team}} · {{count}} değişiklik"
+  },
+  "form": {
+    "new": "Yeni sürüm",
+    "edit": "Sürümü düzenle",
+    "description": "Açıklama",
+    "owner": "Sahip",
+    "windowStart": "Hedef başlangıç",
+    "windowEnd": "Hedef bitiş",
+    "windowOrder": "Bitiş, başlangıçtan sonra olmalı.",
+    "notes": "Notlar"
+  },
+  "detail": {
+    "back": "Listeye dön",
+    "content": "İçerik",
+    "createdAt": "Oluşturulma",
+    "startedAt": "Başlama",
+    "closedAt": "Kapanma"
+  },
+  "actions": {
+    "title": "İşlemler",
+    "start": "Başlat",
+    "complete": "Tamamla",
+    "cancel": "Sürümü iptal et",
+    "cancelMessage": "Sürümdeki değişiklikler sürümden çıkar, kendi durumlarını korur.",
+    "reason": "İptal nedeni"
+  },
+  "changes": {
+    "title": "Değişiklikler",
+    "add": "Değişiklik ekle",
+    "number": "Değişiklik numarası",
+    "remove": "Çıkar",
+    "removeMessage": "{{number}} sürümden çıkarılacak.",
+    "empty": "Sürümde değişiklik yok.",
+    "notOpenable": "Açma yetkiniz yok"
+  },
+  "timeline": {
+    "title": "Geçmiş",
+    "events": {
+      "created": "Oluşturuldu",
+      "updated": "Güncellendi",
+      "started": "Başladı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi",
+      "change_added": "Değişiklik eklendi",
+      "change_removed": "Değişiklik çıkarıldı"
+    }
+  }
+}

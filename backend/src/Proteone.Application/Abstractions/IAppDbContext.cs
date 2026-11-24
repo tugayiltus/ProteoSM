@@ -6,6 +6,7 @@ using Proteone.Domain.Knowledge;
 using Proteone.Domain.Licences;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Problems;
+using Proteone.Domain.Releases;
 using Proteone.Domain.Services;
 using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
@@ -56,6 +57,8 @@ public interface IAppDbContext
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceAsset> ServiceAssets { get; }
+    DbSet<Release> Releases { get; }
+    DbSet<ReleaseEvent> ReleaseEvents { get; }
     DbSet<Software> Software { get; }
     DbSet<Licence> Licences { get; }
     DbSet<LicenceAssignment> LicenceAssignments { get; }

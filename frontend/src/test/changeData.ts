@@ -4,6 +4,7 @@ import { ADMIN_ME } from './mockApi';
 import { TEAMS } from './taskData';
 
 export const CHANGE: ChangeDetail = {
+  release: null,
   id: 'chg-1',
   number: 'CHG-2026-000001',
   title: 'Çekirdek anahtar yazılım güncellemesi',

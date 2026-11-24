@@ -13,6 +13,7 @@ using Proteone.Domain.Changes;
 using Proteone.Domain.Common;
 using Proteone.Domain.Knowledge;
 using Proteone.Domain.Problems;
+using Proteone.Domain.Releases;
 using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
 
@@ -24,13 +25,14 @@ public enum SearchHitType
     Change,
     Task,
     Problem,
+    Release,
     Asset,
     Service,
     Software,
     Article,
 }
 
-/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, the service id, the software id, or the article id the knowledge base route uses.</summary>
+/// <summary><paramref name="Key"/> is the ticket, change, task, problem or release number, the asset tag, the service id, the software id, or the article id the knowledge base route uses.</summary>
 public sealed record SearchHit(SearchHitType Type, string Key, string Title, string? Status);
 
 public sealed record SearchGroup(SearchHitType Type, IReadOnlyList<SearchHit> Hits, bool HasMore);
@@ -145,6 +147,22 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
                 problems.Where(p => EF.Functions.Like(p.SearchText, pattern, LikePattern.EscapeText))
                     .OrderByDescending(p => p.UpdatedAt).ThenByDescending(p => p.Id)
                     .Select(p => new Row(p.Number, p.Title, p.Status.ToString())),
+                cancellationToken));
+
+            var releases = db.Releases.AsNoTracking();
+            var releaseNumber = ReleaseNumber.Normalize(text);
+            if (exact is null && ReleaseNumber.IsValid(releaseNumber))
+            {
+                exact = await FirstAsync(
+                    SearchHitType.Release,
+                    releases.Where(r => r.Number == releaseNumber).Select(r => new Row(r.Number, r.Title, r.Status.ToString())),
+                    cancellationToken);
+            }
+
+            AddGroup(groups, SearchHitType.Release, await TopAsync(
+                releases.Where(r => EF.Functions.Like(r.SearchText, pattern, LikePattern.EscapeText))
+                    .OrderByDescending(r => r.UpdatedAt).ThenByDescending(r => r.Id)
+                    .Select(r => new Row(r.Number, r.Title, r.Status.ToString())),
                 cancellationToken));
 
             var assets = db.Assets.AsNoTracking();

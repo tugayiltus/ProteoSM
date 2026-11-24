@@ -92,7 +92,8 @@
     "removeAsset": "Çıkar",
     "noTimeline": "Henüz kayıt yok.",
     "noWindow": "Pencere belirlenmedi",
-    "notPlanned": "Belirlenmedi"
+    "notPlanned": "Belirlenmedi",
+    "release": "Sürüm"
   },
   "summary": {
     "banner": "Bu değişikliğin çalışma özetini görüyorsunuz.",
@@ -231,7 +232,9 @@
       "problem_linked": "Probleme bağlandı",
       "problem_unlinked": "Problemden ayrıldı",
       "service_set": "Hizmet atandı",
-      "service_cleared": "Hizmet kaldırıldı"
+      "service_cleared": "Hizmet kaldırıldı",
+      "release_set": "Sürüme eklendi",
+      "release_cleared": "Sürümden çıkarıldı"
     }
   },
   "conflicts": {

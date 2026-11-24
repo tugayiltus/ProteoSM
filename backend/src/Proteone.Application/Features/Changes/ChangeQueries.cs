@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
+using Proteone.Application.Features.Releases;
 using Proteone.Application.Features.Services;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Changes;
@@ -77,7 +78,8 @@ internal static class ChangeQueries
             change.ClosingNote, change.CancelReason, change.CreatedById, row.CreatedByName, change.CreatedAt, change.UpdatedAt,
             change.ClosedAt, assets, groups, await LoadApprovalAsync(db, change, viewer, cancellationToken),
             (await conflicts.FindAsync([changeId], viewer, cancellationToken))[changeId], hasEligibleApprover,
-            viewer.CanWork(change), change.Version, await ServiceAssignment.RefAsync(db, change.ServiceId, cancellationToken));
+            viewer.CanWork(change), change.Version, await ServiceAssignment.RefAsync(db, change.ServiceId, cancellationToken),
+            await db.Releases.AsNoTracking().Where(r => r.Id == change.ReleaseId).Select(r => new ReleaseRef(r.Number, r.Title, r.Status)).SingleOrDefaultAsync(cancellationToken));
     }
 
     private static async Task<ChangeApprovalInfo?> LoadApprovalAsync(

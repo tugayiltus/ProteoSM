@@ -149,6 +149,7 @@ internal sealed partial class PilotSeedSession(
         await SeedTicketsAsync();
         await SeedChangesAsync();
         await SeedTasksAsync();
+        await SeedReleasesAsync();
         await SeedProblemsAsync();
         return admin;
     }

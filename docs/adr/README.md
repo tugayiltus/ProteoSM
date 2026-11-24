@@ -43,3 +43,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0037](0037-proteone-name-and-compatibility.md) | Proteone Name and Compatibility with TGYSM Installations | accepted | 2026-11-24 |
 | [0038](0038-admin-entry-page.md) | Own Entry Page for the Admin Area | accepted | 2026-11-24 |
 | [0039](0039-software-licences.md) | Software Licences | accepted | 2026-11-24 |
+| [0040](0040-light-release.md) | Light Release | accepted | 2026-11-24 |

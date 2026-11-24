@@ -122,7 +122,9 @@
     "licences": "Lisanslar",
     "licenceDetail": "Lisans",
     "software": "Yazılımlar",
-    "mySoftware": "Yazılımlarım"
+    "mySoftware": "Yazılımlarım",
+    "releases": "Sürümler",
+    "releaseDetail": "Sürüm"
   },
   "menuGroups": {
     "personal": "Kişisel",

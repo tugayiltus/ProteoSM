@@ -205,5 +205,14 @@
     "kind_mismatch": "Bu lisans türü seçilen hedefe atanamaz.",
     "target_not_assignable": "Pasif kullanıcıya, kullanım dışı veya kayıp cihaza lisans atanamaz.",
     "already_assigned": "Bu kullanıcı veya cihaz zaten bu lisansı kullanıyor."
+  },
+  "releases": {
+    "invalid_transition": "Bu işlem sürümün mevcut durumunda yapılamaz.",
+    "closed": "Tamamlanmış veya iptal edilmiş sürüm değiştirilemez.",
+    "open_changes": "Sürümü tamamlamak için en az bir değişiklik olmalı ve tüm değişiklikler kapalı veya iptal olmalı.",
+    "change_finished": "Kapalı veya iptal edilmiş değişiklik sürüme eklenemez.",
+    "change_taken": "Bu değişiklik zaten bir sürümde.",
+    "owner_team_not_allowed": "Sürüm yalnızca üyesi olduğunuz bir ekibe verilebilir.",
+    "owner_not_in_team": "Sürüm sahibi, sahip ekibin aktif bir üyesi olmalı."
   }
 }

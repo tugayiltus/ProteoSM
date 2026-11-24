@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261124202500_WidenExportJobsReportConstraintForLicences";
+    public override string LastMigrationId => "20261124204502_AddReleases";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -846,7 +846,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 
                 b.ToTable("change_events", t =>
                     {
-                        t.HasCheckConstraint("ck_change_events_kind", "kind IN ('created', 'updated', 'submitted', 'withdrawn', 'approved', 'rejected', 'returned', 'approval_voided', 'implementation_started', 'implementation_finished', 'backout_started', 'closed', 'cancelled', 'assets_changed', 'ticket_linked', 'ticket_unlinked', 'problem_linked', 'problem_unlinked', 'service_set', 'service_cleared')");
+                        t.HasCheckConstraint("ck_change_events_kind", "kind IN ('created', 'updated', 'submitted', 'withdrawn', 'approved', 'rejected', 'returned', 'approval_voided', 'implementation_started', 'implementation_finished', 'backout_started', 'closed', 'cancelled', 'assets_changed', 'ticket_linked', 'ticket_unlinked', 'problem_linked', 'problem_unlinked', 'service_set', 'service_cleared', 'release_set', 'release_cleared')");
                     });
             });
 
@@ -967,6 +967,10 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("uuid")
                     .HasColumnName("owner_team_id");
 
+                b.Property<Guid?>("ReleaseId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("release_id");
+
                 b.Property<string>("Risk")
                     .IsRequired()
                     .HasMaxLength(40)
@@ -1032,6 +1036,9 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.HasIndex("Number")
                     .IsUnique()
                     .HasDatabaseName("ix_change_requests_number");
+
+                b.HasIndex("ReleaseId")
+                    .HasDatabaseName("ix_change_requests_release_id");
 
                 b.HasIndex("ServiceId")
                     .HasDatabaseName("ix_change_requests_service_id");
@@ -2197,6 +2204,170 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasDatabaseName("ux_problem_tickets_ticket_id");
 
                 b.ToTable("problem_tickets");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Releases.Release", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("CancelReason")
+                    .HasMaxLength(500)
+                    .HasColumnType("character varying(500)")
+                    .HasColumnName("cancel_reason");
+
+                b.Property<DateTimeOffset?>("ClosedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("closed_at");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<Guid>("CreatedById")
+                    .HasColumnType("uuid")
+                    .HasColumnName("created_by_id");
+
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasColumnType("character varying(4000)")
+                    .HasColumnName("description");
+
+                b.Property<string>("Notes")
+                    .HasMaxLength(4000)
+                    .HasColumnType("character varying(4000)")
+                    .HasColumnName("notes");
+
+                b.Property<string>("Number")
+                    .IsRequired()
+                    .HasMaxLength(32)
+                    .HasColumnType("character varying(32)")
+                    .HasColumnName("number");
+
+                b.Property<Guid?>("OwnerId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("owner_id");
+
+                b.Property<Guid>("OwnerTeamId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("owner_team_id");
+
+                b.Property<string>("SearchText")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("search_text");
+
+                b.Property<DateTimeOffset?>("StartedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("started_at");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("status");
+
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("title");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.Property<DateTimeOffset?>("WindowEnd")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("window_end");
+
+                b.Property<DateTimeOffset?>("WindowStart")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("window_start");
+
+                b.HasKey("Id")
+                    .HasName("pk_releases");
+
+                b.HasIndex("CreatedById")
+                    .HasDatabaseName("ix_releases_created_by_id");
+
+                b.HasIndex("Number")
+                    .IsUnique()
+                    .HasDatabaseName("ix_releases_number");
+
+                b.HasIndex("OwnerId")
+                    .HasDatabaseName("ix_releases_owner_id");
+
+                b.HasIndex("OwnerTeamId", "Status")
+                    .HasDatabaseName("ix_releases_owner_team_id_status");
+
+                var index = b.HasIndex(new[] { "SearchText" }, "ix_releases_search_text_trgm")
+                    .HasDatabaseName("ix_releases_search_text");
+
+                NpgsqlIndexBuilderExtensions.HasMethod(index, "gin");
+                NpgsqlIndexBuilderExtensions.HasOperators(index, new[] { "gin_trgm_ops" });
+
+                b.HasIndex(new[] { "UpdatedAt", "Id" }, "ix_releases_updated_at_id")
+                    .IsDescending()
+                    .HasDatabaseName("ix_releases_updated_at_id");
+
+                b.ToTable("releases", t =>
+                    {
+                        t.HasCheckConstraint("ck_releases_status", "status IN ('planned', 'in_progress', 'completed', 'cancelled')");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Releases.ReleaseEvent", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid?>("ActorUserId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("actor_user_id");
+
+                b.Property<string>("DataJson")
+                    .IsRequired()
+                    .HasColumnType("jsonb")
+                    .HasColumnName("data");
+
+                b.Property<string>("Kind")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("kind");
+
+                b.Property<DateTimeOffset>("OccurredAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("occurred_at");
+
+                b.Property<Guid>("ReleaseId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("release_id");
+
+                b.HasKey("Id")
+                    .HasName("pk_release_events");
+
+                b.HasIndex("ActorUserId")
+                    .HasDatabaseName("ix_release_events_actor_user_id");
+
+                b.HasIndex("ReleaseId", "OccurredAt")
+                    .HasDatabaseName("ix_release_events_release_id_occurred_at");
+
+                b.ToTable("release_events", t =>
+                    {
+                        t.HasCheckConstraint("ck_release_events_kind", "kind IN ('created', 'updated', 'started', 'completed', 'cancelled', 'change_added', 'change_removed')");
+                    });
             });
 
         modelBuilder.Entity("Proteone.Domain.Reports.ExportJob", b =>
@@ -4161,6 +4332,12 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .IsRequired()
                     .HasConstraintName("fk_change_requests_teams_owner_team_id");
 
+                b.HasOne("Proteone.Domain.Releases.Release", null)
+                    .WithMany()
+                    .HasForeignKey("ReleaseId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_change_requests_releases_release_id");
+
                 b.HasOne("Proteone.Domain.Services.Service", null)
                     .WithMany()
                     .HasForeignKey("ServiceId")
@@ -4432,6 +4609,45 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired()
                     .HasConstraintName("fk_problem_tickets_tickets_ticket_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Releases.Release", b =>
+            {
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("CreatedById")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_releases_users_created_by_id");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("OwnerId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_releases_users_owner_id");
+
+                b.HasOne("Proteone.Domain.Organization.Team", null)
+                    .WithMany()
+                    .HasForeignKey("OwnerTeamId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_releases_teams_owner_team_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Releases.ReleaseEvent", b =>
+            {
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("ActorUserId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_release_events_users_actor_user_id");
+
+                b.HasOne("Proteone.Domain.Releases.Release", null)
+                    .WithMany()
+                    .HasForeignKey("ReleaseId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_release_events_releases_release_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Reports.ExportJob", b =>
