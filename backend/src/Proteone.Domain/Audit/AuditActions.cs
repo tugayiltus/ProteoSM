@@ -148,6 +148,11 @@ public static class AuditActions
     /// <summary>Written by the migration that replaced the former product name (ADR-0037).</summary>
     public const string ProductNameReplaced = "audit.product_name_replaced";
 
+    public const string MonitoringSourceCreated = "monitoring.created";
+    public const string MonitoringSourceUpdated = "monitoring.updated";
+    public const string MonitoringSecretReplaced = "monitoring.secret_replaced";
+    public const string MonitoringLimitReached = "monitoring.limit_reached";
+
     public const string ReleaseCreated = "releases.created";
     public const string ReleaseUpdated = "releases.updated";
     public const string ReleaseStatusChanged = "releases.status_changed";

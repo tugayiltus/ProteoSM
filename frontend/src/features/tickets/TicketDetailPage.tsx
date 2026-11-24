@@ -137,6 +137,7 @@ function TicketDetail({ number }: { number: string }) {
           <Field label={t('detail.assignee')} value={item.assigneeName} />
           <Field label={t('detail.category')} value={item.categoryName} />
           <Field label={t('detail.location')} value={item.locationName} />
+          {item.monitoringSource !== undefined && <Field label={t('detail.monitoring')} value={item.monitoringSource} />}
           {isItStaffOrAdmin(me.role) && <TicketServiceField ticket={item} />}
           {item.kind === 'request' && <Field label={t('detail.requestType')} value={item.requestTypeName} />}
           <Field label={t('detail.createdAt')} value={formatDateTime(item.createdAt)} />

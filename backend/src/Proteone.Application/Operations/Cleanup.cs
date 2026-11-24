@@ -55,6 +55,9 @@ public sealed class CleanupHandler(IAppDbContext db, IFileStore files, TimeProvi
             .Where(j => (j.CommittedAt ?? j.CreatedAt) < cutoff)
             .ExecuteDeleteAsync(cancellationToken);
 
+        // A replay older than this is refused by its timestamp, so the event id is no longer needed (ADR-0041).
+        await db.MonitoringEvents.Where(e => e.ReceivedAt < cutoff).ExecuteDeleteAsync(cancellationToken);
+
         var exportFiles = await ExpireExportsAsync(cancellationToken);
 
         return new CleanupResult(tokens, events, heartbeats, exportFiles, importJobs);

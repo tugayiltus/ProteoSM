@@ -12,6 +12,7 @@ using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
+using Proteone.Domain.Monitoring;
 using Proteone.Domain.Notifications;
 using Proteone.Domain.Operations;
 using Proteone.Domain.Organization;
@@ -57,6 +58,10 @@ public interface IAppDbContext
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceAsset> ServiceAssets { get; }
+    DbSet<MonitoringSource> MonitoringSources { get; }
+    DbSet<MonitoringSourceStatus> MonitoringSourceStatuses { get; }
+    DbSet<MonitoringEvent> MonitoringEvents { get; }
+    DbSet<MonitoringAlert> MonitoringAlerts { get; }
     DbSet<Release> Releases { get; }
     DbSet<ReleaseEvent> ReleaseEvents { get; }
     DbSet<Software> Software { get; }

@@ -124,7 +124,8 @@
     "software": "Yazılımlar",
     "mySoftware": "Yazılımlarım",
     "releases": "Sürümler",
-    "releaseDetail": "Sürüm"
+    "releaseDetail": "Sürüm",
+    "adminMonitoring": "İzleme kaynakları"
   },
   "menuGroups": {
     "personal": "Kişisel",

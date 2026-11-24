@@ -188,7 +188,8 @@
     "service": "Hizmet",
     "software": "Yazılım",
     "licence": "Lisans",
-    "release": "Sürüm"
+    "release": "Sürüm",
+    "monitoring_source": "İzleme kaynağı"
   },
   "auditActions": {
     "setup": {
@@ -386,6 +387,12 @@
       "status_changed": "Sürüm durumu değişti",
       "change_added": "Sürüme değişiklik eklendi",
       "change_removed": "Sürümden değişiklik çıkarıldı"
+    },
+    "monitoring": {
+      "created": "İzleme kaynağı oluşturuldu",
+      "updated": "İzleme kaynağı güncellendi",
+      "secret_replaced": "İzleme anahtarı değiştirildi",
+      "limit_reached": "İzleme kaynağı saatlik sınıra ulaştı"
     }
   },
   "emailEvents": {
@@ -656,6 +663,32 @@
       "actions": "İşlemler",
       "selectBrand": "Marka seçin",
       "selectType": "Tür seçin"
+    }
+  },
+  "monitoring": {
+    "title": "İzleme kaynakları",
+    "new": "Yeni kaynak",
+    "edit": "Kaynağı düzenle",
+    "replace": "Anahtarı yenile",
+    "replaceMessage": "{{name}} kaynağının eski anahtarı hemen geçersiz olur.",
+    "secretTitle": "{{name}} anahtarı",
+    "secretMessage": "Anahtar yalnızca bir kez gösterilir. Şimdi kopyalayıp izleme aracına girin.",
+    "never": "Olay gelmedi",
+    "lastEvent": "Son olay",
+    "failed": "Reddedilen istek",
+    "status": "Durum",
+    "actions": "İşlemler",
+    "empty": "İzleme kaynağı yok.",
+    "cardMeta": "{{team}} · Son olay: {{last}} · Reddedilen: {{failed}}",
+    "fields": {
+      "name": "Ad",
+      "team": "Ekip",
+      "requester": "Talep sahibi",
+      "service": "Hizmet",
+      "category": "Kategori",
+      "impact": "Etki",
+      "urgency": "Aciliyet",
+      "active": "Aktif"
     }
   }
 }

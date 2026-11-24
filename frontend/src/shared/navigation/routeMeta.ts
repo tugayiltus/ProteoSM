@@ -63,6 +63,7 @@ export const ROUTE_IDS = [
   'adminSlaPolicy',
   'adminSystem',
   'adminLoginMethod',
+  'adminMonitoring',
   'adminAudit',
 ] as const;
 
@@ -152,6 +153,7 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   adminSlaPolicy: admin({ path: ROUTES.adminSlaPolicy, icon: 'timer', titleKey: 'routes.adminSlaPolicy', parent: 'adminOverview', group: 'sla', menu: { order: 20 } }),
   adminSystem: admin({ path: ROUTES.adminSystem, icon: 'settings', titleKey: 'routes.adminSystem', parent: 'adminOverview', group: 'system', menu: { order: 10 } }),
   adminLoginMethod: admin({ path: ROUTES.adminLoginMethod, icon: 'lock', titleKey: 'routes.adminLoginMethod', parent: 'adminOverview', group: 'system', menu: { order: 15 } }),
+  adminMonitoring: admin({ path: ROUTES.adminMonitoring, icon: 'bell', titleKey: 'routes.adminMonitoring', parent: 'adminOverview', group: 'system', menu: { order: 17 } }),
   adminAudit: admin({ path: ROUTES.adminAudit, icon: 'history', titleKey: 'routes.adminAudit', parent: 'adminOverview', group: 'system', menu: { order: 20 } }),
 };
 

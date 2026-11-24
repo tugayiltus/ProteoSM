@@ -8,6 +8,7 @@ public sealed class SecurityOptions
     public const int DefaultMaxSessionHours = 24;
     public const int DefaultForgotPasswordPermitLimitPerMinute = 5;
     public const int DefaultSetPasswordPermitLimitPerMinute = 5;
+    public const int DefaultMonitoringPermitLimitPerMinute = 60;
 
     public int LoginPermitLimitPerMinute { get; init; } = DefaultLoginPermitLimitPerMinute;
 
@@ -21,4 +22,7 @@ public sealed class SecurityOptions
 
     /// <summary>Set-password requests per client IP per minute: each one hashes a password before the token lookup.</summary>
     public int SetPasswordPermitLimitPerMinute { get; init; } = DefaultSetPasswordPermitLimitPerMinute;
+
+    /// <summary>Monitoring webhook requests per client IP per minute, counted before any check (ADR-0041).</summary>
+    public int MonitoringPermitLimitPerMinute { get; init; } = DefaultMonitoringPermitLimitPerMinute;
 }

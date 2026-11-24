@@ -44,13 +44,21 @@ internal static class TicketQueries
         var (openTaskCount, tasks) = viewer.SeesInternal ? await TasksAsync(db, t.Id, viewer, cancellationToken) : (0, []);
         var service = viewer.SeesInternal ? await ServiceAssignment.RefAsync(db, t.ServiceId, cancellationToken) : null;
 
+        // The mark "İzleme" is for IT; the requester of a source is IT, but the rule does not rely on it.
+        var monitoring = viewer.SeesInternal
+            ? await (
+                from a in db.MonitoringAlerts
+                join s in db.MonitoringSources on a.SourceId equals s.Id
+                where a.TicketId == t.Id
+                select s.Name).SingleOrDefaultAsync(cancellationToken)
+            : null;
         return new TicketDetail(
             t.Id, t.Number, t.Kind, t.Subject, t.Description, t.Status, t.HoldReason, t.HoldNote, t.Impact, t.Urgency, t.Priority,
             t.CategoryId, category, t.LocationId, location, t.RequesterId, UserName(t.RequesterId)!, t.TeamId, team, t.AssigneeId, UserName(t.AssigneeId),
             t.RequestTypeId, requestType, t.RequiresApproval,
             viewer.SeesInternal ? t.RootCause : null,
             t.Resolution, t.Outcome, t.CancelReason, t.CreatedAt, t.UpdatedAt, t.CompletedAt, approval, related, viewer.CanWork(t), t.Version, sla,
-            openTaskCount, tasks, service);
+            openTaskCount, tasks, service, monitoring);
     }
 
     /// <summary>

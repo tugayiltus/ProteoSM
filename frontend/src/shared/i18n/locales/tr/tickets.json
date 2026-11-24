@@ -168,7 +168,8 @@
     "internal": "İç not",
     "by": "{{name}}",
     "download": "İndir",
-    "openTasksWarning": "Bu kayda bağlı {{count}} açık görev var. Kaydı yine de tamamlayabilirsiniz; görevler açık kalır."
+    "openTasksWarning": "Bu kayda bağlı {{count}} açık görev var. Kaydı yine de tamamlayabilirsiniz; görevler açık kalır.",
+    "monitoring": "İzleme"
   },
   "comment": {
     "public": "Yanıt",

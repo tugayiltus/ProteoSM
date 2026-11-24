@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261124204502_AddReleases";
+    public override string LastMigrationId => "20261124205829_AddMonitoring";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1501,6 +1501,215 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 NpgsqlIndexBuilderExtensions.HasOperators(index, new[] { "gin_trgm_ops" });
 
                 b.ToTable("software");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringAlert", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("AlertKey")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("alert_key");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<bool>("IsResolved")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_resolved");
+
+                b.Property<DateTimeOffset>("LastFiringAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_firing_at");
+
+                b.Property<Guid>("SourceId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("source_id");
+
+                b.Property<Guid>("TicketId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("ticket_id");
+
+                b.HasKey("Id")
+                    .HasName("pk_monitoring_alerts");
+
+                b.HasIndex("TicketId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_monitoring_alerts_ticket");
+
+                b.HasIndex("SourceId", "AlertKey")
+                    .HasDatabaseName("ix_monitoring_alerts_source_key");
+
+                b.HasIndex("SourceId", "CreatedAt")
+                    .HasDatabaseName("ix_monitoring_alerts_source_created");
+
+                b.ToTable("monitoring_alerts");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringEvent", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("EventId")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("event_id");
+
+                b.Property<DateTimeOffset>("ReceivedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("received_at");
+
+                b.Property<Guid>("SourceId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("source_id");
+
+                b.HasKey("Id")
+                    .HasName("pk_monitoring_events");
+
+                b.HasIndex("ReceivedAt")
+                    .HasDatabaseName("ix_monitoring_events_received_at");
+
+                b.HasIndex("SourceId", "EventId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_monitoring_events_source_event");
+
+                b.ToTable("monitoring_events");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringSource", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid?>("CategoryId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("category_id");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<string>("Impact")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("impact");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("name");
+
+                b.Property<string>("NormalizedName")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("normalized_name");
+
+                b.Property<string>("ProtectedSecret")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("protected_secret");
+
+                b.Property<Guid>("RequesterId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("requester_id");
+
+                b.Property<DateTimeOffset>("SecretSetAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("secret_set_at");
+
+                b.Property<Guid?>("ServiceId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("service_id");
+
+                b.Property<Guid>("TeamId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("team_id");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<string>("Urgency")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("urgency");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_monitoring_sources");
+
+                b.HasIndex("CategoryId")
+                    .HasDatabaseName("ix_monitoring_sources_category_id");
+
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("ux_monitoring_sources_normalized_name");
+
+                b.HasIndex("RequesterId")
+                    .HasDatabaseName("ix_monitoring_sources_requester_id");
+
+                b.HasIndex("ServiceId")
+                    .HasDatabaseName("ix_monitoring_sources_service_id");
+
+                b.HasIndex("TeamId")
+                    .HasDatabaseName("ix_monitoring_sources_team_id");
+
+                b.ToTable("monitoring_sources", t =>
+                    {
+                        t.HasCheckConstraint("ck_monitoring_sources_impact", "impact IN ('high', 'medium', 'low')");
+
+                        t.HasCheckConstraint("ck_monitoring_sources_urgency", "urgency IN ('high', 'medium', 'low')");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringSourceStatus", b =>
+            {
+                b.Property<Guid>("SourceId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("source_id");
+
+                b.Property<int>("FailedCount")
+                    .HasColumnType("integer")
+                    .HasColumnName("failed_count");
+
+                b.Property<DateTimeOffset?>("LastEventAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_event_at");
+
+                b.Property<DateTimeOffset?>("LastFailedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_failed_at");
+
+                b.Property<DateTimeOffset?>("LimitAuditedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("limit_audited_at");
+
+                b.HasKey("SourceId")
+                    .HasName("pk_monitoring_source_statuses");
+
+                b.ToTable("monitoring_source_statuses");
             });
 
         modelBuilder.Entity("Proteone.Domain.Notifications.EmailDelivery", b =>
@@ -4465,6 +4674,72 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("fk_licence_assignments_users_user_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringAlert", b =>
+            {
+                b.HasOne("Proteone.Domain.Monitoring.MonitoringSource", null)
+                    .WithMany()
+                    .HasForeignKey("SourceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_alerts_monitoring_sources_source_id");
+
+                b.HasOne("Proteone.Domain.Tickets.Ticket", null)
+                    .WithMany()
+                    .HasForeignKey("TicketId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_alerts_tickets_ticket_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringEvent", b =>
+            {
+                b.HasOne("Proteone.Domain.Monitoring.MonitoringSource", null)
+                    .WithMany()
+                    .HasForeignKey("SourceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_events_monitoring_sources_source_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringSource", b =>
+            {
+                b.HasOne("Proteone.Domain.Catalog.Category", null)
+                    .WithMany()
+                    .HasForeignKey("CategoryId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_monitoring_sources_categories_category_id");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("RequesterId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_sources_users_requester_id");
+
+                b.HasOne("Proteone.Domain.Services.Service", null)
+                    .WithMany()
+                    .HasForeignKey("ServiceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_monitoring_sources_services_service_id");
+
+                b.HasOne("Proteone.Domain.Organization.Team", null)
+                    .WithMany()
+                    .HasForeignKey("TeamId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_sources_teams_team_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Monitoring.MonitoringSourceStatus", b =>
+            {
+                b.HasOne("Proteone.Domain.Monitoring.MonitoringSource", null)
+                    .WithMany()
+                    .HasForeignKey("SourceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_monitoring_source_statuses_monitoring_sources_source_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Notifications.EmailDelivery", b =>

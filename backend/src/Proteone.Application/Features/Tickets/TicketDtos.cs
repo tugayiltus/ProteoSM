@@ -67,7 +67,8 @@ public sealed record TicketDetail(
     IReadOnlyList<TicketSla> Sla,
     int OpenTaskCount,
     IReadOnlyList<TicketTaskItem> Tasks,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ServiceRef? Service);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ServiceRef? Service,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MonitoringSource);
 
 /// <summary>A task opened from the ticket, for IT staff on the ticket detail; the requester never sees tasks (ADR-0031).</summary>
 public sealed record TicketTaskItem(string Number, string Title, Proteone.Domain.Tasks.WorkTaskStatus Status, string TeamName, string? AssigneeName);

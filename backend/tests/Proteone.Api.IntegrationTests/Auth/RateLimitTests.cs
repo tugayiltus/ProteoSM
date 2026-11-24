@@ -13,6 +13,8 @@ public sealed class LowRateLimitApiFactory : ApiFactory
     protected override int ForgotPasswordPermitLimitPerMinute => Limit;
 
     protected override int SetPasswordPermitLimitPerMinute => Limit;
+
+    protected override int MonitoringPermitLimitPerMinute => Limit;
 }
 
 public sealed class RateLimitTests(LowRateLimitApiFactory factory) : IClassFixture<LowRateLimitApiFactory>
@@ -33,6 +35,21 @@ public sealed class RateLimitTests(LowRateLimitApiFactory factory) : IClassFixtu
 
         Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
         Assert.Equal(ErrorCodes.RateLimited, await ApiClient.ReadCodeAsync(limited));
+    }
+
+    [Fact]
+    public async Task Monitoring_events_over_the_limit_get_429_before_any_check()
+    {
+        var path = $"/api/v1/monitoring/{Guid.NewGuid()}/events";
+        var client = ApiClient.Create(factory);
+        for (var attempt = 0; attempt < LowRateLimitApiFactory.Limit; attempt++)
+        {
+            using var refused = await client.PostAsync(path, new { }, withCsrf: false);
+            Assert.Equal(HttpStatusCode.Unauthorized, refused.StatusCode);
+        }
+
+        using var limited = await client.PostAsync(path, new { }, withCsrf: false);
+        Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
     }
 
     [Fact]

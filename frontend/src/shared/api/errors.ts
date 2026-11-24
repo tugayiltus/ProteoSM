@@ -23,6 +23,8 @@ export const ERROR_CODES = {
   categoryNameTaken: 'categories.name_taken',
   categoryTooDeep: 'categories.too_deep',
   requestTypeNameTaken: 'request_types.name_taken',
+  monitoringNameTaken: 'monitoring.name_taken',
+  monitoringRequesterInvalid: 'monitoring.requester_invalid',
   releaseOwnerTeamNotAllowed: 'releases.owner_team_not_allowed',
   releaseOwnerNotInTeam: 'releases.owner_not_in_team',
   softwareNameTaken: 'licences.software_name_taken',

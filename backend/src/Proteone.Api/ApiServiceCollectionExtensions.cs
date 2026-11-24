@@ -28,7 +28,7 @@ internal static class ApiServiceCollectionExtensions
     {
         services.AddOptions<SecurityOptions>()
             .Bind(configuration.GetSection(SecurityOptions.SectionName))
-            .Validate(o => o.LoginPermitLimitPerMinute > 0 && o.ForgotPasswordPermitLimitPerMinute > 0 && o.SetPasswordPermitLimitPerMinute > 0 && o.SessionHours > 0 && o.MaxSessionHours >= o.SessionHours, "Security limits must be positive, and MaxSessionHours at least SessionHours.")
+            .Validate(o => o.LoginPermitLimitPerMinute > 0 && o.ForgotPasswordPermitLimitPerMinute > 0 && o.SetPasswordPermitLimitPerMinute > 0 && o.MonitoringPermitLimitPerMinute > 0 && o.SessionHours > 0 && o.MaxSessionHours >= o.SessionHours, "Security limits must be positive, and MaxSessionHours at least SessionHours.")
             .ValidateOnStart();
         services.AddOptions<AppOptions>()
             .Bind(configuration.GetSection(AppOptions.SectionName))
@@ -113,6 +113,8 @@ internal static class ApiServiceCollectionExtensions
                 PerClientPerMinute(context, context.RequestServices.GetRequiredService<IOptions<SecurityOptions>>().Value.ForgotPasswordPermitLimitPerMinute));
             options.AddPolicy(RateLimitPolicies.SetPassword, context =>
                 PerClientPerMinute(context, context.RequestServices.GetRequiredService<IOptions<SecurityOptions>>().Value.SetPasswordPermitLimitPerMinute));
+            options.AddPolicy(RateLimitPolicies.Monitoring, context =>
+                PerClientPerMinute(context, context.RequestServices.GetRequiredService<IOptions<SecurityOptions>>().Value.MonitoringPermitLimitPerMinute));
         });
 
         return services;

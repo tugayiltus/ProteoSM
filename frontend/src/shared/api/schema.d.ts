@@ -2235,6 +2235,209 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/monitoring-sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MonitoringSourceItem"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateMonitoringSourceRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MonitoringSourceSecret"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/monitoring-sources/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateMonitoringSourceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MonitoringSourceItem"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/monitoring-sources/{id}/secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VersionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MonitoringSourceSecret"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/categories": {
         parameters: {
             query?: never;
@@ -13332,6 +13535,20 @@ export interface components {
             /** Format: uuid */
             parentId: null | string;
         };
+        CreateMonitoringSourceRequest: {
+            name: string;
+            /** Format: uuid */
+            teamId: string;
+            /** Format: uuid */
+            requesterId: string;
+            /** Format: uuid */
+            serviceId: null | string;
+            /** Format: uuid */
+            categoryId: null | string;
+            impact: components["schemas"]["Level"];
+            urgency: components["schemas"]["Level"];
+            isActive: boolean;
+        };
         CreatePolicyVersionCommand: {
             targets: components["schemas"]["PolicyTargetItem"][];
             pauseRules: components["schemas"]["PauseRuleItem"][];
@@ -13819,6 +14036,40 @@ export interface components {
         };
         /** @enum {unknown} */
         MetricShape: "count" | "ratio" | "duration" | "distribution";
+        MonitoringSourceItem: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: uuid */
+            teamId: string;
+            teamName: string;
+            /** Format: uuid */
+            requesterId: string;
+            requesterName: string;
+            /** Format: uuid */
+            serviceId: null | string;
+            serviceName: null | string;
+            /** Format: uuid */
+            categoryId: null | string;
+            categoryName: null | string;
+            impact: components["schemas"]["Level"];
+            urgency: components["schemas"]["Level"];
+            isActive: boolean;
+            /** Format: date-time */
+            secretSetAt: string;
+            /** Format: date-time */
+            lastEventAt: null | string;
+            /** Format: int32 */
+            failedCount: number;
+            /** Format: date-time */
+            lastFailedAt: null | string;
+            /** Format: uint32 */
+            version: number;
+        };
+        MonitoringSourceSecret: {
+            source: components["schemas"]["MonitoringSourceItem"];
+            secret: string;
+        };
         MyApprovalItem: {
             /** Format: uuid */
             id: string;
@@ -14700,6 +14951,7 @@ export interface components {
             openTaskCount: number;
             tasks: components["schemas"]["TicketTaskItem"][];
             service?: null | components["schemas"]["ServiceRef"];
+            monitoringSource?: null | string;
         };
         /** @enum {unknown} */
         TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked" | "service_set" | "service_cleared";
@@ -14894,6 +15146,22 @@ export interface components {
             name: string;
             /** Format: uuid */
             parentId: null | string;
+        };
+        UpdateMonitoringSourceRequest: {
+            /** Format: uint32 */
+            version: number;
+            name: string;
+            /** Format: uuid */
+            teamId: string;
+            /** Format: uuid */
+            requesterId: string;
+            /** Format: uuid */
+            serviceId: null | string;
+            /** Format: uuid */
+            categoryId: null | string;
+            impact: components["schemas"]["Level"];
+            urgency: components["schemas"]["Level"];
+            isActive: boolean;
         };
         UpdateProblemRequest: {
             /** Format: uint32 */

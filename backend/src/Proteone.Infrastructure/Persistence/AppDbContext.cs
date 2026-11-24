@@ -15,6 +15,7 @@ using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
+using Proteone.Domain.Monitoring;
 using Proteone.Domain.Notifications;
 using Proteone.Domain.Operations;
 using Proteone.Domain.Organization;
@@ -59,6 +60,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ProblemChangeLink> ProblemChangeLinks => Set<ProblemChangeLink>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceAsset> ServiceAssets => Set<ServiceAsset>();
+    public DbSet<MonitoringSource> MonitoringSources => Set<MonitoringSource>();
+    public DbSet<MonitoringSourceStatus> MonitoringSourceStatuses => Set<MonitoringSourceStatus>();
+    public DbSet<MonitoringEvent> MonitoringEvents => Set<MonitoringEvent>();
+    public DbSet<MonitoringAlert> MonitoringAlerts => Set<MonitoringAlert>();
     public DbSet<Release> Releases => Set<Release>();
     public DbSet<ReleaseEvent> ReleaseEvents => Set<ReleaseEvent>();
     public DbSet<Software> Software => Set<Software>();
