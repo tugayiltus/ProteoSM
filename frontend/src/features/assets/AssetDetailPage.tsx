@@ -25,6 +25,7 @@ import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { SectionCard } from '../../shared/page/SectionCard';
 import { ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
+import { AssetLicencesCard } from '../licences/AssetLicencesCard';
 
 import { OPERATIONS_BY_STATUS, useAsset, useAssetHistory, type AssetItem, type AssetMovementItem, type AssetOperationKind } from './api';
 import { AssetFormDialog } from './AssetFormDialog';
@@ -132,6 +133,7 @@ export function AssetDetailPage() {
       )}
     </SectionCard>
     <AssetServicesCard assetId={item.id} assetTag={item.assetTag} canLink={item.status !== 'retired' && item.status !== 'lost'} />
+    <AssetLicencesCard assetTag={item.assetTag} />
     <AssetQrCard assetId={item.id} assetTag={item.assetTag} />
     </VStack>
   );

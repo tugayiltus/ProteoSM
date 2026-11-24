@@ -18,6 +18,7 @@ public static class NotificationEventTypes
     public const string TicketCompleted = "ticket_completed";
     public const string SlaWarning = "sla_warning";
     public const string SlaBreached = "sla_breached";
+    public const string LicenceExpiring = "licence_expiring";
     public const string AccountActivation = "account_activation";
     public const string PasswordReset = "password_reset";
 }

@@ -118,7 +118,11 @@
     "adminLoginMethod": "Giriş yöntemi",
     "adminAudit": "Denetim kayıtları",
     "adminBrands": "Markalar",
-    "adminModels": "Modeller"
+    "adminModels": "Modeller",
+    "licences": "Lisanslar",
+    "licenceDetail": "Lisans",
+    "software": "Yazılımlar",
+    "mySoftware": "Yazılımlarım"
   },
   "menuGroups": {
     "personal": "Kişisel",

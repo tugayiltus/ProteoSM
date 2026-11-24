@@ -26,10 +26,11 @@ public enum SearchHitType
     Problem,
     Asset,
     Service,
+    Software,
     Article,
 }
 
-/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, the service id, or the article id the knowledge base route uses.</summary>
+/// <summary><paramref name="Key"/> is the ticket, change, task or problem number, the asset tag, the service id, the software id, or the article id the knowledge base route uses.</summary>
 public sealed record SearchHit(SearchHitType Type, string Key, string Title, string? Status);
 
 public sealed record SearchGroup(SearchHitType Type, IReadOnlyList<SearchHit> Hits, bool HasMore);
@@ -55,8 +56,8 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
     private const string QueryField = "q";
     private static readonly string QueryInvalidMessage = $"The search text must be {SearchLimits.MinLength} to {SearchLimits.MaxLength} characters.";
     private const string Separator = " ";
-    private const string ServiceActive = "Active";
-    private const string ServiceInactive = "Inactive";
+    private const string Active = "Active";
+    private const string Inactive = "Inactive";
 
     // A short legacy tag must not hijack typing: only a whole-looking tag is tried as an exact match.
     private static bool LooksLikeTag(string text) => text.Length >= SearchLimits.MinExactTagLength && !text.Any(char.IsWhiteSpace);
@@ -168,7 +169,14 @@ public sealed class SearchHandler(IAppDbContext db, TicketScope ticketScope, Cha
                 db.Services.AsNoTracking()
                     .Where(s => EF.Functions.Like(s.SearchText, pattern, LikePattern.EscapeText))
                     .OrderByDescending(s => s.IsActive).ThenBy(s => s.Name).ThenBy(s => s.Id)
-                    .Select(s => new Row(s.Id.ToString(), s.Name, s.IsActive ? ServiceActive : ServiceInactive)),
+                    .Select(s => new Row(s.Id.ToString(), s.Name, s.IsActive ? Active : Inactive)),
+                cancellationToken));
+
+            AddGroup(groups, SearchHitType.Software, await TopAsync(
+                db.Software.AsNoTracking()
+                    .Where(s => EF.Functions.Like(s.SearchText, pattern, LikePattern.EscapeText))
+                    .OrderByDescending(s => s.IsActive).ThenBy(s => s.Name).ThenBy(s => s.Id)
+                    .Select(s => new Row(s.Id.ToString(), s.Vendor + Separator + s.Name, s.IsActive ? Active : Inactive)),
                 cancellationToken));
         }
 

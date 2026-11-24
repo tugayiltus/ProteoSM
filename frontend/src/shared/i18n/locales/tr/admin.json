@@ -185,7 +185,9 @@
     "task": "Görev",
     "change": "Değişiklik",
     "problem": "Problem",
-    "service": "Hizmet"
+    "service": "Hizmet",
+    "software": "Yazılım",
+    "licence": "Lisans"
   },
   "auditActions": {
     "setup": {
@@ -363,6 +365,19 @@
       "deactivated": "Hizmet pasifleştirildi",
       "asset_linked": "Hizmete cihaz bağlandı",
       "asset_unlinked": "Hizmetten cihaz ayrıldı"
+    },
+    "software": {
+      "created": "Yazılım oluşturuldu",
+      "updated": "Yazılım güncellendi"
+    },
+    "licences": {
+      "created": "Lisans oluşturuldu",
+      "updated": "Lisans güncellendi",
+      "assigned": "Lisans atandı",
+      "released": "Lisans ataması kaldırıldı",
+      "key_set": "Lisans anahtarı kaydedildi",
+      "key_cleared": "Lisans anahtarı silindi",
+      "key_shown": "Lisans anahtarı görüntülendi"
     }
   },
   "emailEvents": {
@@ -379,7 +394,8 @@
     "sla_warning": "SLA uyarısı",
     "sla_breached": "SLA ihlali",
     "account_activation": "Hesap etkinleştirme",
-    "password_reset": "Şifre sıfırlama"
+    "password_reset": "Şifre sıfırlama",
+    "licence_expiring": "Lisans süresi bitiyor"
   },
   "categories": {
     "title": "Kategoriler",

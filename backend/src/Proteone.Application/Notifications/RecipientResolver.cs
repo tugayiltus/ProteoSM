@@ -91,6 +91,9 @@ public sealed class RecipientResolver(IAppDbContext db)
             case NotificationEventTypes.ChangeBackoutStarted:
                 return await BackoutWorkerIdsAsync(outboxEvent, cancellationToken);
 
+            case NotificationEventTypes.LicenceExpiring:
+                return await LicenceTeamIdsAsync(outboxEvent, cancellationToken);
+
             case NotificationEventTypes.AccountActivation:
             case NotificationEventTypes.PasswordReset:
                 return outboxEvent.UserId is { } user ? [user] : [];
@@ -159,6 +162,13 @@ public sealed class RecipientResolver(IAppDbContext db)
     private async Task<IReadOnlyList<Guid>> TaskTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
     {
         var teamId = await db.WorkTasks.Where(t => t.Id == outboxEvent.SubjectId).Select(t => t.TeamId).SingleAsync(cancellationToken);
+        return await TeamMemberIdsAsync(teamId, cancellationToken);
+    }
+
+    /// <summary>The active members of the team that owns the licence now.</summary>
+    private async Task<IReadOnlyList<Guid>> LicenceTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
+    {
+        var teamId = await db.Licences.Where(l => l.Id == outboxEvent.SubjectId).Select(l => l.OwnerTeamId).SingleAsync(cancellationToken);
         return await TeamMemberIdsAsync(teamId, cancellationToken);
     }
 

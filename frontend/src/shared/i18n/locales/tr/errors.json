@@ -194,5 +194,16 @@
   },
   "search": {
     "query_invalid": "Arama metni 2 ile 100 karakter arasında olmalı."
+  },
+  "licences": {
+    "software_name_taken": "Bu üretici ve adla başka bir yazılım var.",
+    "software_inactive": "Pasif yazılıma yeni lisans eklenemez.",
+    "owner_team_inactive": "Sahip ekip aktif olmalı.",
+    "full": "Lisansta boş hak kalmadı.",
+    "expired": "Süresi biten lisans atanamaz.",
+    "quantity_below_use": "Adet, kullanılan hak sayısından az olamaz.",
+    "kind_mismatch": "Bu lisans türü seçilen hedefe atanamaz.",
+    "target_not_assignable": "Pasif kullanıcıya, kullanım dışı veya kayıp cihaza lisans atanamaz.",
+    "already_assigned": "Bu kullanıcı veya cihaz zaten bu lisansı kullanıyor."
   }
 }

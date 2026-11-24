@@ -21,6 +21,7 @@ public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock cl
     private const string TicketUrlPathFormat = "/tickets/{0}";
     private const string TaskUrlPathFormat = "/tasks/{0}";
     private const string ChangeUrlPathFormat = "/changes/{0}";
+    private const string LicenceUrlPathFormat = "/licences/{0}";
     private const string DateFormat = "dd.MM.yyyy";
 
     public async Task<IReadOnlyDictionary<string, string>> LoadAsync(OutboxEvent outboxEvent, Recipient recipient, CancellationToken cancellationToken)
@@ -82,6 +83,22 @@ public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock cl
             var status = decision is null ? change.Status : ChangeStatusAfter(decision.Status, change.Status);
             Set(TemplateVariables.Status, ChangeLabels.Of(status));
             Set(TemplateVariables.Reason, decision?.Reason ?? string.Empty);
+        }
+
+        if (outboxEvent.SubjectType == OutboxSubjectTypes.Licence && outboxEvent.SubjectId is { } licenceId)
+        {
+            var licence = await (
+                from l in db.Licences.AsNoTracking()
+                where l.Id == licenceId
+                join software in db.Software on l.SoftwareId equals software.Id
+                join team in db.Teams on l.OwnerTeamId equals team.Id
+                select new { l.Name, l.ExpiresOn, Software = software.Name, Team = team.Name })
+                .SingleAsync(cancellationToken);
+            Set(TemplateVariables.LicenceName, licence.Name);
+            Set(TemplateVariables.SoftwareName, licence.Software);
+            Set(TemplateVariables.TeamName, licence.Team);
+            Set(TemplateVariables.ExpiresOn, licence.ExpiresOn?.ToString(DateFormat, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty);
+            Set(TemplateVariables.LicenceUrl, PublicUrl(LicenceUrlPathFormat, licenceId.ToString()));
         }
 
         // sla_warning/sla_breached: metric and due time come from the event's own payload (ids and reason codes

@@ -33,6 +33,8 @@ internal sealed class LicenceConfiguration : IEntityTypeConfiguration<Licence>
         });
         builder.ConfigureEntityBase();
         builder.Property(l => l.Name).HasMaxLength(LicenceLimits.NameMaxLength).IsRequired();
+        builder.Property(l => l.SearchText).HasMaxLength(LicenceLimits.NameMaxLength).IsRequired();
+        builder.HasIndex(l => l.SearchText).HasDatabaseName("ix_licences_search_text_trgm").HasMethod(TrigramIndex.Method).HasOperators(TrigramIndex.Operators);
         builder.Property(l => l.Kind).HasConversion(SnakeCaseEnumConversion<LicenceKind>.Converter).HasMaxLength(SnakeCaseEnumConversion<LicenceKind>.MaxLength);
         builder.Property(l => l.Notes).HasMaxLength(LicenceLimits.NotesMaxLength);
         builder.HasIndex(l => l.ExpiresOn).HasDatabaseName("ix_licences_expires_on");

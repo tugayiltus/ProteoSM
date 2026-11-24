@@ -50,13 +50,13 @@ public sealed class EmailTemplateAdminTests(ApiFactory factory) : IAsyncLifetime
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var items = (await admin.ReadJsonAsync<JsonElement>(response)).EnumerateArray().ToList();
-        Assert.Equal(14, items.Count);
+        Assert.Equal(15, items.Count);
         var eventTypes = items.Select(t => t.GetProperty("eventType").GetString()!).ToHashSet(StringComparer.Ordinal);
         var expectedEventTypes = new HashSet<string>(StringComparer.Ordinal)
         {
             NotificationEventTypes.TicketCreated, NotificationEventTypes.TicketAssigned, NotificationEventTypes.PublicReply,
             NotificationEventTypes.ApprovalRequested, NotificationEventTypes.ApprovalDecided, NotificationEventTypes.TicketCompleted,
-            NotificationEventTypes.SlaWarning, NotificationEventTypes.SlaBreached, NotificationEventTypes.AccountActivation,
+            NotificationEventTypes.SlaWarning, NotificationEventTypes.SlaBreached, NotificationEventTypes.LicenceExpiring, NotificationEventTypes.AccountActivation,
             NotificationEventTypes.PasswordReset, NotificationEventTypes.TaskAssigned,
             NotificationEventTypes.ChangeApprovalRequested, NotificationEventTypes.ChangeApprovalDecided, NotificationEventTypes.ChangeBackoutStarted,
         };

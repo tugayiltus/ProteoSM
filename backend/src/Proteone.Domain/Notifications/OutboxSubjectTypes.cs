@@ -7,4 +7,5 @@ public static class OutboxSubjectTypes
     public const string Ticket = "ticket";
     public const string Task = "task";
     public const string Change = "change";
+    public const string Licence = "licence";
 }

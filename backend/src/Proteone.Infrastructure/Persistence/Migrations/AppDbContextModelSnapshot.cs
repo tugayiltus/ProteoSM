@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261124135355_ProteoneHistory";
+    public override string LastMigrationId => "20261124200102_AddLicences";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1278,6 +1278,222 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 
                         t.HasCheckConstraint("ck_knowledge_articles_visibility", "visibility IN ('employees', 'internal')");
                     });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Licences.Licence", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<DateOnly?>("ExpiresOn")
+                    .HasColumnType("date")
+                    .HasColumnName("expires_on");
+
+                b.Property<DateOnly?>("ExpiryNotifiedFor")
+                    .HasColumnType("date")
+                    .HasColumnName("expiry_notified_for");
+
+                b.Property<string>("Kind")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("kind");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("character varying(150)")
+                    .HasColumnName("name");
+
+                b.Property<string>("Notes")
+                    .HasMaxLength(2000)
+                    .HasColumnType("character varying(2000)")
+                    .HasColumnName("notes");
+
+                b.Property<Guid>("OwnerTeamId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("owner_team_id");
+
+                b.Property<string>("ProtectedKey")
+                    .HasColumnType("text")
+                    .HasColumnName("protected_key");
+
+                b.Property<int>("Quantity")
+                    .HasColumnType("integer")
+                    .HasColumnName("quantity");
+
+                b.Property<string>("SearchText")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("character varying(150)")
+                    .HasColumnName("search_text");
+
+                b.Property<Guid>("SoftwareId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("software_id");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_licences");
+
+                b.HasIndex("ExpiresOn")
+                    .HasDatabaseName("ix_licences_expires_on");
+
+                b.HasIndex("OwnerTeamId")
+                    .HasDatabaseName("ix_licences_owner_team_id");
+
+                var index = b.HasIndex("SearchText")
+                    .HasDatabaseName("ix_licences_search_text_trgm");
+
+                NpgsqlIndexBuilderExtensions.HasMethod(index, "gin");
+                NpgsqlIndexBuilderExtensions.HasOperators(index, new[] { "gin_trgm_ops" });
+
+                b.HasIndex("SoftwareId")
+                    .HasDatabaseName("ix_licences_software_id");
+
+                b.ToTable("licences", t =>
+                    {
+                        t.HasCheckConstraint("ck_licences_kind", "kind IN ('per_user', 'per_device')");
+
+                        t.HasCheckConstraint("ck_licences_quantity", "quantity BETWEEN 1 AND 100000");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Licences.LicenceAssignment", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid?>("AssetId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("asset_id");
+
+                b.Property<DateTimeOffset>("AssignedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("assigned_at");
+
+                b.Property<Guid>("AssignedBy")
+                    .HasColumnType("uuid")
+                    .HasColumnName("assigned_by");
+
+                b.Property<Guid>("LicenceId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("licence_id");
+
+                b.Property<DateTimeOffset?>("ReleasedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("released_at");
+
+                b.Property<Guid?>("ReleasedBy")
+                    .HasColumnType("uuid")
+                    .HasColumnName("released_by");
+
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("user_id");
+
+                b.HasKey("Id")
+                    .HasName("pk_licence_assignments");
+
+                b.HasIndex("AssetId")
+                    .HasDatabaseName("ix_licence_assignments_asset_id");
+
+                b.HasIndex("AssignedBy")
+                    .HasDatabaseName("ix_licence_assignments_assigned_by");
+
+                b.HasIndex("ReleasedBy")
+                    .HasDatabaseName("ix_licence_assignments_released_by");
+
+                b.HasIndex("UserId")
+                    .HasDatabaseName("ix_licence_assignments_user_id");
+
+                b.HasIndex("LicenceId", "AssetId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_licence_assignments_asset")
+                    .HasFilter("released_at IS NULL AND asset_id IS NOT NULL");
+
+                b.HasIndex("LicenceId", "UserId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_licence_assignments_user")
+                    .HasFilter("released_at IS NULL AND user_id IS NOT NULL");
+
+                b.ToTable("licence_assignments", t =>
+                    {
+                        t.HasCheckConstraint("ck_licence_assignments_target", "(user_id IS NULL) <> (asset_id IS NULL)");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Licences.Software", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("character varying(150)")
+                    .HasColumnName("name");
+
+                b.Property<string>("SearchText")
+                    .IsRequired()
+                    .HasMaxLength(251)
+                    .HasColumnType("character varying(251)")
+                    .HasColumnName("search_text");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<string>("Vendor")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("vendor");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_software");
+
+                b.HasIndex("SearchText")
+                    .IsUnique()
+                    .HasDatabaseName("ux_software_search_text");
+
+                var index = b.HasIndex(new[] { "SearchText" }, "ix_software_search_text_trgm")
+                    .HasDatabaseName("ix_software_search_text");
+
+                NpgsqlIndexBuilderExtensions.HasMethod(index, "gin");
+                NpgsqlIndexBuilderExtensions.HasOperators(index, new[] { "gin_trgm_ops" });
+
+                b.ToTable("software");
             });
 
         modelBuilder.Entity("Proteone.Domain.Notifications.EmailDelivery", b =>
@@ -4020,6 +4236,58 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired()
                     .HasConstraintName("fk_knowledge_articles_users_updated_by");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Licences.Licence", b =>
+            {
+                b.HasOne("Proteone.Domain.Organization.Team", null)
+                    .WithMany()
+                    .HasForeignKey("OwnerTeamId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_licences_teams_owner_team_id");
+
+                b.HasOne("Proteone.Domain.Licences.Software", null)
+                    .WithMany()
+                    .HasForeignKey("SoftwareId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_licences_software_software_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Licences.LicenceAssignment", b =>
+            {
+                b.HasOne("Proteone.Domain.Assets.Asset", null)
+                    .WithMany()
+                    .HasForeignKey("AssetId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_licence_assignments_assets_asset_id");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("AssignedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_licence_assignments_users_assigned_by");
+
+                b.HasOne("Proteone.Domain.Licences.Licence", null)
+                    .WithMany()
+                    .HasForeignKey("LicenceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_licence_assignments_licences_licence_id");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("ReleasedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_licence_assignments_users_released_by");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_licence_assignments_users_user_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Notifications.EmailDelivery", b =>

@@ -32,7 +32,7 @@ describe('AppLayout sidebar', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME } });
     renderRoute('/profile');
     const nav = await mainNav();
-    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Bilgi bankası']);
+    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası']);
     expect(within(nav).queryByText('IT operasyonu')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Yönetim' })).not.toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe('AppLayout sidebar', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME } });
     renderRoute('/profile');
     const nav = await mainNav();
-    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Bilgi bankası', 'İş listem', 'Kuyruk', 'Görevler', 'Problemler', 'Değişiklikler', 'Envanter', 'Hizmetler', 'Raporlar', 'Dışa aktarımlarım']);
+    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası', 'İş listem', 'Kuyruk', 'Görevler', 'Problemler', 'Değişiklikler', 'Envanter', 'Hizmetler', 'Lisanslar', 'Raporlar', 'Dışa aktarımlarım']);
     expect(screen.queryByRole('link', { name: 'Yönetim' })).not.toBeInTheDocument();
   });
 

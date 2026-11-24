@@ -6,6 +6,7 @@ using Proteone.Api.Endpoints.Assets;
 using Proteone.Api.Endpoints.Changes;
 using Proteone.Api.Endpoints.Problems;
 using Proteone.Api.Endpoints.Services;
+using Proteone.Api.Endpoints.Licences;
 using Proteone.Api.Endpoints.Tasks;
 using Proteone.Api.Endpoints.Tickets;
 using Proteone.Api.Http;
@@ -70,6 +71,7 @@ internal static class ApiApplicationExtensions
         api.MapTaskEndpoints();
         api.MapProblemEndpoints();
         api.MapServiceEndpoints();
+        api.MapLicenceEndpoints();
         api.MapChangeEndpoints();
         api.MapApprovalEndpoints();
         api.MapKnowledgeEndpoints();

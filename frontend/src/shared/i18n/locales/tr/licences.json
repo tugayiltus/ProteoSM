@@ -1,0 +1,91 @@
+{
+  "seats": "{{used}} / {{quantity}}",
+  "noEnd": "Süresiz",
+  "kinds": {
+    "per_user": "Kullanıcı başına",
+    "per_device": "Cihaz başına"
+  },
+  "kindTargets": {
+    "per_user": "Kullanıcı",
+    "per_device": "Cihaz"
+  },
+  "states": {
+    "full": "Dolu",
+    "expiring": "30 gün içinde bitiyor",
+    "expired": "Süresi bitti"
+  },
+  "columns": {
+    "software": "Yazılım",
+    "name": "Lisans",
+    "kind": "Tür",
+    "seats": "Kullanım",
+    "team": "Sahip ekip",
+    "end": "Bitiş tarihi"
+  },
+  "list": {
+    "title": "Lisanslar",
+    "search": "Lisans ara",
+    "caption": "Lisans listesi",
+    "empty": "Bu filtreyle lisans yok.",
+    "all": "Tümü",
+    "open": "Aç",
+    "stateFilter": "Durum",
+    "cardMeta": "{{kind}} · {{team}} · {{end}}"
+  },
+  "form": {
+    "new": "Yeni lisans",
+    "edit": "Lisansı düzenle",
+    "quantity": "Adet",
+    "notes": "Notlar"
+  },
+  "software": {
+    "title": "Yazılımlar",
+    "new": "Yeni yazılım",
+    "edit": "Yazılımı düzenle",
+    "vendor": "Üretici",
+    "name": "Yazılım",
+    "active": "Aktif",
+    "status": "Durum",
+    "actions": "İşlemler",
+    "search": "Yazılım ara",
+    "empty": "Bu filtreyle yazılım yok.",
+    "caption": "Yazılım listesi",
+    "licences": "{{count}} lisans"
+  },
+  "detail": {
+    "back": "Listeye dön",
+    "assign": "Ata",
+    "assignments": "Atamalar",
+    "released": "Kaldırılan atamalar",
+    "none": "Kayıt yok.",
+    "assignedAt": "Atanma: {{date}}",
+    "releasedAt": "Kaldırılma: {{date}}",
+    "unavailable": "Kullanılamıyor",
+    "release": "Atamayı kaldır"
+  },
+  "assign": {
+    "searchUser": "Kullanıcı ara",
+    "searchAsset": "Cihaz ara"
+  },
+  "key": {
+    "title": "Lisans anahtarı",
+    "stored": "Anahtar kayıtlı.",
+    "none": "Anahtar kayıtlı değil.",
+    "show": "Anahtarı göster",
+    "showMessage": "Anahtarın görüntülenmesi denetim kaydına yazılır.",
+    "shown": "Pencereyi kapatınca anahtar ekrandan silinir.",
+    "add": "Anahtar ekle",
+    "change": "Anahtarı değiştir",
+    "clear": "Anahtarı sil",
+    "clearMessage": "Kayıtlı anahtar silinir. Bu işlem geri alınamaz."
+  },
+  "mine": {
+    "empty": "Size atanmış yazılım yok.",
+    "caption": "Yazılımlarım"
+  },
+  "asset": {
+    "title": "Lisanslar",
+    "none": "Bu cihaza atanmış lisans yok.",
+    "meta": "{{name}} · Bitiş: {{end}}"
+  }
+}

@@ -44,6 +44,7 @@ internal static class Program
         builder.Services.AddHostedService<EmailSenderJob>();
         builder.Services.AddHostedService<SlaMonitorJob>();
         builder.Services.AddHostedService<CleanupJob>();
+        builder.Services.AddHostedService<LicenceMonitorJob>();
         builder.Services.AddHostedService<ExportRunnerJob>();
 
         var app = builder.Build();

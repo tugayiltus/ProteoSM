@@ -13,6 +13,10 @@ public sealed class Licence : Entity
 
     public Guid SoftwareId { get; private init; }
     public string Name { get; private set; } = string.Empty;
+
+    /// <summary>Turkish-insensitive key of the name, for search.</summary>
+    public string SearchText { get; private set; } = string.Empty;
+
     public LicenceKind Kind { get; private init; }
     public int Quantity { get; private set; }
     public Guid OwnerTeamId { get; private set; }
@@ -49,6 +53,7 @@ public sealed class Licence : Entity
         }
 
         Name = LicenceText.Required(name, LicenceLimits.NameMaxLength, nameof(name));
+        SearchText = TurkishText.ToSearchKey(Name);
         Quantity = quantity;
         OwnerTeamId = ownerTeamId;
         ExpiresOn = expiresOn;

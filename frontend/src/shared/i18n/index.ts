@@ -8,6 +8,7 @@ import changes from './locales/tr/changes.json';
 import common from './locales/tr/common.json';
 import errors from './locales/tr/errors.json';
 import kb from './locales/tr/kb.json';
+import licences from './locales/tr/licences.json';
 import problems from './locales/tr/problems.json';
 import reports from './locales/tr/reports.json';
 import search from './locales/tr/search.json';
@@ -19,7 +20,7 @@ export const DEFAULT_LANGUAGE = 'tr';
 export const DEFAULT_NAMESPACE = 'common';
 
 export const resources = {
-  tr: { common, auth, admin, assets, tickets, tasks, problems, changes, kb, reports, search, services, errors },
+  tr: { common, auth, admin, assets, tickets, tasks, problems, changes, kb, reports, search, services, licences, errors },
 } as const;
 
 void i18n.use(initReactI18next).init({

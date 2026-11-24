@@ -1,7 +1,7 @@
 // Every icon the UI uses, imported by name so only these ship.
 import type { IconName, IconType } from '@astryxdesign/core/Icon';
 import {
-  ArrowLeft, Bell, BookOpen, Bug, Building2, ChartPie, ClipboardList, Contrast, Download, Gauge, GitCompareArrows, History, House, Inbox, Laptop, Layers, List, ListChecks,
+  ArrowLeft, Bell, BookOpen, Bug, Building2, ChartPie, ClipboardList, Contrast, Download, Gauge, GitCompareArrows, History, House, KeyRound, Inbox, Laptop, Layers, List, ListChecks,
   Lock, Mail, MailOpen, MapPin, Monitor, MonitorSmartphone, Moon, NotebookText, Pause, Pencil, Plus, Printer, Settings, Sun, Tag, Tags, User,
   Users, UsersRound,
 } from 'lucide-react';
@@ -34,6 +34,7 @@ export const Icons = {
   home: House,
   inbox: Inbox,
   laptop: Laptop,
+  licences: KeyRound,
   list: List,
   listChecks: ListChecks,
   locationPin: MapPin,

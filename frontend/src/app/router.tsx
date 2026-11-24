@@ -74,6 +74,7 @@ export const userPages: RouteObject[] = [
           { id: 'kbArticle', path: `${ROUTES.kb}/:id`, lazy: async () => ({ Component: (await import('../features/kb/ArticlePage')).ArticlePage }) },
           { id: 'scanAsset', path: ROUTES.scanAsset, lazy: async () => ({ Component: (await import('../features/assets/labels/ScanAssetPage')).ScanAssetPage }) },
           { id: 'myAssets', path: ROUTES.myAssets, lazy: async () => ({ Component: (await import('../features/assets/MyAssetsPage')).MyAssetsPage }) },
+          { id: 'mySoftware', path: ROUTES.mySoftware, lazy: async () => ({ Component: (await import('../features/licences/MySoftwarePage')).MySoftwarePage }) },
           {
             element: (
               <RequireRole roles={IT_STAFF_OR_ADMIN}>
@@ -95,6 +96,9 @@ export const userPages: RouteObject[] = [
               { id: 'assetDetail', path: `${ROUTES.assets}/:id`, lazy: async () => ({ Component: (await import('../features/assets/AssetDetailPage')).AssetDetailPage }) },
               { id: 'services', path: ROUTES.services, lazy: async () => ({ Component: (await import('../features/services/ServicesPage')).ServicesPage }) },
               { id: 'serviceDetail', path: `${ROUTES.services}/:id`, lazy: async () => ({ Component: (await import('../features/services/ServiceDetailPage')).ServiceDetailPage }) },
+              { id: 'licences', path: ROUTES.licences, lazy: async () => ({ Component: (await import('../features/licences/LicencesPage')).LicencesPage }) },
+              { id: 'licenceDetail', path: `${ROUTES.licences}/:id`, lazy: async () => ({ Component: (await import('../features/licences/LicenceDetailPage')).LicenceDetailPage }) },
+              { id: 'software', path: ROUTES.software, lazy: async () => ({ Component: (await import('../features/licences/SoftwarePage')).SoftwarePage }) },
             ],
           },
           {
