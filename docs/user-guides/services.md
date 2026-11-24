@@ -45,7 +45,7 @@ Arıza, talep, değişiklik ve problem sayfalarında **Hizmet** alanı vardır. 
 
 **Kuyruk**, **Değişiklikler** ve **Problemler** listelerinde **Hizmet** filtresi vardır. **Ara** penceresi hizmetleri ad ve açıklamaya göre bulur.
 
-**Raporlar** sayfasının **Olaylar**, **Talepler**, **Değişiklikler** ve **Problemler** sekmelerinde **Hizmete göre** kartı, dönemde açılan kayıtları hizmete göre sayar. Hizmeti seçilmemiş kayıtlar **Hizmet yok** satırındadır. Bir satıra basınca arkasındaki kayıtlar açılır.
+**Raporlar** sayfasının **Olaylar**, **Talepler**, **Değişiklikler** ve **Problemler** sekmelerinde **Hizmete göre** kartı, dönemde açılan kayıtları hizmete göre sayar. Hizmeti seçilmemiş kayıtlar **Hizmet yok** satırındadır. Kayıtların kendisi için listelerdeki **Hizmet** filtresini kullanın.
 
 ![Hizmete göre kartı](images/reports-service-desktop.png)
 

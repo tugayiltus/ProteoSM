@@ -522,5 +522,5 @@ Relationships: all foreign keys are `RESTRICT`; records are deactivated or close
 - **Two entry pages (ADR-0038):** one build, `index.html` and `admin/index.html`; a link between the areas loads the page, sign-in returns to the admin page through the local `from` parameter.
 - **Fixes of November 2026:** record numbers use the company year; a stale version is a conflict also when no value changes; only the creator commits an import job, and jobs leave after 30 days; duplicate serials report `assets.serial_taken`; a truncated upload is 400 and a too large body 413; password changes share the per-client login limit; a ticket in progress that is transferred without an assignee becomes open; the "Hizmete göre" figure has no record links.
 
-<!-- DOC-BASELINE: 8d39bd7 -->
-_Documentation baseline: current as of commit 8d39bd7 (2026-11-24). Refresh with `git log --oneline 8d39bd7..HEAD`._
+<!-- DOC-BASELINE: e348dc2 -->
+_Documentation baseline: current as of commit e348dc2 (2026-11-24). Refresh with `git log --oneline e348dc2..HEAD`._
