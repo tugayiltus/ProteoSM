@@ -78,3 +78,7 @@ Run through `tools/` scripts.
 - **Plans/specs:** `docs/superpowers/specs/`, `docs/superpowers/plans/`. Read the latest on resume.
 - **Memory index:** `~/.claude/projects/-Users-lektuel-claude-Proteone/memory/MEMORY.md` — one fact per `name.md` file with a one-line pointer in the index.
 - When updating any index, create a dedicated `.md` file then add the reference line — never inline content into the index; no orphan files.
+
+## Graphify
+
+This repo is indexed in Graphify. For questions about code structure, callers, dependencies, or the impact of a change, use Graphify's MCP tools before grep or reading files one by one: query_graph for how something works, graphify_find for where a symbol is defined, graphify_callers for who calls it, graphify_impact for what a change could affect, review_status for Graphify's review of a pull request. Use grep for exact strings, such as error messages or config keys. If a Graphify tool fails or the repository isn't indexed, say so, then fall back to grep.
