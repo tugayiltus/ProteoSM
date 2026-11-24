@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
 using Proteone.Application.Features.Users;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
@@ -35,31 +36,36 @@ public sealed class SetupFirstAdminHandler(
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
 
-        if (await db.Users.AnyAsync(cancellationToken))
-        {
-            throw new DomainException(ErrorCodes.SetupAlreadyCompleted, "An account already exists; setup is closed.");
-        }
-
         var temporaryPassword = temporaryPasswords.Generate();
-        var admin = User.Create(
-            command.FirstName,
-            command.LastName,
-            command.Email,
-            UserRole.Admin,
-            departmentId: null,
-            locationId: null,
-            passwords.Hash(temporaryPassword),
-            clock.GetUtcNow());
+        User? admin = null;
+        // Two parallel runs must not both find an empty table.
+        await db.RunSerializedAsync(SerializationLocks.AdminMembership, async ct =>
+        {
+            if (await db.Users.AnyAsync(ct))
+            {
+                throw new DomainException(ErrorCodes.SetupAlreadyCompleted, "An account already exists; setup is closed.");
+            }
 
-        db.Users.Add(admin);
-        audit.Record(
-            AuditActions.FirstAdminCreated,
-            AuditEntityTypes.User,
-            admin.Id,
-            newValues: new { admin.Email, admin.Role },
-            actorUserId: admin.Id);
-        await db.SaveChangesAsync(cancellationToken);
+            admin = User.Create(
+                command.FirstName,
+                command.LastName,
+                command.Email,
+                UserRole.Admin,
+                departmentId: null,
+                locationId: null,
+                passwords.Hash(temporaryPassword),
+                clock.GetUtcNow());
 
-        return new SetupFirstAdminResult(admin.Id, temporaryPassword);
+            db.Users.Add(admin);
+            audit.Record(
+                AuditActions.FirstAdminCreated,
+                AuditEntityTypes.User,
+                admin.Id,
+                newValues: new { admin.Email, admin.Role },
+                actorUserId: admin.Id);
+            await db.SaveChangesAsync(ct);
+        }, cancellationToken);
+
+        return new SetupFirstAdminResult(admin!.Id, temporaryPassword);
     }
 }

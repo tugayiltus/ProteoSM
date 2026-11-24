@@ -136,6 +136,19 @@ public sealed class AssetImportTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Another_users_preview_cannot_be_committed()
+    {
+        var job = await PreviewAsync(await ItAsync(), Csv("DT-1,laptop,Lenovo,T14,SN-1,Merkez Kampüs / A Blok,Muhasebe,in_stock,,,"));
+        var (other, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.ItStaff, "other@example.com");
+
+        using var commit = await other.PostAsync(CommitPath(job));
+
+        Assert.Equal(HttpStatusCode.NotFound, commit.StatusCode);
+        await using var db = factory.Database.CreateDbContext();
+        Assert.False(await db.Assets.AnyAsync(Ct));
+    }
+
+    [Fact]
     public async Task One_bad_row_blocks_the_commit_and_nothing_is_written()
     {
         var it = await ItAsync();

@@ -57,6 +57,30 @@ public sealed class SetupFirstAdminTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Parallel_runs_create_one_admin()
+    {
+        const int runs = 8;
+
+        var results = await Task.WhenAll(Enumerable.Range(0, runs).Select(async run =>
+        {
+            await using var scope = factory.Services.CreateAsyncScope();
+            var handler = scope.ServiceProvider.GetRequiredService<SetupFirstAdminHandler>();
+            try
+            {
+                await handler.HandleAsync(Command with { Email = $"admin{run}@example.com" }, Ct);
+                return null;
+            }
+            catch (DomainException refused)
+            {
+                return refused.Code;
+            }
+        }));
+
+        Assert.Single(results, code => code is null);
+        Assert.Equal(runs - 1, results.Count(code => code == ErrorCodes.SetupAlreadyCompleted));
+    }
+
+    [Fact]
     public async Task Cli_prints_temporary_password_once_and_then_refuses()
     {
         var output = new StringWriter();

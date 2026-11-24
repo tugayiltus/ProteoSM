@@ -56,7 +56,7 @@ This file is the only work queue from 2026-11-24. Earlier plans, ledgers and the
 
 Order: rename first (every path changes), then fixes of earlier phases, then one review and one test pass, then documents, then approvals. New modules follow.
 
-### A. Proteone code
+### A. Proteone code (steps 1–8 done on `feature/proteone`)
 
 1. This plan.
 2. Tests that pin the Data Protection values.
@@ -72,8 +72,10 @@ Order: rename first (every path changes), then fixes of earlier phases, then one
 The notes come from the phase ledgers. Some may be fixed already: check each against the code first, close it with a reason when it no longer applies, and prove each behavior fix with a failing test.
 
 9. Security and data safety
-   - Phase 1: wrong current password on change-password is not counted or rate limited; no absolute session lifetime; first-admin set-up race; `TRUNCATE` on `audit_events`.
-   - Phase 2–3: CSV template and export without formula neutralisation; any IT user can commit another user's import job; missing foreign keys on `asset_assignments` and `asset_movements`; import rows kept after commit.
+   - Done: change-password has the per-client limit; first-admin set-up runs serialized; only the creator commits an import job.
+   - Closed after a check: `TRUNCATE` on `audit_events` is blocked (`audit_events_no_truncate`); no CSV export exists and the template holds fixed text.
+   - Open: foreign keys on the actor columns of `asset_movements` and `asset_assignments`; import rows kept after commit.
+   - Owner decision (step 19): an absolute session lifetime and its length; today an active session slides without an end.
 10. Wrong behavior
     - Phase 1: updates without a change skip the version check and write an empty audit row; a cancelled request is logged as error 500.
     - Phase 2–3: malformed uploads return 500 and 413 becomes 400; a transfer to a team only leaves an in-progress ticket without assignee; missing `approval_requested` event; ticket year from UTC on 1 January; duplicate serial reported as `tag_taken`.

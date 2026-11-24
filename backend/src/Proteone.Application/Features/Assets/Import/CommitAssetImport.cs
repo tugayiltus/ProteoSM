@@ -13,6 +13,7 @@ public sealed record CommitAssetImportCommand(Guid JobId);
 
 /// <summary>
 /// Inserts every row of a previewed job in one transaction, with one movement per asset and one audit event.
+/// Only the user who previewed the file commits it; another user gets 404.
 /// Committing a committed job returns its result and inserts nothing (serialized per commit).
 /// </summary>
 public sealed class CommitAssetImportHandler(IAppDbContext db, ICurrentActor actor, IAuditLog audit, IAssetTagGenerator tags, ICompanyClock companyClock, TimeProvider clock)
@@ -25,7 +26,7 @@ public sealed class CommitAssetImportHandler(IAppDbContext db, ICurrentActor act
         AssetImportJob? job = null;
         await db.RunSerializedAsync(SerializationLocks.AssetImport, async ct =>
         {
-            job = await db.AssetImportJobs.SingleOrDefaultAsync(j => j.Id == command.JobId, ct)
+            job = await db.AssetImportJobs.SingleOrDefaultAsync(j => j.Id == command.JobId && j.CreatedByUserId == actorId, ct)
                 ?? throw new NotFoundException(AuditEntityTypes.AssetImport);
             var now = clock.GetUtcNow();
             if (!job.Commit(now))
