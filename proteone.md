@@ -157,7 +157,7 @@ Envanter, cihazın ne olduğunu ve nerede bulunduğunu gösterir. Asset Manageme
 
 ## 4. Paneller ve yetkilendirme
 
-Tek React uygulaması ve ortak API kullanılır. `/admin`, ayrı gezinme ve ekran düzenine sahip yönetim alanıdır; ayrı frontend dağıtımı değildir.
+Tek frontend build’i ve ortak API kullanılır. `/admin`, aynı adreste kendi giriş sayfası, gezinmesi ve ekran düzeni olan yönetim alanıdır; ayrı dağıtım değildir (ADR-0038).
 
 | İşlem | Çalışan | IT personeli | Yönetici |
 |---|---|---|---|

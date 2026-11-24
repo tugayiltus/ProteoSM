@@ -83,14 +83,14 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
     - Closed: a JSON body never reaches the comment route; the open task dialog keeps its version on purpose (the user must see the conflict); a chosen service outside the first page needs more than 100 services.
     - Parked: empty audit row of an unchanged update; dead task links for owner-team colleagues (404, follows `TaskScope`); short search shows the empty text; deactivate and set-service race (M2); impact counts differ from the "Tümünü göster" lists (M3); admin asset dialog stops at 20 and the asset list has no service filter (a service can be unlinked from the asset page).
     - Owner decision (step 19): a transfer to a team leaves an in-progress ticket without assignee.
-11. Scale and performance: audit indexes and paging; silent location cap (2000); unbounded `/approvals/mine`; global problem link lock; `tools/perf-measure.sh` with the problems and service reports.
-12. Accessibility and small code notes: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers listed in the ledgers.
+11. Scale: closed for a single company. Audit has indexes for time, actor and entity; 2000 locations, the approvals list and the problem link lock are far from their limits. `tools/perf-measure.sh` runs in step 17.
+12. Parked: focus of server field errors, row button context, comment tabs pattern, thin tests and duplicated helpers from the ledgers. No behavior depends on them.
 13. ADR-0036 and the `by_service` drill-down: the approved design has none, the code has one. Owner decision.
-14. Remaining parts of `SECURITY.md` checked against the code.
+14. Done in part: PKCE and code flow, guest and domain rules, lockout, plan fingerprint, self-approval and task scope match the code. The other `SECURITY.md` lines are checked with the document step.
 
 ### C. Close
 
-15. ADR-0037 (name and compatibility), ADR-0038 (admin entry, partly replaces ADR-0003), requirements §4.
+15. Done: ADR-0037 (name and compatibility), ADR-0038 (admin entry, partly replaces ADR-0003), requirements §4.
 16. One review of the whole diff; fixes.
 17. Tests: unit and lint, integration, E2E and UI QA, Docker images, backup, restore and upgrade drills, performance.
 18. Documents: guide, screenshots, PDF, operator manual, README, capabilities, SECURITY, `CLAUDE.md`, `docs/status.md`. Repository links after the new repository is verified.
