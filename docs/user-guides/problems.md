@@ -40,6 +40,8 @@ Bir arıza üzerinde çalışırken de problem açabilirsiniz: arızanın **Prob
 
 **Numara veya başlıkta ara**, **Durum** ve **Etki** ile listeyi daraltın. **Arıza** sütunu probleme bağlı arıza sayısını gösterir. **İş listem** sayfasındaki **Ekibimin problemleri** kartı, ekiplerinizin açık problem sayısını gösterir ve aynı listeyi açar.
 
+**Hizmet** filtresi, hizmeti seçilmiş problemleri listeler. Problemin **Hizmet** alanını sahip ekip veya yönetici doldurur (bkz. [Hizmetler](services.md)).
+
 ![Açık problemler listesi](images/problems-list-desktop.png)
 
 ## Problem üzerinde çalışma

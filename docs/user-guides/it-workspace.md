@@ -88,6 +88,8 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
+Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. **Kuyruk** listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](services.md)).
+
 ## İpuçları
 
 - Güne **SLA Riski** kuyruğuyla başlayın.

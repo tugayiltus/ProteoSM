@@ -51,6 +51,8 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
 
+**Olaylar**, **Talepler**, **Değişiklikler** ve **Problemler** sekmelerindeki **Hizmete göre** kartı için bkz. [Hizmetler](services.md).
+
 ## Rakamın arkasındaki kayıtları görme
 
 1. Bir kartın başlığına (örneğin "Açılan kayıt") basın. O rakamı oluşturan kayıtların listesi açılır.

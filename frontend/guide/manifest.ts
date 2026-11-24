@@ -66,6 +66,21 @@ const clickButton =
     await page.getByRole('dialog').waitFor();
   };
 
+const CONFLICT_BANNER = /değişiklikle çakışıyor/;
+
+/** Opens the first change of the list whose detail shows the window conflict banner. */
+const openConflictingChange = async (page: Page): Promise<void> => {
+  const links = page.getByRole('link', { name: OPEN_LINK }).filter({ visible: true });
+  await links.first().waitFor();
+  const hrefs = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href') ?? ''));
+  for (const href of hrefs) {
+    await page.goto(href);
+    await page.getByRole('heading', { name: 'Plan', exact: true }).waitFor();
+    if (await page.getByText(CONFLICT_BANNER).first().isVisible()) return;
+  }
+  throw new Error('No change on the list page has a window conflict.');
+};
+
 /** The change report card of closed changes tied to an incident they caused. */
 const CAUSED_INCIDENTS_CARD = 'Sorun çıkaran değişiklikler';
 
@@ -104,6 +119,22 @@ const openSearch = async (page: Page): Promise<void> => {
   await page.keyboard.type(SEARCH_TEXT);
   await dialog.getByText('Değişiklikler', { exact: true }).waitFor();
 };
+
+/** The "Hizmet" field of a record detail; its button opens the service picker ("Hizmet seç" or "Hizmeti değiştir"). */
+const SERVICE_PICKER_BUTTON = /^(Hizmet seç|Hizmeti değiştir)$/;
+
+/** Opens the first ticket of the list and the service picker on it. */
+const openServicePicker = async (page: Page): Promise<void> => {
+  await openFirstRecord(page);
+  await page.getByRole('button', { name: SERVICE_PICKER_BUTTON }).filter({ visible: true }).first().click();
+  await page.getByRole('dialog').waitFor();
+};
+
+/** The report card of records by service. */
+const SERVICE_REPORT_CARD = 'Hizmete göre';
+
+/** Row button of the admin service list that opens the asset links of a service ("Varlıklar <service>"). */
+const SERVICE_ASSETS_BUTTON = /^Varlıklar /;
 
 /** Seed names the guide shows in its examples (backend Features/Pilot). */
 const PILOT_CATEGORY = 'TGYSM Pilot';
@@ -176,8 +207,32 @@ export const MANIFEST: readonly GuideShot[] = [
   { id: 'tasks-list', role: 'it', path: '/tasks?queue=team', views: DESKTOP },
   { id: 'task-detail', role: 'admin', path: '/tasks?status=in_progress', setup: openFirstRecord, views: DESKTOP },
   { id: 'changes-list', role: 'admin', path: '/changes?queue=open', views: DESKTOP },
-  { id: 'change-detail', role: 'admin', path: '/changes?status=scheduled', setup: openFirstRecord, views: ALL_VIEWS },
+  { id: 'change-detail', role: 'admin', path: '/changes?status=scheduled', setup: openConflictingChange, views: ALL_VIEWS },
   { id: 'change-calendar', role: 'admin', path: '/changes/calendar', views: ALL_VIEWS },
+  // services
+  { id: 'services-list', role: 'it', path: '/services', views: DESKTOP },
+  { id: 'service-detail', role: 'it', path: '/services', setup: openFirstRecord, views: ALL_VIEWS },
+  { id: 'ticket-service', role: 'it', path: MY_WORK_QUEUE, setup: openServicePicker, views: DESKTOP },
+  {
+    id: 'reports-service',
+    role: 'it',
+    path: '/reports/incidents',
+    setup: async (page) => {
+      await page.getByText(SERVICE_REPORT_CARD, { exact: true }).first().scrollIntoViewIfNeeded();
+    },
+    views: DESKTOP,
+  },
+  { id: 'admin-services', role: 'admin', path: '/admin/services', views: DESKTOP },
+  {
+    id: 'admin-service-assets',
+    role: 'admin',
+    path: '/admin/services',
+    setup: async (page) => {
+      await page.getByRole('button', { name: SERVICE_ASSETS_BUTTON }).filter({ visible: true }).first().click();
+      await page.getByRole('dialog').waitFor();
+    },
+    views: DESKTOP,
+  },
   // inventory
   { id: 'assets-list', role: 'it', path: '/assets', views: DESKTOP },
   { id: 'asset-detail', role: 'it', path: '/assets?status=assigned', setup: openFirstRecord, views: DESKTOP },

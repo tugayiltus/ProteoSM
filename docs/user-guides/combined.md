@@ -71,7 +71,7 @@ IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümü
 Masaüstünde menü ekranın solunda her zaman açıktır. Menü rolünüze göre gruplanır:
 
 - **Kişisel**: **Ana sayfa**, **Kayıtlarım**, **Zimmetlerim**, **Bilgi bankası**.
-- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**; yöneticiler ayrıca **Onay yönetimi**.
+- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**, **Hizmetler**; yöneticiler ayrıca **Onay yönetimi**.
 - **Analiz** (IT personeli ve yönetici): **Raporlar**, **Dışa aktarımlarım**.
 
 Menünün altındaki düğmeyle (**Menüyü daralt**) menüyü yalnızca simgelere indirebilirsiniz.
@@ -93,13 +93,13 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ekran
 Üst çubuktaki **Ara** düğmesine basın veya klavyede `/` tuşuna basın. Arama penceresi açılır.
 
 1. Kayıt numarası, demirbaş etiketi veya bir kelime yazın. Arama en az 2 karakterle başlar.
-2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Problemler**, **Envanter**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
+2. Sonuçlar türe göre gruplanır: **Kayıtlar**, **Değişiklikler**, **Görevler**, **Problemler**, **Envanter**, **Hizmetler**, **Bilgi bankası**. Her türde en fazla 5 sonuç görünür.
 3. Bir sonuca basarak açın. Tam bir numara yazdıysanız o kayıt en üstte gösterilir.
 4. Bir grupta daha fazla sonuç varsa **Tümünü gör** ile ilgili listeyi aynı arama metniyle açın.
 
 ![Arama penceresi](images/search-desktop.png)
 
-Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem ve envanter sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
+Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem, envanter ve hizmet sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
 
@@ -471,6 +471,8 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
+Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. **Kuyruk** listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](#hizmetler)).
+
 ## İpuçları
 
 - Güne **SLA Riski** kuyruğuyla başlayın.
@@ -657,6 +659,8 @@ Değişiklik sayfasındaki **İlgili problemler** bölümü, bu değişikliğin 
 
 **Kuyruk** filtresiyle listeyi seçin: **Benim değişikliklerim**, **Ekibimin değişiklikleri**, **Onay bekleyenler**, **Açık değişiklikler**, **Bu hafta uygulanacak**. **Durum** ve **Risk** filtreleri ile **Numara veya başlıkta ara** kutusu listeyi daraltır. **İş listem** sayfasındaki **Değişikliklerim** kartı sahibi olduğunuz değişiklikleri, **Bu hafta uygulanacak** kartı bu hafta başlayacak olanları açar. Size veya ekibinize düşen değişiklikler İş listem'de risk ve pencereyle birlikte görünür.
 
+**Hizmet** filtresi, hizmeti seçilmiş değişiklikleri listeler. Değişikliğin **Hizmet** alanını sahip ekip veya yönetici doldurur; bu alan onayı etkilemez (bkz. [Hizmetler](#hizmetler)).
+
 ![Açık değişiklikler listesi](images/changes-list-desktop.png)
 
 ## İpuçları
@@ -705,6 +709,8 @@ Bir arıza üzerinde çalışırken de problem açabilirsiniz: arızanın **Prob
 | **Bilinen hatalar** | **Bilinen hata** durumundaki problemler. |
 
 **Numara veya başlıkta ara**, **Durum** ve **Etki** ile listeyi daraltın. **Arıza** sütunu probleme bağlı arıza sayısını gösterir. **İş listem** sayfasındaki **Ekibimin problemleri** kartı, ekiplerinizin açık problem sayısını gösterir ve aynı listeyi açar.
+
+**Hizmet** filtresi, hizmeti seçilmiş problemleri listeler. Problemin **Hizmet** alanını sahip ekip veya yönetici doldurur (bkz. [Hizmetler](#hizmetler)).
 
 ![Açık problemler listesi](images/problems-list-desktop.png)
 
@@ -776,6 +782,84 @@ Problem **Bilinen hata** veya **Çözüldü** durumundayken **Bilinen hata makal
 - Problemleri ana menüdeki **Ara** ile de bulabilirsiniz; tam `PRB-` numarası problemi doğrudan açar.
 - Problem sayıları ve çözüm süreleri **Raporlar** sayfasındaki **Problemler** sekmesindedir (bkz. [Raporlar](#raporlar)).
 
+# Hizmetler
+
+Bu sayfa IT personeli ve yöneticiler içindir. Çalışanlar hizmetleri görmez; kayıtlarında da **Hizmet** alanı çıkmaz.
+
+Hizmet, şirketin kullandığı bir sistem veya altyapıdır (örneğin e-posta, VPN, SAP). Hizmet sayfası o hizmetin cihazlarını, açık kayıtlarını, süren değişikliklerini ve açık problemlerini tek yerde gösterir. Hizmet bir kaydı yönlendirmez; ekibi, önceliği veya SLA süresini değiştirmez.
+
+## Hizmet listesi
+
+Menüde **Hizmetler** sayfasını açın. Liste sahip ekibi, bağlı varlık sayısını, açık kayıt sayısını ve durumu gösterir. **Hizmet ara**, **Sahip ekip** ve **Durum** ile listeyi daraltın. Hizmeti açmak için **Aç** bağlantısına basın.
+
+![Hizmet listesi](images/services-list-desktop.png)
+
+## Hizmet sayfası ve etki görünümü
+
+| Bölüm | İçindekiler |
+|---|---|
+| **Varlıklar** | Hizmete bağlı cihazlar ve durumları. Emekliye ayrılan veya kaybolan cihaz da bağı kaldırılana kadar görünür. |
+| **Açık kayıtlar** | Hizmeti seçilmiş, kapanmamış arıza ve talepler. |
+| **Değişiklikler** | Onay bekleyen, planlanan, uygulanan ve doğrulanan değişiklikler. |
+| **Açık problemler** | Çözülmemiş ve iptal edilmemiş problemler. |
+
+Her bölüm en fazla 20 satır gösterir; toplam sayı başlığın yanındadır. Daha çok kayıt varsa **Tümünü göster** bağlantısı, hizmete göre süzülmüş listeyi açar. Görme yetkiniz olmayan kaydın yalnızca numarası, başlığı ve durumu çıkar; yanında **Açma yetkiniz yok** yazar.
+
+![Hizmet sayfası](images/service-detail-desktop.png)
+
+![Telefonda hizmet sayfası](images/service-detail-mobile.png)
+
+## Kayda hizmet seçme
+
+Arıza, talep, değişiklik ve problem sayfalarında **Hizmet** alanı vardır. Bir kayda tek hizmet seçilir.
+
+1. **Hizmet** alanında **Hizmet seç** düğmesine basın.
+2. Listeden hizmeti seçin ve **Kaydet** düğmesine basın.
+3. Sonradan **Hizmeti değiştir** ile başka hizmet seçin veya **Hizmeti kaldır** ile alanı boşaltın.
+
+![Kayda hizmet seçme](images/ticket-service-desktop.png)
+
+- Arıza veya talebe bağlı cihazlar tek bir aktif hizmete aitse pencerede "Önerilen: VPN" gibi bir satır çıkar ve o hizmet seçili gelir. Siz **Kaydet** düğmesine basmadan hiçbir şey kaydedilmez.
+- Yalnızca aktif hizmetler seçilebilir. Kayıttaki hizmet sonradan pasife alınırsa kayıtta kalır ve yanında **Pasif** yazar.
+- Kapanmış kayıtlara da hizmet seçilebilir. Kaydın durumu, SLA süresi ve değişikliğin onayı bundan etkilenmez.
+- Arıza ve taleplerde kaydı gören her IT personeli hizmet seçebilir. Değişiklik ve problemlerde sahip ekibin üyesi veya yönetici olmalısınız.
+- Değişiklikteki **Etkilenen hizmet** ayrı bir metin alanıdır; pencere çakışması uyarısı o metne bakar.
+
+## Listelerde ve raporlarda hizmet
+
+**Kuyruk**, **Değişiklikler** ve **Problemler** listelerinde **Hizmet** filtresi vardır. **Ara** penceresi hizmetleri ad ve açıklamaya göre bulur.
+
+**Raporlar** sayfasının **Olaylar**, **Talepler**, **Değişiklikler** ve **Problemler** sekmelerinde **Hizmete göre** kartı, dönemde açılan kayıtları hizmete göre sayar. Hizmeti seçilmemiş kayıtlar **Hizmet yok** satırındadır. Bir satıra basınca arkasındaki kayıtlar açılır.
+
+![Hizmete göre kartı](images/reports-service-desktop.png)
+
+## Hizmet tanımlama (yönetici)
+
+Yönetim ekranında **Hizmet kataloğu** altındaki **Hizmetler** sayfasını açın.
+
+1. **Yeni hizmet** düğmesine basın.
+2. **Hizmet** adını ve **Sahip ekip** alanını doldurun; isterseniz **Açıklama** yazın. Hizmet adı tek olmalıdır.
+3. **Oluştur** düğmesine basın.
+
+**Düzenle** ile bilgileri değiştirin. Kullanılmayan hizmeti **Pasife al** ile kapatın; **Aktif et** ile geri açın. Hizmet silinmez, eski kayıtlar hizmetini korur.
+
+![Yönetimde hizmetler](images/admin-services-desktop.png)
+
+## Varlık bağlama (yönetici)
+
+1. Hizmetin satırında **Varlıklar** düğmesine basın.
+2. **Etiket ara** alanına demirbaş etiketini yazın, **Bağlanacak varlık** listesinden cihazı seçin.
+3. **Varlık bağla** düğmesine basın. Yanlış bağı **Bağı kaldır** ile silin.
+
+![Hizmetin varlıkları](images/admin-service-assets-desktop.png)
+
+Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cihaz yeni bir hizmete bağlanamaz. Bağlar cihaz sayfasındaki **Hizmetler** kartından da yönetilir (bkz. [Envanter](#envanter)).
+
+## İpuçları
+
+- Yaygın bir kesintide önce hizmet sayfasına bakın; aynı nedenli arızaları ve o gün uygulanan değişikliği birlikte görürsünüz.
+- Cihaz bağlarını güncel tutun; hizmet önerisi bu bağlardan gelir.
+
 # Envanter
 
 Bu sayfa IT personeli ve yöneticiler içindir: cihazları kaydetmek, teslim etmek, geri almak ve takip etmek.
@@ -834,6 +918,8 @@ Cihaz sayfasında **Cihaz bilgileri**, sağda **İşlemler** ve altta **Geçmiş
 Her işlem **Onayla** ile kaydedilir ve **Geçmiş** bölümüne eklenir: ne yapıldı, kim yaptı, kime verildi.
 
 Teslim edilen cihaz kişinin **Zimmetlerim** sayfasında görünür. Bir talep için teslim yapılıyorsa cihaz yalnızca talep sahibine verilebilir ve onay gereken taleplerde önce onay gelmiş olmalıdır.
+
+**Hizmetler** kartı cihazın bağlı olduğu hizmetleri gösterir. Yöneticiler buradan **Hizmete bağla** ve **Bağı kaldır** ile bağları değiştirir (bkz. [Hizmetler](#hizmetler)).
 
 ## CSV ile toplu cihaz ekleme
 
@@ -916,6 +1002,8 @@ Telefonda filtreler gizlidir: **Filtreler (0)** düğmesine basın, seçimleri y
 ![Problemler raporu](images/reports-problems-desktop.png)
 
 Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; **SLA süresi (mesai)** yalnızca SLA takvimindeki çalışma saatlerini sayar.
+
+**Olaylar**, **Talepler**, **Değişiklikler** ve **Problemler** sekmelerindeki **Hizmete göre** kartı için bkz. [Hizmetler](#hizmetler).
 
 ## Rakamın arkasındaki kayıtları görme
 
@@ -1114,7 +1202,7 @@ Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcıla
 Bu sayfa yöneticiler içindir. İki katalog vardır:
 
 - **Cihaz kataloğu**: **Markalar** ve **Modeller**. Envantere cihaz eklerken bu listelerden seçilir.
-- **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**. Çalışanlar arıza ve talep açarken bunlardan seçer.
+- **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**: çalışanlar arıza ve talep açarken bunlardan seçer. **Hizmetler**: yalnızca IT kullanır; tanımlama ve varlık bağlama için bkz. [Hizmetler](#hizmetler).
 
 ## Markalar
 

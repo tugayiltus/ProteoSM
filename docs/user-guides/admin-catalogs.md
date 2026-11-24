@@ -3,7 +3,7 @@
 Bu sayfa yöneticiler içindir. İki katalog vardır:
 
 - **Cihaz kataloğu**: **Markalar** ve **Modeller**. Envantere cihaz eklerken bu listelerden seçilir.
-- **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**. Çalışanlar arıza ve talep açarken bunlardan seçer.
+- **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**: çalışanlar arıza ve talep açarken bunlardan seçer. **Hizmetler**: yalnızca IT kullanır; tanımlama ve varlık bağlama için bkz. [Hizmetler](services.md).
 
 ## Markalar
 

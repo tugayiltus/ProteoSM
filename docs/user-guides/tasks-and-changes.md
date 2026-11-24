@@ -178,6 +178,8 @@ Değişiklik sayfasındaki **İlgili problemler** bölümü, bu değişikliğin 
 
 **Kuyruk** filtresiyle listeyi seçin: **Benim değişikliklerim**, **Ekibimin değişiklikleri**, **Onay bekleyenler**, **Açık değişiklikler**, **Bu hafta uygulanacak**. **Durum** ve **Risk** filtreleri ile **Numara veya başlıkta ara** kutusu listeyi daraltır. **İş listem** sayfasındaki **Değişikliklerim** kartı sahibi olduğunuz değişiklikleri, **Bu hafta uygulanacak** kartı bu hafta başlayacak olanları açar. Size veya ekibinize düşen değişiklikler İş listem'de risk ve pencereyle birlikte görünür.
 
+**Hizmet** filtresi, hizmeti seçilmiş değişiklikleri listeler. Değişikliğin **Hizmet** alanını sahip ekip veya yönetici doldurur; bu alan onayı etkilemez (bkz. [Hizmetler](services.md)).
+
 ![Açık değişiklikler listesi](images/changes-list-desktop.png)
 
 ## İpuçları
