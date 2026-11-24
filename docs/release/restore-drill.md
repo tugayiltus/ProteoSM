@@ -1,7 +1,7 @@
 # Restore drill
 
-Run by `tools/restore-drill.sh` on 2026-11-24T13:25:18Z at commit `0d3f3a1` (images `0d3f3a1`).
-Archive: `proteone-20261124-132338.tar.gz` (40K). Acceptance criterion 19 of `proteone.md` §20; ADR-0025.
+Run by `tools/restore-drill.sh` on 2026-11-24T23:24:45Z at commit `dabbb59` (images `dabbb59`).
+Archive: `proteone-20261124-232315.tar.gz` (44K). Acceptance criterion 19 of `proteone.md` §20; ADR-0025.
 
 | Check | Expected | Actual | Result |
 |---|---|---|---|
@@ -15,7 +15,7 @@ Archive: `proteone-20261124-132338.tar.gz` (40K). Acceptance criterion 19 of `pr
 | health | 200 | 200 | pass |
 | session from before the backup is still valid | 200 | 200 | pass |
 | attachment downloads with the same size | 2176 | 2176 | pass |
-| export file downloads with the same size | 7728 | 7728 | pass |
+| export file downloads with the same size | 7726 | 7726 | pass |
 | deactivated user cannot sign in | HTTP 401 auth.invalid_credentials | HTTP 401 auth.invalid_credentials | pass |
 | post-restore checks reported | 5 | 5 | pass |
 | post-restore check script (exit code) | 0 | 0 | pass |
