@@ -29,7 +29,26 @@ Date: 2026-11-24. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 
 ## Earlier phases
 
-Phases 0–12 are complete and on `master` (`docs/status.md`): 0 design, 1 foundation, 2 assets, 3 support, 4 SLA and email, 5 knowledge and reports, 6 first release, 7 tasks, 8 changes, 9 calendar and reports, 10 related records and search, 11 problems, 12 service catalogue. They are not rebuilt. Their deferred review notes and the open work below join the queue.
+Phases 0–12 are complete and on `master` under the TGYSM name (`docs/status.md`): 0 design, 1 foundation, 2 assets, 3 support, 4 SLA and email, 5 knowledge and reports, 6 first release, 7 tasks, 8 changes, 9 calendar and reports, 10 related records and search, 11 problems, 12 service catalogue. They are not rebuilt. Their deferred review notes and the open work below join the queue.
+
+## How earlier work fits the new decisions
+
+This file is the only work queue from 2026-11-24. Earlier plans, ledgers and the "Açık işler" list of `docs/status.md` are history or sources; `docs/status.md` points here at the close. Where an older text differs, this table wins.
+
+| Earlier text | Now |
+|---|---|
+| TGYSM names, `Tgysm.*` paths, `TGYSM_*` variables in open items | read as the Proteone name after step 3–5; no item is done under the old name |
+| ADR-0003, `tgysm.md` §4: one SPA, no separate admin frontend | one build with two entries (ADR-0038); same origin, session, CSRF and policies |
+| Admin items (asset dialog limit, admin cache after 401, category form, admin tables) | done in the admin entry after step 8, not before |
+| Daily operation items (approvals, impact view, service choice, asset card link) | stay in the user app; moving a screen never changes a right |
+| Service catalogue (ADR-0036) | definition in admin, choice and impact in the user app; its rules stay |
+| Notes about CoreUI, Tailwind or Radix components | closed: the code was replaced by Astryx (ADR-0027) |
+| Docs and screenshot items | once, in step 18, on the running Proteone build |
+| Test and performance items | code and tests with the item; runs once, in step 17 |
+| Guide and pilot database `tgysm_pilot` | a new `proteone_pilot`; the old database is left alone |
+| Real Entra and Active Directory test | on the Proteone installation and its address (redirect URI changes when the host changes) |
+| Dependabot pull requests on TGYSM | not moved; the new repository creates its own |
+| Software and licence assets, light Release, monitoring webhook | built only as Proteone, after the transition |
 
 ## Queue
 
