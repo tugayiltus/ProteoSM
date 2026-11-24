@@ -57,8 +57,11 @@ export const taskPath = (number: string) => `${ROUTES.tasks}/${number}`;
 export const servicePath = (id: string) => `${ROUTES.services}/${id}`;
 /** Query parameter of the staff ticket, change and problem lists that keeps only one service's records. */
 export const SERVICE_FILTER_PARAM = 'serviceId';
+/** Query parameter of those lists that keeps only the records the service page counts as open. */
+export const OPEN_FILTER_PARAM = 'open';
+export const OPEN_FILTER_ON = 'true';
 /** A record list filtered to one service ("Tümünü göster" on the service page). */
-export const serviceFilteredPath = (listPath: string, serviceId: string) => `${listPath}?${new URLSearchParams({ [SERVICE_FILTER_PARAM]: serviceId }).toString()}`;
+export const serviceFilteredPath = (listPath: string, serviceId: string, openOnly = false) => `${listPath}?${new URLSearchParams({ [SERVICE_FILTER_PARAM]: serviceId, ...(openOnly ? { [OPEN_FILTER_PARAM]: OPEN_FILTER_ON } : {}) }).toString()}`;
 export const problemPath = (number: string) => `${ROUTES.problems}/${number}`;
 export const changePath = (number: string) => `${ROUTES.changes}/${number}`;
 

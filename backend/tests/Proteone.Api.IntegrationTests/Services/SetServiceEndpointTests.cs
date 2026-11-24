@@ -228,4 +228,58 @@ public sealed class SetServiceEndpointTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(ChangeWorld.NumberOf(change), Assert.Single(changes.GetProperty("items").EnumerateArray()).GetProperty("number").GetString());
         Assert.Equal(ProblemWorld.NumberOf(problem), Assert.Single(problems.GetProperty("items").EnumerateArray()).GetProperty("number").GetString());
     }
+
+    [Fact]
+    public async Task The_open_filter_leaves_the_closed_records_of_the_service_out()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var serviceId = await ServiceAsync(world, "Dosya sunucusu");
+        var open = await TicketWorld.CreateIncidentAsync(world.Employee, "Paylaşım açılmıyor");
+        await SetAsync(world.Desk, TicketWorld.PathOf(open), serviceId, TicketWorld.VersionOf(open));
+        var closed = await CompletedIncidentAsync(world, world.Employee);
+        await SetAsync(world.Desk, TicketWorld.PathOf(closed), serviceId, TicketWorld.VersionOf(closed));
+
+        var all = await TicketWorld.ReadAsync(world.Desk, $"{TicketWorld.TicketsPath}?serviceId={serviceId}");
+        var onlyOpen = await TicketWorld.ReadAsync(world.Desk, $"{TicketWorld.TicketsPath}?serviceId={serviceId}&open=true");
+        // A draft is not part of the impact view; a pending or planned change is.
+        var draft = await ChangeWorld.CreateAsync(world.Desk, world);
+        await SetAsync(world.Desk, ChangeWorld.PathOf(draft), serviceId, ChangeWorld.VersionOf(draft));
+        var changes = await TicketWorld.ReadAsync(world.Desk, $"{ChangeWorld.ChangesPath}?serviceId={serviceId}&open=true");
+        var problem = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id);
+        await SetAsync(world.Desk, ProblemWorld.PathOf(problem), serviceId, ProblemWorld.VersionOf(problem));
+        var problems = await TicketWorld.ReadAsync(world.Desk, $"{ProblemWorld.ProblemsPath}?serviceId={serviceId}&open=true");
+
+        Assert.Equal(2, all.GetProperty("items").GetArrayLength());
+        Assert.Equal(TicketWorld.NumberOf(open), Assert.Single(onlyOpen.GetProperty("items").EnumerateArray()).GetProperty("number").GetString());
+        Assert.Empty(changes.GetProperty("items").EnumerateArray());
+        Assert.Single(problems.GetProperty("items").EnumerateArray());
+    }
+
+    [Theory]
+    [InlineData("ticket")]
+    [InlineData("change")]
+    [InlineData("problem")]
+    public async Task A_set_waiting_on_an_uncommitted_deactivation_is_refused(string kind)
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var serviceId = await ServiceAsync(world, "ERP");
+        var (path, version) = kind switch
+        {
+            "change" => (await ChangeWorld.CreateAsync(world.Desk, world)) is var c ? (ChangeWorld.PathOf(c), ChangeWorld.VersionOf(c)) : default,
+            "problem" => (await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id)) is var p ? (ProblemWorld.PathOf(p), ProblemWorld.VersionOf(p)) : default,
+            _ => (await TicketWorld.CreateIncidentAsync(world.Employee)) is var t ? (TicketWorld.PathOf(t), TicketWorld.VersionOf(t)) : default,
+        };
+        await using var deactivateDb = factory.Database.CreateDbContext();
+        await using var deactivate = await deactivateDb.Database.BeginTransactionAsync(Ct);
+        await deactivateDb.Database.ExecuteSqlAsync($"SELECT pg_advisory_xact_lock({Application.Common.SerializationLocks.ServiceCatalog})", Ct);
+        (await deactivateDb.Services.SingleAsync(s => s.Id == serviceId, Ct)).SetActive(false, DateTimeOffset.UtcNow);
+        await deactivateDb.SaveChangesAsync(Ct);
+
+        var call = PutServiceAsync(world.Desk, path, serviceId, version);
+        await AdvisoryLocks.WaitUntilBlockedOrDoneAsync(factory, call, Ct);
+        await deactivate.CommitAsync(Ct);
+
+        using var set = await call;
+        Assert.Equal(ErrorCodes.ServiceInactive, await ApiClient.ReadCodeAsync(set));
+    }
 }

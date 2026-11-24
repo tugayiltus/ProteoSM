@@ -112,7 +112,7 @@ internal static class ChangeEndpoints
         DateOnly.TryParseExact(value, DateFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var day) ? day : null;
 
     private static async Task<Ok<PagedResult<ChangeListItem>>> ListAsync(
-        string? queue, string? status, string? risk, string? search, int? page, int? pageSize, Guid? serviceId,
+        string? queue, string? status, string? risk, string? search, int? page, int? pageSize, Guid? serviceId, bool? open,
         ListChangesHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListChangesQuery(
@@ -122,7 +122,8 @@ internal static class ChangeEndpoints
             search,
             page ?? PageRequest.FirstPage,
             pageSize ?? PageRequest.DefaultPageSize,
-            serviceId);
+            serviceId,
+            open ?? false);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 

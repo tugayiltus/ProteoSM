@@ -5,7 +5,7 @@ using Proteone.Domain.Assets;
 
 namespace Proteone.Application.Features.Assets;
 
-public sealed record ListAssetsQuery(string? Search, AssetType? Type, AssetStatus? Status, Guid? LocationId, int Page, int PageSize);
+public sealed record ListAssetsQuery(string? Search, AssetType? Type, AssetStatus? Status, Guid? LocationId, int Page, int PageSize, Guid? ServiceId = null);
 
 public sealed class ListAssetsHandler(IAppDbContext db)
 {
@@ -36,6 +36,11 @@ public sealed class ListAssetsHandler(IAppDbContext db)
         if (query.LocationId is { } locationId)
         {
             assets = assets.Where(a => a.LocationId == locationId);
+        }
+
+        if (query.ServiceId is { } serviceId)
+        {
+            assets = assets.Where(a => db.ServiceAssets.Any(l => l.AssetId == a.Id && l.ServiceId == serviceId));
         }
 
         return assets.ToItems(db).ToPagedResultAsync(new PageRequest(query.Page, query.PageSize), cancellationToken);

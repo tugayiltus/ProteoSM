@@ -7,6 +7,7 @@ import { Button } from '@astryxdesign/core/Button';
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout';
+import { Link } from '@astryxdesign/core/Link';
 import { List, ListItem } from '@astryxdesign/core/List';
 import { Selector } from '@astryxdesign/core/Selector';
 import { Text } from '@astryxdesign/core/Text';
@@ -19,6 +20,7 @@ import { describeError } from '../../../shared/api/errorMessage';
 import { FormAlert } from '../../../shared/feedback/FormAlert';
 import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
+import { ROUTES, serviceFilteredPath } from '../../../shared/routes';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
 import { useAssets, type AssetStatus } from '../../assets/api';
 import { useLinkServiceAsset, useServiceImpact, useUnlinkServiceAsset } from '../../services/serviceApi';
@@ -122,7 +124,11 @@ export function ServiceAssetsDialog({ serviceId, serviceName, onClose }: { servi
                       />
                     ))}
                   </List>
-                  {assets.total > assets.items.length && <Text type="supporting">{t('services.assetsShown', { count: assets.items.length, total: assets.total })}</Text>}
+                  {assets.total > assets.items.length && (
+                    <Text type="supporting">
+                      {t('services.assetsShown', { count: assets.items.length, total: assets.total })} <Link href={serviceFilteredPath(ROUTES.assets, serviceId)}>{t('services.assetsAll')}</Link>
+                    </Text>
+                  )}
                 </VStack>
               )}
             </VStack>

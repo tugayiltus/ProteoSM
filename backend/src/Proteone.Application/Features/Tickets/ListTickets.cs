@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Application.Common.Paging;
+using Proteone.Application.Features.Services;
 using Proteone.Application.Sla;
 using Proteone.Domain.Common;
 using Proteone.Domain.Tickets;
@@ -18,7 +19,7 @@ public enum TicketQueue
     SlaRisk,
 }
 
-public sealed record ListTicketsQuery(TicketQueue? Queue, TicketStatus? Status, TicketKind? Kind, Priority? Priority, string? Search, int Page, int PageSize, Guid? ServiceId);
+public sealed record ListTicketsQuery(TicketQueue? Queue, TicketStatus? Status, TicketKind? Kind, Priority? Priority, string? Search, int Page, int PageSize, Guid? ServiceId, bool OpenOnly = false);
 
 /// <summary>Lists tickets in the viewer's scope; queues and filters only narrow it.</summary>
 public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, TicketSlaReader slaReader)
@@ -59,6 +60,11 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
         if (query.Priority is { } priority)
         {
             tickets = tickets.Where(t => t.Priority == priority);
+        }
+
+        if (query.OpenOnly)
+        {
+            tickets = tickets.Where(t => !ImpactStatuses.ClosedTickets.Contains(t.Status));
         }
 
         if (query.ServiceId is { } serviceId)

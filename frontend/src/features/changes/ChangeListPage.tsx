@@ -26,9 +26,10 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { changePath, ROUTES, SERVICE_FILTER_PARAM } from '../../shared/routes';
+import { OPEN_FILTER_ON, OPEN_FILTER_PARAM, changePath, ROUTES, SERVICE_FILTER_PARAM } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { OpenOnlyFilter } from '../services/OpenOnlyFilter';
 import { ServiceFilter } from '../services/ServiceFilter';
 
 import { CHANGE_QUEUES, CHANGE_STATUSES, LEVELS, useChanges, type ChangeListItem } from './api';
@@ -39,7 +40,7 @@ import { WindowText } from './WindowText';
 const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
-const FILTER_KEYS = ['queue', 'status', 'risk', SERVICE_FILTER_PARAM] as const;
+const FILTER_KEYS = ['queue', 'status', 'risk', SERVICE_FILTER_PARAM, OPEN_FILTER_PARAM] as const;
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
 
@@ -73,7 +74,8 @@ export function ChangeListPage() {
   const risk = pick(LEVELS, list.filters.risk);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
   const serviceId = list.filters[SERVICE_FILTER_PARAM] === '' ? undefined : list.filters[SERVICE_FILTER_PARAM];
-  const changes = useChanges({ queue, status, risk, serviceId, search, page: list.page, pageSize: PAGE_SIZE });
+  const open = list.filters[OPEN_FILTER_PARAM] === OPEN_FILTER_ON ? true : undefined;
+  const changes = useChanges({ queue, status, risk, serviceId, open, search, page: list.page, pageSize: PAGE_SIZE });
   const columns: DataColumn<ChangeListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
@@ -151,6 +153,7 @@ export function ChangeListPage() {
               onChange={(value) => list.setFilter('risk', value)}
             />
             <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />
+            <OpenOnlyFilter value={list.filters[OPEN_FILTER_PARAM]} onChange={(value) => list.setFilter(OPEN_FILTER_PARAM, value)} />
           </>
         }
       />

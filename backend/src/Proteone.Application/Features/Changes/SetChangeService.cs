@@ -1,4 +1,5 @@
 using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
 using Proteone.Application.Features.Services;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Changes;
@@ -16,6 +17,8 @@ public sealed class SetChangeServiceHandler(IAppDbContext db, ChangeWork work, I
     public Task<ChangeDetail> HandleAsync(SetChangeServiceCommand command, CancellationToken cancellationToken) =>
         work.RunAsync(command.Number, command.Version, async (change, viewer, now, ct) =>
         {
+            // Deactivation takes the same lock, so a service cannot be set while it is being deactivated.
+            await db.LockAsync(SerializationLocks.ServiceCatalog, ct);
             var result = await ServiceAssignment.ApplyAsync(db, change.ServiceId, command.ServiceId, id => change.SetService(id, now), ct);
             if (result is null)
             {

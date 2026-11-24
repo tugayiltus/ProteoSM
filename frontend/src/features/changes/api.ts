@@ -47,6 +47,7 @@ export interface ChangeListParams {
   risk: Level | undefined;
   /** Only changes of this service; the service page links here. */
   serviceId?: string;
+  open?: boolean;
   search: string;
   page: number;
   pageSize: number;
@@ -64,6 +65,7 @@ export function useChanges(params: ChangeListParams) {
               status: params.status,
               risk: params.risk,
               serviceId: params.serviceId,
+              open: params.open,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,

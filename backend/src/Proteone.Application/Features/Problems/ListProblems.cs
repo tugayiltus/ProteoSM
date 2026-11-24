@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Application.Common.Paging;
+using Proteone.Application.Features.Services;
 using Proteone.Domain.Common;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Tickets;
@@ -18,7 +19,7 @@ public enum ProblemQueue
     KnownErrors,
 }
 
-public sealed record ListProblemsQuery(ProblemQueue? Queue, ProblemStatus? Status, Level? Impact, string? Search, int Page, int PageSize, Guid? ServiceId);
+public sealed record ListProblemsQuery(ProblemQueue? Queue, ProblemStatus? Status, Level? Impact, string? Search, int Page, int PageSize, Guid? ServiceId, bool OpenOnly = false);
 
 /// <summary>Lists problems for IT staff and admins; queues and filters only narrow the list. Employees get not found.</summary>
 public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
@@ -47,6 +48,11 @@ public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
         if (query.Impact is { } impact)
         {
             problems = problems.Where(p => p.Impact == impact);
+        }
+
+        if (query.OpenOnly)
+        {
+            problems = problems.Where(p => !ImpactStatuses.ClosedProblems.Contains(p.Status));
         }
 
         if (query.ServiceId is { } serviceId)

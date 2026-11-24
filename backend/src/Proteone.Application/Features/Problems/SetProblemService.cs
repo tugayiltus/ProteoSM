@@ -1,4 +1,5 @@
 using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
 using Proteone.Application.Features.Services;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Problems;
@@ -13,7 +14,15 @@ public sealed record SetProblemServiceCommand(string Number, Guid? ServiceId, ui
 /// </summary>
 public sealed class SetProblemServiceHandler(IAppDbContext db, ProblemWork work, IAuditLog audit)
 {
-    public Task<ProblemDetail> HandleAsync(SetProblemServiceCommand command, CancellationToken cancellationToken) =>
+    public async Task<ProblemDetail> HandleAsync(SetProblemServiceCommand command, CancellationToken cancellationToken)
+    {
+        ProblemDetail? detail = null;
+        // Deactivation takes the same lock, so a service cannot be set while it is being deactivated.
+        await db.RunSerializedAsync(SerializationLocks.ServiceCatalog, async ct => detail = await RunAsync(command, ct), cancellationToken);
+        return detail!;
+    }
+
+    private Task<ProblemDetail> RunAsync(SetProblemServiceCommand command, CancellationToken cancellationToken) =>
         work.RunAsync(command.Number, command.Version, async (problem, viewer, now) =>
         {
             var change = await ServiceAssignment.ApplyAsync(db, problem.ServiceId, command.ServiceId, id => problem.SetService(id, now), cancellationToken);

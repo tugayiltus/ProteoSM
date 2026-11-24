@@ -14,8 +14,6 @@ namespace Proteone.Api.IntegrationTests.Services;
 [Collection(ApiCollection.Name)]
 public sealed class ServiceAdminEndpointTests(ApiFactory factory) : IAsyncLifetime
 {
-    private static readonly TimeSpan LockPollInterval = TimeSpan.FromMilliseconds(50);
-    private static readonly TimeSpan LockWaitTimeout = TimeSpan.FromSeconds(10);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -200,7 +198,7 @@ public sealed class ServiceAdminEndpointTests(ApiFactory factory) : IAsyncLifeti
         await retireDb.SaveChangesAsync(Ct);
 
         var linkCall = world.Admin.PostAsync($"{AdminServicesPath}/{Id(service)}/assets", new { assetId });
-        await WaitUntilBlockedOrDoneAsync(linkCall);
+        await AdvisoryLocks.WaitUntilBlockedOrDoneAsync(factory, linkCall, Ct);
         await retire.CommitAsync(Ct);
 
         using var link = await linkCall;
@@ -208,26 +206,5 @@ public sealed class ServiceAdminEndpointTests(ApiFactory factory) : IAsyncLifeti
         Assert.Equal(ErrorCodes.ServiceAssetNotLinkable, await ApiClient.ReadCodeAsync(link));
         await using var db = factory.Database.CreateDbContext();
         Assert.False(await db.ServiceAssets.AnyAsync(l => l.AssetId == assetId, Ct));
-    }
-
-    /// <summary>Returns once the call waits on an advisory lock, or once it finished without waiting (the red case).</summary>
-    private async Task WaitUntilBlockedOrDoneAsync(Task call)
-    {
-        var deadline = DateTimeOffset.UtcNow + LockWaitTimeout;
-        while (!call.IsCompleted && DateTimeOffset.UtcNow < deadline)
-        {
-            await using var probe = factory.Database.CreateDbContext();
-            var waiting = await probe.Database
-                .SqlQuery<int>($"SELECT count(*)::int AS \"Value\" FROM pg_locks WHERE locktype = 'advisory' AND NOT granted")
-                .SingleAsync(Ct);
-            if (waiting > 0)
-            {
-                return;
-            }
-
-            await Task.Delay(LockPollInterval, Ct);
-        }
-
-        Assert.True(call.IsCompleted, "The link call neither waited on the lock nor finished.");
     }
 }

@@ -90,7 +90,7 @@ internal static class AssetEndpoints
     private static async Task<Ok<AssetItem>> Ok(Task<AssetItem> operation) => TypedResults.Ok(await operation);
 
     private static async Task<Ok<PagedResult<AssetItem>>> ListAsync(
-        string? search, string? type, string? status, Guid? locationId, int? page, int? pageSize,
+        string? search, string? type, string? status, Guid? locationId, int? page, int? pageSize, Guid? serviceId,
         ListAssetsHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListAssetsQuery(
@@ -99,7 +99,8 @@ internal static class AssetEndpoints
             QueryParsing.ParseEnum<AssetStatus>(status, StatusParameter),
             locationId,
             page ?? PageRequest.FirstPage,
-            pageSize ?? PageRequest.DefaultPageSize);
+            pageSize ?? PageRequest.DefaultPageSize,
+            serviceId);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 

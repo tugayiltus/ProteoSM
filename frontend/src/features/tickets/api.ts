@@ -60,6 +60,7 @@ export interface TicketListParams {
   priority: Priority | undefined;
   /** Only tickets of this service (staff list only; the service page links here). */
   serviceId?: string;
+  open?: boolean;
   search: string;
   page: number;
   pageSize: number;
@@ -78,6 +79,7 @@ export function useTickets(params: TicketListParams) {
               kind: params.kind,
               priority: params.priority,
               serviceId: params.serviceId,
+              open: params.open,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,

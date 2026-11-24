@@ -21,8 +21,9 @@ import { ListToolbar } from '../../shared/list/ListToolbar';
 import { useListParams } from '../../shared/list/useListParams';
 import { linkState } from '../../shared/navigation/returnTo';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { SERVICE_FILTER_PARAM, ticketPath } from '../../shared/routes';
+import { OPEN_FILTER_ON, OPEN_FILTER_PARAM, SERVICE_FILTER_PARAM, ticketPath } from '../../shared/routes';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { OpenOnlyFilter } from '../services/OpenOnlyFilter';
 import { ServiceFilter } from '../services/ServiceFilter';
 
 import { PRIORITIES, TICKET_STATUSES, useTickets, type TicketListItem, type TicketQueue } from './api';
@@ -34,7 +35,7 @@ const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
 const FILTER_KEYS = ['status', 'priority'] as const;
 /** The staff list also filters by service. "Kayıtlarım" does not: employees never see services. */
-const STAFF_FILTER_KEYS = [...FILTER_KEYS, SERVICE_FILTER_PARAM] as const;
+const STAFF_FILTER_KEYS = [...FILTER_KEYS, SERVICE_FILTER_PARAM, OPEN_FILTER_PARAM] as const;
 type StaffFilterKey = (typeof STAFF_FILTER_KEYS)[number];
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
@@ -57,7 +58,8 @@ export function TicketList({ queue, showWorkColumns }: { queue: TicketQueue | un
   const priority = pick(PRIORITIES, list.filters.priority);
   const search = useDebouncedValue(list.search, SEARCH_DEBOUNCE_MS);
   const serviceId = showWorkColumns && list.filters[SERVICE_FILTER_PARAM] !== '' ? list.filters[SERVICE_FILTER_PARAM] : undefined;
-  const tickets = useTickets({ queue, status, kind: undefined, priority, serviceId, search, page: list.page, pageSize: PAGE_SIZE });
+  const open = showWorkColumns && list.filters[OPEN_FILTER_PARAM] === OPEN_FILTER_ON ? true : undefined;
+  const tickets = useTickets({ queue, status, kind: undefined, priority, serviceId, open, search, page: list.page, pageSize: PAGE_SIZE });
 
   const columns: DataColumn<TicketListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
@@ -127,6 +129,7 @@ export function TicketList({ queue, showWorkColumns }: { queue: TicketQueue | un
               />
             )}
             {showWorkColumns && <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />}
+            {showWorkColumns && <OpenOnlyFilter value={list.filters[OPEN_FILTER_PARAM]} onChange={(value) => list.setFilter(OPEN_FILTER_PARAM, value)} />}
           </>
         }
       />

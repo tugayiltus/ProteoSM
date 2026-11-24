@@ -107,4 +107,19 @@ public sealed class ServiceReadEndpointTests(ApiFactory factory) : IAsyncLifetim
         Assert.Equal(HttpStatusCode.NotFound, detail.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, byAsset.StatusCode);
     }
+
+    [Fact]
+    public async Task Assets_filter_by_service()
+    {
+        var world = await ServiceWorld.CreateAsync(factory);
+        var service = await world.CreateServiceAsync("ERP");
+        var (linked, tag) = await world.AssetAsync("SRV-0001");
+        await world.AssetAsync("SRV-0002");
+        using var link = await world.Admin.PostAsync($"{ServiceWorld.AdminServicesPath}/{ServiceWorld.Id(service)}/assets", new { assetId = linked });
+
+        using var response = await world.Admin.GetAsync($"{ServiceWorld.AssetsPath}?serviceId={ServiceWorld.Id(service)}");
+        var page = await world.Admin.ReadJsonAsync<System.Text.Json.JsonElement>(response);
+
+        Assert.Equal(tag, Assert.Single(page.GetProperty("items").EnumerateArray()).GetProperty("assetTag").GetString());
+    }
 }

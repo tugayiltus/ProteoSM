@@ -14,7 +14,15 @@ public sealed record SetTicketServiceCommand(string Number, Guid? ServiceId, uin
 /// </summary>
 public sealed class SetTicketServiceHandler(IAppDbContext db, TicketWork work, IAuditLog audit)
 {
-    public Task<TicketDetail> HandleAsync(SetTicketServiceCommand command, CancellationToken cancellationToken) =>
+    public async Task<TicketDetail> HandleAsync(SetTicketServiceCommand command, CancellationToken cancellationToken)
+    {
+        TicketDetail? detail = null;
+        // Deactivation takes the same lock, so a service cannot be set while it is being deactivated.
+        await db.RunSerializedAsync(SerializationLocks.ServiceCatalog, async ct => detail = await RunAsync(command, ct), cancellationToken);
+        return detail!;
+    }
+
+    private Task<TicketDetail> RunAsync(SetTicketServiceCommand command, CancellationToken cancellationToken) =>
         work.RunAsync(command.Number, command.Version, requireWorker: false, async (ticket, viewer, now) =>
         {
             if (!viewer.SeesInternal)

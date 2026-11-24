@@ -31,6 +31,7 @@ export interface AssetListParams {
   search: string;
   type: AssetType | undefined;
   status: AssetStatus | undefined;
+  serviceId?: string;
   page: number;
   pageSize: number;
 }
@@ -42,7 +43,7 @@ export function useAssets(params: AssetListParams, enabled = true) {
     queryFn: () =>
       unwrap(
         api.GET('/api/v1/assets', {
-          params: { query: { search: params.search === '' ? undefined : params.search, type: params.type, status: params.status, page: params.page, pageSize: params.pageSize } },
+          params: { query: { search: params.search === '' ? undefined : params.search, type: params.type, status: params.status, serviceId: params.serviceId, page: params.page, pageSize: params.pageSize } },
         }),
       ),
     placeholderData: keepPreviousData,

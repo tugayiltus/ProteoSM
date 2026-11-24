@@ -56,7 +56,7 @@ internal static class ProblemEndpoints
     }
 
     private static async Task<Ok<PagedResult<ProblemListItem>>> ListAsync(
-        string? queue, string? status, string? impact, string? search, int? page, int? pageSize, Guid? serviceId, ListProblemsHandler handler, CancellationToken cancellationToken)
+        string? queue, string? status, string? impact, string? search, int? page, int? pageSize, Guid? serviceId, bool? open, ListProblemsHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListProblemsQuery(
             QueryParsing.ParseEnum<ProblemQueue>(queue, QueueParameter),
@@ -65,7 +65,8 @@ internal static class ProblemEndpoints
             search,
             page ?? PageRequest.FirstPage,
             pageSize ?? PageRequest.DefaultPageSize,
-            serviceId);
+            serviceId,
+            open ?? false);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 

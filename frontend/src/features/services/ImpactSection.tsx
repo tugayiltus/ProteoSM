@@ -1,5 +1,5 @@
 /**
- * @input A section title, its total, its rows, and optionally a filtered-list link and a note.
+ * @input A section title, its total, its rows, and optionally a filtered-list link.
  * @output One impact section: title, total, the capped rows and "Tümünü göster" when the total is larger.
  *   A row the viewer cannot open shows its number, title and status without a link (ADR-0033).
  * @position Service detail page, one per section (assets, open records, changes, open problems).
@@ -32,11 +32,9 @@ export interface ImpactSectionProps {
   serviceName: string;
   /** Filtered list with every row; shown only when the total is larger than the rows. */
   showAllHref?: string;
-  /** Shown under the rows when the total is larger and no list can show the rest. */
-  cappedNote?: string;
 }
 
-export function ImpactSection({ title, total, rows, serviceName, showAllHref, cappedNote }: ImpactSectionProps) {
+export function ImpactSection({ title, total, rows, serviceName, showAllHref }: ImpactSectionProps) {
   const { t } = useTranslation('services');
   const location = useLocation();
   const isCapped = total > rows.length;
@@ -71,7 +69,6 @@ export function ImpactSection({ title, total, rows, serviceName, showAllHref, ca
           ))}
         </List>
       )}
-      {isCapped && showAllHref === undefined && cappedNote !== undefined && <Text type="supporting">{cappedNote}</Text>}
     </SectionCard>
   );
 }

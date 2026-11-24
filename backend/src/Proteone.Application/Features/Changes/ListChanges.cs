@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Application.Common.Paging;
+using Proteone.Application.Features.Services;
 using Proteone.Application.Reports;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Common;
@@ -32,7 +33,7 @@ public sealed record ChangeListItem(
     string? OwnerName,
     DateTimeOffset UpdatedAt);
 
-public sealed record ListChangesQuery(ChangeQueue? Queue, ChangeStatus? Status, Level? Risk, string? Search, int Page, int PageSize, Guid? ServiceId);
+public sealed record ListChangesQuery(ChangeQueue? Queue, ChangeStatus? Status, Level? Risk, string? Search, int Page, int PageSize, Guid? ServiceId, bool OpenOnly = false);
 
 /// <summary>Lists changes in the viewer's scope; queues and filters only narrow it. Employees get not found.</summary>
 public sealed class ListChangesHandler(IAppDbContext db, ChangeScope scope, ICompanyClock companyClock, TimeProvider clock)
@@ -76,6 +77,11 @@ public sealed class ListChangesHandler(IAppDbContext db, ChangeScope scope, ICom
         if (query.Risk is { } risk)
         {
             changes = changes.Where(c => c.Risk == risk);
+        }
+
+        if (query.OpenOnly)
+        {
+            changes = changes.Where(c => ImpactStatuses.OpenChanges.Contains(c.Status));
         }
 
         if (query.ServiceId is { } serviceId)

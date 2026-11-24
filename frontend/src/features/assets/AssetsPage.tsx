@@ -25,9 +25,10 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
-import { assetPath, ROUTES } from '../../shared/routes';
+import { assetPath, ROUTES, SERVICE_FILTER_PARAM } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { ServiceFilter } from '../services/ServiceFilter';
 
 import { ASSET_STATUSES, ASSET_TYPES, useAssets, type AssetItem } from './api';
 import { AssetFormDialog } from './AssetFormDialog';
@@ -37,7 +38,7 @@ import type { LabelPrintState } from './labels/AssetLabelsPrintPage';
 const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
-const FILTER_KEYS = ['type', 'status'] as const;
+const FILTER_KEYS = ['type', 'status', SERVICE_FILTER_PARAM] as const;
 const META_SEPARATOR = ' · ';
 
 const pick = <T extends string>(allowed: readonly T[], value: string): T | undefined => allowed.find((item) => item === value);
@@ -62,7 +63,7 @@ export function AssetsPage() {
   const [creating, setCreating] = useState(false);
   const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set());
   const navigate = useNavigate();
-  const assets = useAssets({ search, type, status, page: list.page, pageSize: PAGE_SIZE });
+  const assets = useAssets({ search, type, status, serviceId: list.filters[SERVICE_FILTER_PARAM] || undefined, page: list.page, pageSize: PAGE_SIZE });
 
   const device = (a: AssetItem) => `${t(`types.${a.type}`)}${META_SEPARATOR}${a.brand} ${a.model}`;
   const columns: DataColumn<AssetItem>[] = [
@@ -132,6 +133,7 @@ export function AssetsPage() {
               value={option(status)}
               onChange={(value) => list.setFilter('status', value)}
             />
+            <ServiceFilter value={list.filters[SERVICE_FILTER_PARAM]} onChange={(value) => list.setFilter(SERVICE_FILTER_PARAM, value)} />
           </>
         }
       />

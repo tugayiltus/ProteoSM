@@ -138,7 +138,8 @@
     "linkAsset": "Varlık bağla",
     "unlink": "Bağı kaldır",
     "noAssets": "Bu hizmete bağlı varlık yok.",
-    "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor."
+    "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor.",
+    "assetsAll": "Tümünü göster"
   },
   "audit": {
     "title": "Denetim kayıtları",

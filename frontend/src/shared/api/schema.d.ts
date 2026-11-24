@@ -3999,6 +3999,7 @@ export interface paths {
                     locationId?: string;
                     page?: number;
                     pageSize?: number;
+                    serviceId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -5232,6 +5233,7 @@ export interface paths {
                     page?: number;
                     pageSize?: number;
                     serviceId?: string;
+                    open?: boolean;
                 };
                 header?: never;
                 path?: never;
@@ -7619,6 +7621,7 @@ export interface paths {
                     page?: number;
                     pageSize?: number;
                     serviceId?: string;
+                    open?: boolean;
                 };
                 header?: never;
                 path?: never;
@@ -9042,6 +9045,7 @@ export interface paths {
                     page?: number;
                     pageSize?: number;
                     serviceId?: string;
+                    open?: boolean;
                 };
                 header?: never;
                 path?: never;

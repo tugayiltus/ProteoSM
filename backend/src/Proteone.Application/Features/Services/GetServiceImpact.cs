@@ -32,11 +32,6 @@ public sealed class GetServiceImpactHandler(IAppDbContext db, ICurrentActor acto
 {
     private const string NameSeparator = " ";
 
-    private static readonly TicketStatus[] ClosedTicketStatuses = [TicketStatus.Completed, TicketStatus.Cancelled];
-    private static readonly ChangeStatus[] ImpactChangeStatuses =
-        [ChangeStatus.PendingApproval, ChangeStatus.Scheduled, ChangeStatus.Implementing, ChangeStatus.Verifying];
-    private static readonly ProblemStatus[] ClosedProblemStatuses = [ProblemStatus.Resolved, ProblemStatus.Cancelled];
-
     public async Task<ServiceImpact> HandleAsync(GetServiceImpactQuery query, CancellationToken cancellationToken)
     {
         await ServiceQueries.EnsureStaffAsync(db, actor, cancellationToken);
@@ -71,7 +66,7 @@ public sealed class GetServiceImpactHandler(IAppDbContext db, ICurrentActor acto
     {
         var viewer = await tickets.ViewerAsync(cancellationToken);
         var openable = tickets.Visible(viewer);
-        var open = db.Tickets.AsNoTracking().Where(t => t.ServiceId == serviceId && !ClosedTicketStatuses.Contains(t.Status));
+        var open = db.Tickets.AsNoTracking().Where(t => t.ServiceId == serviceId && !ImpactStatuses.ClosedTickets.Contains(t.Status));
         var total = await open.CountAsync(cancellationToken);
         var rows = await open
             .OrderByDescending(t => t.CreatedAt).ThenByDescending(t => t.Id)
@@ -84,7 +79,7 @@ public sealed class GetServiceImpactHandler(IAppDbContext db, ICurrentActor acto
     {
         var viewer = await changes.ViewerAsync(cancellationToken);
         var openable = changes.Visible(viewer);
-        var open = db.ChangeRequests.AsNoTracking().Where(c => c.ServiceId == serviceId && ImpactChangeStatuses.Contains(c.Status));
+        var open = db.ChangeRequests.AsNoTracking().Where(c => c.ServiceId == serviceId && ImpactStatuses.OpenChanges.Contains(c.Status));
         var total = await open.CountAsync(cancellationToken);
         var rows = await open
             .OrderByDescending(c => c.WindowStart).ThenByDescending(c => c.CreatedAt).ThenByDescending(c => c.Id)
@@ -96,7 +91,7 @@ public sealed class GetServiceImpactHandler(IAppDbContext db, ICurrentActor acto
     /// <summary>Every IT staff member and admin reads every problem (ADR-0034), so problem rows always open.</summary>
     private async Task<Section<ImpactRecord>> ProblemsAsync(Guid serviceId, CancellationToken cancellationToken)
     {
-        var open = db.Problems.AsNoTracking().Where(p => p.ServiceId == serviceId && !ClosedProblemStatuses.Contains(p.Status));
+        var open = db.Problems.AsNoTracking().Where(p => p.ServiceId == serviceId && !ImpactStatuses.ClosedProblems.Contains(p.Status));
         var total = await open.CountAsync(cancellationToken);
         var rows = await open
             .OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id)

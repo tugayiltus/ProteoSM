@@ -53,6 +53,7 @@ export interface ProblemListParams {
   impact: Level | undefined;
   /** Only problems of this service; the service page links here. */
   serviceId?: string;
+  open?: boolean;
   search: string;
   page: number;
   pageSize: number;
@@ -70,6 +71,7 @@ export function useProblems(params: ProblemListParams) {
               status: params.status,
               impact: params.impact,
               serviceId: params.serviceId,
+              open: params.open,
               search: params.search === '' ? undefined : params.search,
               page: params.page,
               pageSize: params.pageSize,

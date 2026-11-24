@@ -66,13 +66,12 @@ function ImpactSections({ service }: { service: ServiceDetail }) {
   const { assets, tickets, changes, problems } = impact.data;
   return (
     <VStack gap={4}>
-      {/* The asset list has no service filter, so a capped asset section says how many it shows. */}
       <ImpactSection
         title={t('detail.sections.assets')}
         total={assets.total}
         rows={assets.items.map(assetRow)}
         serviceName={service.name}
-        cappedNote={t('detail.assetsShown', { total: assets.total, count: assets.items.length })}
+        showAllHref={serviceFilteredPath(ROUTES.assets, service.id)}
       />
       <ImpactSection
         title={t('detail.sections.tickets')}
@@ -86,14 +85,14 @@ function ImpactSections({ service }: { service: ServiceDetail }) {
         total={changes.total}
         rows={changes.items.map((x) => recordRow(x, changePath, <ChangeStatusBadge status={x.status as ChangeStatus} />))}
         serviceName={service.name}
-        showAllHref={serviceFilteredPath(ROUTES.changes, service.id)}
+        showAllHref={serviceFilteredPath(ROUTES.changes, service.id, true)}
       />
       <ImpactSection
         title={t('detail.sections.problems')}
         total={problems.total}
         rows={problems.items.map((x) => recordRow(x, problemPath, <ProblemStatusBadge status={x.status as ProblemStatus} />))}
         serviceName={service.name}
-        showAllHref={serviceFilteredPath(ROUTES.problems, service.id)}
+        showAllHref={serviceFilteredPath(ROUTES.problems, service.id, true)}
       />
     </VStack>
   );

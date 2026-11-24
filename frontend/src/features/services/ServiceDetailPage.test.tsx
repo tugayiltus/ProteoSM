@@ -34,12 +34,10 @@ describe('ServiceDetailPage', () => {
     renderRoute(DETAIL_PATH);
 
     await screen.findByRole('heading', { name: 'Açık kayıtlar' });
-    expect(section('Açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/workspace/queue?queue=all&serviceId=${SERVICE.id}`);
-    expect(section('Açık problemler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/problems?serviceId=${SERVICE.id}`);
+    expect(section('Açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/workspace/queue?queue=all&serviceId=${SERVICE.id}&open=true`);
+    expect(section('Açık problemler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/problems?serviceId=${SERVICE.id}&open=true`);
     expect(section('Değişiklikler').queryByRole('link', { name: 'Tümünü göster' })).not.toBeInTheDocument();
-    // The asset list has no service filter: the section says how many it shows instead.
-    expect(section('Varlıklar').queryByRole('link', { name: 'Tümünü göster' })).not.toBeInTheDocument();
-    expect(section('Varlıklar').getByText('30 varlıktan ilk 1 tanesi gösteriliyor.')).toBeInTheDocument();
+    expect(section('Varlıklar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/assets?serviceId=${SERVICE.id}`);
   });
 
   it('links the change list when changes hold more than they list', async () => {
@@ -47,7 +45,7 @@ describe('ServiceDetailPage', () => {
     renderRoute(DETAIL_PATH);
 
     await screen.findByRole('heading', { name: 'Değişiklikler' });
-    expect(section('Değişiklikler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/changes?serviceId=${SERVICE.id}`);
+    expect(section('Değişiklikler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/changes?serviceId=${SERVICE.id}&open=true`);
   });
 
   it('shows a row the viewer cannot open without a link', async () => {

@@ -43,7 +43,7 @@ internal static partial class TicketEndpoints
         TypedResults.Created($"{ApiRoutes.V1}{ApiRoutes.Tickets}/{detail.Number}", detail);
 
     private static async Task<Ok<PagedResult<TicketListItem>>> ListAsync(
-        string? queue, string? status, string? kind, string? priority, string? search, int? page, int? pageSize, Guid? serviceId,
+        string? queue, string? status, string? kind, string? priority, string? search, int? page, int? pageSize, Guid? serviceId, bool? open,
         ListTicketsHandler handler, CancellationToken cancellationToken)
     {
         var query = new ListTicketsQuery(
@@ -54,7 +54,8 @@ internal static partial class TicketEndpoints
             search,
             page ?? PageRequest.FirstPage,
             pageSize ?? PageRequest.DefaultPageSize,
-            serviceId);
+            serviceId,
+            open ?? false);
         return TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
     }
 }
