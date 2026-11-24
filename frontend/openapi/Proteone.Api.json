@@ -13379,7 +13379,8 @@
           "phase",
           "teamId",
           "teamName",
-          "assigneeName"
+          "assigneeName",
+          "canOpen"
         ],
         "type": "object",
         "properties": {
@@ -13411,6 +13412,9 @@
               "null",
               "string"
             ]
+          },
+          "canOpen": {
+            "type": "boolean"
           }
         }
       },

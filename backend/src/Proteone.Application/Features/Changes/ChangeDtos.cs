@@ -8,8 +8,9 @@ namespace Proteone.Application.Features.Changes;
 
 public sealed record ChangeAssetItem(Guid Id, string AssetTag, AssetType Type, string Brand, string Model, AssetStatus Status);
 
+/// <summary><paramref name="CanOpen"/>: the viewer may open the task page (<see cref="Tasks.TaskScope"/>); the row itself is part of the change.</summary>
 public sealed record ChangeTaskRow(
-    Guid Id, string Number, string Title, WorkTaskStatus Status, ChangePhase Phase, Guid TeamId, string TeamName, string? AssigneeName);
+    Guid Id, string Number, string Title, WorkTaskStatus Status, ChangePhase Phase, Guid TeamId, string TeamName, string? AssigneeName, bool CanOpen);
 
 /// <summary>The tasks of one phase; every phase is present, possibly empty.</summary>
 public sealed record ChangePhaseGroup(ChangePhase Phase, IReadOnlyList<ChangeTaskRow> Tasks);

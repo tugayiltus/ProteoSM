@@ -58,12 +58,14 @@ internal static class ChangeQueries
             where l.ChangeId == changeId
             orderby a.AssetTag
             select new ChangeAssetItem(a.Id, a.AssetTag, a.Type, a.Brand, a.Model, a.Status)).ToListAsync(cancellationToken);
+        var (isAdmin, teamIds, viewerId) = (viewer.IsAdmin, viewer.TeamIds, viewer.UserId);
         var tasks = await db.WorkTasks.AsNoTracking().Where(t => t.ChangeId == changeId)
             .OrderBy(t => t.Number)
             .Select(t => new ChangeTaskRow(
                 t.Id, t.Number, t.Title, t.Status, t.Phase!.Value, t.TeamId,
                 db.Teams.Where(x => x.Id == t.TeamId).Select(x => x.Name).First(),
-                db.Users.Where(u => u.Id == t.AssigneeId).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefault()))
+                db.Users.Where(u => u.Id == t.AssigneeId).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefault(),
+                isAdmin || teamIds.Contains(t.TeamId) || t.AssigneeId == viewerId || t.CreatedById == viewerId))
             .ToListAsync(cancellationToken);
         var groups = Enum.GetValues<ChangePhase>().Select(p => new ChangePhaseGroup(p, [.. tasks.Where(t => t.Phase == p)])).ToList();
         var hasEligibleApprover = await ChangeApprovalFlow.HasEligibleApproverAsync(db, change, cancellationToken);

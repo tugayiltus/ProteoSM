@@ -51,6 +51,7 @@ export function GlobalSearch() {
   const { role } = useSession();
   const isPhone = useIsPhone();
   const [isOpen, setIsOpen] = useState(false);
+  const [isTooShort, setIsTooShort] = useState(false);
   const latest = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const release = useRef<(() => void) | undefined>(undefined);
@@ -92,6 +93,7 @@ export function GlobalSearch() {
         cancel();
         const mine = latest.current;
         const query = raw.trim();
+        setIsTooShort(query.length < SEARCH_MIN_LENGTH);
         if (query.length < SEARCH_MIN_LENGTH || query.length > SEARCH_MAX_LENGTH) {
           return [];
         }
@@ -154,7 +156,7 @@ export function GlobalSearch() {
             go(path);
           }
         }}
-        emptySearchText={t('empty')}
+        emptySearchText={isTooShort ? t('hint') : t('empty')}
         emptyBootstrapText={<Text>{t('hint')}</Text>}
         renderItem={(item) =>
           item.isInactive === true ? (

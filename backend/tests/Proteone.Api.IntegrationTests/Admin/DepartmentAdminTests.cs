@@ -105,6 +105,18 @@ public sealed class DepartmentAdminTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Saving_the_same_values_writes_no_audit_row()
+    {
+        var admin = await AdminAsync();
+        var created = await CreateAsync(admin, "Hukuk");
+        using var same = await admin.PutAsync($"{DepartmentsPath}/{created.GetProperty("id").GetGuid()}", new { version = created.GetProperty("version").GetUInt32(), name = "Hukuk" });
+
+        Assert.Equal(HttpStatusCode.OK, same.StatusCode);
+        await using var db = factory.Database.CreateDbContext();
+        Assert.False(await db.AuditEvents.AnyAsync(a => a.Action == AuditActions.DepartmentUpdated, Ct));
+    }
+
+    [Fact]
     public async Task Deactivate_and_reactivate_are_audited()
     {
         var admin = await AdminAsync();

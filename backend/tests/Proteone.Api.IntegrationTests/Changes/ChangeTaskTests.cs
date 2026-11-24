@@ -318,4 +318,21 @@ public sealed class ChangeTaskTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.Equal("changes.invalid_transition", await ApiClient.ReadCodeAsync(response));
     }
+
+    [Fact]
+    public async Task A_task_row_says_whether_the_viewer_may_open_the_task()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var change = await ChangeWorld.CreateAsync(world.Admin, world);
+        await ChangeWorld.AddTaskAsync(factory, change, ChangePhase.Preparation, world.FieldTeam.Id);
+
+        var desk = await TicketWorld.ReadAsync(world.Desk, ChangeWorld.PathOf(change));
+        var admin = await TicketWorld.ReadAsync(world.Admin, ChangeWorld.PathOf(change));
+
+        Assert.False(CanOpenFirstTask(desk));
+        Assert.True(CanOpenFirstTask(admin));
+    }
+
+    private static bool CanOpenFirstTask(System.Text.Json.JsonElement change) =>
+        change.GetProperty("detail").GetProperty("tasksByPhase").EnumerateArray().SelectMany(g => g.GetProperty("tasks").EnumerateArray()).Single().GetProperty("canOpen").GetBoolean();
 }

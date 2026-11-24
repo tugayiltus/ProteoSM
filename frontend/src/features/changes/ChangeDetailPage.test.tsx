@@ -37,6 +37,15 @@ describe('ChangeDetailPage', () => {
     expect(within(history).getByText('Pencere uygun değil')).toBeInTheDocument();
   });
 
+  it('shows a task the viewer cannot open without a link', async () => {
+    const closedTask = { ...CHANGE, tasksByPhase: CHANGE.tasksByPhase.map((group) => ({ ...group, tasks: group.tasks.map((task) => ({ ...task, canOpen: false })) })) };
+    mockApi(changeRoutes(closedTask) as never);
+    renderRoute(`/changes/${CHANGE.number}`);
+
+    expect(await screen.findByText(/TSK-2026-000001/)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /TSK-2026-000001/ })).not.toBeInTheDocument();
+  });
+
   it('warns about window conflicts and links the visible ones', async () => {
     const conflicts = [
       { number: 'CHG-2026-000009', title: 'Ağ bakımı', windowStart: '2026-12-01T22:00:00Z', windowEnd: '2026-12-02T01:00:00Z', reason: 'asset' as const },

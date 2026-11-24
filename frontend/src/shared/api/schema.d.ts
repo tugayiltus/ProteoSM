@@ -11784,6 +11784,7 @@ export interface components {
             teamId: string;
             teamName: string;
             assigneeName: null | string;
+            canOpen: boolean;
         };
         /** @enum {unknown} */
         ChangeTicketLinkKind: "prompted" | "caused";

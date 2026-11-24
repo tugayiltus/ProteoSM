@@ -59,6 +59,8 @@ describe('GlobalSearch', () => {
     await user.type(input, 'y');
     await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
     expect(searchCalls(api)).toHaveLength(0);
+    expect(screen.getAllByText('Kayıt numarası, demirbaş etiketi veya kelime yazın')).not.toHaveLength(0);
+    expect(screen.queryByText('Sonuç bulunamadı')).not.toBeInTheDocument();
     await user.type(input, 'az');
     expect(searchCalls(api)).toHaveLength(0);
     await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));

@@ -61,9 +61,13 @@ export function ChangeTasks({ change }: { change: ChangeDetail }) {
                   <ListItem
                     key={task.id}
                     label={
-                      <StateLink href={taskPath(task.number)} state={linkState(location)}>
-                        {`${task.number}${META_SEPARATOR}${task.title}`}
-                      </StateLink>
+                      task.canOpen ? (
+                        <StateLink href={taskPath(task.number)} state={linkState(location)}>
+                          {`${task.number}${META_SEPARATOR}${task.title}`}
+                        </StateLink>
+                      ) : (
+                        `${task.number}${META_SEPARATOR}${task.title}`
+                      )
                     }
                     description={`${task.teamName}${META_SEPARATOR}${task.assigneeName ?? tc('none')}`}
                     endContent={<TaskStatusBadge status={task.status} />}

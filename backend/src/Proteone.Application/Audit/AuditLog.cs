@@ -12,6 +12,8 @@ internal sealed class AuditLog(IAppDbContext db, ICurrentActor actor, TimeProvid
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    private const string UpdatedSuffix = ".updated";
+
     public void Record(
         string action,
         string entityType,
@@ -21,6 +23,13 @@ internal sealed class AuditLog(IAppDbContext db, ICurrentActor actor, TimeProvid
         string? reason = null,
         Guid? actorUserId = null)
     {
+        var (before, after) = (Serialize(oldValues), Serialize(newValues));
+        if (action.EndsWith(UpdatedSuffix, StringComparison.Ordinal) && before is not null && before == after && reason is null)
+        {
+            // Saving a form without a change is not an event.
+            return;
+        }
+
         db.AuditEvents.Add(AuditEvent.Create(
             clock.GetUtcNow(),
             actorUserId ?? actor.UserId,
@@ -28,8 +37,8 @@ internal sealed class AuditLog(IAppDbContext db, ICurrentActor actor, TimeProvid
             entityType,
             entityId,
             reason,
-            Serialize(oldValues),
-            Serialize(newValues),
+            before,
+            after,
             actor.CorrelationId));
     }
 

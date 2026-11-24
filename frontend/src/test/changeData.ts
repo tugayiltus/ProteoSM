@@ -38,7 +38,7 @@ export const CHANGE: ChangeDetail = {
   tasksByPhase: [
     {
       phase: 'implementation',
-      tasks: [{ id: 'task-1', number: 'TSK-2026-000001', title: 'Anahtarı güncelle', status: 'open', phase: 'implementation', teamId: 'team-2', teamName: 'Saha Destek', assigneeName: null }],
+      tasks: [{ id: 'task-1', number: 'TSK-2026-000001', title: 'Anahtarı güncelle', status: 'open', phase: 'implementation', teamId: 'team-2', teamName: 'Saha Destek', assigneeName: null, canOpen: true }],
     },
   ],
   approval: null,
