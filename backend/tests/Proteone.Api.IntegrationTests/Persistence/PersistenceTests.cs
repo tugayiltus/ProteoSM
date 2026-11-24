@@ -86,7 +86,23 @@ public sealed class PersistenceTests(PostgresDatabase database) : IAsyncLifetime
         db.Users.Add(user);
         await db.SaveChangesAsync(Ct);
 
-        db.SetExpectedVersion(user, user.Version + 1);
+        Assert.Throws<ConcurrencyException>(() => db.SetExpectedVersion(user, user.Version + 1));
+    }
+
+    [Fact]
+    public async Task A_change_after_the_version_check_still_fails_the_save()
+    {
+        await using var db = database.CreateDbContext();
+        var user = NewUser("raced@example.com");
+        db.Users.Add(user);
+        await db.SaveChangesAsync(Ct);
+        db.SetExpectedVersion(user, user.Version);
+        await using (var other = database.CreateDbContext())
+        {
+            (await other.Users.SingleAsync(u => u.Id == user.Id, Ct)).ChangeRole(UserRole.ItStaff, Now);
+            await other.SaveChangesAsync(Ct);
+        }
+
         user.ChangeRole(UserRole.Admin, Now);
 
         await Assert.ThrowsAsync<ConcurrencyException>(() => db.SaveChangesAsync(Ct));

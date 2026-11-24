@@ -31,6 +31,8 @@ public sealed class AnonymousAccessTests(ApiFactory factory) : IAsyncLifetime
         "POST api/v1/auth/set-password",
         "GET api/v1/health",
         "* api/{**path}",
+        // The two static entry pages (ADR-0038); they hold no data.
+        "GET,HEAD admin/{*path:nonfile}",
         "GET,HEAD {*path:nonfile}",
     ];
 
