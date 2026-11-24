@@ -3,6 +3,7 @@ using System.Text.Json;
 using Proteone.Application.Reports;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Changes;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Tasks;
@@ -51,7 +52,7 @@ public static class ExportHeaders
     public static readonly IReadOnlyList<Type> EnumTypes =
     [
         typeof(TicketKind), typeof(TicketStatus), typeof(Priority), typeof(AssetType), typeof(AssetStatus),
-        typeof(SlaStateFilter), typeof(ReportName), typeof(ReportDrillPart), typeof(ChangeStatus), typeof(ChangeOutcome), typeof(Level), typeof(WorkTaskStatus), typeof(ProblemStatus),
+        typeof(SlaStateFilter), typeof(ReportName), typeof(ReportDrillPart), typeof(ChangeStatus), typeof(ChangeOutcome), typeof(Level), typeof(WorkTaskStatus), typeof(ProblemStatus), typeof(LicenceKind),
     ];
 
     /// <summary>Which enum type a filter key's value belongs to, for the keys whose value is an enum name.</summary>

@@ -40,7 +40,13 @@
     "due_date": "Bitiş tarihi",
     "impact": "Etki",
     "resolved_at": "Çözülme",
-    "service": "Hizmet"
+    "service": "Hizmet",
+    "vendor": "Üretici",
+    "software": "Yazılım",
+    "licence": "Lisans",
+    "used": "Kullanılan",
+    "quantity": "Adet",
+    "expires_on": "Bitiş tarihi"
   },
   "filters": {
     "from": "Başlangıç tarihi",
@@ -97,10 +103,15 @@
     "by_team": "Ekibe göre",
     "known_errors_open": "Açık bilinen hatalar",
     "resolved": "Çözülen problemler",
-    "resolution_time": "Çözüm süresi",
     "by_impact": "Etkiye göre problemler",
     "incidents_per_problem": "Problem başına arıza",
-    "by_service": "Hizmete göre"
+    "by_service": "Hizmete göre",
+    "licences_all": "Tüm lisanslar",
+    "licences_full": "Dolu lisanslar",
+    "licences_ending_30": "30 gün içinde bitenler",
+    "licences_ending_60": "60 gün içinde bitenler",
+    "licences_ending_90": "90 gün içinde bitenler",
+    "licences_expired": "Süresi bitenler"
   },
   "metric_buckets": {
     "by_service": {
@@ -194,7 +205,8 @@
       "warranty": "Garanti",
       "changes": "Değişiklikler",
       "tasks": "Görevler",
-      "problems": "Problemler"
+      "problems": "Problemler",
+      "licences": "Lisanslar"
     },
     "problem_status": {
       "open": "Açık",
@@ -232,6 +244,10 @@
     "report_drill_part": {
       "numerator": "Pay",
       "denominator": "Payda"
+    },
+    "licence_kind": {
+      "per_user": "Kullanıcı başına",
+      "per_device": "Cihaz başına"
     }
   }
 }

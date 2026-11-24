@@ -76,6 +76,7 @@ export const ticketRow = (n: number) => ({
 
 export const ticketDrilldown = (page: number, count: number, totalCount: number): DrilldownResult => ({
   kind: 'tickets',
+  licences: null,
   tickets: { items: Array.from({ length: count }, (_, i) => ticketRow(i + 1 + (page - 1) * 20)), page, pageSize: 20, totalCount },
   assets: null,
   changes: null,
@@ -85,6 +86,7 @@ export const ticketDrilldown = (page: number, count: number, totalCount: number)
 
 export const ASSET_DRILLDOWN: DrilldownResult = {
   kind: 'assets',
+  licences: null,
   tickets: null,
   changes: null,
   tasks: null,
@@ -159,6 +161,7 @@ export const TASK_REPORT = reportResult('tasks', [
 
 export const CHANGE_DRILLDOWN: DrilldownResult = {
   kind: 'changes',
+  licences: null,
   tickets: null,
   assets: null,
   tasks: null,
@@ -175,6 +178,7 @@ export const CHANGE_DRILLDOWN: DrilldownResult = {
 
 export const TASK_DRILLDOWN: DrilldownResult = {
   kind: 'tasks',
+  licences: null,
   tickets: null,
   assets: null,
   changes: null,
@@ -208,6 +212,7 @@ export const PROBLEM_REPORT = reportResult('problems', [
 
 export const PROBLEM_DRILLDOWN: DrilldownResult = {
   kind: 'problems',
+  licences: null,
   tickets: null,
   assets: null,
   changes: null,

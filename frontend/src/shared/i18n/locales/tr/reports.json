@@ -17,7 +17,8 @@
     "warranty": "Garanti",
     "changes": "Değişiklikler",
     "tasks": "Görevler",
-    "problems": "Problemler"
+    "problems": "Problemler",
+    "licences": "Lisanslar"
   },
   "scope": {
     "all": "Kapsam: tüm kayıtlar",
@@ -93,7 +94,13 @@
     "resolved": "Çözülen problemler",
     "by_impact": "Etkiye göre problemler",
     "incidents_per_problem": "Problem başına arıza",
-    "by_service": "Hizmete göre"
+    "by_service": "Hizmete göre",
+    "licences_all": "Tüm lisanslar",
+    "licences_full": "Dolu lisanslar",
+    "licences_ending_30": "30 gün içinde bitenler",
+    "licences_ending_60": "60 gün içinde bitenler",
+    "licences_ending_90": "90 gün içinde bitenler",
+    "licences_expired": "Süresi bitenler"
   },
   "serviceBuckets": {
     "none": "Hizmet yok"

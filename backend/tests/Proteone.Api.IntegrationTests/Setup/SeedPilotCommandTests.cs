@@ -152,6 +152,8 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(Scaled(PilotSeedVolumes.Articles), await db.KnowledgeArticles.CountAsync(Ct));
         Assert.True(await db.Categories.AnyAsync(c => c.Name == PilotSeed.PilotCategoryName && c.Scope == CategoryScope.Incident, Ct));
 
+        Assert.Equal(4, await db.Licences.CountAsync(Ct));
+        Assert.True(await db.LicenceAssignments.CountAsync(a => a.ReleasedAt == null, Ct) > 4);
         var catalogue = await db.Services.AsNoTracking().ToListAsync(Ct);
         Assert.Equal(SeededServices, catalogue.Count);
         var teamIds = await db.Teams.Select(t => t.Id).ToListAsync(Ct);

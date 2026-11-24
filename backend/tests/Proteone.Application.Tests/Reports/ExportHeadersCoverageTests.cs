@@ -57,7 +57,7 @@ public sealed class ExportHeadersCoverageTests
     [Fact]
     public void Every_column_key_has_a_header_and_covers_its_row_record()
     {
-        foreach (var key in ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems))
+        foreach (var key in ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems).Concat(ExportColumns.Licences))
         {
             Assert.False(string.IsNullOrWhiteSpace(ExportHeaders.Column(key)), key);
         }
@@ -67,6 +67,7 @@ public sealed class ExportHeadersCoverageTests
         Assert.Equal(typeof(DrilldownChangeRow).GetProperties().Length, ExportColumns.Changes.Count);
         Assert.Equal(typeof(DrilldownTaskRow).GetProperties().Length, ExportColumns.Tasks.Count);
         Assert.Equal(typeof(DrilldownProblemRow).GetProperties().Length, ExportColumns.Problems.Count);
+        Assert.Equal(typeof(DrilldownLicenceRow).GetProperties().Length - 1, ExportColumns.Licences.Count); // the licence id is not a column
     }
 
     [Fact]
@@ -85,7 +86,7 @@ public sealed class ExportHeadersCoverageTests
     [Fact]
     public void Every_enum_a_row_record_carries_is_translatable()
     {
-        var rowEnums = new[] { typeof(DrilldownTicketRow), typeof(DrilldownAssetRow), typeof(DrilldownChangeRow), typeof(DrilldownTaskRow), typeof(DrilldownProblemRow) }
+        var rowEnums = new[] { typeof(DrilldownTicketRow), typeof(DrilldownAssetRow), typeof(DrilldownChangeRow), typeof(DrilldownTaskRow), typeof(DrilldownProblemRow), typeof(DrilldownLicenceRow) }
             .SelectMany(t => t.GetProperties())
             .Select(p => Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType)
             .Where(t => t.IsEnum)
@@ -114,7 +115,7 @@ public sealed class ExportHeadersCoverageTests
         Assert.Contains($"scope.{GetReportHandler.TeamsScope}", Keys);
 
         var expected = filterKeys.Select(k => $"filters.{k}")
-            .Concat(ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems).Select(c => $"columns.{c}"))
+            .Concat(ExportColumns.Tickets.Concat(ExportColumns.Assets).Concat(ExportColumns.Changes).Concat(ExportColumns.Tasks).Concat(ExportColumns.Problems).Concat(ExportColumns.Licences).Select(c => $"columns.{c}"))
             .Concat(typeof(ExportHeaders.Labels).GetFields(BindingFlags.Public | BindingFlags.Static).Select(f => $"labels.{f.GetRawConstantValue()}"))
             .Concat([$"scope.{GetReportHandler.AllScope}", $"scope.{GetReportHandler.TeamsScope}"])
             .Concat(MetricKeysOfAllReports().Select(k => $"metrics.{k}"))

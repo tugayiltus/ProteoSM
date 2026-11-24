@@ -12,6 +12,7 @@ using Proteone.Application.Reports;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
 using Proteone.Domain.Organization;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Users;
 using Proteone.Infrastructure.Reports;
@@ -139,12 +140,19 @@ public sealed class ExportJobTests(FakeClockApiFactory factory) : IClassFixture<
     [InlineData("changes", "by_risk")]
     [InlineData("tasks", "by_status")]
     [InlineData("problems", "by_impact")]
-    public async Task A_background_export_of_the_change_task_and_problem_reports_is_stored_and_runs(string report, string metric)
+    [InlineData("licences", "licences_all")]
+    public async Task A_background_export_of_the_change_task_problem_and_licence_reports_is_stored_and_runs(string report, string metric)
     {
         var world = await SeedAsync();
         await new ChangeReportFixture(world).ChangeAsync(ChangeEnding.Open, T0);
         await new TaskReportFixture(world).TaskAsync(TaskEnding.Open, T0);
         await new ProblemReportFixture(world).ProblemAsync(ProblemEnding.Open, T0);
+        await TestData.SaveAsync(factory, db =>
+        {
+            var software = Software.Create("Office", "Microsoft", T0);
+            db.Software.Add(software);
+            db.Licences.Add(Licence.Create(software.Id, "Plan", LicenceKind.PerUser, 1, world.DeskTeam.Id, null, null, T0));
+        });
         var admin = await LoginAsync(world.Admin.Email);
 
         var id = await RequestAsync(admin, $"report={report}&metric={metric}&{March}");

@@ -74,6 +74,7 @@ export const REPORT_FILTER_FIELDS: Record<ReportName, readonly ReportFilterKey[]
   changes: ['from', 'to', 'teamId'],
   tasks: ['from', 'to', 'teamId'],
   problems: ['from', 'to', 'teamId'],
+  licences: ['teamId'],
 };
 
 /** Filters shown on first view; the rest of a report's filters sit under "Diğer filtreler". */

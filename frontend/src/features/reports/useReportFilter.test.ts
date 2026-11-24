@@ -46,8 +46,8 @@ describe('drill-down selection', () => {
     expect(figureListHref('incidents', 'open_backlog', { priority: 'p1' }, '8+')).toBe('/reports/incidents/list?metric=open_backlog&bucket=8%2B&priority=p1');
   });
 
-  it('lists the change, task and problem tabs last', () => {
-    expect(REPORT_NAMES.slice(-3)).toEqual(['changes', 'tasks', 'problems']);
+  it('lists the change, task, problem and licence tabs last', () => {
+    expect(REPORT_NAMES.slice(-4)).toEqual(['changes', 'tasks', 'problems', 'licences']);
     expect(isReportName('changes')).toBe(true);
     expect(isReportName('tasks')).toBe(true);
     expect(isReportName('problems')).toBe(true);

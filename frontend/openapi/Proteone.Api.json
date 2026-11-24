@@ -15281,8 +15281,59 @@
           "assets",
           "changes",
           "tasks",
-          "problems"
+          "problems",
+          "licences"
         ]
+      },
+      "DrilldownLicenceRow": {
+        "required": [
+          "id",
+          "vendor",
+          "softwareName",
+          "name",
+          "kind",
+          "ownerTeamName",
+          "used",
+          "quantity",
+          "expiresOn"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "softwareName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/LicenceKind"
+          },
+          "ownerTeamName": {
+            "type": "string"
+          },
+          "used": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expiresOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        }
       },
       "DrilldownProblemRow": {
         "required": [
@@ -15338,7 +15389,8 @@
           "assets",
           "changes",
           "tasks",
-          "problems"
+          "problems",
+          "licences"
         ],
         "type": "object",
         "properties": {
@@ -15392,6 +15444,16 @@
               },
               {
                 "$ref": "#/components/schemas/PagedResultOfDrilldownProblemRow"
+              }
+            ]
+          },
+          "licences": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PagedResultOfDrilldownLicenceRow"
               }
             ]
           }
@@ -16898,6 +16960,35 @@
           }
         }
       },
+      "PagedResultOfDrilldownLicenceRow": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrilldownLicenceRow"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "PagedResultOfDrilldownProblemRow": {
         "required": [
           "items",
@@ -18229,7 +18320,8 @@
           "warranty",
           "changes",
           "tasks",
-          "problems"
+          "problems",
+          "licences"
         ]
       },
       "ReportResult": {

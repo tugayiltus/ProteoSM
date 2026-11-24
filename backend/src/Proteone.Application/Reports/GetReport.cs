@@ -1,4 +1,5 @@
 using Proteone.Application.Common;
+using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Users;
 
@@ -33,6 +34,11 @@ public sealed class GetReportHandler(ReportScope scope, TicketReportSource sourc
             return await TaskReport(query, viewer, cancellationToken);
         }
 
+        if (query.Report == ReportName.Licences)
+        {
+            return await LicenceReport(query, viewer, cancellationToken);
+        }
+
         if (query.Report == ReportName.Problems)
         {
             return await ProblemReport(query, viewer, cancellationToken);
@@ -50,9 +56,9 @@ public sealed class GetReportHandler(ReportScope scope, TicketReportSource sourc
         return new ReportResult(query.Report, effective, ScopeLabelOf(viewer, query.Report), figures);
     }
 
-    /// <summary><see cref="AllScope"/> for admins, <see cref="TeamsScope"/> for IT staff; asset and problem reports always see everything.</summary>
+    /// <summary><see cref="AllScope"/> for admins, <see cref="TeamsScope"/> for IT staff; asset, problem and licence reports always see everything.</summary>
     public static string ScopeLabelOf(ReportViewer viewer, ReportName report) =>
-        viewer.Role == UserRole.Admin || report is ReportName.Assets or ReportName.Warranty or ReportName.Problems ? AllScope : TeamsScope;
+        viewer.Role == UserRole.Admin || report is ReportName.Assets or ReportName.Warranty or ReportName.Problems or ReportName.Licences ? AllScope : TeamsScope;
 
     /// <summary>The change report: each metric dates the changes on its own basis, inside the viewer's team scope.</summary>
     private async Task<ReportResult> ChangeReport(GetReportQuery query, ReportViewer viewer, CancellationToken cancellationToken)
@@ -80,6 +86,19 @@ public sealed class GetReportHandler(ReportScope scope, TicketReportSource sourc
         }
 
         return new ReportResult(query.Report, query.Filter, ScopeLabelOf(viewer, query.Report), figures);
+    }
+
+    /// <summary>The licence report is a snapshot of all licences, for IT staff and admins alike.</summary>
+    private async Task<ReportResult> LicenceReport(GetReportQuery query, ReportViewer viewer, CancellationToken cancellationToken)
+    {
+        var pipeline = ReportPipeline.Licences(scope, db, companyClock, viewer, query.Filter, clock.GetUtcNow());
+        var figures = new List<ReportFigure>();
+        foreach (var metric in ReportCatalog.Get(query.Report).OfType<LicenceReportMetric>())
+        {
+            figures.Add(await metric.ComputeAsync(pipeline.Filtered, pipeline.Context, cancellationToken));
+        }
+
+        return new ReportResult(query.Report, query.Filter, AllScope, figures);
     }
 
     /// <summary>The task report: each metric dates the tasks on its own basis, inside the viewer's team scope.</summary>

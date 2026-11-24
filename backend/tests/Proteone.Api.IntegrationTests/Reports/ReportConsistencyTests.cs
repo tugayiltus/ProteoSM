@@ -6,6 +6,7 @@ using Proteone.Application.Reports;
 using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Common;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Sla;
 using Proteone.Domain.Tickets;
@@ -104,10 +105,25 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         await problems.ProblemAsync(ProblemEnding.Resolved, T0.AddDays(3), Level.High, TimeSpan.FromHours(4), linkedIncidents: 6);
         await problems.ProblemAsync(ProblemEnding.Cancelled, T0.AddDays(4), Level.Low);
         await problems.ProblemAsync(ProblemEnding.KnownError, T0.AddDays(5), Level.Medium, teamId: world.FieldTeam.Id);
+        await using (var db = world.Db())
+        {
+            var software = Software.Create("Office", "Microsoft", T0);
+            var today = DateOnly.FromDateTime(Now.UtcDateTime);
+            var full = Licence.Create(software.Id, "Dolu", LicenceKind.PerUser, 1, world.DeskTeam.Id, today.AddDays(20), null, T0);
+            db.Software.Add(software);
+            db.Licences.AddRange(
+                full,
+                Licence.Create(software.Id, "Elli", LicenceKind.PerDevice, 5, world.FieldTeam.Id, today.AddDays(50), null, T0),
+                Licence.Create(software.Id, "Biten", LicenceKind.PerDevice, 5, world.DeskTeam.Id, today.AddDays(-3), null, T0),
+                Licence.Create(software.Id, "Süresiz", LicenceKind.PerUser, 5, world.DeskTeam.Id, null, null, T0));
+            db.LicenceAssignments.Add(full.AssignTo(world.Desk, 0, today, world.Desk.Id, T0));
+            await db.SaveChangesAsync(Ct);
+        }
+
         return (fx, assets);
     }
 
-    private static long TotalOf(DrilldownResult result) => (result.Tickets?.TotalCount ?? result.Assets?.TotalCount ?? result.Changes?.TotalCount ?? result.Tasks?.TotalCount ?? result.Problems?.TotalCount)!.Value;
+    private static long TotalOf(DrilldownResult result) => (result.Tickets?.TotalCount ?? result.Assets?.TotalCount ?? result.Changes?.TotalCount ?? result.Tasks?.TotalCount ?? result.Problems?.TotalCount ?? result.Licences?.TotalCount)!.Value;
 
     [Fact]
     public async Task Every_figure_equals_its_drilldown_total_for_admin_and_it_staff()

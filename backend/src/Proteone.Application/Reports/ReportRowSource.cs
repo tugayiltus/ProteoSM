@@ -2,9 +2,11 @@ using FluentValidation;
 using FluentValidation.Results;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
+using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Common;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Tasks;
@@ -19,6 +21,7 @@ public enum DrilldownKind
     Changes,
     Tasks,
     Problems,
+    Licences,
 }
 
 public sealed record DrilldownTicketRow(
@@ -38,10 +41,16 @@ public sealed record DrilldownTaskRow(
 public sealed record DrilldownProblemRow(
     string Number, string Title, ProblemStatus Status, Level Impact, string OwnerTeamName, DateTimeOffset CreatedAt, DateTimeOffset? ResolvedAt, string? ServiceName);
 
+public sealed record DrilldownLicenceRow(
+    Guid Id, string Vendor, string SoftwareName, string Name, LicenceKind Kind, string OwnerTeamName, int Used, int Quantity, DateOnly? ExpiresOn);
+
 /// <summary>The ordered rows behind one figure: exactly one list is set, the one matching <see cref="Kind"/>.</summary>
 public sealed record DrilldownRows(
     DrilldownKind Kind, IQueryable<DrilldownTicketRow>? Tickets, IQueryable<DrilldownAssetRow>? Assets,
-    IQueryable<DrilldownChangeRow>? Changes, IQueryable<DrilldownTaskRow>? Tasks, IQueryable<DrilldownProblemRow>? Problems);
+    IQueryable<DrilldownChangeRow>? Changes, IQueryable<DrilldownTaskRow>? Tasks, IQueryable<DrilldownProblemRow>? Problems)
+{
+    public IQueryable<DrilldownLicenceRow>? Licences { get; init; }
+}
 
 /// <summary>
 /// The rows behind a report figure, ordered so any page of them is stable. The drill-down endpoint pages this query; the Excel
@@ -77,6 +86,11 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
         if (metric is TaskReportMetric taskMetric)
         {
             return OpenTasks(viewer, taskMetric, bucket, part, filter, now);
+        }
+
+        if (metric is LicenceReportMetric licenceMetric)
+        {
+            return OpenLicences(viewer, licenceMetric, bucket, part, filter, now);
         }
 
         if (metric is ProblemReportMetric problemMetric)
@@ -189,6 +203,30 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
                 db.Users.Where(u => u.Id == t.AssigneeId).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefault(),
                 t.DueDate, t.CreatedAt, t.ClosedAt)),
             null);
+    }
+
+    private DrilldownRows OpenLicences(ReportViewer viewer, LicenceReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now)
+    {
+        if (part == ReportDrillPart.Denominator)
+        {
+            throw Invalid(PartField);
+        }
+
+        if (bucket is not null)
+        {
+            throw Invalid(BucketField);
+        }
+
+        var pipeline = ReportPipeline.Licences(scope, db, companyClock, viewer, filter, now);
+        var rows =
+            from licence in metric.Rows(pipeline.Filtered, pipeline.Context)
+            join software in db.Software on licence.SoftwareId equals software.Id
+            orderby software.SearchText, licence.SearchText, licence.Id
+            select new DrilldownLicenceRow(
+                licence.Id, software.Vendor, software.Name, licence.Name, licence.Kind,
+                db.Teams.Where(t => t.Id == licence.OwnerTeamId).Select(t => t.Name).First(),
+                db.LicenceAssignments.Count(a => a.LicenceId == licence.Id && a.ReleasedAt == null), licence.Quantity, licence.ExpiresOn);
+        return new DrilldownRows(DrilldownKind.Licences, null, null, null, null, null) { Licences = rows };
     }
 
     private DrilldownRows OpenProblems(ReportViewer viewer, ProblemReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now)

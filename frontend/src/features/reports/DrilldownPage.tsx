@@ -21,7 +21,7 @@ import { readPageParam } from '../../shared/lib/pageParam';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
-import { assetPath, changePath, problemPath, reportPath, taskPath, ticketPath } from '../../shared/routes';
+import { assetPath, changePath, licencePath, problemPath, reportPath, taskPath, ticketPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 
 import {
@@ -35,6 +35,7 @@ import {
   type DrillSelection,
   type DrilldownAssetRow,
   type DrilldownChangeRow,
+  type DrilldownLicenceRow,
   type DrilldownProblemRow,
   type DrilldownTaskRow,
   type DrilldownTicketRow,
@@ -166,6 +167,37 @@ function useProblemColumns(): DataColumn<DrilldownProblemRow>[] {
   ];
 }
 
+const licenceEnd = (row: DrilldownLicenceRow) => (row.expiresOn === null ? translateOr('licences:noEnd', '') : formatDate(row.expiresOn));
+const licenceKind = (row: DrilldownLicenceRow) => translateOr(`licences:kinds.${row.kind}`, row.kind);
+const licenceSeats = (row: DrilldownLicenceRow) => `${row.used} / ${row.quantity}`;
+
+function useLicenceColumns(): DataColumn<DrilldownLicenceRow>[] {
+  const { t } = useTranslation('licences');
+  return [
+    { key: 'software', header: t('columns.software'), renderCell: (row) => `${row.vendor} ${row.softwareName}` },
+    { key: 'name', header: t('columns.name'), renderCell: (row) => <LicenceLink row={row} /> },
+    { key: 'kind', header: t('columns.kind'), renderCell: licenceKind },
+    { key: 'seats', header: t('columns.seats'), renderCell: licenceSeats },
+    { key: 'team', header: t('columns.team'), renderCell: (row) => row.ownerTeamName },
+    { key: 'end', header: t('columns.end'), renderCell: licenceEnd },
+  ];
+}
+
+function LicenceLink({ row }: { row: DrilldownLicenceRow }) {
+  return <Link href={licencePath(row.id)}>{row.name}</Link>;
+}
+
+function LicenceCard({ row }: { row: DrilldownLicenceRow }) {
+  return (
+    <VStack gap={0.5}>
+      <LicenceLink row={row} />
+      <Text wordBreak="break-word">{`${row.vendor} ${row.softwareName}`}</Text>
+      <Text type="supporting">{[licenceKind(row), licenceSeats(row), row.ownerTeamName].join(META_SEPARATOR)}</Text>
+      <Text type="supporting">{licenceEnd(row)}</Text>
+    </VStack>
+  );
+}
+
 const problemStatus = (row: DrilldownProblemRow) => translateOr(`problems:statuses.${row.status}`, row.status);
 const problemImpact = (row: DrilldownProblemRow) => translateOr(`problems:levels.${row.impact}`, row.impact);
 
@@ -238,9 +270,10 @@ function DrilldownRows({ report, selection, filter, page, onPageChange }: RowsPr
   const changeColumns = useChangeColumns();
   const taskColumns = useTaskColumns();
   const problemColumns = useProblemColumns();
+  const licenceColumns = useLicenceColumns();
   const rows = useDrilldown(report, selection, filter, page);
 
-  const paged = rows.data?.tickets ?? rows.data?.assets ?? rows.data?.changes ?? rows.data?.tasks ?? rows.data?.problems ?? null;
+  const paged = rows.data?.tickets ?? rows.data?.assets ?? rows.data?.changes ?? rows.data?.tasks ?? rows.data?.problems ?? rows.data?.licences ?? null;
   return (
     <VStack gap={3}>
       <Card padding={0}>
@@ -264,6 +297,9 @@ function DrilldownRows({ report, selection, filter, page, onPageChange }: RowsPr
             renderCard={(row) => <ProblemCard row={row} />}
             caption={t('drilldown.caption')}
           />
+        )}
+        {rows.data?.licences != null && rows.data.licences.totalCount > 0 && (
+          <DataList items={rows.data.licences.items} columns={licenceColumns} getKey={(row) => row.id} renderCard={(row) => <LicenceCard row={row} />} caption={t('drilldown.caption')} />
         )}
         {rows.data?.tickets == null && rows.data?.assets != null && rows.data.assets.totalCount > 0 && (
           <DataList items={rows.data.assets.items} columns={assetColumns} getKey={(row) => row.id} renderCard={(row) => <AssetCard row={row} />} caption={t('drilldown.caption')} />

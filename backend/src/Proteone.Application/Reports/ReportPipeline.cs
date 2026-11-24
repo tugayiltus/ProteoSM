@@ -1,7 +1,9 @@
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
+using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Changes;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Reports;
 using Proteone.Domain.Tasks;
@@ -20,6 +22,9 @@ public sealed record ChangePipeline(IQueryable<ChangeRequest> Filtered, ReportCo
 
 /// <summary>The scoped, filtered problems of one problem metric with the context it computes in.</summary>
 public sealed record ProblemPipeline(IQueryable<Problem> Filtered, ReportContext Context);
+
+/// <summary>The scoped, filtered licences of the licence report with the context it computes in.</summary>
+public sealed record LicencePipeline(IQueryable<Licence> Filtered, LicenceReportContext Context);
 
 /// <summary>The scoped, filtered tasks of one task metric with the context it computes in.</summary>
 public sealed record TaskPipeline(IQueryable<WorkTask> Filtered, TaskReportContext Context);
@@ -58,6 +63,14 @@ public static class ReportPipeline
     {
         var window = filter.Window(companyClock.Zone);
         return new ProblemPipeline(ProblemReportSource.Apply(scope.ProblemsFor(viewer), filter, basis, window), new ReportContext(db, now, window));
+    }
+
+    /// <summary>Only the owner team narrows the licence report; it has no period.</summary>
+    public static LicencePipeline Licences(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now)
+    {
+        var licences = scope.LicencesFor(viewer);
+        return new LicencePipeline(
+            filter.TeamId is { } teamId ? licences.Where(l => l.OwnerTeamId == teamId) : licences, new LicenceReportContext(db, companyClock.DateOf(now)));
     }
 
     public static AssetPipeline Assets(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now) =>

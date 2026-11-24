@@ -31,7 +31,7 @@ describe('ReportsPage', () => {
     expect(await screen.findByRole('link', { name: 'Açılan kayıt' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/reports/incidents');
     const tabs = screen.getByRole('navigation', { name: 'Rapor türleri' });
-    const names = ['Olaylar', 'Talepler', 'Operasyon', 'Transferler', 'Envanter', 'Garanti', 'Değişiklikler', 'Görevler', 'Problemler'];
+    const names = ['Olaylar', 'Talepler', 'Operasyon', 'Transferler', 'Envanter', 'Garanti', 'Değişiklikler', 'Görevler', 'Problemler', 'Lisanslar'];
     expect(within(tabs).getAllByRole('link')).toHaveLength(names.length);
     for (const name of names) {
       expect(within(tabs).getByRole('link', { name })).toBeInTheDocument();

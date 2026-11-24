@@ -132,6 +132,22 @@ describe('DrilldownPage', () => {
     expect(within(table).getByText('Yüksek')).toBeInTheDocument();
   });
 
+  it('lists licences with their use and links them', async () => {
+    const licence = { id: 'lic-1', vendor: 'Microsoft', softwareName: 'Office', name: 'Yıllık plan', kind: 'per_user', ownerTeamName: 'Servis Masası', used: 2, quantity: 5, expiresOn: null };
+    const body = { kind: 'licences', tickets: null, assets: null, changes: null, tasks: null, problems: null, licences: { items: [licence], page: 1, pageSize: 20, totalCount: 1 } };
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/reports/licences': { status: 200, body: reportResult('licences', []) },
+      'GET /api/v1/reports/licences/drilldown': { status: 200, body },
+    });
+    renderRoute('/reports/licences/list?metric=licences_all');
+
+    expect((await screen.findAllByRole('link', { name: 'Yıllık plan' }))[0]).toHaveAttribute('href', '/licences/lic-1');
+    const table = screen.getByRole('table');
+    expect(within(table).getByText('2 / 5')).toBeInTheDocument();
+    expect(within(table).getByText('Süresiz')).toBeInTheDocument();
+  });
+
   it('shows an empty list', async () => {
     mockApi({
       'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },

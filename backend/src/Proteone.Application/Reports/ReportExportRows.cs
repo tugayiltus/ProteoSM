@@ -32,6 +32,16 @@ public static class ExportColumns
     public const string ResolvedAt = "resolved_at";
     public const string Service = "service";
 
+    public const string Vendor = "vendor";
+    public const string Software = "software";
+    public const string Licence = "licence";
+    public const string Used = "used";
+    public const string Quantity = "quantity";
+    public const string ExpiresOn = "expires_on";
+
+    public static readonly IReadOnlyList<string> Licences =
+        [Vendor, Software, Licence, Type, Team, Used, Quantity, ExpiresOn];
+
     public static readonly IReadOnlyList<string> Tickets =
         [Number, Kind, Subject, Status, Priority, Team, Assignee, CreatedAt, CompletedAt, Service];
 
@@ -58,6 +68,7 @@ public static class ReportExportRows
         DrilldownKind.Changes => ExportColumns.Changes,
         DrilldownKind.Tasks => ExportColumns.Tasks,
         DrilldownKind.Problems => ExportColumns.Problems,
+        DrilldownKind.Licences => ExportColumns.Licences,
         _ => ExportColumns.Tickets,
     };
 
@@ -78,6 +89,7 @@ public static class ReportExportRows
         DrilldownKind.Assets => rows.Assets!.CountAsync(cancellationToken),
         DrilldownKind.Changes => rows.Changes!.CountAsync(cancellationToken),
         DrilldownKind.Tasks => rows.Tasks!.CountAsync(cancellationToken),
+        DrilldownKind.Licences => rows.Licences!.CountAsync(cancellationToken),
         DrilldownKind.Problems => rows.Problems!.CountAsync(cancellationToken),
         _ => rows.Tickets!.CountAsync(cancellationToken),
     };
@@ -109,6 +121,16 @@ public static class ReportExportRows
             await foreach (var k in rows.Tasks!.AsAsyncEnumerable())
             {
                 yield return [k.Number, k.Title, k.Status, k.Priority, k.TeamName, k.AssigneeName, k.DueDate, k.CreatedAt, k.ClosedAt];
+            }
+
+            yield break;
+        }
+
+        if (rows.Kind == DrilldownKind.Licences)
+        {
+            await foreach (var l in rows.Licences!.AsAsyncEnumerable())
+            {
+                yield return [l.Vendor, l.SoftwareName, l.Name, l.Kind, l.OwnerTeamName, l.Used, l.Quantity, l.ExpiresOn];
             }
 
             yield break;

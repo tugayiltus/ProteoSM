@@ -3,6 +3,7 @@ using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Changes;
+using Proteone.Domain.Licences;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Tasks;
 using Proteone.Domain.Tickets;
@@ -73,6 +74,10 @@ public sealed class ReportScope(IAppDbContext db, ICurrentActor actor)
             _ => throw new ForbiddenException(),
         };
     }
+
+    /// <summary>Licences are visible to every active IT staff member and admin; employees are forbidden.</summary>
+    public IQueryable<Licence> LicencesFor(ReportViewer viewer) =>
+        viewer.Role == UserRole.Employee ? throw new ForbiddenException() : db.Licences;
 
     /// <summary>Problems are visible to every active IT staff member and admin, whatever their team; employees are forbidden.</summary>
     public IQueryable<Problem> ProblemsFor(ReportViewer viewer) =>

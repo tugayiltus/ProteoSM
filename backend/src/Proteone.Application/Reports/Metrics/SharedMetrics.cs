@@ -24,6 +24,7 @@ public static class MetricKeys
     public const string UnitChanges = "changes";
     public const string UnitTasks = "tasks";
     public const string UnitProblems = "problems";
+    public const string UnitLicences = "licences";
     public const string UnitSeconds = "seconds";
 }
 
