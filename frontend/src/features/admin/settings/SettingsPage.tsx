@@ -65,7 +65,7 @@ export function SettingsPage() {
       <SectionCard title={t('settings.periodsTitle')}>
         {settings.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {settings.isError && <ErrorState error={settings.error} onRetry={() => void settings.refetch()} />}
-        {settings.data && <SettingsForm key={settings.data.version} settings={settings.data} />}
+        {settings.data && <SettingsForm settings={settings.data} />}
       </SectionCard>
     </VStack>
   );

@@ -7,22 +7,25 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, unwrap } from '../../../shared/api/client';
 import type { components } from '../../../shared/api/schema';
-import { useReloadOnConflict } from '../../../shared/api/useReloadOnConflict';
 
 export type SystemSettings = components['schemas']['SystemSettingsDto'];
 
 const settingsKey = ['admin', 'settings'] as const;
 
+/** Only a conflict reloads the open form's version (query client); any other refetch would skip the conflict check. */
 export function useSystemSettings() {
-  return useQuery({ queryKey: settingsKey, queryFn: () => unwrap(api.GET('/api/v1/admin/system-settings')) });
+  return useQuery({
+    queryKey: settingsKey,
+    queryFn: () => unwrap(api.GET('/api/v1/admin/system-settings')),
+    gcTime: 0,
+    refetchOnReconnect: false,
+  });
 }
 
 export function useUpdateSystemSettings() {
   const queryClient = useQueryClient();
-  const reload = useReloadOnConflict(settingsKey);
   return useMutation({
     mutationFn: (body: SystemSettings) => unwrap(api.PUT('/api/v1/admin/system-settings', { body })),
     onSuccess: (saved) => queryClient.setQueryData(settingsKey, saved),
-    onError: reload,
   });
 }

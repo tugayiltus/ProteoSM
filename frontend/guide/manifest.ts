@@ -281,5 +281,7 @@ export const MANIFEST: readonly GuideShot[] = [
   { id: 'admin-email-templates', role: 'admin', path: '/admin/email-templates', views: DESKTOP },
   { id: 'admin-email-deliveries', role: 'admin', path: '/admin/email-deliveries', views: DESKTOP },
   { id: 'admin-monitoring', role: 'admin', path: '/admin/monitoring', views: DESKTOP },
+  { id: 'admin-announcements', role: 'admin', path: '/admin/announcements', views: DESKTOP },
+  { id: 'admin-settings', role: 'admin', path: '/admin/settings', views: DESKTOP },
   { id: 'admin-system', role: 'admin', path: '/admin/system', views: DESKTOP },
 ];

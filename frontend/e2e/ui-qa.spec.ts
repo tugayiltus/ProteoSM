@@ -45,7 +45,7 @@ test('every screen in light and dark mode', async ({ browser }, info) => {
     '/changes', `/changes/${changeNumber}`, `/tasks/${changeTask}`, '/changes/calendar', '/releases', '/licences', '/software', '/software/mine', '/admin/monitoring', '/reports/licences', '/reports', '/reports/incidents', '/reports/changes', '/reports/tasks', '/reports/exports', '/profile', '/change-password',
     '/admin', '/admin/users', '/admin/departments', '/admin/teams', '/admin/locations', '/admin/categories', '/admin/request-types',
     '/admin/brands', '/admin/models', '/admin/sla/policy', '/admin/sla/calendar', '/admin/email-templates', '/admin/email-deliveries',
-    '/admin/audit', '/admin/system', '/nope-404',
+    '/admin/audit', '/admin/system', '/admin/settings', '/admin/announcements', '/admin/login-method', '/admin/services', '/tasks', '/problems', '/services', '/nope-404',
   ];
   const dir = path.join(OUT, info.project.name);
   mkdirSync(dir, { recursive: true });

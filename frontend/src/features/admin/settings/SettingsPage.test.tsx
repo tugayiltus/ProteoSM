@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ADMIN_ME, mockApi } from '../../../test/mockApi';
@@ -33,5 +33,24 @@ describe('SettingsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Kaydet' }));
     expect(await screen.findByText('Geçersiz değer.')).toBeInTheDocument();
     expect(api.calls.some((c) => c.method === 'PUT')).toBe(false);
+  });
+
+  it('keeps the input and the warning after a conflict, and saves over the reloaded version', async () => {
+    let current = SETTINGS;
+    const api = mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, [`PUT ${PATH}`]: { status: 409, body: { code: 'concurrency.conflict' } } });
+    api.set(`GET ${PATH}`, () => ({ status: 200, body: current }));
+    const { user } = renderRoute('/admin/settings');
+    const notice = await screen.findByLabelText(/Lisans bitiş uyarısı/);
+    await user.clear(notice);
+    await user.type(notice, '45');
+    current = { ...SETTINGS, warrantyWindowDays: 60, version: 9 };
+    await user.click(screen.getByRole('button', { name: 'Kaydet' }));
+    await waitFor(() => expect(api.calls.filter((c) => c.method === 'GET' && c.url.includes(PATH)).length).toBeGreaterThan(1));
+    expect(await screen.findByText(/başka biri tarafından değiştirildi/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Lisans bitiş uyarısı/)).toHaveValue('45');
+    await user.click(screen.getByRole('button', { name: 'Kaydet' }));
+    await waitFor(() => expect(api.calls.filter((c) => c.method === 'PUT')).toHaveLength(2));
+    const body: unknown = await api.calls.filter((c) => c.method === 'PUT').at(-1)?.clone().json();
+    expect(body).toMatchObject({ licenceNoticeDays: 45, version: 9 });
   });
 });
