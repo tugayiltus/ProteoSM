@@ -12,7 +12,7 @@ Güncel: 2026-11-25. Geliştirme: `tugayiltus/Proteone`.
 | Hizmet ve lisans | Hizmet kataloğu, hafif CMDB, yazılım ve lisans | 0036, 0039 |
 | İzleme | İmzalı webhook ile arıza açma | 0041 |
 | Rapor | Raporlar, drill-down, Excel | 0020, 0022 |
-| Yönetim | `/admin`, giriş yöntemi, denetim | 0030, 0038 |
+| Yönetim | `/admin`, giriş yöntemi, denetim, genel ayarlar, duyurular | 0030, 0038, 0042 |
 | Dağıtım | Docker Compose, yedek, geri yükleme | 0024, 0025 |
 
 ## Planlanan ve açık işler

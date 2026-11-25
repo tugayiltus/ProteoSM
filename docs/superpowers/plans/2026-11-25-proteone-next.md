@@ -11,12 +11,6 @@ Rules kept: moving a screen never changes a right (ADR-0038). The software list 
 - Sign-in test with a real Entra tenant and a real Active Directory.
 - Host sizing after the pilot.
 
-## Known small gaps
+## Open check
 
-- An unchanged update writes an empty audit row.
-- Task links are 404 for owner-team colleagues (follows `TaskScope`).
-- A too short search shows the empty text.
-- Deactivating a service and choosing it can race.
-- Impact counts differ from the "Tümünü göster" lists.
-- The admin asset dialog stops at 20 assets; the asset list has no service filter.
-- Focus on server field errors, row button context, comment tabs pattern.
+- One E2E run on 2026-11-25 stayed on the login page after a successful sign-in (`frontend/e2e/tasks.spec.ts`, `mobile-360`). Cause unknown; two later full runs and CI passed.
