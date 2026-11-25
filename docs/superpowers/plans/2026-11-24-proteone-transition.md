@@ -104,7 +104,7 @@ The notes come from the phase ledgers. Some may be fixed already: check each aga
 
 ### E. Last step
 
-23. Owner decision (2026-11-24): after all other work the project folder becomes `~/claude/Proteone`. Nothing moves before that. Steps: check for uncommitted work, branches and worktrees; move or clone with the git-ignored files that are still needed (`deploy/.env`, certificates, `tmp/db-backup-20261124`, `.superpowers`); reinstall the dev services from the new path; move the assistant memory to the new project path; compare commit, branches and remotes; run lint and tests there. The old folder is deleted only with a separate approval.
+23. Done on 2026-11-25; the old folder still exists. Owner decision (2026-11-24): after all other work the project folder becomes `~/claude/Proteone`. Nothing moves before that. Steps: check for uncommitted work, branches and worktrees; move or clone with the git-ignored files that are still needed (`deploy/.env`, certificates, `tmp/db-backup-20261124`, `.superpowers`); reinstall the dev services from the new path; move the assistant memory to the new project path; compare commit, branches and remotes; run lint and tests there. The old folder is deleted only with a separate approval.
 
 ## Acceptance
 

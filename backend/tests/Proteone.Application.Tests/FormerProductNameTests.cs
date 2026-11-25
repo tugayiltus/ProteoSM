@@ -11,6 +11,9 @@ public sealed partial class FormerProductNameTests
 
     private static readonly string[] SkippedFolders = ["bin", "obj", "node_modules", "certs"];
 
+    /// <summary>Settings of this machine, not part of the repository (git-ignored).</summary>
+    private const string LocalSettings = "deploy/.env";
+
     private static readonly string[] AllowedFiles =
     [
         // Data Protection name and purposes: stored secrets were protected with them.
@@ -56,6 +59,6 @@ public sealed partial class FormerProductNameTests
         let path = Path.Combine(RepositoryPaths.Root, searched)
         from file in File.Exists(path) ? [path] : Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
         let relative = Path.GetRelativePath(RepositoryPaths.Root, file).Replace(Path.DirectorySeparatorChar, '/')
-        where !relative.Split('/').Any(SkippedFolders.Contains)
+        where relative != LocalSettings && !relative.Split('/').Any(SkippedFolders.Contains)
         select relative;
 }
