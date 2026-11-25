@@ -52,3 +52,7 @@ The product continues under the name Proteone. The former name TGYSM was in name
 ## Amendment 2026-11-25
 
 The owner asked for the Proteone name in all documents. Accepted ADRs, designs and release records now use it; this file, the upgrade instructions and the stored-data literals keep the former name. Finished plans left the working tree and stay in the Git history.
+
+## Amendment 2026-11-25 (upgrade path)
+
+The upgrade path and the fallbacks for TGYSM installations are removed (ADR-0043). The naming decisions and the stored-data literals stay.

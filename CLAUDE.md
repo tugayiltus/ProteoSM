@@ -1,6 +1,6 @@
 # Proteone — ITSM web platform
 
-Single-company ITSM: incident and request management, IT inventory and asset management, SLA, email, knowledge base and reports. UI: Astryx (ADR-0027), user application plus `/admin` (ADR-0038). Goal: ServiceNow-like for small and medium teams, without its complexity. Merges to `master` only with owner approval. Former name TGYSM (ADR-0037). Work queue: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Status: `docs/status.md`. Requirements: `proteone.md`.
+Single-company ITSM: incident and request management, IT inventory and asset management, SLA, email, knowledge base and reports. UI: Astryx (ADR-0027), user application plus `/admin` (ADR-0038). Goal: ServiceNow-like for small and medium teams, without its complexity. Merges to `master` only with owner approval. Work queue: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Status: `docs/status.md`. Requirements: `proteone.md`.
 
 ## Stack & Architecture
 - **Backend:** .NET 11 modular monolith (ADR-0001, runtime ADR-0035) — `backend/src/Proteone.Domain` (rules, no framework deps) → `Proteone.Application` (handlers + FluentValidation, ports) → `Proteone.Infrastructure` (EF Core + Npgsql, migrations) → `Proteone.Api` (Minimal APIs, auth, CLI). `backend/src/Proteone.Worker` (Generic Host, jobs `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner`, `Cleanup`, row leases; references Application + Infrastructure, never Api; ADR-0014/0015) runs next to the API. Solution: `backend/Proteone.slnx`.
@@ -30,7 +30,6 @@ Run through `tools/` scripts.
 - `tools/compose.sh <args>` — `docker compose` with `deploy/compose.yaml` + `deploy/.env`.
 - `tools/gen-self-signed-cert.sh [host]` — test certificate in `deploy/certs/`.
 - `tools/backup.sh`, `tools/restore.sh <archive> [--force]`, `tools/restore-drill.sh` — backup now, restore, drill on throw-away stacks (writes `docs/release/restore-drill.md`).
-- `tools/upgrade-drill.sh <tgysm tag>` — rehearse the move of a TGYSM stack (ADR-0037).
 - `tools/seed-pilot.sh [--fresh|--drop|--compose] [--scale <f>]` — pilot data (local `proteone_pilot*` DB or deployed stack).
 - `tools/perf-measure.sh` (`PERF_PASSWORD`) — perf run, writes `docs/release/performance.md`.
 - `tools/guide-screenshots.sh` (`GUIDE_PASSWORD`), `tools/build-user-guide.sh` — guide screenshots; `combined.md` + A4 `combined.pdf`.

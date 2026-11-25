@@ -17,4 +17,4 @@ Güncel: 2026-11-25. Geliştirme: `tugayiltus/Proteone`.
 
 ## Planlanan ve açık işler
 
-Tek iş listesi: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Gereksinimler: `proteone.md`. TGYSM kurulumundan geçiş: `docs/operations.md` (ADR-0037).
+Tek iş listesi: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Gereksinimler: `proteone.md`.

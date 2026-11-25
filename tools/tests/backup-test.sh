@@ -28,7 +28,7 @@ check_next "scheduler: after 02:30 runs the next night" "2026-10-10 00:00" "2026
 check_next "scheduler: exactly 02:30 runs the next night" "2026-10-09 23:30" "2026-10-10 23:30"
 
 # 2. A run writes one archive with dump, files, keys and manifest; an expired archive goes, a fresh one stays.
-in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteone-20000101-000000.tar.gz; touch $BACKUP_DIR/proteone-29990101-000000.tar.gz; touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/tgysm-20000101-000000.tar.gz"
+in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteone-20000101-000000.tar.gz; touch $BACKUP_DIR/proteone-29990101-000000.tar.gz"
 in_backup "touch -d @\$((\$(date +%s) - $OLD_PARTIAL_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/.partial-20000101-000000.tar"
 if tools/backup.sh >/dev/null; then pass "backup: exit 0"; else fail "backup: exit 0"; fi
 latest="$(in_backup "ls -t $BACKUP_DIR/proteone-2[0-8]*.tar.gz | head -1")"
@@ -51,7 +51,6 @@ archived_files="$(grep -c '^files/.*[^/]$' <<<"$contents" || true)"
 if [[ "$recorded_files" == "$archived_files" ]]; then pass "manifest fileCount matches the archive ($archived_files)"; else fail "manifest fileCount $recorded_files vs $archived_files archived"; fi
 if in_backup "test ! -e $BACKUP_DIR/.partial-20000101-000000.tar"; then pass "retention removed a day-old .partial leftover"; else fail "retention removed a day-old .partial leftover"; fi
 if in_backup "test ! -e $BACKUP_DIR/proteone-20000101-000000.tar.gz"; then pass "retention removed the expired archive"; else fail "retention removed the expired archive"; fi
-if in_backup "test ! -e $BACKUP_DIR/tgysm-20000101-000000.tar.gz"; then pass "retention removed an expired archive from before the rename"; else fail "retention removed an expired archive from before the rename"; fi
 if in_backup "test -e $BACKUP_DIR/proteone-29990101-000000.tar.gz"; then pass "retention kept a recent archive"; else fail "retention kept a recent archive"; fi
 
 # 3. The safety backup tools/restore.sh takes before --force skips retention: an expired archive (perhaps the one being

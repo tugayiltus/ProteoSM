@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Proteone.Application.Tests;
 
-/// <summary>The former product name stays only where stored data, upgrades or applied migrations need it.</summary>
+/// <summary>The former product name stays only where stored data or applied migrations need it.</summary>
 public sealed partial class FormerProductNameTests
 {
     private const string Migrations = "backend/src/Proteone.Infrastructure/Persistence/Migrations/";
@@ -28,30 +28,16 @@ public sealed partial class FormerProductNameTests
         Migrations + "20261124115906_ProteoneBrand.cs",
         Migrations + "20261124135355_ProteoneHistory.cs",
         "backend/tests/Proteone.Api.IntegrationTests/Persistence/ProteoneBrandMigrationTests.cs",
-        // Upgrade of an existing installation and of browser settings.
-        "deploy/backup/backup.sh",
-        "deploy/compose.yaml",
-        "frontend/admin/index.html",
-        "frontend/index.html",
-        "frontend/src/shared/layout/useSidebar.ts",
-        "frontend/src/shared/ui/colorMode.ts",
-        "tools/deploy.sh",
-        "tools/seed-pilot.sh",
-        "tools/tests/backup-test.sh",
-        "tools/upgrade-drill.sh",
         "backend/tests/Proteone.Application.Tests/FormerProductNameTests.cs",
-        // Documents that explain the stored names, the upgrade or the owner's open decisions.
-        "CLAUDE.md",
+        // Documents that explain the stored names.
         "SECURITY.md",
         "capabilities.md",
         "docs/adr/0004-local-identity-cookie-csrf.md",
         "docs/adr/0017-password-set-links.md",
         "docs/adr/0030-login-method-chosen-in-the-admin-panel.md",
         "docs/adr/0037-proteone-name-and-compatibility.md",
+        "docs/adr/0043-no-upgrade-path-from-tgysm.md",
         "docs/adr/README.md",
-        "docs/operations.md",
-        "docs/status.md",
-        "docs/superpowers/plans/2026-11-25-proteone-next.md",
     ];
 
     [GeneratedRegex("tgysm", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]

@@ -46,3 +46,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0040](0040-light-release.md) | Light Release | accepted | 2026-11-24 |
 | [0041](0041-monitoring-webhook.md) | Signed Monitoring Webhook | accepted | 2026-11-25 |
 | [0042](0042-system-settings-and-announcements.md) | General Settings and Announcements in the Admin Area | accepted | 2026-11-25 |
+| [0043](0043-no-upgrade-path-from-tgysm.md) | No Upgrade Path from a TGYSM Installation | accepted | 2026-11-25 |

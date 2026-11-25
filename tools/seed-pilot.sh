@@ -31,8 +31,6 @@ readonly PILOT_ENVIRONMENT="Pilot"
 readonly PILOT_EMAIL_DOMAIN="pilot.example.com"
 readonly ENV_FILE="${PROTEONE_ENV_FILE:-deploy/.env}"
 readonly DEPLOYMENT_KEY="PROTEONE_DEPLOYMENT"
-# Env files from before the rename; read only while the new key is missing.
-readonly LEGACY_DEPLOYMENT_KEY="TGYSM_DEPLOYMENT"
 readonly PILOT_DEPLOYMENT="pilot"
 source tools/lib/env-file.sh
 
@@ -59,7 +57,6 @@ echo "Note: SLA breach notifications for open seeded tickets will go to @$PILOT_
 
 if [[ "$mode" == "compose" ]]; then
   deployment="$(env_value "$ENV_FILE" "$DEPLOYMENT_KEY")"
-  deployment="${deployment:-$(env_value "$ENV_FILE" "$LEGACY_DEPLOYMENT_KEY")}"
   if [[ "$deployment" != "$PILOT_DEPLOYMENT" ]]; then
     echo "Refused: --compose seeds only a pilot host, and $ENV_FILE has ${DEPLOYMENT_KEY}=${deployment:-<unset>}." >&2
     echo "On a pilot host set ${DEPLOYMENT_KEY}=${PILOT_DEPLOYMENT} in $ENV_FILE; never on a production host." >&2

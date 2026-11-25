@@ -10,8 +10,6 @@ export type ResolvedMode = Exclude<ColorMode, 'auto'>;
 
 /** Mirrored in the pre-paint script in `index.html`; a test keeps the two equal. */
 export const COLOR_MODE_STORAGE_KEY = 'proteone-theme';
-/** The key of the former product name; read while the new one is missing, so a user keeps the chosen mode. */
-export const LEGACY_COLOR_MODE_STORAGE_KEY = 'tgysm-theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 const DEFAULT_MODE: ColorMode = 'auto';
 
@@ -19,7 +17,7 @@ const isColorMode = (value: unknown): value is ColorMode => typeof value === 'st
 
 export function readStoredMode(): ColorMode {
   try {
-    const stored = window.localStorage.getItem(COLOR_MODE_STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_COLOR_MODE_STORAGE_KEY);
+    const stored = window.localStorage.getItem(COLOR_MODE_STORAGE_KEY);
     return isColorMode(stored) ? stored : DEFAULT_MODE;
   } catch {
     // Private mode or blocked storage: follow the system.

@@ -126,21 +126,6 @@ Images of earlier builds stay on the host under their Git short hash until remov
 
 The next `tools/deploy.sh` overwrites `deploy/.version` with its own hash, so `tools/compose.sh` and `tools/restore.sh` always use the images that run. Do not set `PROTEONE_VERSION` in `deploy/.env`: `deploy/.version` overrides it.
 
-## Moving a TGYSM installation
-
-The product was named TGYSM until November 2026 (ADR-0037). An installation moves by backup and restore into a new stack; the old volumes stay for a rollback. Rehearsal on throw-away stacks: `tools/upgrade-drill.sh <tgysm image tag>`.
-
-1. On the TGYSM checkout: `tools/backup.sh`, copy the archive out of the `backups` volume (or `BACKUP_HOST_DIR`) and keep a copy off the host. Note the running tag in `deploy/.version`.
-2. Stop it without removing volumes: `tools/compose.sh down`. Never add `-v`.
-3. On the Proteone checkout: create `deploy/.env` from `deploy/.env.example`. Copy your values. New key names: `PROTEONE_SUBNET` and `PROTEONE_DEPLOYMENT` (the `TGYSM_` names still work). Set a new `POSTGRES_PASSWORD` and the sender name in `EMAIL_FROM`. Copy the certificate to `deploy/certs/proteone.crt` and `deploy/certs/proteone.key`.
-4. `tools/docker-build.sh`, then `tools/restore.sh <archive>`. The database becomes `proteone` with the user `proteone`; `migrate` runs after the restore.
-5. `tools/deploy.sh --skip-gates`. It refuses to start empty beside `tgysm_pgdata`; after the restore it runs normally.
-6. Check `/api/v1/health`, sign in, `/admin/system`, and the sign-in method in `/admin`. When the address changes, update the redirect URI in Microsoft Entra ID.
-
-What users notice: they sign in once again. Waiting account links and stored directory secrets keep working. A session ends 24 hours after sign-in (`Security:MaxSessionHours`). The move replaces the old name in email templates, sent emails and audit rows; web addresses, directory paths and text written by users stay.
-
-Rollback: `tools/compose.sh down` on the Proteone checkout, then `tools/compose.sh up -d` on the TGYSM checkout. Everything written after the move is lost. Delete the old volumes only when no rollback is needed any more.
-
 ## Backups
 
 - **What:** one archive `proteone-YYYYMMDD-HHMMSS.tar.gz` (UTC time) per run with `db.dump` (`pg_dump -Fc`), `files/` (file store), `keys/` (Data Protection key ring) and `manifest.json` (app version, newest migration, creation time, SHA-256 of `db.dump`, number of files in the archive, row count of every table). Dump, counts and migration id come from one database snapshot. A file that changes while the file store is archived is tolerated (GNU tar exit 1); `fileCount` is what the archive holds.

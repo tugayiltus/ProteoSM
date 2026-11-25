@@ -15,7 +15,7 @@
       (function () {
         var mode = 'auto';
         try {
-          var stored = localStorage.getItem('proteone-theme') || localStorage.getItem('tgysm-theme');
+          var stored = localStorage.getItem('proteone-theme');
           if (stored === 'light' || stored === 'dark' || stored === 'auto') mode = stored;
         } catch (e) {}
         if (mode === 'auto') mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

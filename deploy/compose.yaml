@@ -8,7 +8,7 @@ x-app-environment: &app-environment
   ConnectionStrings__Default: Host=postgres;Database=proteone;Username=proteone;Password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
   App__PublicBaseUrl: ${PUBLIC_BASE_URL:?set PUBLIC_BASE_URL in deploy/.env}
   App__TimeZone: ${APP_TIME_ZONE:-Europe/Istanbul}
-  Http__KnownProxyNetworks__0: ${PROTEONE_SUBNET:-${TGYSM_SUBNET:-172.28.0.0/24}}
+  Http__KnownProxyNetworks__0: ${PROTEONE_SUBNET:-172.28.0.0/24}
   Email__Mode: ${EMAIL_MODE:-Smtp}
   Email__From: ${EMAIL_FROM:?set EMAIL_FROM in deploy/.env}
   Email__PickupFolder: /data/files/email-pickup
@@ -156,4 +156,4 @@ networks:
   default:
     ipam:
       config:
-        - subnet: ${PROTEONE_SUBNET:-${TGYSM_SUBNET:-172.28.0.0/24}}
+        - subnet: ${PROTEONE_SUBNET:-172.28.0.0/24}
