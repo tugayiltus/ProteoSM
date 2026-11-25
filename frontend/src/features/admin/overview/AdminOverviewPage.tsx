@@ -3,6 +3,8 @@
  * @output The setup checks: departments without an approver, a missing intake team and background job problems.
  * @position `/admin`, the admin landing page.
  */
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Icon } from '@astryxdesign/core/Icon';
 import { Link } from '@astryxdesign/core/Link';
@@ -15,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { LoadingState } from '../../../shared/feedback/States';
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
+import { ActionCard } from '../../../shared/page/ActionCard';
 import { SectionCard } from '../../../shared/page/SectionCard';
 import { ROUTES } from '../../../shared/routes';
 import { Icons } from '../../../shared/ui/icons';
@@ -24,6 +27,13 @@ import { useTeams } from '../teams/api';
 
 /** Large enough to see every department and team of one company on a single page. */
 const OVERVIEW_PAGE_SIZE = 100;
+const CARD_COLUMNS = { minWidth: 260 } as const;
+const SHORTCUTS = [
+  { key: 'users', route: 'adminUsers' },
+  { key: 'teams', route: 'adminTeams' },
+  { key: 'announcements', route: 'adminAnnouncements' },
+  { key: 'settings', route: 'adminSettings' },
+] as const;
 const HEALTHY_STATUS = 'ok';
 
 /** `/admin` landing page: setup gaps found through existing admin endpoints (no new API). */
@@ -38,6 +48,21 @@ function CheckItem({ ok = false, title, children }: { ok?: boolean; title: strin
       label={<Text type="label">{title}</Text>}
       description={children}
     />
+  );
+}
+
+function Shortcuts() {
+  const { t } = useTranslation('admin');
+  const { t: tc } = useTranslation();
+  return (
+    <VStack gap={3}>
+      <Heading level={2}>{t('overview.shortcutsTitle')}</Heading>
+      <Grid columns={CARD_COLUMNS} gap={3}>
+        {SHORTCUTS.map(({ key, route }) => (
+          <ActionCard key={key} to={ROUTE_META[route].path} title={tc(`routes.${route}`)} description={t(`overview.shortcuts.${key}`)} icon={ROUTE_META[route].icon ?? 'settings'} />
+        ))}
+      </Grid>
+    </VStack>
   );
 }
 
@@ -91,6 +116,7 @@ export function AdminOverviewPage() {
           )}
         </List>
       </SectionCard>
+      <Shortcuts />
     </VStack>
   );
 }

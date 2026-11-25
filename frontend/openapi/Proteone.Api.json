@@ -497,6 +497,28 @@
         }
       }
     },
+    "/api/v1/announcements": {
+      "get": {
+        "tags": [
+          "Announcements"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActiveAnnouncement"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/users": {
       "get": {
         "tags": [
@@ -2282,6 +2304,211 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MonitoringSourceSecret"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/system-settings": {
+      "get": {
+        "tags": [
+          "Admin: Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemSettingsDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin: Settings"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSystemSettingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemSettingsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/announcements": {
+      "get": {
+        "tags": [
+          "Admin: Announcements"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnnouncementItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Admin: Announcements"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/announcements/{id}": {
+      "put": {
+        "tags": [
+          "Admin: Announcements"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -13068,6 +13295,43 @@
   },
   "components": {
     "schemas": {
+      "ActiveAnnouncement": {
+        "required": [
+          "id",
+          "title",
+          "body",
+          "level",
+          "startsAt",
+          "endsAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/AnnouncementLevel"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "AddChangeTicketRequest": {
         "required": [
           "ticketNumber",
@@ -13143,6 +13407,54 @@
             "format": "uuid"
           }
         }
+      },
+      "AnnouncementItem": {
+        "required": [
+          "id",
+          "title",
+          "body",
+          "level",
+          "startsAt",
+          "endsAt",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/AnnouncementLevel"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
+      "AnnouncementLevel": {
+        "enum": [
+          "info",
+          "warning"
+        ]
       },
       "ApprovalDecisionRequest": {
         "required": [
@@ -15446,6 +15758,38 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "CreateAnnouncementRequest": {
+        "required": [
+          "title",
+          "body",
+          "level",
+          "startsAt",
+          "endsAt"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/AnnouncementLevel"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },
@@ -20355,6 +20699,28 @@
           }
         }
       },
+      "SystemSettingsDto": {
+        "required": [
+          "licenceNoticeDays",
+          "warrantyWindowDays",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "licenceNoticeDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "warrantyWindowDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "TaskCommentRequest": {
         "required": [
           "body"
@@ -21511,6 +21877,43 @@
           }
         }
       },
+      "UpdateAnnouncementRequest": {
+        "required": [
+          "version",
+          "title",
+          "body",
+          "level",
+          "startsAt",
+          "endsAt"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/AnnouncementLevel"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "UpdateArticleRequest": {
         "required": [
           "title",
@@ -22068,6 +22471,28 @@
           }
         }
       },
+      "UpdateSystemSettingsRequest": {
+        "required": [
+          "licenceNoticeDays",
+          "warrantyWindowDays",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "licenceNoticeDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "warrantyWindowDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "UpdateTeamRequest": {
         "required": [
           "version",
@@ -22451,6 +22876,9 @@
   },
   "tags": [
     {
+      "name": "Admin: Announcements"
+    },
+    {
       "name": "Admin: Audit"
     },
     {
@@ -22487,6 +22915,9 @@
       "name": "Admin: Services"
     },
     {
+      "name": "Admin: Settings"
+    },
+    {
       "name": "Admin: System"
     },
     {
@@ -22494,6 +22925,9 @@
     },
     {
       "name": "Admin: Users"
+    },
+    {
+      "name": "Announcements"
     },
     {
       "name": "Approvals"

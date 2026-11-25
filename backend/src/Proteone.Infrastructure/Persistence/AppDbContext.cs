@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
+using Proteone.Domain.Announcements;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Auth;
 using Proteone.Domain.Catalog;
@@ -20,6 +21,7 @@ using Proteone.Domain.Notifications;
 using Proteone.Domain.Operations;
 using Proteone.Domain.Organization;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Settings;
 using Proteone.Domain.Sla;
 using Proteone.Domain.Users;
 
@@ -60,6 +62,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ProblemChangeLink> ProblemChangeLinks => Set<ProblemChangeLink>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceAsset> ServiceAssets => Set<ServiceAsset>();
+    public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
+    public DbSet<Announcement> Announcements => Set<Announcement>();
     public DbSet<MonitoringSource> MonitoringSources => Set<MonitoringSource>();
     public DbSet<MonitoringSourceStatus> MonitoringSourceStatuses => Set<MonitoringSourceStatus>();
     public DbSet<MonitoringEvent> MonitoringEvents => Set<MonitoringEvent>();

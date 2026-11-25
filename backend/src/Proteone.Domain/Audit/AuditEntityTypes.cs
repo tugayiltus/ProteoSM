@@ -30,6 +30,8 @@ public static class AuditEntityTypes
     public const string ExportJob = "export_job";
     public const string AuthSettings = "auth_settings";
     public const string Audit = "audit";
+    public const string SystemSettings = "system_settings";
+    public const string Announcement = "announcement";
     public const string MonitoringSource = "monitoring_source";
     public const string Release = "release";
     public const string Software = "software";

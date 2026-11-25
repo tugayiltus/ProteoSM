@@ -73,6 +73,6 @@ public static class ReportPipeline
             filter.TeamId is { } teamId ? licences.Where(l => l.OwnerTeamId == teamId) : licences, new LicenceReportContext(db, companyClock.DateOf(now)));
     }
 
-    public static AssetPipeline Assets(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now) =>
-        new(AssetReportSource.Apply(scope.AssetsFor(viewer), filter), AssetReportContext.Create(db, filter, now, companyClock.Zone));
+    public static AssetPipeline Assets(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now, int warrantyWindowDays) =>
+        new(AssetReportSource.Apply(scope.AssetsFor(viewer), filter), AssetReportContext.Create(db, filter, now, companyClock.Zone, warrantyWindowDays));
 }

@@ -11,7 +11,7 @@ Owner: Tugay İLTUŞ. Only work queue. Finished plans are in the Git history; de
 3. Menu: the long IT group is split by job; the home page links every personal area.
 4. `/admin` general settings: licence notice days and warranty window, now fixed in code.
 5. Announcements: an admin publishes a dated message; every signed-in user sees it on the home page.
-6. Admin overview: shortcuts beside the set-up checks.
+6. Admin overview: shortcuts beside the set-up checks. Conversation before the links on the ticket page; row actions on one line.
 7. Checks in this order: lint, focused tests, full tests, E2E, UI sweep, review of the whole diff, then confirmation by an independent agent.
 8. Last: guide, screenshots, PDF, README and the GitHub page.
 

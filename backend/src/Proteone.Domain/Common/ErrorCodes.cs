@@ -44,6 +44,7 @@ public static class ErrorCodes
 
     public const string AssetInvalidTransition = "assets.invalid_transition";
     public const string AssetTagTaken = "assets.tag_taken";
+    public const string AnnouncementInvalidPeriod = "announcements.invalid_period";
     public const string MonitoringUnauthorized = "monitoring.unauthorized";
     public const string MonitoringSourceUnusable = "monitoring.source_unusable";
     public const string MonitoringNameTaken = "monitoring.name_taken";

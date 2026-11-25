@@ -27,6 +27,8 @@ internal static class ApiRoutes
     public const string Problems = "/problems";
     public const string Services = "/services";
     public const string Monitoring = "/monitoring";
+    public const string Announcements = "/announcements";
+    public const string SystemSettings = "/system-settings";
     public const string MonitoringSources = "/monitoring-sources";
     public const string Releases = "/releases";
     public const string Software = "/software";

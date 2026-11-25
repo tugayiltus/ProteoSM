@@ -4,6 +4,7 @@ using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Reports;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Settings;
 
 namespace Proteone.Api.IntegrationTests.Reports;
 
@@ -81,7 +82,7 @@ internal sealed class AssetReportFixture(ReportWorld world)
     {
         var effective = filter ?? new ReportFilter();
         await using var db = World.Db();
-        var context = AssetReportContext.Create(db, effective, Now, new TestClock().Zone);
+        var context = AssetReportContext.Create(db, effective, Now, new TestClock().Zone, SystemSettings.DefaultWarrantyWindowDays);
         var assets = AssetReportSource.Apply(db.Assets, effective);
         var metrics = ReportCatalog.Get(report).Cast<AssetReportMetric>().ToList();
         Assert.NotEmpty(metrics);

@@ -40,6 +40,8 @@ export const ROUTES = {
   adminEmailTemplates: '/admin/email-templates',
   adminEmailDeliveries: '/admin/email-deliveries',
   adminSystem: '/admin/system',
+  adminSettings: '/admin/settings',
+  adminAnnouncements: '/admin/announcements',
   adminMonitoring: '/admin/monitoring',
   adminLoginMethod: '/admin/login-method',
   adminSlaCalendar: '/admin/sla/calendar',

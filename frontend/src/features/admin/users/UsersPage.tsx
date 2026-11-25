@@ -34,6 +34,8 @@ import { TemporaryPasswordDialog } from './TemporaryPasswordDialog';
 import { UserFormDialog } from './UserFormDialog';
 import { USER_ROLES } from './userSchema';
 
+/** Three buttons fit on one line. */
+const ACTIONS_GROW = 2.5;
 const PAGE_SIZE = 20;
 const FIRST_PAGE = 1;
 const SKELETON_ROWS = 5;
@@ -144,7 +146,7 @@ export function UsersPage() {
     { key: 'role', header: t('users.columns.role'), renderCell: (user) => tc(`roles.${user.role}`) },
     { key: 'department', header: t('users.columns.department'), renderCell: (user) => user.departmentName ?? tc('none') },
     { key: 'status', header: t('users.columns.status'), renderCell: (user) => <ActiveToken isActive={user.isActive} /> },
-    { key: 'actions', header: t('users.columns.actions'), renderCell: (user) => <UserActions user={user} onEdit={editUser} onAction={openAction} /> },
+    { key: 'actions', header: t('users.columns.actions'), grow: ACTIONS_GROW, renderCell: (user) => <UserActions user={user} onEdit={editUser} onAction={openAction} /> },
   ];
 
   const renderCard = (user: UserListItem) => (

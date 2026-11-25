@@ -16,7 +16,7 @@ public sealed class GetDrilldownHandler(ReportScope scope, ReportRowSource rows)
     public async Task<DrilldownResult> HandleAsync(GetDrilldownQuery query, CancellationToken cancellationToken)
     {
         var viewer = await scope.ViewerAsync(cancellationToken);
-        var opened = rows.Open(viewer, query.Report, query.Metric, query.Bucket, query.Part, query.Filter);
+        var opened = await rows.OpenAsync(viewer, query.Report, query.Metric, query.Bucket, query.Part, query.Filter, cancellationToken);
         return opened.Kind switch
         {
             DrilldownKind.Assets => new DrilldownResult(opened.Kind, null, await opened.Assets!.ToPagedResultAsync(query.Page, cancellationToken), null, null, null, null),

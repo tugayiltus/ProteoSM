@@ -10,6 +10,7 @@ using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
 using Proteone.Domain.Licences;
 using Proteone.Domain.Notifications;
+using Proteone.Domain.Settings;
 using Proteone.Domain.Users;
 
 namespace Proteone.Api.IntegrationTests.Licences;
@@ -207,9 +208,9 @@ public sealed class LicenceEndpointTests(ApiFactory factory) : IAsyncLifetime
     public async Task List_filters_by_text_state_and_kind()
     {
         var software = Id(await SoftwareAsync("Çizim", "Autodesk"));
-        await LicenceAsync(software, name: "Dolu", quantity: 1, expiresOn: Today().AddDays(LicenceLimits.ExpiryNoticeDays));
+        await LicenceAsync(software, name: "Dolu", quantity: 1, expiresOn: Today().AddDays(SystemSettings.DefaultLicenceNoticeDays));
         await LicenceAsync(software, name: "Bitmiş", expiresOn: Today().AddDays(-1));
-        var device = await LicenceAsync(software, PerDevice, name: "Cihaz", expiresOn: Today().AddDays(LicenceLimits.ExpiryNoticeDays + 1));
+        var device = await LicenceAsync(software, PerDevice, name: "Cihaz", expiresOn: Today().AddDays(SystemSettings.DefaultLicenceNoticeDays + 1));
         var full = (await JsonAsync(_tech, await _tech.GetAsync($"{LicencesPath}?q=dolu"))).GetProperty("items")[0];
         await JsonAsync(_tech, await AssignUserAsync(Id(full), _employeeUser.Id));
 
@@ -312,11 +313,30 @@ public sealed class LicenceEndpointTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task The_notice_period_follows_the_setting()
+    {
+        const int noticeDays = 5;
+        var software = Id(await SoftwareAsync());
+        await LicenceAsync(software, name: "Yakın", expiresOn: Today().AddDays(noticeDays));
+        await LicenceAsync(software, name: "Uzak", expiresOn: Today().AddDays(noticeDays + 1));
+        await using (var db = factory.Database.CreateDbContext())
+        {
+            await db.SystemSettings.ExecuteUpdateAsync(set => set.SetProperty(x => x.LicenceNoticeDays, noticeDays), Ct);
+        }
+
+        await NotifyAsync();
+
+        Assert.Equal(1, await ExpiryEventsAsync());
+        var expiring = await JsonAsync(_tech, await _tech.GetAsync($"{LicencesPath}?state=expiring"));
+        Assert.Equal(1, expiring.GetProperty("totalCount").GetInt32());
+    }
+
+    [Fact]
     public async Task The_owner_team_is_told_once_per_end_date()
     {
         var software = Id(await SoftwareAsync());
-        var due = await LicenceAsync(software, expiresOn: Today().AddDays(LicenceLimits.ExpiryNoticeDays));
-        await LicenceAsync(software, expiresOn: Today().AddDays(LicenceLimits.ExpiryNoticeDays + 1));
+        var due = await LicenceAsync(software, expiresOn: Today().AddDays(SystemSettings.DefaultLicenceNoticeDays));
+        await LicenceAsync(software, expiresOn: Today().AddDays(SystemSettings.DefaultLicenceNoticeDays + 1));
         await LicenceAsync(software, expiresOn: Today().AddDays(-1));
         await LicenceAsync(software);
 

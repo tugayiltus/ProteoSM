@@ -56,14 +56,14 @@ public abstract class ReportMetric : IReportMetric
 public sealed record AssetReportContext(IAppDbContext Db, DateOnly Today, DateOnly WarrantyFrom, DateOnly WarrantyTo)
 {
     /// <summary>
-    /// The context of a run at <paramref name="now"/>. The warranty window defaults to today..today + <see cref="ReportBuckets.DefaultWarrantyWindowDays"/>;
+    /// The context of a run at <paramref name="now"/>. The warranty window defaults to today..today + <paramref name="warrantyWindowDays"/>;
     /// its start never lies before today, so "expiring" and "expired" never share an asset.
     /// </summary>
-    public static AssetReportContext Create(IAppDbContext db, ReportFilter filter, DateTimeOffset now, TimeZoneInfo zone)
+    public static AssetReportContext Create(IAppDbContext db, ReportFilter filter, DateTimeOffset now, TimeZoneInfo zone, int warrantyWindowDays)
     {
         var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(now, zone).DateTime);
         var from = filter.From is { } start && start > today ? start : today;
-        var to = filter.To ?? today.AddDays(ReportBuckets.DefaultWarrantyWindowDays);
+        var to = filter.To ?? today.AddDays(warrantyWindowDays);
         return new AssetReportContext(db, today, from, to);
     }
 }

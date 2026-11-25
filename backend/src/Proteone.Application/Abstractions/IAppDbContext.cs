@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Proteone.Domain.Announcements;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Auth;
 using Proteone.Domain.Catalog;
@@ -17,6 +18,7 @@ using Proteone.Domain.Notifications;
 using Proteone.Domain.Operations;
 using Proteone.Domain.Organization;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Settings;
 using Proteone.Domain.Sla;
 using Proteone.Domain.Users;
 
@@ -58,6 +60,8 @@ public interface IAppDbContext
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceAsset> ServiceAssets { get; }
+    DbSet<SystemSettings> SystemSettings { get; }
+    DbSet<Announcement> Announcements { get; }
     DbSet<MonitoringSource> MonitoringSources { get; }
     DbSet<MonitoringSourceStatus> MonitoringSourceStatuses { get; }
     DbSet<MonitoringEvent> MonitoringEvents { get; }

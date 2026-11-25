@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Reports;
 using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Settings;
 
 namespace Proteone.Api.IntegrationTests.Reports;
 
@@ -51,8 +53,8 @@ public sealed class WarrantyReportTests(ApiFactory factory) : IAsyncLifetime
     {
         var fx = await FixtureAsync();
         var hq = await TestData.LocationAsync(factory, "Merkez");
-        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(ReportBuckets.DefaultWarrantyWindowDays));
-        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(ReportBuckets.DefaultWarrantyWindowDays + 1));
+        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(SystemSettings.DefaultWarrantyWindowDays));
+        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(SystemSettings.DefaultWarrantyWindowDays + 1));
         await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(10));
 
         var byDefault = await fx.RunAsync(ReportName.Warranty, fx.World.Desk.Id);
@@ -63,6 +65,24 @@ public sealed class WarrantyReportTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(1, ValueOf(narrow, WarrantyMetrics.Expiring));
         Assert.Equal(2, ValueOf(later, WarrantyMetrics.Expiring));
         await fx.AssertFiguresMatchRowsAsync(ReportName.Warranty, new ReportFilter { To = Today.AddDays(10) });
+    }
+
+    [Fact]
+    public async Task Default_window_follows_the_setting()
+    {
+        const int windowDays = 20;
+        var fx = await FixtureAsync();
+        var hq = await TestData.LocationAsync(factory, "Merkez");
+        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(windowDays));
+        await fx.AssetAsync(hq.Id, warrantyEndsOn: Today.AddDays(windowDays + 1));
+        await using (var db = fx.World.Db())
+        {
+            await db.SystemSettings.ExecuteUpdateAsync(set => set.SetProperty(x => x.WarrantyWindowDays, windowDays), TestContext.Current.CancellationToken);
+        }
+
+        var result = await fx.RunAsync(ReportName.Warranty, fx.World.Desk.Id);
+
+        Assert.Equal(1, ValueOf(result, WarrantyMetrics.Expiring));
     }
 
     [Fact]

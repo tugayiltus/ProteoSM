@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Common;
 using Proteone.Application.Reports.Metrics;
 using Proteone.Domain.Reports;
@@ -118,7 +119,8 @@ public sealed class GetReportHandler(ReportScope scope, TicketReportSource sourc
     /// <summary>Asset and warranty reports are snapshots of all assets, for IT staff and admins alike.</summary>
     private async Task<ReportResult> AssetReport(GetReportQuery query, ReportViewer viewer, CancellationToken cancellationToken)
     {
-        var pipeline = ReportPipeline.Assets(scope, db, companyClock, viewer, query.Filter, clock.GetUtcNow());
+        var warrantyWindowDays = await db.SystemSettings.Select(s => s.WarrantyWindowDays).SingleAsync(cancellationToken);
+        var pipeline = ReportPipeline.Assets(scope, db, companyClock, viewer, query.Filter, clock.GetUtcNow(), warrantyWindowDays);
 
         var figures = new List<ReportFigure>();
         foreach (var metric in ReportCatalog.Get(query.Report).OfType<AssetReportMetric>())

@@ -32,6 +32,8 @@ import { useSetTeamActive, useTeams, type TeamItem } from './api';
 import { TeamFormDialog } from './TeamFormDialog';
 import { TeamMembersDialog } from './TeamMembersDialog';
 
+/** Three buttons fit on one line. */
+const ACTIONS_GROW = 2.5;
 const PAGE_SIZE = 20;
 const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -83,7 +85,7 @@ export function TeamsPage() {
     { key: 'name', header: t('teams.columns.name'), renderCell: (team) => <Text type="label">{team.name}</Text> },
     { key: 'members', header: t('teams.columns.members'), renderCell: (team) => t('teams.memberCount', { count: team.memberCount }) },
     { key: 'status', header: t('teams.columns.status'), renderCell: (team) => <TeamTokens team={team} /> },
-    { key: 'actions', header: t('teams.columns.actions'), renderCell: actions },
+    { key: 'actions', header: t('teams.columns.actions'), grow: ACTIONS_GROW, renderCell: actions },
   ];
   const renderCard = (team: TeamItem) => (
     <VStack gap={2}>

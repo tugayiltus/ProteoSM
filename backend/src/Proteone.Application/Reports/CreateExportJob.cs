@@ -23,7 +23,7 @@ public sealed class CreateExportJobHandler(ReportScope scope, ReportRowSource ro
     public async Task<ExportJobItem> HandleAsync(CreateExportJobCommand command, CancellationToken cancellationToken)
     {
         var viewer = await scope.ViewerAsync(cancellationToken);
-        var opened = rows.Open(viewer, command.Report, command.Metric, command.Bucket, command.Part, command.Filter);
+        var opened = await rows.OpenAsync(viewer, command.Report, command.Metric, command.Bucket, command.Part, command.Filter, cancellationToken);
         var count = await ReportExportRows.CountAsync(opened, cancellationToken);
         if (count > ReportExportLimits.JobMaxRows)
         {

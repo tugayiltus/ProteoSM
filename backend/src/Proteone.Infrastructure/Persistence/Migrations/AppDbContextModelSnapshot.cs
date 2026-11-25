@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261124223303_SoftwareKeyAndAlertResolvedTime";
+    public override string LastMigrationId => "20261125115929_AddSettingsAndAnnouncements";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -28,6 +28,73 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 
         NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
         NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+        modelBuilder.Entity("Proteone.Domain.Announcements.Announcement", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Body")
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .HasColumnType("character varying(1000)")
+                    .HasColumnName("body");
+
+                b.Property<DateTimeOffset>("CreatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at");
+
+                b.Property<Guid>("CreatedById")
+                    .HasColumnType("uuid")
+                    .HasColumnName("created_by_id");
+
+                b.Property<DateTimeOffset?>("EndsAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("ends_at");
+
+                b.Property<string>("Level")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("level");
+
+                b.Property<DateTimeOffset>("StartsAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("starts_at");
+
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("character varying(150)")
+                    .HasColumnName("title");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_announcements");
+
+                b.HasIndex("CreatedById")
+                    .HasDatabaseName("ix_announcements_created_by_id");
+
+                b.HasIndex("StartsAt")
+                    .HasDatabaseName("ix_announcements_starts_at");
+
+                b.ToTable("announcements", t =>
+                    {
+                        t.HasCheckConstraint("ck_announcements_level", "level IN ('info', 'warning')");
+
+                        t.HasCheckConstraint("ck_announcements_period", "ends_at IS NULL OR ends_at > starts_at");
+                    });
+            });
 
         modelBuilder.Entity("Proteone.Domain.Assets.Asset", b =>
             {
@@ -2804,6 +2871,39 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.ToTable("service_assets");
             });
 
+        modelBuilder.Entity("Proteone.Domain.Settings.SystemSettings", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<int>("LicenceNoticeDays")
+                    .HasColumnType("integer")
+                    .HasColumnName("licence_notice_days");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.Property<int>("WarrantyWindowDays")
+                    .HasColumnType("integer")
+                    .HasColumnName("warranty_window_days");
+
+                b.HasKey("Id")
+                    .HasName("pk_system_settings");
+
+                b.ToTable("system_settings", t =>
+                    {
+                        t.HasCheckConstraint("ck_system_settings_days", "licence_notice_days BETWEEN 1 AND 365 AND warranty_window_days BETWEEN 1 AND 365");
+                    });
+            });
+
         modelBuilder.Entity("Proteone.Domain.Sla.BusinessCalendar", b =>
             {
                 b.Property<Guid>("Id")
@@ -4375,6 +4475,16 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasName("pk_ticket_counters");
 
                 b.ToTable("ticket_counters");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Announcements.Announcement", b =>
+            {
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("CreatedById")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_announcements_users_created_by_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Assets.Asset", b =>

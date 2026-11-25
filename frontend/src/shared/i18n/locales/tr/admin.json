@@ -189,7 +189,9 @@
     "software": "Yazılım",
     "licence": "Lisans",
     "release": "Sürüm",
-    "monitoring_source": "İzleme kaynağı"
+    "monitoring_source": "İzleme kaynağı",
+    "system_settings": "Genel ayarlar",
+    "announcement": "Duyuru"
   },
   "auditActions": {
     "setup": {
@@ -393,6 +395,13 @@
       "updated": "İzleme kaynağı güncellendi",
       "secret_replaced": "İzleme anahtarı değiştirildi",
       "limit_reached": "İzleme kaynağı saatlik sınıra ulaştı"
+    },
+    "system_settings": {
+      "updated": "Genel ayarlar güncellendi"
+    },
+    "announcements": {
+      "created": "Duyuru oluşturuldu",
+      "updated": "Duyuru güncellendi"
     }
   },
   "emailEvents": {
@@ -628,7 +637,14 @@
     "workerIssue": "Arka plan işlerinden en az biri sorunlu.",
     "allGood": "Eksik kurulum tanımı bulunmadı.",
     "goToTeams": "Ekiplere git",
-    "goToSystem": "Sistem durumuna git"
+    "goToSystem": "Sistem durumuna git",
+    "shortcutsTitle": "Sık kullanılanlar",
+    "shortcuts": {
+      "users": "Kullanıcı ekleyin, rol verin.",
+      "teams": "Ekip üyelerini düzenleyin.",
+      "announcements": "Herkese mesaj yayınlayın.",
+      "settings": "Uyarı sürelerini belirleyin."
+    }
   },
   "deviceCatalog": {
     "brands": {
@@ -691,5 +707,41 @@
       "urgency": "Aciliyet",
       "active": "Aktif"
     }
+  },
+  "settings": {
+    "title": "Genel ayarlar",
+    "periodsTitle": "Uyarı ve rapor süreleri",
+    "licenceNoticeDays": "Lisans bitiş uyarısı",
+    "licenceNoticeHint": "Sahip ekip, lisans bitmeden bu kadar gün önce uyarılır.",
+    "warrantyWindowDays": "Garanti raporu penceresi",
+    "warrantyWindowHint": "Bitiş tarihi seçilmediğinde rapor bu kadar gün ileriye bakar.",
+    "unit": "gün",
+    "saved": "Ayarlar kaydedildi."
+  },
+  "announcements": {
+    "title": "Duyurular",
+    "new": "Yeni duyuru",
+    "edit": "Duyuruyu düzenle",
+    "empty": "Duyuru yok.",
+    "fields": {
+      "title": "Başlık",
+      "body": "Mesaj",
+      "level": "Önem",
+      "startsAt": "Başlangıç",
+      "endsAt": "Bitiş"
+    },
+    "noEnd": "Süresiz",
+    "status": "Durum",
+    "actions": "İşlemler",
+    "levels": {
+      "info": "Bilgi",
+      "warning": "Uyarı"
+    },
+    "states": {
+      "scheduled": "Planlandı",
+      "active": "Yayında",
+      "ended": "Bitti"
+    },
+    "cardMeta": "{{start}} – {{end}}"
   }
 }

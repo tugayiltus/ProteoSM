@@ -64,6 +64,8 @@ export const ROUTE_IDS = [
   'adminSystem',
   'adminLoginMethod',
   'adminMonitoring',
+  'adminSettings',
+  'adminAnnouncements',
   'adminAudit',
 ] as const;
 
@@ -71,7 +73,7 @@ export type RouteId = (typeof ROUTE_IDS)[number];
 
 export type MenuArea = 'app' | 'admin';
 
-export const APP_MENU_GROUPS = ['personal', 'itOps', 'analysis'] as const;
+export const APP_MENU_GROUPS = ['personal', 'itOps', 'changeOps', 'inventory', 'analysis'] as const;
 export const ADMIN_MENU_GROUPS = ['overview', 'organization', 'deviceCatalog', 'serviceCatalog', 'sla', 'notifications', 'system'] as const;
 export type MenuGroupId = (typeof APP_MENU_GROUPS)[number] | (typeof ADMIN_MENU_GROUPS)[number];
 
@@ -109,12 +111,12 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   workspaceQueue: app({ path: ROUTES.workspaceQueue, icon: 'inbox', titleKey: 'routes.workspaceQueue', parent: 'workspace', group: 'itOps', menu: { order: 20, roles: IT_STAFF_OR_ADMIN } }),
   tasks: app({ path: ROUTES.tasks, icon: 'listChecks', titleKey: 'routes.tasks', parent: 'workspace', group: 'itOps', menu: { order: 25, roles: IT_STAFF_OR_ADMIN } }),
   taskDetail: app({ path: `${ROUTES.tasks}/:number`, titleKey: 'routes.taskDetail', parent: 'tasks', dynamic: true }),
-  problems: app({ path: ROUTES.problems, icon: 'problems', titleKey: 'routes.problems', parent: 'workspace', group: 'itOps', menu: { order: 26, roles: IT_STAFF_OR_ADMIN } }),
+  problems: app({ path: ROUTES.problems, icon: 'problems', titleKey: 'routes.problems', parent: 'workspace', group: 'changeOps', menu: { order: 26, roles: IT_STAFF_OR_ADMIN } }),
   problemDetail: app({ path: `${ROUTES.problems}/:number`, titleKey: 'routes.problemDetail', parent: 'problems', dynamic: true }),
-  changes: app({ path: ROUTES.changes, icon: 'changes', titleKey: 'routes.changes', parent: 'workspace', group: 'itOps', menu: { order: 27, roles: IT_STAFF_OR_ADMIN } }),
+  changes: app({ path: ROUTES.changes, icon: 'changes', titleKey: 'routes.changes', parent: 'workspace', group: 'changeOps', menu: { order: 27, roles: IT_STAFF_OR_ADMIN } }),
   changeCalendar: app({ path: ROUTES.changeCalendar, icon: 'calendar', titleKey: 'routes.changeCalendar', parent: 'changes' }),
   changeDetail: app({ path: `${ROUTES.changes}/:number`, titleKey: 'routes.changeDetail', parent: 'changes', dynamic: true }),
-  releases: app({ path: ROUTES.releases, icon: 'releases', titleKey: 'routes.releases', parent: 'workspace', group: 'itOps', menu: { order: 28, roles: IT_STAFF_OR_ADMIN } }),
+  releases: app({ path: ROUTES.releases, icon: 'releases', titleKey: 'routes.releases', parent: 'workspace', group: 'changeOps', menu: { order: 28, roles: IT_STAFF_OR_ADMIN } }),
   releaseDetail: app({ path: `${ROUTES.releases}/:number`, titleKey: 'routes.releaseDetail', parent: 'releases', dynamic: true }),
   approvals: app({ path: ROUTES.approvals, icon: 'checkCircle', titleKey: 'routes.approvals', parent: 'home', group: 'itOps', menu: { order: 30, roles: ADMIN_ONLY } }),
   kbList: app({ path: ROUTES.kb, icon: 'book', titleKey: 'routes.kbList', parent: 'home', group: 'personal', menu: { order: 40 } }),
@@ -122,10 +124,10 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   kbArticle: app({ path: `${ROUTES.kb}/:id`, titleKey: 'routes.kbArticle', parent: 'kbList', dynamic: true }),
   kbEdit: app({ path: `${ROUTES.kb}/:id/edit`, titleKey: 'routes.kbEdit', parent: 'kbArticle' }),
   myAssets: app({ path: ROUTES.myAssets, icon: 'laptop', titleKey: 'routes.myAssets', parent: 'home', group: 'personal', menu: { order: 30 } }),
-  assets: app({ path: ROUTES.assets, icon: 'devices', titleKey: 'routes.assets', parent: 'home', group: 'itOps', menu: { order: 40, roles: IT_STAFF_OR_ADMIN } }),
-  services: app({ path: ROUTES.services, icon: 'services', titleKey: 'routes.services', parent: 'workspace', group: 'itOps', menu: { order: 45, roles: IT_STAFF_OR_ADMIN } }),
+  assets: app({ path: ROUTES.assets, icon: 'devices', titleKey: 'routes.assets', parent: 'home', group: 'inventory', menu: { order: 40, roles: IT_STAFF_OR_ADMIN } }),
+  services: app({ path: ROUTES.services, icon: 'services', titleKey: 'routes.services', parent: 'home', group: 'inventory', menu: { order: 45, roles: IT_STAFF_OR_ADMIN } }),
   serviceDetail: app({ path: `${ROUTES.services}/:id`, titleKey: 'routes.serviceDetail', parent: 'services', dynamic: true }),
-  licences: app({ path: ROUTES.licences, icon: 'licences', titleKey: 'routes.licences', parent: 'workspace', group: 'itOps', menu: { order: 46, roles: IT_STAFF_OR_ADMIN } }),
+  licences: app({ path: ROUTES.licences, icon: 'licences', titleKey: 'routes.licences', parent: 'home', group: 'inventory', menu: { order: 46, roles: IT_STAFF_OR_ADMIN } }),
   licenceDetail: app({ path: `${ROUTES.licences}/:id`, titleKey: 'routes.licenceDetail', parent: 'licences', dynamic: true }),
   software: app({ path: ROUTES.software, titleKey: 'routes.software', parent: 'licences' }),
   mySoftware: app({ path: ROUTES.mySoftware, icon: 'licences', titleKey: 'routes.mySoftware', parent: 'home', group: 'personal', menu: { order: 35 } }),
@@ -134,7 +136,7 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   assetLabels: app({ path: ROUTES.assetLabels, titleKey: 'routes.assetLabels', parent: 'assets' }),
   assetDetail: app({ path: `${ROUTES.assets}/:id`, titleKey: 'routes.assetDetail', parent: 'assets', dynamic: true }),
   reports: app({ path: ROUTES.reports, icon: 'chartPie', titleKey: 'routes.reports', parent: 'home', group: 'analysis', menu: { order: 10, roles: IT_STAFF_OR_ADMIN } }),
-  reportExports: app({ path: ROUTES.reportExports, icon: 'download', titleKey: 'routes.reportExports', parent: 'reports', group: 'analysis', menu: { order: 20, roles: IT_STAFF_OR_ADMIN } }),
+  reportExports: app({ path: ROUTES.reportExports, icon: 'download', titleKey: 'routes.reportExports', parent: 'reports' }),
   report: app({ path: `${ROUTES.reports}/:report`, titleKey: 'routes.report', parent: 'reports', titleParam: { param: 'report', keyPrefix: 'reports:tabs.' } }),
   reportList: app({ path: `${ROUTES.reports}/:report/list`, titleKey: 'routes.reportList', parent: 'report', dynamic: true }),
   adminOverview: admin({ path: ROUTES.admin, icon: 'speedometer', titleKey: 'routes.adminOverview', group: 'overview', menu: { order: 10 } }),
@@ -154,6 +156,8 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   adminSystem: admin({ path: ROUTES.adminSystem, icon: 'settings', titleKey: 'routes.adminSystem', parent: 'adminOverview', group: 'system', menu: { order: 10 } }),
   adminLoginMethod: admin({ path: ROUTES.adminLoginMethod, icon: 'lock', titleKey: 'routes.adminLoginMethod', parent: 'adminOverview', group: 'system', menu: { order: 15 } }),
   adminMonitoring: admin({ path: ROUTES.adminMonitoring, icon: 'bell', titleKey: 'routes.adminMonitoring', parent: 'adminOverview', group: 'system', menu: { order: 17 } }),
+  adminSettings: admin({ path: ROUTES.adminSettings, icon: 'pencil', titleKey: 'routes.adminSettings', parent: 'adminOverview', group: 'system', menu: { order: 5 } }),
+  adminAnnouncements: admin({ path: ROUTES.adminAnnouncements, icon: 'megaphone', titleKey: 'routes.adminAnnouncements', parent: 'adminOverview', group: 'notifications', menu: { order: 5 } }),
   adminAudit: admin({ path: ROUTES.adminAudit, icon: 'history', titleKey: 'routes.adminAudit', parent: 'adminOverview', group: 'system', menu: { order: 20 } }),
 };
 

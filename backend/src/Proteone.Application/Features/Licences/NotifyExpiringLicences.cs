@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
-using Proteone.Domain.Licences;
 using Proteone.Domain.Notifications;
 
 namespace Proteone.Application.Features.Licences;
@@ -16,7 +15,7 @@ public sealed class NotifyExpiringLicencesHandler(IAppDbContext db, INotificatio
         db.RunSerializedAsync(SerializationLocks.LicenceSeats, async ct =>
         {
             var today = companyClock.DateOf(clock.GetUtcNow());
-            var noticeEnd = today.AddDays(LicenceLimits.ExpiryNoticeDays);
+            var noticeEnd = today.AddDays(await db.SystemSettings.Select(s => s.LicenceNoticeDays).SingleAsync(ct));
             var due = await db.Licences
                 .Where(l => l.ExpiresOn >= today && l.ExpiresOn <= noticeEnd && (l.ExpiryNotifiedFor == null || l.ExpiryNotifiedFor != l.ExpiresOn))
                 .ToListAsync(ct);

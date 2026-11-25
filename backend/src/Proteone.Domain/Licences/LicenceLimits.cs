@@ -10,9 +10,6 @@ public static class LicenceLimits
     public const int MinQuantity = 1;
     public const int MaxQuantity = 100_000;
 
-    /// <summary>The owner team is told this many days before a licence ends.</summary>
-    public const int ExpiryNoticeDays = 30;
-
     /// <summary>Search text is the vendor, one space and the name.</summary>
     public const int SearchTextMaxLength = VendorMaxLength + 1 + NameMaxLength;
 }

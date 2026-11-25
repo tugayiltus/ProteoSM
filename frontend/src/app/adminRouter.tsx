@@ -46,6 +46,8 @@ export const adminPages: RouteObject[] = [
               { id: 'adminLoginMethod', path: ROUTES.adminLoginMethod, lazy: async () => ({ Component: (await import('../features/admin/auth/LoginMethodPage')).LoginMethodPage }) },
               { id: 'adminMonitoring', path: ROUTES.adminMonitoring, lazy: async () => ({ Component: (await import('../features/admin/monitoring/MonitoringPage')).MonitoringPage }) },
               { id: 'adminSystem', path: ROUTES.adminSystem, lazy: async () => ({ Component: (await import('../features/admin/system/SystemPage')).SystemPage }) },
+              { id: 'adminSettings', path: ROUTES.adminSettings, lazy: async () => ({ Component: (await import('../features/admin/settings/SettingsPage')).SettingsPage }) },
+              { id: 'adminAnnouncements', path: ROUTES.adminAnnouncements, lazy: async () => ({ Component: (await import('../features/admin/announcements/AnnouncementsPage')).AnnouncementsPage }) },
               { id: 'adminAudit', path: ROUTES.adminAudit, lazy: async () => ({ Component: (await import('../features/admin/audit/AuditPage')).AuditPage }) },
             ],
           },

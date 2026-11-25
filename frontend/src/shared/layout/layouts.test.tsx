@@ -33,15 +33,15 @@ describe('AppLayout sidebar', () => {
     renderRoute('/profile');
     const nav = await mainNav();
     expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası']);
-    expect(within(nav).queryByText('IT operasyonu')).not.toBeInTheDocument();
+    expect(within(nav).queryByText('Destek')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Yönetim' })).not.toBeInTheDocument();
   });
 
-  it('shows IT staff the IT and analysis groups without approvals or admin', async () => {
+  it('shows IT staff the support, change, inventory and analysis groups without approvals or admin', async () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME } });
     renderRoute('/profile');
     const nav = await mainNav();
-    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası', 'İş listem', 'Kuyruk', 'Görevler', 'Problemler', 'Değişiklikler', 'Sürümler', 'Envanter', 'Hizmetler', 'Lisanslar', 'Raporlar', 'Dışa aktarımlarım']);
+    expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası', 'İş listem', 'Kuyruk', 'Görevler', 'Problemler', 'Değişiklikler', 'Sürümler', 'Envanter', 'Hizmetler', 'Lisanslar', 'Raporlar']);
     expect(screen.queryByRole('link', { name: 'Yönetim' })).not.toBeInTheDocument();
   });
 
@@ -49,7 +49,7 @@ describe('AppLayout sidebar', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME } });
     renderRoute('/profile');
     const nav = await mainNav();
-    expect(within(nav).getByRole('link', { name: 'Onay yönetimi' })).toHaveAttribute('href', '/approvals');
+    expect(within(nav).getByRole('link', { name: 'Onaylar' })).toHaveAttribute('href', '/approvals');
     expect(screen.getByRole('link', { name: 'Yönetim' })).toHaveAttribute('href', '/admin');
   });
 
@@ -169,7 +169,7 @@ describe('AdminLayout', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, ...ADMIN_DATA });
     renderRoute('/admin');
     const nav = await screen.findByRole('navigation', { name: 'Yönetim menüsü' });
-    for (const group of ['Organizasyon', 'Hizmet kataloğu', 'SLA', 'Bildirimler', 'Sistem ve denetim']) {
+    for (const group of ['Organizasyon', 'Hizmet kataloğu', 'SLA', 'Duyuru ve bildirim', 'Sistem ve denetim']) {
       expect(within(nav).getByText(group)).toBeInTheDocument();
     }
     expect(screen.getByRole('link', { name: 'Uygulamaya dön' })).toHaveAttribute('href', '/');

@@ -255,7 +255,8 @@
     "recentEmpty": "Henüz kaydınız yok.",
     "allTickets": "Tüm kayıtlarım",
     "queuesTitle": "İş kuyruklarım",
-    "moreTitle": "Diğer işlemler"
+    "moreTitle": "Diğer işlemler",
+    "announcements": "Duyurular"
   },
   "sla": {
     "title": "SLA",

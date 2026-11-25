@@ -25,7 +25,7 @@ public sealed class ListLicencesHandler(IAppDbContext db, ICurrentActor actor, I
     {
         await LicenceQueries.EnsureStaffAsync(db, actor, cancellationToken);
         var today = companyClock.DateOf(clock.GetUtcNow());
-        var noticeEnd = today.AddDays(LicenceLimits.ExpiryNoticeDays);
+        var noticeEnd = today.AddDays(await db.SystemSettings.Select(s => s.LicenceNoticeDays).SingleAsync(cancellationToken));
         var licences = db.Licences.AsNoTracking();
         if (query.SoftwareId is { } softwareId)
         {

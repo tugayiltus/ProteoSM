@@ -221,5 +221,8 @@
     "source_unusable": "İzleme kaynağının talep sahibi veya ekibi aktif değil.",
     "name_taken": "Bu adla başka bir izleme kaynağı var.",
     "requester_invalid": "Talep sahibi aktif IT personeli veya yönetici olmalı."
+  },
+  "announcements": {
+    "invalid_period": "Bitiş, başlangıçtan sonra olmalı."
   }
 }

@@ -27,7 +27,7 @@ public sealed class ExportReportHandler(
     public async Task<ReportExportFile> HandleAsync(ExportReportQuery query, CancellationToken cancellationToken)
     {
         var viewer = await scope.ViewerAsync(cancellationToken);
-        var opened = rows.Open(viewer, query.Report, query.Metric, query.Bucket, query.Part, query.Filter);
+        var opened = await rows.OpenAsync(viewer, query.Report, query.Metric, query.Bucket, query.Part, query.Filter, cancellationToken);
         var count = await ReportExportRows.CountAsync(opened, cancellationToken);
         if (count > ReportExportLimits.SyncMaxRows)
         {

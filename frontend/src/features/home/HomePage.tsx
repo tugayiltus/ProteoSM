@@ -26,6 +26,8 @@ import { useTickets, type TicketQueue, type TicketStatus } from '../tickets/api'
 import { TicketStatusBadge } from '../tickets/TicketBadges';
 import { QueueCard } from '../workspace/QueueCard';
 
+import { Announcements } from './Announcements';
+
 const RECENT_COUNT = 5;
 const FIRST_PAGE = 1;
 const HOME_QUEUES: readonly TicketQueue[] = ['assigned_to_me', 'team', 'sla_risk'];
@@ -95,9 +97,11 @@ function MoreLinks() {
   const { t } = useTranslation('tickets');
   const { t: tk } = useTranslation('kb');
   const { t: ta } = useTranslation('assets');
+  const { t: tl } = useTranslation('licences');
   const links: ActionCardProps[] = [
     { to: ROUTES.kb, title: tk('home.card'), description: tk('home.cardDescription'), icon: 'book' },
     { to: ROUTES.myAssets, title: ta('home.mineCard'), description: ta('home.mineCardDescription'), icon: 'laptop' },
+    { to: ROUTES.mySoftware, title: tl('home.mineCard'), description: tl('home.mineCardDescription'), icon: 'licences' },
   ];
   return (
     <VStack gap={3}>
@@ -119,6 +123,7 @@ export function HomePage() {
   return (
     <VStack gap={6}>
       <PageHeader icon={ROUTE_META.home.icon} titleOverride={t('home.greeting', { name: me.firstName })} />
+      <Announcements />
       <ReportActions />
       {isItStaffOrAdmin(me.role) && (
         <VStack gap={3}>

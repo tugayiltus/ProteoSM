@@ -94,7 +94,7 @@ public sealed class RunExportJobsHandler(
         await db.SaveChangesAsync(cancellationToken);
 
         var filter = ReportFilter.FromJson(job.Filters);
-        var opened = scoped.GetRequiredService<ReportRowSource>().Open(viewer, job.Report, job.Metric, job.Bucket, job.Part, filter);
+        var opened = await scoped.GetRequiredService<ReportRowSource>().OpenAsync(viewer, job.Report, job.Metric, job.Bucket, job.Part, filter, cancellationToken);
         if (await ReportExportRows.CountAsync(opened, cancellationToken) > ReportExportLimits.JobMaxRows)
         {
             job.Fail(ErrorCodes.ReportsExportTooLarge, clock.GetUtcNow());

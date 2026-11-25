@@ -157,16 +157,16 @@ function TicketDetail({ number }: { number: string }) {
           {item.cancelReason && <Field label={t('detail.cancelReason')} value={item.cancelReason} />}
         </MetadataList>
       </SectionCard>
-      <TicketProblemCard ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
-      <TicketLinks ticket={item} isRequester={item.requesterId === me.id} />
-      <TicketTasks ticket={item} />
-      <TicketChangeLinks ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
-      <TicketArticles ticket={item} />
       <SectionCard title={t('detail.comments')}>
         {comments.isError && <ErrorState error={comments.error} onRetry={() => void comments.refetch()} />}
         {comments.data && <CommentList ticket={item} comments={comments.data} />}
         <CommentBox ticket={item} />
       </SectionCard>
+      <TicketProblemCard ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
+      <TicketLinks ticket={item} isRequester={item.requesterId === me.id} />
+      <TicketTasks ticket={item} />
+      <TicketChangeLinks ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
+      <TicketArticles ticket={item} />
       <SectionCard title={t('detail.timeline')}>
         {timeline.isError && <ErrorState error={timeline.error} onRetry={() => void timeline.refetch()} />}
         {timeline.data && <Timeline events={timeline.data} />}

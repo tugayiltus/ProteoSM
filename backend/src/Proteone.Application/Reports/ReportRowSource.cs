@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using FluentValidation.Results;
 using Proteone.Application.Abstractions;
@@ -68,14 +69,15 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
     /// a ratio's denominator rows, or the rows of one distribution <paramref name="bucket"/>. An unknown metric, a denominator on a
     /// non-ratio, or an unknown or unsupported bucket is a 400 field error.
     /// </summary>
-    public DrilldownRows Open(ReportViewer viewer, ReportName report, string metricKey, string? bucket, ReportDrillPart part, ReportFilter filter)
+    public async Task<DrilldownRows> OpenAsync(
+        ReportViewer viewer, ReportName report, string metricKey, string? bucket, ReportDrillPart part, ReportFilter filter, CancellationToken cancellationToken)
     {
         filter.EnsureValid();
         var metric = ReportCatalog.Find(report, metricKey);
         var now = clock.GetUtcNow();
         if (metric is AssetReportMetric assetMetric)
         {
-            return OpenAssets(viewer, assetMetric, bucket, part, filter, now);
+            return OpenAssets(viewer, assetMetric, bucket, part, filter, now, await db.SystemSettings.Select(s => s.WarrantyWindowDays).SingleAsync(cancellationToken));
         }
 
         if (metric is ChangeReportMetric changeMetric)
@@ -141,14 +143,14 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
                 t.CreatedAt, t.CompletedAt,
                 db.Services.Where(s => s.Id == t.ServiceId).Select(s => s.Name).FirstOrDefault()));
 
-    private DrilldownRows OpenAssets(ReportViewer viewer, AssetReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now)
+    private DrilldownRows OpenAssets(ReportViewer viewer, AssetReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now, int warrantyWindowDays)
     {
         if (part == ReportDrillPart.Denominator)
         {
             throw Invalid(PartField);
         }
 
-        var pipeline = ReportPipeline.Assets(scope, db, companyClock, viewer, filter, now);
+        var pipeline = ReportPipeline.Assets(scope, db, companyClock, viewer, filter, now, warrantyWindowDays);
         IQueryable<Asset> rows;
         try
         {

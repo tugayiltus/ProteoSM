@@ -11,7 +11,7 @@
   },
   "states": {
     "full": "Dolu",
-    "expiring": "30 gün içinde bitiyor",
+    "expiring": "Yakında bitiyor",
     "expired": "Süresi bitti"
   },
   "columns": {
@@ -87,5 +87,9 @@
     "title": "Lisanslar",
     "none": "Bu cihaza atanmış lisans yok.",
     "meta": "{{name}} · Bitiş: {{end}}"
+  },
+  "home": {
+    "mineCard": "Yazılımlarım",
+    "mineCardDescription": "Size verilen yazılımları görün."
   }
 }

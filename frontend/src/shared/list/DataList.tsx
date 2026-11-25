@@ -7,7 +7,7 @@ import { CheckboxInput } from '@astryxdesign/core/CheckboxInput';
 import { HStack } from '@astryxdesign/core/HStack';
 import { List, ListItem } from '@astryxdesign/core/List';
 import { StackItem } from '@astryxdesign/core/Stack';
-import { Table, useTableSelection, type TableColumn } from '@astryxdesign/core/Table';
+import { proportional, Table, useTableSelection, type TableColumn } from '@astryxdesign/core/Table';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,8 @@ export interface DataColumn<T> {
   key: string;
   header: string;
   renderCell: (item: T) => ReactNode;
+  /** Share of the table width beside the other columns (default 1); rows of buttons need more. */
+  grow?: number;
 }
 
 export interface DataListProps<T> {
@@ -36,6 +38,8 @@ export interface DataSelection<T> {
   /** Names the row in its checkbox label ("<name> öğesini seç"), e.g. the asset tag. */
   rowLabel: (item: T) => string;
 }
+
+const DEFAULT_GROW = 1;
 
 /** Astryx `Table` needs plain record rows, so each item travels inside one. */
 interface Row<T> extends Record<string, unknown> {
@@ -86,7 +90,7 @@ export function DataList<T>({ items, columns, getKey, renderCard, caption, selec
     );
   }
   const rows: Row<T>[] = items.map((item) => ({ rowKey: getKey(item), item }));
-  const tableColumns: TableColumn<Row<T>>[] = columns.map((column) => ({ key: column.key, header: column.header, renderCell: (row) => column.renderCell(row.item) }));
+  const tableColumns: TableColumn<Row<T>>[] = columns.map((column) => ({ key: column.key, header: column.header, width: proportional(column.grow ?? DEFAULT_GROW), renderCell: (row) => column.renderCell(row.item) }));
   return (
     <Table
       aria-label={caption}

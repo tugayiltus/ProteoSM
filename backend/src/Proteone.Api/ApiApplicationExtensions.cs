@@ -75,6 +75,7 @@ internal static class ApiApplicationExtensions
         api.MapLicenceEndpoints();
         api.MapReleaseEndpoints();
         api.MapMonitoringEndpoints();
+        api.MapAnnouncementEndpoints();
         api.MapChangeEndpoints();
         api.MapApprovalEndpoints();
         api.MapKnowledgeEndpoints();

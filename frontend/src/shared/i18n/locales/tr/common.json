@@ -86,7 +86,7 @@
     "changes": "Değişiklikler",
     "changeCalendar": "Bakım takvimi",
     "changeDetail": "Değişiklik",
-    "approvals": "Onay yönetimi",
+    "approvals": "Onaylar",
     "kbList": "Bilgi bankası",
     "kbNew": "Yeni makale",
     "kbArticle": "Makale",
@@ -125,19 +125,23 @@
     "mySoftware": "Yazılımlarım",
     "releases": "Sürümler",
     "releaseDetail": "Sürüm",
-    "adminMonitoring": "İzleme kaynakları"
+    "adminMonitoring": "İzleme kaynakları",
+    "adminSettings": "Genel ayarlar",
+    "adminAnnouncements": "Duyurular"
   },
   "menuGroups": {
     "personal": "Kişisel",
-    "itOps": "IT operasyonu",
+    "itOps": "Destek",
     "analysis": "Analiz",
     "overview": "Genel bakış",
     "organization": "Organizasyon",
     "deviceCatalog": "Cihaz kataloğu",
     "serviceCatalog": "Hizmet kataloğu",
     "sla": "SLA",
-    "notifications": "Bildirimler",
-    "system": "Sistem ve denetim"
+    "notifications": "Duyuru ve bildirim",
+    "system": "Sistem ve denetim",
+    "changeOps": "Değişiklik ve problem",
+    "inventory": "Varlık ve hizmet"
   },
   "breadcrumb": {
     "label": "Sayfa yolu",
