@@ -37,6 +37,8 @@ test('task: IT hands work from an incident to another team, which claims, starts
   const complete = db.page.getByRole('dialog');
   await complete.getByLabel('Sonuç notu').fill('Yedek 02:00 itibarıyla alındı');
   await complete.getByRole('button', { name: 'Onayla' }).click();
+  // The closing dialog still holds the note; without this wait the text matches twice.
+  await expect(complete).toBeHidden();
   await expect(db.page.getByText('Tamamlandı').first()).toBeVisible();
   await expect(db.page.getByText('Yedek 02:00 itibarıyla alındı')).toBeVisible();
   await expectNoHorizontalScroll(db.page);
