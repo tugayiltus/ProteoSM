@@ -12,7 +12,7 @@ Bazı talep tipleri yönetici onayı ister (örneğin "Yeni bilgisayar"). Böyle
 
 ## Talepleri onaylama veya reddetme
 
-1. Menüden **Onay yönetimi** sayfasını açın. **Onay bekleyenler** listesi açılır.
+1. Menüden **Onaylar** sayfasını açın. **Onay bekleyenler** listesi açılır.
 2. Listede size atanmış talepler ve onaylayıcısı olmayan talepler görünür. Her satırda numara, konu, talep sahibi, talep tipi ve tarih yazar.
 3. Ayrıntıyı görmek için talep numarasına basın.
 4. Karar verin:
@@ -42,7 +42,7 @@ Onaylanmış bir talebin kapsamı sonradan değişirse IT ekibi talep sayfasınd
 
 ## Değişiklikleri onaylama
 
-**Onay yönetimi** sayfasında, karar verebileceğiniz değişiklikler de listelenir. Her satırda değişiklik numarası, başlık, risk, bakım penceresi ve uygulama planının başı yazar. Bakım penceresi başka bir değişiklikle çakışıyorsa satırda "1 çakışma", "2 çakışma" gibi bir not yazar; ayrıntı için değişiklik sayfasına bakın. Çakışma yalnızca uyarıdır, kararınızı engellemez.
+**Onaylar** sayfasında, karar verebileceğiniz değişiklikler de listelenir. Her satırda değişiklik numarası, başlık, risk, bakım penceresi ve uygulama planının başı yazar. Bakım penceresi başka bir değişiklikle çakışıyorsa satırda "1 çakışma", "2 çakışma" gibi bir not yazar; ayrıntı için değişiklik sayfasına bakın. Çakışma yalnızca uyarıdır, kararınızı engellemez.
 
 1. Ayrıntıyı görmek için değişiklik numarasına basın.
 2. Karar verin:

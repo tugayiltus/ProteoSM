@@ -71,8 +71,10 @@ IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümü
 Masaüstünde menü ekranın solunda her zaman açıktır. Menü rolünüze göre gruplanır:
 
 - **Kişisel**: **Ana sayfa**, **Kayıtlarım**, **Zimmetlerim**, **Bilgi bankası**.
-- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**, **Hizmetler**; yöneticiler ayrıca **Onay yönetimi**.
-- **Analiz** (IT personeli ve yönetici): **Raporlar**, **Dışa aktarımlarım**.
+- **Destek** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**; yöneticide ayrıca **Onaylar**.
+- **Değişiklik ve problem** (IT personeli ve yönetici): **Problemler**, **Değişiklikler**, **Sürümler**.
+- **Varlık ve hizmet** (IT personeli ve yönetici): **Envanter**, **Hizmetler**, **Lisanslar**.
+- **Analiz** (IT personeli ve yönetici): **Raporlar**. **Dışa aktarımlarım** rapor sayfasının sağ üstündedir.
 
 Menünün altındaki düğmeyle (**Menüyü daralt**) menüyü yalnızca simgelere indirebilirsiniz.
 

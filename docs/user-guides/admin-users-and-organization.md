@@ -52,7 +52,7 @@ Sistemdeki son aktif yönetici pasifleştirilemez ve rolü değiştirilemez.
 
 ![Departmanlar](images/admin-departments-desktop.png)
 
-Onaylayıcı kendi açtığı talebi onaylayamaz; bu durumda talep onaylayıcısız kalır ve bir yönetici **Onay yönetimi** sayfasında onaylayıcı atar (bkz. [Onaylar](approvals.md)).
+Onaylayıcı kendi açtığı talebi onaylayamaz; bu durumda talep onaylayıcısız kalır ve bir yönetici **Onaylar** sayfasında onaylayıcı atar (bkz. [Onaylar](approvals.md)).
 
 ## Lokasyonlar
 

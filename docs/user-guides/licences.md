@@ -41,7 +41,7 @@ Aynı üretici ve adla ikinci yazılım açılmaz. Kullanılmayan yazılımı **
 
 ## Bitiş e-postası
 
-Bitişe 30 gün kala sahip ekibin aktif üyelerine bir e-posta gider. Süre daha azsa e-posta hemen gider. Bitiş tarihi değişirse yeni tarih için yeniden gider.
+Bitişe, **Genel ayarlar** sayfasında seçilen gün sayısı (başlangıçta 30) kala sahip ekibin aktif üyelerine bir e-posta gider. Süre daha azsa e-posta hemen gider. Bitiş tarihi değişirse yeni tarih için yeniden gider.
 
 ## Lisans anahtarı (yönetici)
 

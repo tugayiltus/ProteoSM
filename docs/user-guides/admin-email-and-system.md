@@ -39,6 +39,29 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
 
+## Duyurular
+
+Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür.
+
+![Duyurular](images/admin-announcements-desktop.png)
+
+1. **Yeni duyuru** düğmesine basın.
+2. **Başlık**, **Mesaj** ve **Önem** alanlarını doldurun.
+3. **Başlangıç** zamanını seçin. **Bitiş** boşsa duyuru süresiz kalır.
+4. **Oluştur** düğmesine basın.
+
+- Duyuru silinmez. Kaldırmak için **Düzenle** ile **Bitiş** zamanını şimdiye alın (başlangıçtan sonra olmalı).
+- Ana sayfada en yeni beş duyuru görünür.
+
+## Genel ayarlar
+
+![Genel ayarlar](images/admin-settings-desktop.png)
+
+- **Lisans bitiş uyarısı**: sahip ekip, lisans bitmeden kaç gün önce uyarılır.
+- **Garanti raporu penceresi**: bitiş tarihi seçilmediğinde garanti raporu kaç gün ileriye bakar.
+
+Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
+
 ## İzleme kaynakları
 
 İzleme aracı (örneğin sunucu izleme) imzalı istekle kendiliğinden arıza açabilir.

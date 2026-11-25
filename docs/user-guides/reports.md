@@ -64,7 +64,7 @@ Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; *
 
 1. Kayıt listesinde **Excel'e aktar** düğmesine basın. Dosya hemen iner.
 2. Liste çok büyükse "Bu liste anında indirilemeyecek kadar büyük" uyarısı çıkar. **Arka planda hazırla** düğmesine basın.
-3. Hazırlanan dosyalar **Dışa aktarımlarım** sayfasında görünür. Menüden veya rapor sayfasının sağ üstündeki **Dışa aktarımlarım** düğmesinden açın.
+3. Hazırlanan dosyalar **Dışa aktarımlarım** sayfasında görünür. Rapor sayfasının sağ üstündeki **Dışa aktarımlarım** düğmesinden açın.
 
 ![Dışa aktarımlarım](images/reports-exports-desktop.png)
 
