@@ -149,7 +149,7 @@ Users: `POST /admin/users` and `POST /admin/users/{id}/reset-password` take `del
 
 - `GET|PUT /admin/system-settings` — licence notice days and warranty window days (1–365); `version` in the body, stale is 409, out of range 400; audited as `system_settings.updated`.
 - `GET|POST /admin/announcements`, `PUT /admin/announcements/{id}` — newest 100; title 150, text 1000, level `info` or `warning`, optional end (`announcements.invalid_period` 409 unless after the start). No delete: an end date takes one down. Audited.
-- `GET /announcements` (signed in) — at most five current ones, newest first.
+- `GET /announcements` (signed in) — at most five current ones, warnings first, then the newest.
 
 ### Admin: system (`admin` policy)
 

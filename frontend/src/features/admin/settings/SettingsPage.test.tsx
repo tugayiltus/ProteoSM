@@ -51,6 +51,6 @@ describe('SettingsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Kaydet' }));
     await waitFor(() => expect(api.calls.filter((c) => c.method === 'PUT')).toHaveLength(2));
     const body: unknown = await api.calls.filter((c) => c.method === 'PUT').at(-1)?.clone().json();
-    expect(body).toMatchObject({ licenceNoticeDays: 45, version: 9 });
+    expect(body).toEqual({ licenceNoticeDays: 45, warrantyWindowDays: 60, version: 9 });
   });
 });

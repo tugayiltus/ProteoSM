@@ -38,6 +38,8 @@ describe('AnnouncementsPage', () => {
     await expect.poll(() => api.calls.some((c) => c.method === 'POST')).toBe(true);
     const body: unknown = await api.calls.find((c) => c.method === 'POST')?.clone().json();
     expect(body).toMatchObject({ title: 'VPN bakımı', body: 'Kesinti', level: 'info', endsAt: null });
+    const { startsAt } = body as { startsAt: string };
+    expect(Math.abs(Date.parse(startsAt) - Date.now())).toBeLessThan(120_000);
   });
 
   it('shows a refused period at the end field and sends the version', async () => {

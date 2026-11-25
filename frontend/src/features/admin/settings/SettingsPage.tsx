@@ -32,16 +32,30 @@ const days = z.number({ error: ERROR_CODES.required }).int(ERROR_CODES.valueInva
 const schema = z.object({ licenceNoticeDays: days, warrantyWindowDays: days });
 type FormValues = z.infer<typeof schema>;
 
+const valuesOf = ({ licenceNoticeDays, warrantyWindowDays }: SystemSettings): FormValues => ({ licenceNoticeDays, warrantyWindowDays });
+
 function SettingsForm({ settings }: { settings: SystemSettings }) {
   const { t } = useTranslation('admin');
   const { t: tc } = useTranslation();
   const showToast = useToast();
   const update = useUpdateSystemSettings();
-  const { control, handleSubmit } = useForm<FormValues>({
+  // After a conflict the fields the user did not touch follow the server, so a retry reverts nothing unseen.
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { licenceNoticeDays: settings.licenceNoticeDays, warrantyWindowDays: settings.warrantyWindowDays },
+    values: valuesOf(settings),
+    resetOptions: { keepDirtyValues: true },
   });
-  const onSubmit = handleSubmit((values) => update.mutate({ ...values, version: settings.version }, { onSuccess: () => showToast({ body: t('settings.saved') }) }));
+  const onSubmit = handleSubmit((values) =>
+    update.mutate(
+      { ...values, version: settings.version },
+      {
+        onSuccess: (saved) => {
+          reset(valuesOf(saved));
+          showToast({ body: t('settings.saved') });
+        },
+      },
+    ),
+  );
   return (
     <form noValidate onSubmit={(event) => void onSubmit(event)}>
       <VStack gap={4}>

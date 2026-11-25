@@ -48,3 +48,7 @@ IT could not see in Proteone which software the company may use, how many seats 
 ### Risks
 - Whoever holds the database and the key ring can read the keys; backups contain both, as for directory secrets.
 - A lost key ring makes stored keys unreadable; they have to be entered again.
+
+## Amendment 2026-11-25
+
+The notice period is a general setting now, 30 days at first (ADR-0042).

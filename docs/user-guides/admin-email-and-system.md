@@ -51,7 +51,7 @@ Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfası
 4. **Oluştur** düğmesine basın.
 
 - Duyuru silinmez. Kaldırmak için **Düzenle** ile **Bitiş** zamanını şimdiye alın (başlangıçtan sonra olmalı).
-- Ana sayfada en yeni beş duyuru görünür.
+- Ana sayfada en çok beş duyuru görünür; önce uyarılar, sonra en yeniler.
 
 ## Genel ayarlar
 

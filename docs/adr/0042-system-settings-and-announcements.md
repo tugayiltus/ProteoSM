@@ -10,8 +10,9 @@ The licence notice period and the warranty window were constants in code, so a c
 
 ## Decision
 
+- Implemented in `4ecfe5f`. Changes the fixed periods of ADR-0039 (licences) and ADR-0020 (reports).
 - One row `system_settings` holds the company-wide values (`licence_notice_days`, `warranty_window_days`, 1–365). The migration inserts it. Admins edit it on `/admin/settings`; each change is audited and version-checked.
-- Announcements have a title, a text, a level (`info`, `warning`), a start and an optional end. Admins manage them on `/admin/announcements`. Every signed-in user reads the current ones on the home page, at most five, newest first.
+- Announcements have a title, a text, a level (`info`, `warning`), a start and an optional end. Admins manage them on `/admin/announcements`. Every signed-in user reads the current ones on the home page, at most five, warnings first, then the newest.
 - An announcement is ended, never deleted, so the audit trail stays whole.
 - Security values (session length, rate limits) stay in the environment: a compromised admin account must not be able to weaken them.
 

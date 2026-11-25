@@ -7,12 +7,14 @@ public sealed partial class FormerProductNameTests
 {
     private const string Migrations = "backend/src/Proteone.Infrastructure/Persistence/Migrations/";
 
-    private static readonly string[] SearchedPaths = ["backend/src", "backend/tests", "deploy", "frontend/src", "frontend/e2e", "frontend/guide", "frontend/index.html", "tools", ".github", "Dockerfile"];
+    private static readonly string[] SearchedPaths = ["backend/src", "backend/tests", "deploy", "frontend/src", "frontend/e2e", "frontend/guide", "frontend/index.html", "frontend/admin", "frontend/public", "docs", "tools", ".github", "Dockerfile", "CLAUDE.md", "README.md", "SECURITY.md", "capabilities.md", "proteone.md", "frontend/CLAUDE.md"];
 
     private static readonly string[] SkippedFolders = ["bin", "obj", "node_modules", "certs"];
 
     /// <summary>Settings of this machine, not part of the repository (git-ignored).</summary>
     private const string LocalSettings = "deploy/.env";
+
+    private static readonly string[] BinaryExtensions = [".png", ".pdf"];
 
     private static readonly string[] AllowedFiles =
     [
@@ -29,6 +31,7 @@ public sealed partial class FormerProductNameTests
         // Upgrade of an existing installation and of browser settings.
         "deploy/backup/backup.sh",
         "deploy/compose.yaml",
+        "frontend/admin/index.html",
         "frontend/index.html",
         "frontend/src/shared/layout/useSidebar.ts",
         "frontend/src/shared/ui/colorMode.ts",
@@ -37,6 +40,18 @@ public sealed partial class FormerProductNameTests
         "tools/tests/backup-test.sh",
         "tools/upgrade-drill.sh",
         "backend/tests/Proteone.Application.Tests/FormerProductNameTests.cs",
+        // Documents that explain the stored names, the upgrade or the owner's open decisions.
+        "CLAUDE.md",
+        "SECURITY.md",
+        "capabilities.md",
+        "docs/adr/0004-local-identity-cookie-csrf.md",
+        "docs/adr/0017-password-set-links.md",
+        "docs/adr/0030-login-method-chosen-in-the-admin-panel.md",
+        "docs/adr/0037-proteone-name-and-compatibility.md",
+        "docs/adr/README.md",
+        "docs/operations.md",
+        "docs/status.md",
+        "docs/superpowers/plans/2026-11-25-proteone-next.md",
     ];
 
     [GeneratedRegex("tgysm", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
@@ -52,6 +67,7 @@ public sealed partial class FormerProductNameTests
 
         Assert.NotEmpty(found);
         Assert.Empty(found.Except(AllowedFiles));
+        Assert.Empty(AllowedFiles.Except(found));
     }
 
     private static IEnumerable<string> Files() =>
@@ -59,6 +75,6 @@ public sealed partial class FormerProductNameTests
         let path = Path.Combine(RepositoryPaths.Root, searched)
         from file in File.Exists(path) ? [path] : Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
         let relative = Path.GetRelativePath(RepositoryPaths.Root, file).Replace(Path.DirectorySeparatorChar, '/')
-        where relative != LocalSettings && !relative.Split('/').Any(SkippedFolders.Contains)
+        where relative != LocalSettings && !BinaryExtensions.Contains(Path.GetExtension(relative)) && !relative.Split('/').Any(SkippedFolders.Contains)
         select relative;
 }

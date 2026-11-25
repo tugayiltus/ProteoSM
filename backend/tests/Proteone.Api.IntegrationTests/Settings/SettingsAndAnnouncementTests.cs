@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Proteone.Api.IntegrationTests.Infrastructure;
+using Proteone.Application.Features.Announcements;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Settings;
 using Proteone.Domain.Users;
@@ -33,11 +34,11 @@ public sealed class SettingsAndAnnouncementTests(ApiFactory factory) : IAsyncLif
         return await client.ReadJsonAsync<JsonElement>(response);
     }
 
-    private static object Draft(string title, int startHours, int? endHours = null, uint version = 0) => new
+    private static object Draft(string title, int startHours, int? endHours = null, uint version = 0, string level = "warning") => new
     {
         title,
         body = "Bakım",
-        level = "warning",
+        level,
         startsAt = DateTimeOffset.UtcNow.AddHours(startHours),
         endsAt = endHours is { } hours ? DateTimeOffset.UtcNow.AddHours(hours) : (DateTimeOffset?)null,
         version,
@@ -103,6 +104,44 @@ public sealed class SettingsAndAnnouncementTests(ApiFactory factory) : IAsyncLif
         using var settings = await staff.GetAsync(SettingsPath);
         using var list = await staff.GetAsync(AdminPath);
         using var create = await staff.PostAsync(AdminPath, Draft("Yetkisiz", -1));
-        Assert.All([settings, list, create], r => Assert.Equal(HttpStatusCode.Forbidden, r.StatusCode));
+        using var put = await staff.PutAsync(SettingsPath, new { licenceNoticeDays = 1, warrantyWindowDays = 1, version = 0 });
+        using var update = await staff.PutAsync($"{AdminPath}/{Guid.CreateVersion7()}", Draft("Yetkisiz", -1));
+        using var anonymous = factory.CreateClient();
+        using var signedOut = await anonymous.GetAsync(new Uri(UserPath, UriKind.Relative), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Unauthorized, signedOut.StatusCode);
+        Assert.All([settings, list, create, put, update], r => Assert.Equal(HttpStatusCode.Forbidden, r.StatusCode));
+    }
+
+    [Fact]
+    public async Task A_warning_stays_visible_behind_newer_information()
+    {
+        using (await _admin.PostAsync(AdminPath, Draft("Uyarı", -48)))
+        {
+        }
+
+        for (var i = 0; i < ListActiveAnnouncementsHandler.MaxShown; i++)
+        {
+            using var created = await _admin.PostAsync(AdminPath, Draft($"Bilgi {i}", -1, level: "info"));
+            Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        }
+
+        var shown = (await JsonAsync(_admin, UserPath)).EnumerateArray().Select(x => x.GetProperty("title").GetString()).ToList();
+        Assert.Equal(ListActiveAnnouncementsHandler.MaxShown, shown.Count);
+        Assert.Equal("Uyarı", shown[0]);
+    }
+
+    [Fact]
+    public async Task A_stale_or_unknown_announcement_update_is_refused_and_a_start_is_required()
+    {
+        using var created = await _admin.PostAsync(AdminPath, Draft("Bir", -1));
+        var item = await _admin.ReadJsonAsync<JsonElement>(created);
+        var (path, version) = ($"{AdminPath}/{item.GetProperty("id").GetGuid()}", item.GetProperty("version").GetUInt32());
+        using var first = await _admin.PutAsync(path, Draft("İki", -1, version: version));
+        using var stale = await _admin.PutAsync(path, Draft("Üç", -1, version: version));
+        using var unknown = await _admin.PutAsync($"{AdminPath}/{Guid.CreateVersion7()}", Draft("Yok", -1));
+        using var noStart = await _admin.PostAsync(AdminPath, new { title = "Başlangıçsız", body = "x", level = "info" });
+        Assert.Equal(
+            [HttpStatusCode.OK, HttpStatusCode.Conflict, HttpStatusCode.NotFound, HttpStatusCode.BadRequest],
+            [first.StatusCode, stale.StatusCode, unknown.StatusCode, noStart.StatusCode]);
     }
 }

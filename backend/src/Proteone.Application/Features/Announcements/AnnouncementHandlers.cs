@@ -20,12 +20,13 @@ internal sealed class AnnouncementDraftValidator : AbstractValidator<Announcemen
         RuleFor(d => d.Title).NotEmpty().MaximumLength(Announcement.TitleMaxLength);
         RuleFor(d => d.Body).NotEmpty().MaximumLength(Announcement.BodyMaxLength);
         RuleFor(d => d.Level).IsInEnum();
+        RuleFor(d => d.StartsAt).NotEmpty();
     }
 }
 
 public sealed class ListActiveAnnouncementsHandler(IAppDbContext db, TimeProvider clock)
 {
-    /// <summary>More than a handful at once is noise; the newest win.</summary>
+    /// <summary>More than a handful at once is noise; warnings first, then the newest.</summary>
     public const int MaxShown = 5;
 
     public async Task<IReadOnlyList<ActiveAnnouncement>> HandleAsync(CancellationToken cancellationToken)
@@ -33,7 +34,7 @@ public sealed class ListActiveAnnouncementsHandler(IAppDbContext db, TimeProvide
         var now = clock.GetUtcNow();
         return await db.Announcements.AsNoTracking()
             .Where(a => a.StartsAt <= now && (a.EndsAt == null || a.EndsAt > now))
-            .OrderByDescending(a => a.StartsAt).ThenBy(a => a.Id)
+            .OrderByDescending(a => a.Level == AnnouncementLevel.Warning).ThenByDescending(a => a.StartsAt).ThenBy(a => a.Id)
             .Take(MaxShown)
             .Select(a => new ActiveAnnouncement(a.Id, a.Title, a.Body, a.Level, a.StartsAt, a.EndsAt))
             .ToListAsync(cancellationToken);
