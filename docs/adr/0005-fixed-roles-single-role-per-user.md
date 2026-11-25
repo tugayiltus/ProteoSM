@@ -6,7 +6,7 @@
 
 ## Context
 
-`tgysm.md` §4 defines three fixed role packages (employee, IT staff, admin) and excludes direct user permissions and custom roles from the first release.
+`proteone.md` §4 defines three fixed role packages (employee, IT staff, admin) and excludes direct user permissions and custom roles from the first release.
 
 ## Decision
 

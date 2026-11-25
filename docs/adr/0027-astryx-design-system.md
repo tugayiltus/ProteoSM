@@ -22,7 +22,7 @@ Replace CoreUI with Astryx across the frontend, in steps:
 
 Two setup choices differ from the Astryx defaults:
 
-- **Self-hosted font.** The theme's `fonts.css` loads Figtree from Google Fonts. TGYSM is a company intranet app, so it must not call outside hosts. `@fontsource/figtree` (weights 400–700, Latin and Latin Extended for Turkish) supplies the same `Figtree` family from the app bundle.
+- **Self-hosted font.** The theme's `fonts.css` loads Figtree from Google Fonts. Proteone is a company intranet app, so it must not call outside hosts. `@fontsource/figtree` (weights 400–700, Latin and Latin Extended for Turkish) supplies the same `Figtree` family from the app bundle.
 - **No generated theme module.** `astryx theme add` writes `src/astryx-themes.ts`, which always imports that `fonts.css`, and the file must not be hand-edited. `AstryxProvider` imports `@astryxdesign/theme-neutral/built` and its stylesheet directly instead.
 
 ## Alternatives Considered

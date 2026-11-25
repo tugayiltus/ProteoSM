@@ -6,7 +6,7 @@
 
 ## Context
 
-Tickets take attachments: 10 MB each, up to 5 per request, PDF/PNG/JPEG/TXT/CSV; stored outside the web root; downloadable only through the authorized API and only after scanning (`tgysm.md` §7.2). Hosting and antivirus are not chosen yet.
+Tickets take attachments: 10 MB each, up to 5 per request, PDF/PNG/JPEG/TXT/CSV; stored outside the web root; downloadable only through the authorized API and only after scanning (`proteone.md` §7.2). Hosting and antivirus are not chosen yet.
 
 ## Decision
 
@@ -37,7 +37,7 @@ Tickets take attachments: 10 MB each, up to 5 per request, PDF/PNG/JPEG/TXT/CSV;
 - Until Phase 6 no malware scanning exists; type checks only.
 
 ### Risks
-- Backups must include the file folder together with the database (`tgysm.md` §17).
+- Backups must include the file folder together with the database (`proteone.md` §17).
 
 ## Amendment 2026-09-27
 

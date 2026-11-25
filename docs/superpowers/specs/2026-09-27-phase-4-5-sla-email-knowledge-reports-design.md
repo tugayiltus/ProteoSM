@@ -2,7 +2,7 @@
 
 - Date: 2026-09-27
 - Owner: Tugay İLTUŞ
-- Requirements source: `tgysm.md` v3.0 §3.1, §9–§12, §15–§17, §19–§21
+- Requirements source: `proteone.md` v3.0 §3.1, §9–§12, §15–§17, §19–§21
 - Builds on: Phase 2–3 (`docs/superpowers/specs/2026-09-26-phase-2-3-assets-and-tickets-design.md`), commit `5ea39bc`
 - Scope: Phase 4 (worker, outbox, email, account links, SLA) and Phase 5 (knowledge base, reports, Excel export) in one spec. Two implementation plans: Phase 4 first, Phase 5 second. Phase 6 (release hardening, pilot, restore drill, production SMTP/scanner/hosting) stays out.
 
@@ -13,7 +13,7 @@
 | Topic | Decision |
 |---|---|
 | Structure | One spec for Phases 4 and 5; one plan per phase, Phase 4 delivered and committed before Phase 5 starts |
-| Background work | A separate `Tgysm.Worker` process (.NET Generic Host) using the same Application layer; safe with several instances through row leases taken with `FOR UPDATE SKIP LOCKED` |
+| Background work | A separate `Proteone.Worker` process (.NET Generic Host) using the same Application layer; safe with several instances through row leases taken with `FOR UPDATE SKIP LOCKED` |
 | Email | Transactional outbox written in the same transaction as the change; worker expands events into per-recipient deliveries and sends them with bounded retry. MailKit SMTP in production, a pickup folder (`.eml` files) in development and tests |
 | Templates | Stored in the database, seeded with Turkish defaults, edited in `/admin`; plain text with a fixed variable list per event |
 | Account links | Activation and password-reset links (single use, time limited, stored as hash) replace temporary passwords as the default; the temporary password stays as an admin fallback and the CLI recovery path |
@@ -22,7 +22,7 @@
 | Reports | Server-side report queries sharing one filter/scope builder with drill-down and export; Excel via ClosedXML; large exports as background jobs with expiring download |
 | Delivery | TDD, gates as Phase 1–3, specialist reviews at the end of each phase, local commits only after green gates; no push |
 
-**Assumptions** (confirm before go-live, `tgysm.md` §21)
+**Assumptions** (confirm before go-live, `proteone.md` §21)
 
 - Company time zone `Europe/Istanbul`; working hours Monday–Friday 09:00–18:00; holidays entered by an admin.
 - Seed SLA targets (business time, first response / resolution): P1 30 min / 4 h, P2 1 h / 8 h, P3 4 h / 3 days, P4 8 h / 5 days. Requests use the same table unless a request type overrides it. Warning at 75 % of the target. These are samples, not commitments.
@@ -30,7 +30,7 @@
 - Activation link valid 72 h, reset link 1 h.
 - Synchronous Excel export up to 5,000 rows; above that a background job; files expire after 24 h.
 
-**Success criteria** (`tgysm.md` §20 items 5, 11–14, 17)
+**Success criteria** (`proteone.md` §20 items 5, 11–14, 17)
 
 1. SLA results stay correct across holidays, working-hour boundaries, the time zone, pauses and priority changes; a transfer never resets a timer.
 2. An outbox event is committed atomically with its change; a rolled-back change leaves no event. After a worker or SMTP restart, pending work is processed; an SMTP outage never rolls back or fails the user's action.
@@ -42,7 +42,7 @@
 
 ## 2. Worker (A)
 
-- New project `backend/src/Tgysm.Worker` (Worker SDK) referencing Application and Infrastructure, never Api (architecture test).
+- New project `backend/src/Proteone.Worker` (Worker SDK) referencing Application and Infrastructure, never Api (architecture test).
 - Jobs, each a `BackgroundService` on a `PeriodicTimer`: `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner`, `Cleanup`. Intervals from `Worker:<Job>:IntervalSeconds`; a non-positive value is clamped to the default and logged.
 - One DI scope and one `DbContext` per unit of work. Failures are logged and recorded; the loop keeps running.
 - Claiming: `SELECT … FOR UPDATE SKIP LOCKED LIMIT n` inside a short transaction sets `locked_until = now + lease`; work runs outside that transaction; completion is a conditional update on the lease owner. A crashed worker's rows become claimable when the lease expires.

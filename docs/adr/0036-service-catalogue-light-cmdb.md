@@ -6,7 +6,7 @@
 
 ## Context
 
-When SAP, e-mail or VPN failed, IT could not see in one place which devices carry that service, which incidents and requests are open against it, which changes touch it and which problems sit under it. The desk found out by reading ticket subjects. `tgysm.md` §2 excludes a full CMDB and a service dependency map. The owner chose a light service catalogue as the third light-ITIL module, after the ticket-change links (ADR-0033) and problems (ADR-0034). The owner chose: services are for IT only (an impact view, not an employee catalogue), one optional service per record, and the service can be set on closed records too. Design: `docs/superpowers/specs/2026-11-23-service-catalogue-light-cmdb-design.md`. Related decisions: ADR-0033 (link access through `TicketWork`, central search), ADR-0034 (problems, `ProblemWork`), ADR-0013 (employee visibility), ADR-0022 (report charts).
+When SAP, e-mail or VPN failed, IT could not see in one place which devices carry that service, which incidents and requests are open against it, which changes touch it and which problems sit under it. The desk found out by reading ticket subjects. `proteone.md` §2 excludes a full CMDB and a service dependency map. The owner chose a light service catalogue as the third light-ITIL module, after the ticket-change links (ADR-0033) and problems (ADR-0034). The owner chose: services are for IT only (an impact view, not an employee catalogue), one optional service per record, and the service can be set on closed records too. Design: `docs/superpowers/specs/2026-11-23-service-catalogue-light-cmdb-design.md`. Related decisions: ADR-0033 (link access through `TicketWork`, central search), ADR-0034 (problems, `ProblemWork`), ADR-0013 (employee visibility), ADR-0022 (report charts).
 
 ## Decision
 
@@ -34,7 +34,7 @@ When SAP, e-mail or VPN failed, IT could not see in one place which devices carr
 ### Alternative 3: A full CMDB with CI classes and a dependency map
 - **Pros**: Service-to-service impact, discovery and relationship types.
 - **Cons**: Large data model, discovery tooling and upkeep that a single-company IT team cannot keep current.
-- **Why not**: `tgysm.md` §2 excludes it; the owner asked for a light catalogue.
+- **Why not**: `proteone.md` §2 excludes it; the owner asked for a light catalogue.
 
 ## Consequences
 

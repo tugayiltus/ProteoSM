@@ -13,7 +13,7 @@ After the CoreUI conversion (ADR-0021), the owner tested the product and found t
 - Dialog forms used two layouts (a `row g-3` grid and a `d-flex flex-column` stack). Some checkboxes were hand-written `<input>` elements, and a few Tailwind class names were left over.
 - ADR-0021 chose a light theme only, with a custom blue (`#1d4ed8`).
 
-The owner asked for one consistent, modern look that follows the CoreUI admin template everywhere. The owner also asked for dark mode, a mobile-first layout, and no layout shift or freeze on phones and desktops. Spec: `docs/superpowers/specs/2026-10-09-ui-cohesion-design.md`.
+The owner asked for one consistent, modern look that follows the CoreUI admin template everywhere. The owner also asked for dark mode, a mobile-first layout, and no layout shift or freeze on phones and desktops. Spec: `2026-10-09-ui-cohesion-design.md`, kept in the Git history.
 
 ## Decision
 
@@ -28,7 +28,7 @@ The owner asked for one consistent, modern look that follows the CoreUI admin te
   Pages place nothing directly on the page background.
 - **Colors.** CoreUI's own palette is used (primary `#5856d6`). The custom `$primary` and `$link-color` are removed. Badges use the `-subtle` and `-emphasis` tokens, which are readable in both modes.
 - **Color modes.** The modes are light, dark and auto (follows the system).
-  - The choice is chosen in the header `ThemeMenu` and stored under `tgysm-theme`.
+  - The choice is chosen in the header `ThemeMenu` and stored under `proteone-theme`.
   - It is applied to `data-coreui-theme` on `<html>` by a small inline script in `index.html` before the first paint, so dark mode never flashes light.
   - Our own store (`colorMode.ts`, `useSyncExternalStore`) keeps one state for the menu and the charts.
   - Charts read their colors from CoreUI's CSS variables (`chartTheme.ts`) and are re-mounted when the mode changes.

@@ -4,7 +4,7 @@ Date: 2026-11-23. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11
 
 Builder calls (owner to check): asset link blocked for `Retired`/`Lost`, existing links kept; link write under `SerializationLocks.AssetLifecycle`; `set-service` is separate from the change plan and never voids an approval; any in-scope IT staff sets it on a ticket; reports get a distribution figure only (no service filter or drill-down); search hit key is the service name.
 
-Context: this is the third light-ITIL module. The owner brief of 2026-11-18 set the order: related records, then Problem, then service catalogue + light CMDB, then software/licence assets, light Release and the monitoring webhook. Phase 10 (ADR-0033) added the ticket ↔ change links and central search. Phase 11 (ADR-0034) added problems. `tgysm.md` §2 excludes "Tam CMDB ve servis bağımlılık haritası". This module stays inside that exclusion: it has services and their assets, but no dependency map, no discovery and no CI classes. `tgysm.md` §2 and §19 are updated with it.
+Context: this is the third light-ITIL module. The owner brief of 2026-11-18 set the order: related records, then Problem, then service catalogue + light CMDB, then software/licence assets, light Release and the monitoring webhook. Phase 10 (ADR-0033) added the ticket ↔ change links and central search. Phase 11 (ADR-0034) added problems. `proteone.md` §2 excludes "Tam CMDB ve servis bağımlılık haritası". This module stays inside that exclusion: it has services and their assets, but no dependency map, no discovery and no CI classes. `proteone.md` §2 and §19 are updated with it.
 
 ## Intent
 
@@ -99,4 +99,4 @@ Success:
 - Exact impact query shape and paging (cap each section and link to the filtered list for "tümü").
 - Seed: about 8 services (SAP, E-posta, VPN, Dosya sunucusu, Yazıcılar, İnternet, ERP mobil, Telefon). Each gets assets and some existing pilot records.
 - Test split: domain rules (active-only set, retired asset link), handler tests for scope and access, frontend tests for the picker suggestion and the impact page, and one E2E path (admin creates a service, IT sets it on an incident, the impact page shows it).
-- ADR-0036 records the decision. `tgysm.md` §2/§19 are updated in the same change.
+- ADR-0036 records the decision. `proteone.md` §2/§19 are updated in the same change.

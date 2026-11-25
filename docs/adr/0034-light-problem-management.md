@@ -6,7 +6,7 @@
 
 ## Context
 
-The same fault came back in many incidents (a VPN that drops every Monday, one printer model that jams). Each incident was fixed alone, and the shared cause, the workaround and the permanent fix lived only in single tickets or in people's heads. `tgysm.md` §2 listed full Problem Management as out of scope. The owner chose a light version as the second light-ITIL module after ADR-0033. Design: `docs/superpowers/specs/2026-11-20-problem-management-design.md`. Related decisions: ADR-0031 (tasks and changes as separate records), ADR-0033 (typed link tables, disclosure of linked rows, link touches `updated_at`), ADR-0019 (knowledge article flow), ADR-0013 (employee visibility).
+The same fault came back in many incidents (a VPN that drops every Monday, one printer model that jams). Each incident was fixed alone, and the shared cause, the workaround and the permanent fix lived only in single tickets or in people's heads. `proteone.md` §2 listed full Problem Management as out of scope. The owner chose a light version as the second light-ITIL module after ADR-0033. Design: `docs/superpowers/specs/2026-11-20-problem-management-design.md`. Related decisions: ADR-0031 (tasks and changes as separate records), ADR-0033 (typed link tables, disclosure of linked rows, link touches `updated_at`), ADR-0019 (knowledge article flow), ADR-0013 (employee visibility).
 
 ## Decision
 

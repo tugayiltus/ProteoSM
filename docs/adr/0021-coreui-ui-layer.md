@@ -6,7 +6,7 @@
 
 ## Context
 
-The UI/UX review (`docs/superpowers/specs/2026-10-09-ui-ux-review.md`) asked for a mobile-first product with a left sidebar on both the application and the `/admin` side, a breadcrumb on every signed-in page and one consistent visual language. The owner chose the CoreUI Free React Admin Template as the base for the whole product and a full conversion rather than a new shell around the old screens (`docs/superpowers/specs/2026-10-09-coreui-ui-ux-design.md`). Until now the frontend used Tailwind CSS for layout and styling and Radix for dialogs and sheets (ADR-0008). This ADR extends ADR-0008; React, Vite, TanStack Query, react-router, react-hook-form + zod and i18next stay.
+The UI/UX review (`2026-10-09-ui-ux-review.md`, kept in the Git history) asked for a mobile-first product with a left sidebar on both the application and the `/admin` side, a breadcrumb on every signed-in page and one consistent visual language. The owner chose the CoreUI Free React Admin Template as the base for the whole product and a full conversion rather than a new shell around the old screens (`2026-10-09-coreui-ui-ux-design.md`, kept in the Git history). Until now the frontend used Tailwind CSS for layout and styling and Radix for dialogs and sheets (ADR-0008). This ADR extends ADR-0008; React, Vite, TanStack Query, react-router, react-hook-form + zod and i18next stay.
 
 ## Decision
 

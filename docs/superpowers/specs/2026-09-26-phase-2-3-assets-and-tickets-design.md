@@ -2,7 +2,7 @@
 
 - Date: 2026-09-26
 - Owner: Tugay İLTUŞ
-- Requirements source: `tgysm.md` v3.0 §5–§8, §13, §16, §17, §19–§20
+- Requirements source: `proteone.md` v3.0 §5–§8, §13, §16, §17, §19–§20
 - Builds on: Phase 0–1 (`docs/superpowers/specs/2026-09-26-phase-0-1-foundation-design.md`), baseline commit `cfd2509`
 - Scope: Phase 2 (IT inventory and asset management) and Phase 3 (incident and request management) in one spec and one plan. SLA, email, knowledge base, reports and the worker stay out (Phases 4–6).
 
@@ -25,7 +25,7 @@
 - Categories have at most two levels.
 - An admin is the only approver role (ADR-0005); the approver is the requester's department approver.
 
-**Success criteria** (`tgysm.md` §20 items 4–10 as they apply)
+**Success criteria** (`proteone.md` §20 items 4–10 as they apply)
 
 1. An employee cannot read another user's ticket, internal note, attachment or assignment by changing an ID (404, no existence leak).
 2. IT staff cannot reach tickets of teams they are not in, through the list, search, detail or attachment download.

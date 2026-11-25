@@ -8,7 +8,7 @@ committed). The real LDAP client and the real OpenID Connect handler ran against
 
 | Service | Image | Role |
 |---|---|---|
-| `test-ca`, `openldap` | `tgysm-test-openldap:local`, built from `alpine:3.20.3` (OpenLDAP slapd 2.6.8) | Active Directory stand-in: `user` class, `sAMAccountName`, `userPrincipalName`, `objectGUID` (`deploy/test-directory/openldap/ad-lite.schema`), throw-away CA, LDAPS 636 + StartTLS 389 |
+| `test-ca`, `openldap` | `proteone-test-openldap:local`, built from `alpine:3.20.3` (OpenLDAP slapd 2.6.8) | Active Directory stand-in: `user` class, `sAMAccountName`, `userPrincipalName`, `objectGUID` (`deploy/test-directory/openldap/ad-lite.schema`), throw-away CA, LDAPS 636 + StartTLS 389 |
 | `oidc` | `ghcr.io/navikt/mock-oauth2-server:2.1.10` | Microsoft Entra ID stand-in: code flow with PKCE, `form_post`, RS256 tokens, claims per client id |
 | `postgres` | `postgres:17.6-alpine` | throw-away database for the API-level LDAP tests |
 | `ldap-tests` | `mcr.microsoft.com/dotnet/sdk:10.0.401` | runs the LDAP classes on Linux with the test CA trusted |
@@ -37,8 +37,8 @@ What the classes check:
 - `LdapOutageContractTests`: with the OpenLDAP container stopped, `POST /api/v1/auth/login/ldap` gives 503
   `auth.directory_unavailable`.
 - `OidcContractTests`: full code flow with PKCE through `GET /api/v1/auth/oidc/start` and the callback ends with a
-  TGYSM session (`/auth/me` 200); another tenant, a disallowed email domain, a bad signature and a wrong issuer are each
-  refused at `/login?error=sso` with no session and no user created, and each test asserts its own cause (TGYSM's
+  Proteone session (`/auth/me` 200); another tenant, a disallowed email domain, a bad signature and a wrong issuer are each
+  refused at `/login?error=sso` with no session and no user created, and each test asserts its own cause (Proteone's
   tenant or domain check on a validly signed token, or the handler's signature or issuer exception);
   `POST /api/v1/admin/auth-settings/test` with `method=entra` passes against the mock; `EntraConnectionTester` fails
   cleanly (`auth.directory_unavailable`) against a wrong authority.
@@ -48,7 +48,7 @@ What the classes check:
 ## Open gaps
 
 - Real directories are still needed before go-live: a real Microsoft Entra tenant and a real Active Directory
-  (`docs/status.md`). The fakes prove TGYSM's side of the contract, not Microsoft's.
+  (`docs/status.md`). The fakes prove Proteone's side of the contract, not Microsoft's.
 - Mock fidelity (OIDC):
   - `tid`, `oid` and `preferred_username` come from mock configuration, so the tenant and domain refusals prove
     `EntraIdentityMapper` refuses a validly signed token with those claims, not that Entra issues them that way.

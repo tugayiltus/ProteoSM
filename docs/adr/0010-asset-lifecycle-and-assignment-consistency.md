@@ -6,7 +6,7 @@
 
 ## Context
 
-An asset can have at most one active assignment; handovers, returns, transfers, maintenance, loss and retirement must keep full history (`tgysm.md` §8.2), including under concurrent operations.
+An asset can have at most one active assignment; handovers, returns, transfers, maintenance, loss and retirement must keep full history (`proteone.md` §8.2), including under concurrent operations.
 
 ## Decision
 

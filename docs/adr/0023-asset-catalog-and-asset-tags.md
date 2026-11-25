@@ -6,7 +6,7 @@
 
 ## Context
 
-Assets stored brand and model as free text typed into the asset form and the CSV import. The UI/UX review (`docs/superpowers/specs/2026-10-09-ui-ux-review.md` §7, UX-02) found spelling variants and duplicates ("Lenovo", " LENOVO ", "Lenova"), which split reports and searches. The owner decided that brands and models are admin-managed selection lists, and that a CSV row naming an unknown brand or model fails instead of creating one (`docs/superpowers/specs/2026-10-09-coreui-ui-ux-design.md` §6.1). Related: ADR-0010 (asset lifecycle), ADR-0011 (CSV import).
+Assets stored brand and model as free text typed into the asset form and the CSV import. The UI/UX review (`2026-10-09-ui-ux-review.md`, kept in the Git history §7, UX-02) found spelling variants and duplicates ("Lenovo", " LENOVO ", "Lenova"), which split reports and searches. The owner decided that brands and models are admin-managed selection lists, and that a CSV row naming an unknown brand or model fails instead of creating one (`2026-10-09-coreui-ui-ux-design.md`, kept in the Git history §6.1). Related: ADR-0010 (asset lifecycle), ADR-0011 (CSV import).
 
 ## Decision
 

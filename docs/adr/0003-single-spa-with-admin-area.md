@@ -6,7 +6,7 @@
 
 ## Context
 
-Employees, IT staff and admins use one product (`tgysm.md` §4). `/admin` needs its own navigation and layout but not a separate deployment. The UI must be mobile-first. A native mobile app will come later and will reuse the API.
+Employees, IT staff and admins use one product (`proteone.md` §4). `/admin` needs its own navigation and layout but not a separate deployment. The UI must be mobile-first. A native mobile app will come later and will reuse the API.
 
 ## Decision
 
@@ -21,7 +21,7 @@ Employees, IT staff and admins use one product (`tgysm.md` §4). `/admin` needs 
 ### Alternative 1: Separate admin SPA
 - **Pros**: smaller bundles per audience.
 - **Cons**: two builds, duplicated shared UI, two deployments.
-- **Why not**: `tgysm.md` §4 requires one application; lazy-loaded admin routes keep the user bundle small.
+- **Why not**: `proteone.md` §4 requires one application; lazy-loaded admin routes keep the user bundle small.
 
 ### Alternative 2: Separate origins (API and SPA on different hosts)
 - **Pros**: independent hosting.

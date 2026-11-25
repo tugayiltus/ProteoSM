@@ -2,14 +2,14 @@
 
 - Date: 2026-10-09
 - Owner: Tugay İLTUŞ
-- Requirements: `tgysm.md` §19 (Phase 6 row), §20 (first-release acceptance criteria 1–20), §21 (open decisions)
+- Requirements: `proteone.md` §19 (Phase 6 row), §20 (first-release acceptance criteria 1–20), §21 (open decisions)
 - Builds on: Phases 1–5 and the CoreUI UI/UX overhaul on `master` (commit `523075f`)
 - Branch: `phase-6-release`
 - Out of scope: Kubernetes, several application servers, WAL archiving / point-in-time recovery, an in-app feedback form, new product features.
 
 ## 1. Agreed understanding
 
-**Goal.** Make TGYSM releasable: a reproducible Docker Compose deployment with HTTPS, persisted secrets and nightly backups; a proven restore; evidence for every §20 acceptance criterion; an end-user guide with screenshots and a PDF; an operator manual; pilot tooling (seed data, performance measurement, first-data setup guide); CI and dependency updates. Close the three minors deferred from the CoreUI review.
+**Goal.** Make Proteone releasable: a reproducible Docker Compose deployment with HTTPS, persisted secrets and nightly backups; a proven restore; evidence for every §20 acceptance criterion; an end-user guide with screenshots and a PDF; an operator manual; pilot tooling (seed data, performance measurement, first-data setup guide); CI and dependency updates. Close the three minors deferred from the CoreUI review.
 
 **Owner decisions (2026-10-09)**
 
@@ -35,7 +35,7 @@
 One multi-stage `Dockerfile` at the repository root:
 
 - `frontend-build` (Node 22): `npm ci`, `npm run build`.
-- `dotnet-build` (.NET 10 SDK): `dotnet publish` of `Tgysm.Api` and `Tgysm.Worker` in Release.
+- `dotnet-build` (.NET 10 SDK): `dotnet publish` of `Proteone.Api` and `Proteone.Worker` in Release.
 - Target `api` (ASP.NET runtime image): published API plus `frontend/dist` copied into the API's `wwwroot`; runs as a non-root user; listens on HTTP `8080` inside the network.
 - Target `worker` (.NET runtime image): published Worker; non-root.
 
@@ -46,7 +46,7 @@ No secrets are baked into images. `.dockerignore` keeps `bin/`, `obj/`, `node_mo
 | Service | Image | Role |
 |---|---|---|
 | `postgres` | `postgres:17` | Database; volume `pgdata`; not published to the host |
-| `migrate` | `api` | One-shot `dotnet Tgysm.Api.dll migrate`; `api` and `worker` start only after it completes successfully |
+| `migrate` | `api` | One-shot `dotnet Proteone.Api.dll migrate`; `api` and `worker` start only after it completes successfully |
 | `api` | `api` | API + SPA; healthcheck `GET /api/v1/health` |
 | `worker` | `worker` | Background jobs |
 | `nginx` | `nginx` (stable) | TLS termination on 443, HTTP 80 redirects to HTTPS, proxies to `api:8080`; certificate and key from `deploy/certs/` (mounted read-only) |
@@ -56,7 +56,7 @@ Shared volumes: `files` (`Files:RootPath=/data/files`, API and Worker), `keys` (
 
 ### 2.3 Application changes
 
-- **`migrate` CLI command** in `Tgysm.Api/Cli`, next to `setup-admin` and `reset-password`: applies pending EF Core migrations (`Database.MigrateAsync`) and exits 0, or non-zero with the error logged. `setup-admin` and `reset-password` run the same way through `docker compose run --rm api …`.
+- **`migrate` CLI command** in `Proteone.Api/Cli`, next to `setup-admin` and `reset-password`: applies pending EF Core migrations (`Database.MigrateAsync`) and exits 0, or non-zero with the error logged. `setup-admin` and `reset-password` run the same way through `docker compose run --rm api …`.
 - **Data Protection key persistence:** a configuration key `DataProtection:KeysPath`; when set, `PersistKeysToFileSystem` on that folder (shared by API and Worker). Required outside Development: startup fails with a clear message when it is empty, like `Files:RootPath`. Closes the "Known gap" in `SECURITY.md`.
 - **Forwarded headers:** outside Development the API trusts `X-Forwarded-For` and `X-Forwarded-Proto` only from the networks listed in `Http:KnownProxyNetworks` (CIDR list; the compose file sets the internal Docker network). Login rate limiting then sees the real client address.
 - **Production settings** come from environment variables in `deploy/.env` (never committed; `deploy/.env.example` documents every key): connection string, `App:PublicBaseUrl`, `App:TimeZone`, `Email:Mode=Smtp` and `Email:Smtp:*`, `Files:RootPath`, `DataProtection:KeysPath`, `Http:KnownProxyNetworks`, PostgreSQL password.
@@ -70,7 +70,7 @@ Shared volumes: `files` (`Files:RootPath=/data/files`, API and Worker), `keys` (
 
 ## 3. Backup and restore
 
-- **Nightly backup** (`backup` service): at a configured local time (`BACKUP_TIME`, default `02:30`), `pg_dump -Fc`, plus `tar` of `/data/files` and `/data/keys`, into `tgysm-YYYYMMDD-HHMMSS.tar.gz` with a `manifest.json` (app commit, migration id, table row counts, file count). Archives older than `BACKUP_RETENTION_DAYS` (default 14) are deleted. A failed run exits non-zero and is visible in the service log.
+- **Nightly backup** (`backup` service): at a configured local time (`BACKUP_TIME`, default `02:30`), `pg_dump -Fc`, plus `tar` of `/data/files` and `/data/keys`, into `proteone-YYYYMMDD-HHMMSS.tar.gz` with a `manifest.json` (app commit, migration id, table row counts, file count). Archives older than `BACKUP_RETENTION_DAYS` (default 14) are deleted. A failed run exits non-zero and is visible in the service log.
 - **`tools/backup.sh`**: the same backup on demand (runs the backup service's script once).
 - **`tools/restore.sh <archive>`**: restores into a stack whose database is empty: refuses when the target database has user tables unless `--force` is given; `pg_restore`, then files and keys, then starts `api`/`worker`.
 - **`tools/restore-drill.sh`** (acceptance criterion 19): creates an isolated compose project (own name, volumes and port), restores the latest archive, then checks: health OK; table row counts equal the manifest; a known attachment and a known export file download with matching size; a session cookie issued by the source stack before the backup is still valid on the restored stack (keys restored); a deactivated user cannot sign in; finally removes the drill project. Prints a pass/fail table and writes it to `docs/release/restore-drill.md`.
@@ -100,7 +100,7 @@ Criterion 18 is answered by §5.2 and criterion 19 by §3; criterion 20 by the d
 
 ### 5.3 First-data guide and feedback
 
-User-guide pages "İlk kurulum" (admin: departments, locations, intake team, approvers, categories, request types, SLA calendar and policy, device catalog, CSV import, first users) and "Sorun bildirme ve geri bildirim" (pilot users report problems through "Bir şey çalışmıyor" in a dedicated "TGYSM Pilot" category that the seed and the setup guide create).
+User-guide pages "İlk kurulum" (admin: departments, locations, intake team, approvers, categories, request types, SLA calendar and policy, device catalog, CSV import, first users) and "Sorun bildirme ve geri bildirim" (pilot users report problems through "Bir şey çalışmıyor" in a dedicated "Proteone Pilot" category that the seed and the setup guide create).
 
 ## 6. Documentation
 
@@ -121,7 +121,7 @@ Pages, one per feature area: `getting-started.md` (sign-in, first password, layo
 
 ## 7. CI and dependency updates
 
-- `.github/workflows/ci.yml`: on push and pull request: checkout, .NET 10 and Node 22 set-up with caches, PostgreSQL 17 service container, `tools/lint.sh`, `tools/test.sh`, Playwright browsers, `tools/e2e.sh`, `docker build` of both targets (no push). Test and E2E artifacts uploaded on failure. Scripts read the database host and user from the existing `TGYSM_DB_*` / `TGYSM_TEST_ADMIN_CONNECTION` variables; any script that assumes Homebrew or macOS is made portable (no behavior change locally).
+- `.github/workflows/ci.yml`: on push and pull request: checkout, .NET 10 and Node 22 set-up with caches, PostgreSQL 17 service container, `tools/lint.sh`, `tools/test.sh`, Playwright browsers, `tools/e2e.sh`, `docker build` of both targets (no push). Test and E2E artifacts uploaded on failure. Scripts read the database host and user from the existing `PROTEONE_DB_*` / `PROTEONE_TEST_ADMIN_CONNECTION` variables; any script that assumes Homebrew or macOS is made portable (no behavior change locally).
 - `.github/dependabot.yml`: weekly updates for `nuget` (`/backend`), `npm` (`/frontend`), `docker` (`/`), `github-actions` (`/`); grouped minor/patch updates per ecosystem.
 
 ## 8. Deferred CoreUI minors

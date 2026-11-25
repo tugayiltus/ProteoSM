@@ -6,7 +6,7 @@
 
 ## Context
 
-Employees see their own tickets and only public content; IT staff see tickets of their teams; admins see all (`tgysm.md` §4). Search, attachment download and relation lists must follow the same rules; changing an ID must not reveal anything (§20 items 4–5).
+Employees see their own tickets and only public content; IT staff see tickets of their teams; admins see all (`proteone.md` §4). Search, attachment download and relation lists must follow the same rules; changing an ID must not reveal anything (§20 items 4–5).
 
 ## Decision
 

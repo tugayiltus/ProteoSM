@@ -135,7 +135,7 @@ Calls made by the designer (owner may override):
 ## 8. Docs and decisions
 
 - ADR-0033 "Typed ticket ↔ change links and central search" (new table, kinds, search scope rules).
-- `tgysm.md` §2 and §19 updated with the module, as the owner rule for ITIL modules requires.
+- `proteone.md` §2 and §19 updated with the module, as the owner rule for ITIL modules requires.
 - `capabilities.md`, user guide pages and `README.md` at the end of the module.
 
 ## Amendment 2026-11-19

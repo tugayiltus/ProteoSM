@@ -6,7 +6,7 @@
 
 ## Context
 
-`tgysm.md` §16 sketches a shared `Ticket` base with `IncidentDetails` and `RequestDetails`. Incidents and requests share status, assignment, comments, attachments, timeline, assets and access scope; they differ in a few fields (request type and approval for requests; detection, root cause and outcome values for incidents). Queues and search always span both kinds.
+`proteone.md` §16 sketches a shared `Ticket` base with `IncidentDetails` and `RequestDetails`. Incidents and requests share status, assignment, comments, attachments, timeline, assets and access scope; they differ in a few fields (request type and approval for requests; detection, root cause and outcome values for incidents). Queues and search always span both kinds.
 
 ## Decision
 

@@ -2,7 +2,7 @@
 
 Date: 2026-11-12. Owner: Tugay İLTUŞ. Status: approved by the owner on 2026-11-12. Base: `master`.
 
-This reverses the "out of scope" line for Change Management in `tgysm.md` §(Kapsam dışı) for normal changes; CAB, standard and emergency changes and Release Management stay out of the first version.
+This reverses the "out of scope" line for Change Management in `proteone.md` §(Kapsam dışı) for normal changes; CAB, standard and emergency changes and Release Management stay out of the first version.
 
 ## Intent
 

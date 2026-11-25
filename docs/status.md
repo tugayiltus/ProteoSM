@@ -1,60 +1,20 @@
 # Proteone — durum özeti
 
-Biten faz ve işlerin tek sayfalık özeti. Ayrıntı her satırdaki plan, spec ve ADR'de; planlar yerinde kalır. Faz tablosu: `proteone.md` (Faz 0–6 = ilk sürüm).
+Güncel: 2026-11-25. Geliştirme: `tugayiltus/Proteone`.
 
-Güncel: 2026-11-24. Ürünün adı bu tarihe kadar TGYSM idi (ADR-0037).
+## Ürün
 
-## Biten fazlar (ilk sürüm)
+| Alan | Kapsam | ADR |
+|---|---|---|
+| Destek | Arıza, talep, onay, SLA, e-posta, ekler, bilgi bankası | 0009, 0011–0019 |
+| Varlık | Envanter, zimmet, içe aktarma, cihaz kataloğu, QR etiket | 0010, 0023, 0028, 0029 |
+| Operasyon | Görev, değişiklik, bakım takvimi, problem, sürüm | 0031–0034, 0040 |
+| Hizmet ve lisans | Hizmet kataloğu, hafif CMDB, yazılım ve lisans | 0036, 0039 |
+| İzleme | İmzalı webhook ile arıza açma | 0041 |
+| Rapor | Raporlar, drill-down, Excel | 0020, 0022 |
+| Yönetim | `/admin`, giriş yöntemi, denetim | 0030, 0038 |
+| Dağıtım | Docker Compose, yedek, geri yükleme | 0024, 0025 |
 
-| Faz | İçerik | Plan | ADR | Sonuç |
-|---|---|---|---|---|
-| 0 — Tasarım | Akışlar, rol matrisi, şema, ADR'ler | `docs/superpowers/plans/2026-09-26-phase-0-1-foundation.md` | 0001–0008 | Tamam |
-| 1 — Temel | Katmanlar, DB/migration, ilk yönetici CLI, giriş, `/admin`, kurum/ekip, audit | aynı plan (16 görev) | 0001–0008 | Tamam |
-| 2 — Varlık | Envanter, CSV içe aktarma, zimmet, teslim/iade, geçmiş | `docs/superpowers/plans/2026-09-26-phase-2-3-assets-and-tickets.md` (20 görev) | 0010 | Tamam |
-| 3 — Destek | Arıza/talep, atama, yorum/ek, onay, varlık ilişkisi, kapanış | aynı plan | 0009, 0011–0013 | Tamam |
-| 4 — SLA/E-posta | Worker, outbox, e-posta şablonları, parola linkleri, iş takvimi, SLA | `docs/superpowers/plans/2026-09-27-phase-4-sla-email.md` (15 görev) | 0014–0018 | Tamam |
-| 5 — Bilgi/Rapor | Bilgi bankası, raporlar, drill-down, Excel (anlık + arka plan) | `docs/superpowers/plans/2026-10-02-phase-5-knowledge-reports.md` (14 görev) | 0019–0020 | Tamam |
-| 6 — İlk sürüm | Docker Compose, yedek/geri yükleme provası, kabul kanıtı, pilot veri, performans, CI, rehber, operatör el kitabı | `docs/superpowers/plans/2026-10-09-phase-6-release.md` (18 görev) | 0024–0025 | İlk sürüm onayı `2d5ec6b` (2026-10-10) |
+## Planlanan ve açık işler
 
-## İlk sürüm sonrası biten işler
-
-| İş | Plan | ADR | Durum |
-|---|---|---|---|
-| Arayüz yenileme (sol menü, breadcrumb, cihaz kataloğu, üretilen etiket, Chart.js) | `docs/superpowers/plans/2026-10-09-coreui-ui-ux.md` (18 görev) | 0021–0023 | `master`; arayüz katmanı Astryx'e geçti |
-| Arayüz bütünlüğü (renk modları, kart düzeni) | `docs/superpowers/plans/2026-10-09-ui-cohesion.md` (11 görev) | 0026 | `master`; Astryx ile yerini aldı |
-| Astryx arayüzü (güncel tasarım sistemi) | `docs/superpowers/plans/2026-11-10-astryx-migration.md` (13 görev) | 0027 | `master` (`3ee50f7`) |
-| Rapor filtreleri, Tür → Marka → Model akışı, QR etiket (yazdırma, toplu, tarayarak arıza) | `docs/superpowers/plans/2026-11-11-reports-catalog-qr.md` (11 görev) | 0028 | `master` (`4d70063`) |
-| Model listesinde tür filtresi, Tür – Marka – Ad sırası | — | — | `master` (`6be4532`) |
-| Yıllık varlık etiketi `ASSET-YYYY-NNNN` | — | 0029 | `master` (`d43ad8c`) |
-| Giriş yöntemi panelden: Yerel, Microsoft Entra ID, Active Directory (LDAP) | `docs/superpowers/plans/2026-11-12-sso-ldap-login.md` (9 görev) | 0030 | `master` (`9a7a0b3`) |
-
-## Görev ve Değişiklik Yönetimi
-
-| Faz | İçerik | Plan | ADR | Durum |
-|---|---|---|---|---|
-| 7 — Görev | `TSK-` görevler, üstlenme/atama/aktarma/bekletme/tamamlama, geçmiş ve notlar, `task_assigned` e-postası, İş listem kartları ve birleşik liste, kayıtta Görevler bölümü | `docs/superpowers/plans/2026-11-13-phase-7-tasks.md` (9 görev) | 0031 | `master` (`2046892`) |
-| 8 — Değişiklik | Normal değişiklik (`CHG-`), durum makinesi, faz görevleri, plan parmak izli tek aşamalı yönetici onayı (plan yazanlar onaylayamaz), kapanış ve geri dönüş, Onaylar ve İş listem'de değişiklikler, üç değişiklik e-postası | `docs/superpowers/plans/2026-11-13-phase-8-changes.md` (10 görev) | 0032 | `master` (`0062691`) |
-| 9 — Takvim/Rapor | Bakım takvimi (ay, hafta, telefonda gün listesi), pencere çakışma uyarısı (değişiklik sayfası, Onaylar, takvim), "Bu hafta uygulanacak" kuyruğu ve kartı, değişiklik ve görev raporları (`by_outcome`, `success_rate`, `by_risk`, `cancelled`; `overdue`, `by_status`, `completion_time`, `by_team`), pilot veri ve performans ölçümü | `docs/superpowers/plans/2026-11-18-phase-9-calendar-reports.md` | 0032 (ek not) | `master` (`3c4e618`) |
-| 10 — İlgili kayıtlar/Arama | Kayıt ↔ değişiklik bağlantısı (`prompted`, `caused`), "İlgili kayıtlar" ve "İlgili değişiklikler" panelleri, "Sorun çıkaran değişiklikler" rapor figürü, üst çubukta merkezi arama ("Ara", `/` kısayolu; kayıt, değişiklik, görev, varlık, makale; tam numarayla doğrudan açma), "Tüm kayıtlar" kuyruğu, performans ölçümü | `docs/superpowers/plans/2026-11-19-phase-10-related-records-search.md` (7 görev) | 0033 | `master` (`d79ea26`) |
-| 11 — Problem | Hafif problem yönetimi (`PRB-`): Açık → İnceleniyor → Bilinen hata → Çözüldü / İptal, kök neden, geçici ve kalıcı çözüm, arıza ve düzelten değişiklik bağlantıları, "Makale oluştur" (iç taslak bilinen hata makalesi), arızada Problem kartı, değişiklikte "İlgili problemler", merkezi aramada problemler, Problemler rapor sekmesi, İş listem kartı "Ekibimin problemleri", pilot veri; ayrıca dizin girişi sözleşme testi (Görev 10) | `docs/superpowers/plans/2026-11-20-phase-11-problem-management.md` (10 görev) | 0034 | `master` (`489b680`, CI yeşil) |
-| 12 — Hizmet kataloğu | Hafif hizmet kataloğu ve CMDB: `/admin` → "Hizmetler" (oluşturma, düzenleme, pasifleştirme, varlık bağlama; kullanım dışı veya kayıp varlık bağlanmaz), IT'ye "Hizmetler" listesi ve hizmet sayfası (Varlıklar, Açık kayıtlar, Değişiklikler, Açık problemler), arıza/talep, değişiklik ve problemde "Hizmet" alanı (kapalı kayıtta da; bağlı cihazdan öneri) ve liste filtresi, varlık sayfasında "Hizmetler" kartı, raporlarda hizmet dağılımı, merkezi aramada hizmetler, pilot veri (8 hizmet); çalışan hizmet görmez | `docs/superpowers/plans/2026-11-23-phase-12-service-catalogue.md` (10 görev) | 0036 | `feature/service-catalogue` (birleştirme sahibin onayını bekliyor) |
-
-## Kasım 2026 modülleri
-
-| Modül | İçerik | Tasarım | ADR |
-|---|---|---|---|
-| Lisanslar | Yazılım ve lisans kayıtları, kullanıcı veya cihaz atama, dolu lisans reddi, bitiş e-postası, korumalı anahtar, "Yazılımlarım", rapor sekmesi | `docs/superpowers/specs/2026-11-24-licences-releases-monitoring-design.md` | 0039 |
-| Sürümler | `REL-` kaydı, birlikte çıkan değişiklikler, onaysız | aynı | 0040 |
-| İzleme webhook'u | İmzalı istekle arıza açma, `/admin` izleme kaynakları, elle kapatma | aynı | 0041 |
-
-Ertelenmiş notlar (hizmet ekranları, arama, denetim, erişilebilirlik, testler) ve bağımsız inceleme bulguları aynı dalda düzeltildi.
-
-## Proteone geçişi
-
-Ad, veritabanı ve dağıtım taşındı, `/admin` kendi giriş sayfasını aldı (ADR-0037, ADR-0038); eski fazların ertelenmiş notlarından hata olanlar düzeltildi. Plan ve tek iş listesi: `docs/superpowers/plans/2026-11-24-proteone-transition.md`. Yükseltme provası: `tools/upgrade-drill.sh`.
-
-## Açık işler
-
-- Aktif geliştirme `tugayiltus/Proteone` reposunda (geçiş noktası `e8b1317`, CI yeşil). TGYSM reposunun arşivlenmesi ve gerçek kurulumun taşınması sahibin onayını bekler. SDK 11 kurulumu ertelendi.
-- SSO canlıya almadan önce gerçek Entra kiracısı ve gerçek AD ile `PROTEONE_TEST_LDAP_*` sözleşme testi ve elle giriş gerekir. Sahip kararı (2026-11-23): test elle çalışır, CI'a eklenmez.
-- Ertelenen küçük notlar plandaki "Parked" maddelerindedir.
+Tek iş listesi: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Gereksinimler: `proteone.md`. TGYSM kurulumundan geçiş: `docs/operations.md` (ADR-0037).

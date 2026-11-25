@@ -20,7 +20,7 @@ The ticket `approvals` table (ADR-0009) serves incidents and requests. It belong
 - An edit of a fingerprint field in `Scheduled` voids the approval. The change returns to `PendingApproval` and the admin who approved gets a notification. An edit in `PendingApproval` refreshes the pending fingerprint. Other fields (title, justification, closing note) do not void it. From `Implementing` on, fingerprint fields are locked (`changes.plan_locked`).
 - If the only eligible admin is the author or owner, the change waits in `PendingApproval` and the detail says no other admin can approve.
 - Emergency changes (approval after the fact), CAB and an approver permission are later work.
-- Implemented in Phase 8 (`docs/superpowers/plans/2026-11-13-phase-8-changes.md`).
+- Implemented in Phase 8 (plan in the Git history).
 
 ## Alternatives Considered
 

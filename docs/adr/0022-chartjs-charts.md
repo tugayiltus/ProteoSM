@@ -6,7 +6,7 @@
 
 ## Context
 
-ADR-0020 chose Recharts for report charts. With the move to CoreUI as the UI layer (ADR-0021), the owner decided that charts use CoreUI's Chart.js integration instead, so the product has one component family (`docs/superpowers/specs/2026-10-09-coreui-ui-ux-design.md` §2, §7). Reports draw one chart type today: horizontal distribution bars, with the same numbers listed as links next to them.
+ADR-0020 chose Recharts for report charts. With the move to CoreUI as the UI layer (ADR-0021), the owner decided that charts use CoreUI's Chart.js integration instead, so the product has one component family (`2026-10-09-coreui-ui-ux-design.md`, kept in the Git history §2, §7). Reports draw one chart type today: horizontal distribution bars, with the same numbers listed as links next to them.
 
 ## Decision
 

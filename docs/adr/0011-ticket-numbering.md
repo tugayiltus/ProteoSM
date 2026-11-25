@@ -6,7 +6,7 @@
 
 ## Context
 
-Numbers look like `INC-2026-000001` / `REQ-2026-000001`, restart every year per kind and must be unique under concurrent creation (`tgysm.md` §5.1, §6).
+Numbers look like `INC-2026-000001` / `REQ-2026-000001`, restart every year per kind and must be unique under concurrent creation (`proteone.md` §5.1, §6).
 
 ## Decision
 

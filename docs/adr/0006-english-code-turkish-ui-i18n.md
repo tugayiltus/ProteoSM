@@ -6,13 +6,13 @@
 
 ## Context
 
-The owner requires English for code, identifiers, database names, API endpoints and URL paths, and Turkish only for the user interface. `tgysm.md` §14 requires i18n keys, `tr-TR` formatting, correct I/İ/ı/i handling and Turkish suffix helpers.
+The owner requires English for code, identifiers, database names, API endpoints and URL paths, and Turkish only for the user interface. `proteone.md` §14 requires i18n keys, `tr-TR` formatting, correct I/İ/ı/i handling and Turkish suffix helpers.
 
 ## Decision
 
 - All identifiers, tables, columns, routes and endpoints are English.
 - UI text lives in `frontend/src/shared/i18n/locales/tr/*.json` (namespaces `common`, `auth`, `admin`, `errors`). Keys are typed through i18next `CustomTypeOptions`, so a missing key fails the TypeScript build.
-- The API returns stable error codes (`ErrorCodes` in `Tgysm.Domain`). `TranslationCoverageTests` fails when any code or audit action lacks a Turkish text, or when `errors.json` holds a stale key.
+- The API returns stable error codes (`ErrorCodes` in `Proteone.Domain`). `TranslationCoverageTests` fails when any code or audit action lacks a Turkish text, or when `errors.json` holds a stale key.
 - Dates and numbers use `Intl` with `tr-TR`; display time zone `Europe/Istanbul`.
 - Case-insensitive matching uses the `tr-TR` culture on the backend (`TurkishText.ToSearchKey`) and `toLocaleLowerCase('tr-TR')` on the frontend. Emails use invariant lower case.
 - `withSuffix` in `shared/lib/turkish.ts` supports two/four-way vowel harmony, buffer letters and `d/t` assimilation, with a pronunciation dictionary. It returns `null` when pronunciation is unknown (e.g. an unknown abbreviation); callers then use a suffix-free label such as `Atanan kişi: …`.

@@ -6,7 +6,7 @@
 
 ## Context
 
-IT staff need to hand work between teams. For example, the database team takes a backup inside a network incident. They also need to run planned changes with approval, a maintenance window, tasks per team, verification and a backout path. `tgysm.md` listed Change Management as out of scope. The owner approved a design on 2026-11-12 (`docs/superpowers/specs/2026-11-12-task-and-change-management-design.md`). That design brings tasks and normal changes into scope as Phases 7–9. CAB, standard and emergency changes, and Release Management stay out of scope.
+IT staff need to hand work between teams. For example, the database team takes a backup inside a network incident. They also need to run planned changes with approval, a maintenance window, tasks per team, verification and a backout path. `proteone.md` listed Change Management as out of scope. The owner approved a design on 2026-11-12 (`docs/superpowers/specs/2026-11-12-task-and-change-management-design.md`). That design brings tasks and normal changes into scope as Phases 7–9. CAB, standard and emergency changes, and Release Management stay out of scope.
 
 The ticket model (ADR-0009) carries SLA (ADR-0018), approval and outcomes made for incidents and requests. A task has a due date, not an SLA. A change has a window, risk, three plans and its own approval.
 

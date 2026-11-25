@@ -6,11 +6,11 @@
 
 ## Context
 
-`tgysm.md` §3.1: the first admin is created once, by a secure one-time setup; no default password and no permanently open setup endpoint.
+`proteone.md` §3.1: the first admin is created once, by a secure one-time setup; no default password and no permanently open setup endpoint.
 
 ## Decision
 
-- `tools/setup-admin.sh --email <email> --first-name <name> --last-name <name>` applies migrations and runs `Tgysm.Api setup-admin ...`.
+- `tools/setup-admin.sh --email <email> --first-name <name> --last-name <name>` applies migrations and runs `Proteone.Api setup-admin ...`.
 - The command refuses (exit code 1, `setup.already_completed`) when any user exists.
 - It generates a 16-character temporary password, prints it once, and sets `must_change_password`.
 - No HTTP setup path exists.

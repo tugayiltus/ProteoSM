@@ -6,7 +6,7 @@
 
 ## Context
 
-The web app must be mobile-first, accessible (keyboard, visible focus, form error descriptions, 360 px without horizontal scroll) and typed end-to-end with the API (`tgysm.md` §13, §15).
+The web app must be mobile-first, accessible (keyboard, visible focus, form error descriptions, 360 px without horizontal scroll) and typed end-to-end with the API (`proteone.md` §13, §15).
 
 ## Decision
 

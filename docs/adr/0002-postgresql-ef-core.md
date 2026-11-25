@@ -6,7 +6,7 @@
 
 ## Context
 
-The owner selected PostgreSQL (`tgysm.md` §1). Business rules need relational constraints (unique email, unique asset number, one active assignment per asset), transactions and optimistic concurrency. Local development has no Docker; PostgreSQL 17 runs from Homebrew.
+The owner selected PostgreSQL (`proteone.md` §1). Business rules need relational constraints (unique email, unique asset number, one active assignment per asset), transactions and optimistic concurrency. Local development has no Docker; PostgreSQL 17 runs from Homebrew.
 
 ## Decision
 
@@ -16,8 +16,8 @@ The owner selected PostgreSQL (`tgysm.md` §1). Business rules need relational c
 - Optimistic concurrency uses PostgreSQL `xmin` (`uint Version` mapped with `IsRowVersion()`). A conflict surfaces as HTTP 409 `concurrency.conflict`.
 - Business uniqueness is enforced by unique indexes. Names compare case-insensitively via a `normalized_name` column written with the `tr-TR` culture.
 - `audit_events` is append-only: a trigger rejects `UPDATE` and `DELETE`.
-- Migrations are versioned in `Tgysm.Infrastructure/Persistence/Migrations` and applied with `tools/migrate.sh`.
-- Integration tests run against a real local PostgreSQL 17: each test run creates and drops a `tgysm_test_<random>` database.
+- Migrations are versioned in `Proteone.Infrastructure/Persistence/Migrations` and applied with `tools/migrate.sh`.
+- Integration tests run against a real local PostgreSQL 17: each test run creates and drops a `proteone_test_<random>` database.
 
 ## Alternatives Considered
 
@@ -29,7 +29,7 @@ The owner selected PostgreSQL (`tgysm.md` §1). Business rules need relational c
 ### Alternative 2: Testcontainers for integration tests
 - **Pros**: isolated, reproducible database per run.
 - **Cons**: requires Docker, which is not installed on the development machine.
-- **Why not**: the owner chose local PostgreSQL 17. The test fixture reads `TGYSM_TEST_ADMIN_CONNECTION`, so a container can be plugged in later without code changes.
+- **Why not**: the owner chose local PostgreSQL 17. The test fixture reads `PROTEONE_TEST_ADMIN_CONNECTION`, so a container can be plugged in later without code changes.
 
 ## Consequences
 

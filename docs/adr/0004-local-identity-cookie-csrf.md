@@ -6,12 +6,12 @@
 
 ## Context
 
-Accounts are local (no SSO, no LDAP in the first release; `tgysm.md` §2). Only admins create users. The first login must force a password change, and role change or deactivation must end active sessions (`tgysm.md` §3.1). The domain `User` must not depend on ASP.NET Core Identity types (ADR-0001).
+Accounts are local (no SSO, no LDAP in the first release; `proteone.md` §2). Only admins create users. The first login must force a password change, and role change or deactivation must end active sessions (`proteone.md` §3.1). The domain `User` must not depend on ASP.NET Core Identity types (ADR-0001).
 
 ## Decision
 
 - Password hashing uses ASP.NET Core Identity's `PasswordHasher<T>` (PBKDF2) behind `IPasswordService` in Infrastructure. The full Identity user store is not used; `User` is a plain domain entity.
-- Session: ASP.NET Core cookie authentication. Cookie `__Host-tgysm`, `Secure`, `HttpOnly`, `SameSite=Strict`, 8-hour sliding lifetime (configurable `Security:SessionHours`).
+- Session: ASP.NET Core cookie authentication. Cookie `__Host-proteone`, `Secure`, `HttpOnly`, `SameSite=Strict`, 8-hour sliding lifetime (configurable `Security:SessionHours`).
 - Every request re-reads the user (`OnValidatePrincipal`): an inactive user or a changed `security_stamp` rejects the session immediately. Fresh role and `must_change_password` claims replace the cookie claims on each request.
 - `security_stamp` rotates on role change, deactivation, reactivation, password change and admin password reset.
 - CSRF: antiforgery token from `GET /api/v1/auth/csrf`, sent back in the `X-CSRF-TOKEN` header on every unsafe `/api` request; checked by `CsrfValidationMiddleware`.

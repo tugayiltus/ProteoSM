@@ -2,14 +2,14 @@
 
 - Date: 2026-09-26
 - Owner: Tugay İLTUŞ
-- Source of requirements: `tgysm.md` v3.0 (§1, §3, §4, §13–§17, §19, §20)
+- Source of requirements: `proteone.md` v3.0 (§1, §3, §4, §13–§17, §19, §20)
 - Scope: Phase 0 (design, ADRs) and Phase 1 (foundation) only. Phase 2+ (assets, tickets, SLA, email, knowledge base, reports) is out of scope.
 
 ## 1. Agreed understanding
 
 **What the owner said**
 
-- Build the ITSM platform described in `tgysm.md`.
+- Build the ITSM platform described in `proteone.md`.
 - Code, identifiers, database names, API endpoints and URL/route paths are English. Only user-visible UI text is Turkish.
 - Mobile-first, user-friendly React + TypeScript web app. A native mobile app comes later, not now.
 - Database: PostgreSQL.
@@ -21,20 +21,20 @@
 | Topic | Decision |
 |---|---|
 | Dev/test database | Local Homebrew PostgreSQL 17 (no Docker on the machine) |
-| ADR file names | `docs/adr/NNNN-kebab-case-title.md` (global rule; overrides `tgysm.md` §18.1 naming) |
-| User guide folder | `docs/user-guides/` (global rule; overrides `tgysm.md` §18.2) |
+| ADR file names | `docs/adr/NNNN-kebab-case-title.md` (global rule; overrides `proteone.md` §18.1 naming) |
+| User guide folder | `docs/user-guides/` (global rule; overrides `proteone.md` §18.2) |
 | First admin | CLI command, no HTTP setup path |
 | UI kit | Tailwind CSS v4 + Radix UI primitives |
 | Use-case pattern | Plain handler classes + FluentValidation (no MediatR) |
 | Frontend data/forms | TanStack Query, React Router, react-hook-form + zod, i18next |
-| Namespace | `Tgysm.*` |
+| Namespace | `Proteone.*` |
 
 **Assumptions (not stated by the owner)**
 
 - The owner and the target institution use Europe/Istanbul time. Timestamps are stored in UTC and displayed in `tr-TR` format.
 - Phase 1 has no email. Admin-driven password reset replaces "forgot password" until Phase 4.
 
-**Success criteria for Phase 1** (`tgysm.md` §20 items 1, 2, 3, 4, 15, 16, 17 as they apply to Phase 1)
+**Success criteria for Phase 1** (`proteone.md` §20 items 1, 2, 3, 4, 15, 16, 17 as they apply to Phase 1)
 
 1. Anonymous users cannot create accounts. Employee and IT staff users get 403 from every `/api/v1/admin/*` endpoint.
 2. After the first admin exists, `setup-admin` refuses to run. No HTTP setup path exists.
@@ -48,21 +48,21 @@
 ## 2. Architecture and repository layout
 
 ```
-TGYSM/
+Proteone/
   backend/
-    Tgysm.slnx
+    Proteone.slnx
     Directory.Build.props      TreatWarningsAsErrors, Nullable, net10.0
     Directory.Packages.props   central package versions
     src/
-      Tgysm.Domain/            entities, business rules, state transitions; no EF/HTTP dependency
-      Tgysm.Application/       use-case handlers + FluentValidation, ports, access scope
-      Tgysm.Infrastructure/    EF Core + Npgsql, Identity stores, migrations
-      Tgysm.Api/               Minimal APIs, authentication, policies, ProblemDetails, composition root, setup-admin CLI
+      Proteone.Domain/            entities, business rules, state transitions; no EF/HTTP dependency
+      Proteone.Application/       use-case handlers + FluentValidation, ports, access scope
+      Proteone.Infrastructure/    EF Core + Npgsql, Identity stores, migrations
+      Proteone.Api/               Minimal APIs, authentication, policies, ProblemDetails, composition root, setup-admin CLI
     tests/
-      Tgysm.Domain.Tests/
-      Tgysm.Application.Tests/
-      Tgysm.Api.IntegrationTests/   WebApplicationFactory + local PostgreSQL 17
-      Tgysm.ArchitectureTests/      layer dependency rules (NetArchTest)
+      Proteone.Domain.Tests/
+      Proteone.Application.Tests/
+      Proteone.Api.IntegrationTests/   WebApplicationFactory + local PostgreSQL 17
+      Proteone.ArchitectureTests/      layer dependency rules (NetArchTest)
   frontend/                    Vite + React + TypeScript
   docs/adr/  docs/user-guides/
   tools/
@@ -89,7 +89,7 @@ Conventions: snake_case names, `uuid` v7 primary keys, `timestamptz` in UTC, Pos
 | `team_memberships` | team_id, user_id, created_at | unique (`team_id`, `user_id`) |
 | `audit_events` | occurred_at, actor_user_id, action, entity_type, entity_id, reason, old_values jsonb, new_values jsonb, correlation_id | trigger rejects UPDATE and DELETE (append-only) |
 
-- One role per user, stored in `users.role`. No Identity role tables. `tgysm.md` §4 defines three fixed roles and no direct permissions.
+- One role per user, stored in `users.role`. No Identity role tables. `proteone.md` §4 defines three fixed roles and no direct permissions.
 - Reference data and users are deactivated, never deleted.
 - A location cannot become its own ancestor.
 - Turkish-aware search: `search_name` is written by the application in lower case with the `tr-TR` culture. Search terms are normalized the same way before a `LIKE` match.
@@ -97,7 +97,7 @@ Conventions: snake_case names, `uuid` v7 primary keys, `timestamptz` in UTC, Pos
 ## 4. Authentication and authorization
 
 - ASP.NET Core Identity via `AddIdentityCore<User>` with cookie authentication.
-- Cookie: `__Host-tgysm`, Secure, HttpOnly, SameSite=Strict.
+- Cookie: `__Host-proteone`, Secure, HttpOnly, SameSite=Strict.
 - Endpoints: `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`, `POST /api/v1/auth/change-password`, `GET /api/v1/auth/csrf`.
 - CSRF: antiforgery token. Every request except GET, HEAD and OPTIONS must send the `X-CSRF-TOKEN` header.
 - Brute force: lockout after 5 failed attempts for 15 minutes. The login endpoint also has a per-IP rate limit. Error responses do not reveal whether an account exists.
@@ -110,7 +110,7 @@ Conventions: snake_case names, `uuid` v7 primary keys, `timestamptz` in UTC, Pos
 
 **First admin**
 
-- Command: `tools/setup-admin.sh --email <email> --first-name <name> --last-name <name>` runs the `setup-admin` command of `Tgysm.Api`.
+- Command: `tools/setup-admin.sh --email <email> --first-name <name> --last-name <name>` runs the `setup-admin` command of `Proteone.Api`.
 - If any user exists, the command fails with a non-zero exit code.
 - The command prints a temporary password once. The password must be changed at first login.
 
@@ -165,7 +165,7 @@ Conventions: snake_case names, `uuid` v7 primary keys, `timestamptz` in UTC, Pos
 
 - **Domain and Application unit tests:** xUnit.
 - **Integration tests:** WebApplicationFactory with local PostgreSQL 17.
-  - Each run creates a `tgysm_test_<random>` database and applies migrations.
+  - Each run creates a `proteone_test_<random>` database and applies migrations.
   - Respawn resets data between tests. The database is dropped at the end.
   - Coverage: success criteria 1–4, lockout, CSRF rejection, last-admin guard, 409 on concurrency conflict, audit UPDATE rejected by the trigger, `setup-admin` refusal.
 - **Architecture tests:** NetArchTest checks the layer dependency rules.

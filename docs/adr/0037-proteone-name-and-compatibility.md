@@ -48,3 +48,7 @@ The product continues under the name Proteone. The former name TGYSM was in name
 ### Risks
 - Data written after the move is lost in a rollback to the old stack. Mitigation: move in a short, announced window.
 - An environment file that sets only old names works for the two listed keys only. Mitigation: the operator manual lists the new keys.
+
+## Amendment 2026-11-25
+
+The owner asked for the Proteone name in all documents. Accepted ADRs, designs and release records now use it; this file, the upgrade instructions and the stored-data literals keep the former name. Finished plans left the working tree and stay in the Git history.

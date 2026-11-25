@@ -10,7 +10,7 @@ Phase 4 needs recurring background work — outbox dispatch, email sending, SLA 
 
 ## Decision
 
-- New project `backend/src/Tgysm.Worker` (.NET Generic Host), referencing `Tgysm.Application` and `Tgysm.Infrastructure`, never `Tgysm.Api` (enforced by an architecture test).
+- New project `backend/src/Proteone.Worker` (.NET Generic Host), referencing `Proteone.Application` and `Proteone.Infrastructure`, never `Proteone.Api` (enforced by an architecture test).
 - Five jobs, each a `BackgroundService` on a `PeriodicTimer`: `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner`, `Cleanup`. Interval per job from `Worker:<Job>:IntervalSeconds`; a non-positive value is clamped to the job's default and logged.
 - One DI scope and one `DbContext` per unit of work. A failure is logged and recorded; the loop keeps running.
 - Claiming work: `SELECT … FOR UPDATE SKIP LOCKED LIMIT n` inside a short transaction sets `locked_until = now + lease`; the work itself runs outside that transaction; completion is a conditional update scoped to the lease owner. A crashed worker's rows become claimable again once the lease expires.
@@ -19,7 +19,7 @@ Phase 4 needs recurring background work — outbox dispatch, email sending, SLA 
 
 ## Alternatives Considered
 
-### Alternative 1: Run the jobs inside the API process (`IHostedService` in `Tgysm.Api`)
+### Alternative 1: Run the jobs inside the API process (`IHostedService` in `Proteone.Api`)
 - **Pros**: one process to build and deploy, no extra project.
 - **Cons**: background throughput is tied to the web process's restarts and deploys; scaling the API horizontally would run N copies of every job, which still needs the same lease-safety mechanism, so the separate process buys isolation for free while a shared process would not.
 - **Why not**: the worker must keep dispatching outbox events and monitoring SLA even while the API is redeployed or restarted; a shared process risks stalling both under one failure.

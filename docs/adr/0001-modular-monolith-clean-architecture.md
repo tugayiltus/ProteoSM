@@ -6,25 +6,25 @@
 
 ## Context
 
-TGYSM is an ITSM platform for one company: incident and request management, IT inventory and asset management, SLA, email notifications, knowledge base and reporting (`tgysm.md` §1). The team size and hosting target are unknown. Business rules (approval, single active asset assignment, SLA pause rules) must stay testable without HTTP or a database, and a background worker (Phase 4) must reuse the same rules.
+Proteone is an ITSM platform for one company: incident and request management, IT inventory and asset management, SLA, email notifications, knowledge base and reporting (`proteone.md` §1). The team size and hosting target are unknown. Business rules (approval, single active asset assignment, SLA pause rules) must stay testable without HTTP or a database, and a background worker (Phase 4) must reuse the same rules.
 
 ## Decision
 
 Build one deployable backend as a modular monolith on .NET 10 with four layers:
 
-- `Tgysm.Domain` — entities, business rules and state transitions. No EF Core, ASP.NET Core or HTTP dependency.
-- `Tgysm.Application` — use-case handlers (one class per use case, plain `HandleAsync` method) with FluentValidation, ports (`IAppDbContext`, `IPasswordService`, `IAuditLog`, `ICurrentActor`) and access-scope checks. It may use EF Core query APIs through `IAppDbContext`, but never Npgsql or ASP.NET Core.
-- `Tgysm.Infrastructure` — EF Core + Npgsql, migrations, password hashing adapter.
-- `Tgysm.Api` — Minimal API endpoints, authentication, authorization policies, error mapping, composition root and CLI commands.
+- `Proteone.Domain` — entities, business rules and state transitions. No EF Core, ASP.NET Core or HTTP dependency.
+- `Proteone.Application` — use-case handlers (one class per use case, plain `HandleAsync` method) with FluentValidation, ports (`IAppDbContext`, `IPasswordService`, `IAuditLog`, `ICurrentActor`) and access-scope checks. It may use EF Core query APIs through `IAppDbContext`, but never Npgsql or ASP.NET Core.
+- `Proteone.Infrastructure` — EF Core + Npgsql, migrations, password hashing adapter.
+- `Proteone.Api` — Minimal API endpoints, authentication, authorization policies, error mapping, composition root and CLI commands.
 
-Endpoints never touch `DbContext` for business data; they call handlers. `Tgysm.ArchitectureTests` enforces the dependency direction. The Worker project is added in Phase 4.
+Endpoints never touch `DbContext` for business data; they call handlers. `Proteone.ArchitectureTests` enforces the dependency direction. The Worker project is added in Phase 4.
 
 ## Alternatives Considered
 
 ### Alternative 1: Microservices
 - **Pros**: independent deployment and scaling per module.
 - **Cons**: distributed transactions for assignment + audit + outbox, more infrastructure, more operations work.
-- **Why not**: one company, unknown load, small team. `tgysm.md` §15 states microservices are not required.
+- **Why not**: one company, unknown load, small team. `proteone.md` §15 states microservices are not required.
 
 ### Alternative 2: MediatR request pipeline
 - **Pros**: uniform pipeline behaviors (validation, logging).
