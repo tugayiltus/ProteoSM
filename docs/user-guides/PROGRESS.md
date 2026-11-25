@@ -31,6 +31,6 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 
 ## Screenshot status
 
-Every image in `images/` is referenced by a page. All 68 images were retaken on 2026-11-25 from the pilot seed with
+Every image in `images/` is referenced by a page. All 70 images were retaken on 2026-11-25 from the pilot seed with an announcement,
 services, licences, releases and a monitoring source, in one full run of `tools/guide-screenshots.sh`; `reports-changes-caused` and `reports-service` scroll to their
 cards. Retake all with `GUIDE_PASSWORD=<pilot password> tools/guide-screenshots.sh`, or single shots by id.

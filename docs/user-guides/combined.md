@@ -71,8 +71,10 @@ IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümü
 Masaüstünde menü ekranın solunda her zaman açıktır. Menü rolünüze göre gruplanır:
 
 - **Kişisel**: **Ana sayfa**, **Kayıtlarım**, **Zimmetlerim**, **Bilgi bankası**.
-- **IT operasyonu** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**, **Problemler**, **Değişiklikler**, **Envanter**, **Hizmetler**; yöneticiler ayrıca **Onay yönetimi**.
-- **Analiz** (IT personeli ve yönetici): **Raporlar**, **Dışa aktarımlarım**.
+- **Destek** (IT personeli ve yönetici): **İş listem**, **Kuyruk**, **Görevler**; yöneticide ayrıca **Onaylar**.
+- **Değişiklik ve problem** (IT personeli ve yönetici): **Problemler**, **Değişiklikler**, **Sürümler**.
+- **Varlık ve hizmet** (IT personeli ve yönetici): **Envanter**, **Hizmetler**, **Lisanslar**.
+- **Analiz** (IT personeli ve yönetici): **Raporlar**. **Dışa aktarımlarım** rapor sayfasının sağ üstündedir.
 
 Menünün altındaki düğmeyle (**Menüyü daralt**) menüyü yalnızca simgelere indirebilirsiniz.
 
@@ -337,7 +339,7 @@ Bazı talep tipleri yönetici onayı ister (örneğin "Yeni bilgisayar"). Böyle
 
 ## Talepleri onaylama veya reddetme
 
-1. Menüden **Onay yönetimi** sayfasını açın. **Onay bekleyenler** listesi açılır.
+1. Menüden **Onaylar** sayfasını açın. **Onay bekleyenler** listesi açılır.
 2. Listede size atanmış talepler ve onaylayıcısı olmayan talepler görünür. Her satırda numara, konu, talep sahibi, talep tipi ve tarih yazar.
 3. Ayrıntıyı görmek için talep numarasına basın.
 4. Karar verin:
@@ -367,7 +369,7 @@ Onaylanmış bir talebin kapsamı sonradan değişirse IT ekibi talep sayfasınd
 
 ## Değişiklikleri onaylama
 
-**Onay yönetimi** sayfasında, karar verebileceğiniz değişiklikler de listelenir. Her satırda değişiklik numarası, başlık, risk, bakım penceresi ve uygulama planının başı yazar. Bakım penceresi başka bir değişiklikle çakışıyorsa satırda "1 çakışma", "2 çakışma" gibi bir not yazar; ayrıntı için değişiklik sayfasına bakın. Çakışma yalnızca uyarıdır, kararınızı engellemez.
+**Onaylar** sayfasında, karar verebileceğiniz değişiklikler de listelenir. Her satırda değişiklik numarası, başlık, risk, bakım penceresi ve uygulama planının başı yazar. Bakım penceresi başka bir değişiklikle çakışıyorsa satırda "1 çakışma", "2 çakışma" gibi bir not yazar; ayrıntı için değişiklik sayfasına bakın. Çakışma yalnızca uyarıdır, kararınızı engellemez.
 
 1. Ayrıntıyı görmek için değişiklik numarasına basın.
 2. Karar verin:
@@ -943,7 +945,7 @@ Aynı üretici ve adla ikinci yazılım açılmaz. Kullanılmayan yazılımı **
 
 ## Bitiş e-postası
 
-Bitişe 30 gün kala sahip ekibin aktif üyelerine bir e-posta gider. Süre daha azsa e-posta hemen gider. Bitiş tarihi değişirse yeni tarih için yeniden gider.
+Bitişe, **Genel ayarlar** sayfasında seçilen gün sayısı (başlangıçta 30) kala sahip ekibin aktif üyelerine bir e-posta gider. Süre daha azsa e-posta hemen gider. Bitiş tarihi değişirse yeni tarih için yeniden gider.
 
 ## Lisans anahtarı (yönetici)
 
@@ -1114,7 +1116,7 @@ Süreler iki türlü gösterilir: **Takvim süresi** gerçek geçen zamandır; *
 
 1. Kayıt listesinde **Excel'e aktar** düğmesine basın. Dosya hemen iner.
 2. Liste çok büyükse "Bu liste anında indirilemeyecek kadar büyük" uyarısı çıkar. **Arka planda hazırla** düğmesine basın.
-3. Hazırlanan dosyalar **Dışa aktarımlarım** sayfasında görünür. Menüden veya rapor sayfasının sağ üstündeki **Dışa aktarımlarım** düğmesinden açın.
+3. Hazırlanan dosyalar **Dışa aktarımlarım** sayfasında görünür. Rapor sayfasının sağ üstündeki **Dışa aktarımlarım** düğmesinden açın.
 
 ![Dışa aktarımlarım](images/reports-exports-desktop.png)
 
@@ -1256,7 +1258,7 @@ Sistemdeki son aktif yönetici pasifleştirilemez ve rolü değiştirilemez.
 
 ![Departmanlar](images/admin-departments-desktop.png)
 
-Onaylayıcı kendi açtığı talebi onaylayamaz; bu durumda talep onaylayıcısız kalır ve bir yönetici **Onay yönetimi** sayfasında onaylayıcı atar (bkz. [Onaylar](#onaylar)).
+Onaylayıcı kendi açtığı talebi onaylayamaz; bu durumda talep onaylayıcısız kalır ve bir yönetici **Onaylar** sayfasında onaylayıcı atar (bkz. [Onaylar](#onaylar)).
 
 ## Lokasyonlar
 
@@ -1452,6 +1454,29 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 - Tablo boşsa (**Henüz çalışan iş kaydı yok.**) arka plan hizmeti hiç çalışmamıştır.
 
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
+
+## Duyurular
+
+Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür.
+
+![Duyurular](images/admin-announcements-desktop.png)
+
+1. **Yeni duyuru** düğmesine basın.
+2. **Başlık**, **Mesaj** ve **Önem** alanlarını doldurun.
+3. **Başlangıç** zamanını seçin. **Bitiş** boşsa duyuru süresiz kalır.
+4. **Oluştur** düğmesine basın.
+
+- Duyuru silinmez. Kaldırmak için **Düzenle** ile **Bitiş** zamanını şimdiye alın (başlangıçtan sonra olmalı).
+- Ana sayfada en çok beş duyuru görünür; önce uyarılar, sonra en yeniler.
+
+## Genel ayarlar
+
+![Genel ayarlar](images/admin-settings-desktop.png)
+
+- **Lisans bitiş uyarısı**: sahip ekip, lisans bitmeden kaç gün önce uyarılır.
+- **Garanti raporu penceresi**: bitiş tarihi seçilmediğinde garanti raporu kaç gün ileriye bakar.
+
+Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 
 ## İzleme kaynakları
 
