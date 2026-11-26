@@ -77,6 +77,19 @@ public sealed class DataProtectionKeysTests : IDisposable
     }
 
     [Fact]
+    public void The_email_password_protected_by_the_api_is_read_by_the_worker_under_its_own_purpose()
+    {
+        using var api = HostServices(_folder, Environments.Production);
+        using var worker = HostServices(_folder, Environments.Production);
+
+        var protectedValue = new EmailSecretProtector(api.GetRequiredService<IDataProtectionProvider>()).Protect(Secret);
+
+        Assert.Equal("Proteone.EmailSettings", EmailSecretProtector.Purpose);
+        Assert.NotEqual(Secret, protectedValue);
+        Assert.Equal(Secret, new EmailSecretProtector(worker.GetRequiredService<IDataProtectionProvider>()).Unprotect(protectedValue));
+    }
+
+    [Fact]
     public void Outside_development_a_missing_folder_fails_with_the_key_name()
     {
         var error = Assert.Throws<InvalidOperationException>(() => KeyStorage.ResolveFolder(new KeyStorageOptions { KeysPath = " " }, new Environment(Environments.Production)));
