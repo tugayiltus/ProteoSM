@@ -93,4 +93,23 @@ public sealed class TemplateRendererTests
 
         Assert.Equal([expectedBadName], badNames);
     }
+
+    [Fact]
+    public void Render_drops_a_line_whose_only_variable_is_line_optional_and_empty()
+    {
+        var empty = new Dictionary<string, string> { ["ticketUrl"] = "U", ["ratingUrl"] = string.Empty };
+
+        Assert.Equal("a U\nU\nend", TemplateRenderer.Render("a {{ticketUrl}}\n{{ticketUrl}}\nLabel: {{ratingUrl}}\nend", empty));
+        Assert.Equal("U\nend", TemplateRenderer.Render("U\nLabel: {{ratingUrl}}\nend", new Dictionary<string, string>()));
+    }
+
+    [Fact]
+    public void Render_keeps_line_optional_lines_with_a_value_or_another_variable()
+    {
+        var values = new Dictionary<string, string> { ["ratingUrl"] = "R", ["ticketUrl"] = "T" };
+        var empty = new Dictionary<string, string> { ["ratingUrl"] = string.Empty, ["ticketUrl"] = "T" };
+
+        Assert.Equal("Label: R\nend", TemplateRenderer.Render("Label: {{ratingUrl}}\nend", values));
+        Assert.Equal("Label: T / \nend", TemplateRenderer.Render("Label: {{ticketUrl}} / {{ratingUrl}}\nend", empty));
+    }
 }

@@ -78,7 +78,7 @@ public sealed class RatingLinkEmailTests(ApiFactory factory) : IAsyncLifetime
         var body = await CompletedEmailBodyAsync(ServiceRequestRequired);
 
         Assert.DoesNotContain("rate=1", body, StringComparison.Ordinal);
-        Assert.EndsWith(RatingLinkLabel, body, StringComparison.Ordinal);
+        Assert.DoesNotContain(RatingLinkLabel.TrimEnd(' ', ':'), body, StringComparison.Ordinal);
     }
 
     [Fact]

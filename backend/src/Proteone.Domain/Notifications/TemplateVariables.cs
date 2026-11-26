@@ -34,6 +34,12 @@ public static class TemplateVariables
     public const string SoftwareName = "softwareName";
     public const string ExpiresOn = "expiresOn";
 
+    /// <summary>
+    /// Variables whose line is left out of the rendered text when every variable on it is line-optional and empty
+    /// (see <see cref="TemplateRenderer.Render"/>); lets a label line disappear with its value. Not a condition syntax.
+    /// </summary>
+    public static readonly IReadOnlySet<string> LineOptional = new HashSet<string>(StringComparer.Ordinal) { RatingUrl };
+
     private static readonly IReadOnlySet<string> TicketCommon = new HashSet<string>(StringComparer.Ordinal)
     {
         TicketNumber, Subject, Status, TicketUrl, RecipientName,

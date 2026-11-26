@@ -43,7 +43,30 @@ public static partial class TemplateRenderer
         return badNames;
     }
 
-    /// <summary>Replaces every `{{name}}` placeholder with its value from <paramref name="values"/>; a missing value becomes empty text.</summary>
-    public static string Render(string text, IReadOnlyDictionary<string, string> values) =>
-        Placeholder().Replace(text, match => values.TryGetValue(match.Groups[1].Value, out var value) ? value : string.Empty);
+    /// <summary>
+    /// Replaces every `{{name}}` placeholder with its value from <paramref name="values"/>; a missing value becomes empty text.
+    /// A line whose variables are all in <see cref="TemplateVariables.LineOptional"/> and all empty is dropped with its line break.
+    /// </summary>
+    public static string Render(string text, IReadOnlyDictionary<string, string> values)
+    {
+        var lines = text.Split('\n');
+        var kept = new List<string>(lines.Length);
+        foreach (var line in lines)
+        {
+            if (!IsEmptyOptionalLine(line, values))
+            {
+                kept.Add(Placeholder().Replace(line, match => values.TryGetValue(match.Groups[1].Value, out var value) ? value : string.Empty));
+            }
+        }
+
+        return string.Join('\n', kept);
+    }
+
+    private static bool IsEmptyOptionalLine(string line, IReadOnlyDictionary<string, string> values)
+    {
+        var matches = Placeholder().Matches(line);
+        return matches.Count > 0 && matches.All(m =>
+            TemplateVariables.LineOptional.Contains(m.Groups[1].Value)
+            && string.IsNullOrEmpty(values.GetValueOrDefault(m.Groups[1].Value)));
+    }
 }
