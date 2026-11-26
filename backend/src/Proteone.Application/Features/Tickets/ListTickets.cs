@@ -17,12 +17,13 @@ public enum TicketQueue
     Unassigned,
     OnHold,
     SlaRisk,
+    ToRate,
 }
 
 public sealed record ListTicketsQuery(TicketQueue? Queue, TicketStatus? Status, TicketKind? Kind, Priority? Priority, string? Search, int Page, int PageSize, Guid? ServiceId, bool OpenOnly = false);
 
 /// <summary>Lists tickets in the viewer's scope; queues and filters only narrow it.</summary>
-public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, TicketSlaReader slaReader)
+public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, TicketSlaReader slaReader, TimeProvider clock)
 {
     private const string NameSeparator = " ";
 
@@ -36,6 +37,7 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
 
         var tickets = scope.Visible(viewer).AsNoTracking();
         var teamIds = viewer.TeamIds;
+        var ratingWindowStart = clock.GetUtcNow() - RatingLimits.Window;
         tickets = query.Queue switch
         {
             TicketQueue.Mine => tickets.Where(t => t.RequesterId == viewer.UserId),
@@ -44,6 +46,12 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
             TicketQueue.Unassigned => tickets.Where(t => t.AssigneeId == null && t.Status != TicketStatus.Completed && t.Status != TicketStatus.Cancelled),
             TicketQueue.OnHold => tickets.Where(t => t.Status == TicketStatus.OnHold),
             TicketQueue.SlaRisk => tickets.Where(t => db.SlaInstances.Any(i => i.TicketId == t.Id && i.StoppedAt == null && (i.WarnedAt != null || i.BreachedAt != null))),
+            // Only the actor's own tickets, for every role: rating is the requester's act.
+            TicketQueue.ToRate => tickets.Where(t => t.RequesterId == viewer.UserId
+                && t.Status == TicketStatus.Completed
+                && t.Outcome != null && TicketRating.RateableOutcomes.Contains(t.Outcome.Value)
+                && t.CompletedAt > ratingWindowStart
+                && !db.TicketRatings.Any(r => r.TicketId == t.Id)),
             _ => tickets,
         };
 
@@ -81,8 +89,10 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
                 : tickets.Where(t => EF.Functions.Like(t.SearchText, LikePattern.Containing(key), LikePattern.EscapeText));
         }
 
-        var page = await tickets
-            .OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id)
+        var ordered = query.Queue == TicketQueue.ToRate
+            ? tickets.OrderByDescending(t => t.CompletedAt).ThenByDescending(t => t.Id)
+            : tickets.OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id);
+        var page = await ordered
             .Select(t => new TicketListItem(
                 t.Id, t.Number, t.Kind, t.Subject, t.Status, t.HoldReason, t.Priority,
                 db.Teams.Where(x => x.Id == t.TeamId).Select(x => x.Name).First(),
