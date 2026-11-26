@@ -16,7 +16,7 @@
 - Window: `RatingLimits.Window = TimeSpan.FromDays(14)` after `CompletedAt`; a request at or after `CompletedAt + Window` is refused.
 - Rateable: `Status == Completed` and `Outcome is Resolved or Fulfilled`.
 - Only `ticket.RequesterId == actor` rates. Everyone else who sees the ticket reads the result; employees see only their own tickets (already the scope rule).
-- The write never changes `tickets.version`; it touches `updated_at` through `TicketActivity.TouchAsync`.
+- The write needs no ticket version and touches `updated_at` through `TicketActivity.TouchAsync`; like a comment, this moves the `xmin` version (ledger ruling).
 - Error codes: `ratings.not_requester` (403), `ratings.not_rateable` (409), `ratings.window_closed` (409); each in `ErrorCodes` and `frontend/src/shared/i18n/locales/tr/errors.json`.
 - Audit actions: `ratings.submitted`, `ratings.updated` (`AuditActions`, Turkish text for `TranslationCoverageTests`).
 - Timeline: internal event kind `RatingGiven`, Turkish label "Puan verildi". The comment is never emailed.
@@ -90,7 +90,7 @@
 - Handler: `scope.LoadAsync` (404 outside scope) → requester check → `TicketRating.Create` or `Update` → `TicketTimeline.Record(..., TicketEventKind.RatingGiven, Visibility.Internal, ...)` with data `{ score }` → audit (`ratings.submitted` on create, `ratings.updated` on update, `newValues: { score }`, no comment) → `TicketActivity.TouchAsync` → one save. A `DbUpdateException` from the unique index maps to `ConcurrencyException` (409).
 
 - [ ] **Step 1: Write the failing tests:**
-  - `Requester_rates_a_resolved_incident_and_desk_sees_score_and_comment` — complete via `TicketWorld`, `PUT rating {score:4, comment:"Hızlıydı"}` → 200, detail `rating.score == 4`, `canRate == true`, `rateUntil == completedAt + 14 d`; desk detail shows `"Hızlıydı"`; audit `ratings.submitted` exists; ticket `version` unchanged.
+  - `Requester_rates_a_resolved_incident_and_desk_sees_score_and_comment` — complete via `TicketWorld`, `PUT rating {score:4, comment:"Hızlıydı"}` → 200, detail `rating.score == 4`, `canRate == true`, `rateUntil == completedAt + 14 d`; desk detail shows `"Hızlıydı"`; audit `ratings.submitted` exists; `updatedAt` moved forward.
   - `Second_put_updates_and_writes_ratings_updated`.
   - `Desk_member_who_is_not_requester_gets_403_not_requester` (`world.Desk`, with `CanWork`).
   - `It_staff_rates_own_ticket` (IT user opens and later rates own incident → 200).
