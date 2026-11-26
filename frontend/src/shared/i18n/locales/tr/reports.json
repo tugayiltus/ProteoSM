@@ -144,6 +144,7 @@
     "emptyForPeriod": "{{period}} için kayıt yok.",
     "empty": "Kayıt yok.",
     "ratio": "{{numerator}} / {{denominator}}",
+    "score": "{{average}} / {{max}}",
     "calendar": "Takvim süresi",
     "sla": "SLA süresi (mesai)",
     "sample": "{{count}} kayıt üzerinden",

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ADMIN_ME, EMPLOYEE_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
-import { CHANGE_REPORT, INCIDENTS, PROBLEM_REPORT, REFERENCE_ROUTES, reportResult, SLA_COMPLIANCE, TASK_REPORT, TEAM_ID, TEAM_LOAD, VOLUME } from '../../test/reportData';
+import { CHANGE_REPORT, INCIDENTS, PROBLEM_REPORT, RATING_AVERAGE, REFERENCE_ROUTES, reportResult, SLA_COMPLIANCE, TASK_REPORT, TEAM_ID, TEAM_LOAD, VOLUME } from '../../test/reportData';
 import { chooseOption } from '../../test/select';
 
 /** An explicit range, so the default last-30-days period does not apply. */
@@ -60,6 +60,15 @@ describe('ReportsPage', () => {
     const ratio = screen.getByRole('link', { name: 'SLA uyumu' }).closest('article') as HTMLElement;
     expect(within(ratio).getByText('%75')).toBeInTheDocument();
     expect(within(ratio).getByText('3 / 4')).toBeInTheDocument();
+  });
+
+  it('shows the average rating with one decimal over the highest score', async () => {
+    mockApi({ ...routes(), 'GET /api/v1/reports/incidents': { status: 200, body: reportResult('incidents', [RATING_AVERAGE]) } });
+    renderRoute('/reports/incidents');
+
+    const card = await screen.findByRole('article', { name: 'Ortalama memnuniyet puanı' });
+    expect(within(card).getByText('3,7 / 5')).toBeInTheDocument();
+    expect(within(card).getByText('11 / 3')).toBeInTheDocument();
   });
 
   it('writes the filter bar to the URL and restores it on reload', async () => {

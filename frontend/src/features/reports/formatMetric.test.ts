@@ -19,6 +19,16 @@ describe('formatMetric', () => {
     expect(view.note).toBe('3 / 4');
   });
 
+  it('formats a score ratio as the average with one decimal over the highest score', () => {
+    const view = describeFigure({ metric: 'rating_average', shape: 'ratio', value: 11 / 3, numerator: 11, denominator: 3, buckets: null, unit: 'score' });
+    expect(view.headline).toBe('3,7 / 5');
+    expect(view.note).toBe('11 / 3');
+  });
+
+  it('keeps one decimal for a whole average score', () => {
+    expect(describeFigure({ metric: 'rating_average', shape: 'ratio', value: 5, numerator: 5, denominator: 1, buckets: null, unit: 'score' }).headline).toBe('5,0 / 5');
+  });
+
   it('formats a ratio without parts as percent only', () => {
     expect(describeFigure({ ...SLA_COMPLIANCE, numerator: null }).note).toBeNull();
   });

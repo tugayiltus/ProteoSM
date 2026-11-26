@@ -59,6 +59,9 @@ export const reportResult = (report: ReportResult['report'], figures: ReportFigu
   figures,
 });
 
+/** Three ratings with a score sum of 11: average 3,7 of 5. */
+export const RATING_AVERAGE: ReportFigure = { metric: 'rating_average', shape: 'ratio', value: 11 / 3, numerator: 11, denominator: 3, buckets: null, unit: 'score' };
+
 export const INCIDENTS = reportResult('incidents', [VOLUME, FIRST_RESPONSE_NO_DATA, SLA_COMPLIANCE, MTTR, BACKLOG]);
 
 export const ticketRow = (n: number) => ({

@@ -11,6 +11,11 @@ const PERCENT_FRACTION_DIGITS = 1;
 
 /** Server unit of durations (MetricKeys.UnitSeconds); a ratio in seconds (MTTR) is an average time, not a percentage. */
 const UNIT_SECONDS = 'seconds';
+/** Server unit of rating scores (MetricKeys.UnitScore); the ratio is the average score, not a percentage. */
+const UNIT_SCORE = 'score';
+/** Highest rating score (RatingLimits.MaxScore). */
+const MAX_SCORE = 5;
+const SCORE_FRACTION_DIGITS = 1;
 /** Bucket keys of duration figures (MetricKeys.Sla) and of MTTR (IncidentMetrics.MttrSla, a total over the denominator). */
 const SLA_AVERAGE_BUCKET = 'sla';
 const MTTR_SLA_TOTAL_BUCKET = 'mttr_sla';
@@ -18,11 +23,15 @@ const MTTR_SLA_TOTAL_BUCKET = 'mttr_sla';
 const MEDIAN_BUCKET = 'median';
 
 const numberFormat = new Intl.NumberFormat(TURKISH_LOCALE);
+const scoreFormat = new Intl.NumberFormat(TURKISH_LOCALE, { minimumFractionDigits: SCORE_FRACTION_DIGITS, maximumFractionDigits: SCORE_FRACTION_DIGITS });
 const percentFormat = new Intl.NumberFormat(TURKISH_LOCALE, { style: 'percent', maximumFractionDigits: PERCENT_FRACTION_DIGITS });
 
 export const formatNumber = (value: number): string => numberFormat.format(value);
 
 export const formatPercent = (ratio: number): string => percentFormat.format(ratio);
+
+/** "3,7 / 5": the average score with one decimal over the highest score. */
+export const formatScore = (average: number): string => i18n.t('reports:figure.score', { average: scoreFormat.format(average), max: MAX_SCORE });
 
 /** "2 gün 3 sa", "3 sa 15 dk" or "15 dk"; seconds are dropped. */
 export function formatDuration(seconds: number): string {
@@ -115,7 +124,8 @@ function describeValue(figure: ReportFigure): Omit<FigureView, 'isEmpty'> {
       figure.numerator === null || figure.denominator === null
         ? null
         : i18n.t('reports:figure.ratio', { numerator: formatNumber(figure.numerator), denominator: formatNumber(figure.denominator) });
-    return { noData: false, headline: formatPercent(figure.value), lines: [], note };
+    const headline = figure.unit === UNIT_SCORE ? formatScore(figure.value) : formatPercent(figure.value);
+    return { noData: false, headline, lines: [], note };
   }
   return { noData: false, headline: formatNumber(figure.value), lines: [], note: null };
 }
