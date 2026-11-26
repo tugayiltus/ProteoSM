@@ -79,6 +79,8 @@ public sealed class RatingLinkEmailTests(ApiFactory factory) : IAsyncLifetime
 
         Assert.DoesNotContain("rate=1", body, StringComparison.Ordinal);
         Assert.DoesNotContain(RatingLinkLabel.TrimEnd(' ', ':'), body, StringComparison.Ordinal);
+        // The body ends exactly with the ticket link of the seeded template: no blank line is left behind.
+        Assert.Matches($@"görüntüleyebilirsiniz: {System.Text.RegularExpressions.Regex.Escape(ApiFactory.PublicBaseUrl)}/tickets/[^\s]+\z", body);
     }
 
     [Fact]

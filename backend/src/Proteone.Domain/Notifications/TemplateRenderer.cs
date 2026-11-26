@@ -45,28 +45,46 @@ public static partial class TemplateRenderer
 
     /// <summary>
     /// Replaces every `{{name}}` placeholder with its value from <paramref name="values"/>; a missing value becomes empty text.
-    /// A line whose variables are all in <see cref="TemplateVariables.LineOptional"/> and all empty is dropped with its line break.
+    /// A line whose variables are all in <see cref="TemplateVariables.LineOptional"/> and all empty is dropped with its line break;
+    /// that path runs only when such an empty line-optional variable is present, otherwise the text is replaced as a whole.
     /// </summary>
     public static string Render(string text, IReadOnlyDictionary<string, string> values)
     {
+        var hasEmptyOptional = Placeholder().Matches(text).Any(m => IsEmptyOptional(m.Groups[1].Value, values));
+        return hasEmptyOptional ? RenderDroppingEmptyLines(text, values) : Substitute(text, values);
+    }
+
+    private static string Substitute(string text, IReadOnlyDictionary<string, string> values) =>
+        Placeholder().Replace(text, match => values.TryGetValue(match.Groups[1].Value, out var value) ? value : string.Empty);
+
+    private static string RenderDroppingEmptyLines(string text, IReadOnlyDictionary<string, string> values)
+    {
         var lines = text.Split('\n');
         var kept = new List<string>(lines.Length);
-        foreach (var line in lines)
+        var droppedLast = false;
+        for (var i = 0; i < lines.Length; i++)
         {
-            if (!IsEmptyOptionalLine(line, values))
+            if (IsEmptyOptionalLine(lines[i], values))
             {
-                kept.Add(Placeholder().Replace(line, match => values.TryGetValue(match.Groups[1].Value, out var value) ? value : string.Empty));
+                droppedLast = i == lines.Length - 1;
+            }
+            else
+            {
+                kept.Add(Substitute(lines[i], values));
             }
         }
 
-        return string.Join('\n', kept);
+        var result = string.Join('\n', kept);
+        // Dropping the last line must not leave a line break the text did not end with.
+        return droppedLast && !text.EndsWith('\n') ? result.TrimEnd('\n') : result;
     }
+
+    private static bool IsEmptyOptional(string name, IReadOnlyDictionary<string, string> values) =>
+        TemplateVariables.LineOptional.Contains(name) && string.IsNullOrEmpty(values.GetValueOrDefault(name));
 
     private static bool IsEmptyOptionalLine(string line, IReadOnlyDictionary<string, string> values)
     {
         var matches = Placeholder().Matches(line);
-        return matches.Count > 0 && matches.All(m =>
-            TemplateVariables.LineOptional.Contains(m.Groups[1].Value)
-            && string.IsNullOrEmpty(values.GetValueOrDefault(m.Groups[1].Value)));
+        return matches.Count > 0 && matches.All(m => IsEmptyOptional(m.Groups[1].Value, values));
     }
 }

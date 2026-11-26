@@ -112,4 +112,21 @@ public sealed class TemplateRendererTests
         Assert.Equal("Label: R\nend", TemplateRenderer.Render("Label: {{ratingUrl}}\nend", values));
         Assert.Equal("Label: T / \nend", TemplateRenderer.Render("Label: {{ticketUrl}} / {{ratingUrl}}\nend", empty));
     }
+
+    [Fact]
+    public void Render_keeps_placeholders_with_line_breaks_inside_the_braces_when_no_line_is_dropped()
+    {
+        var values = new Dictionary<string, string> { ["subject"] = "Arıza" };
+
+        Assert.Equal("Konu: Arıza", TemplateRenderer.Render("Konu: {{\nsubject\n}}", values));
+    }
+
+    [Fact]
+    public void Render_does_not_leave_a_trailing_line_break_when_the_dropped_line_was_last()
+    {
+        var values = new Dictionary<string, string> { ["ticketUrl"] = "U" };
+
+        Assert.Equal("Link: U", TemplateRenderer.Render("Link: {{ticketUrl}}\n\nLabel: {{ratingUrl}}", values));
+        Assert.Equal("Link: U\n\n", TemplateRenderer.Render("Link: {{ticketUrl}}\n\nLabel: {{ratingUrl}}\n", values));
+    }
 }
