@@ -21,6 +21,9 @@ updates:
         versions: [">=10"]
       - dependency-name: "@eslint/js"
         versions: [">=10"]
+      # Pinned to 6.x until typescript-eslint supports TypeScript 7 (its peer range is <6.1.0).
+      - dependency-name: typescript
+        versions: [">=7"]
 
   - package-ecosystem: github-actions
     directory: /
