@@ -11,6 +11,7 @@ using Proteone.Application.Features.Knowledge;
 using Proteone.Application.Features.Organization.Departments;
 using Proteone.Application.Features.Organization.Locations;
 using Proteone.Application.Features.Organization.Teams;
+using Proteone.Application.Features.Ratings;
 using Proteone.Application.Features.Setup;
 using Proteone.Application.Features.Tickets;
 using Proteone.Application.Features.Users;
@@ -72,6 +73,8 @@ internal sealed partial class PilotSeedSession(
     private const int HoldBeforeCompletePercent = 25;
     private const int WorkerReplyPercent = 70;
     private const int RootCausePercent = 30;
+    private const int RatedPercent = 40;
+    private const int RatingCommentPercent = 30;
 
     // Minutes between the steps of one ticket (from, to).
     private static readonly (int Min, int Max) ApprovalDelay = (30, 24 * 60);
@@ -81,6 +84,7 @@ internal sealed partial class PilotSeedSession(
     private static readonly (int Min, int Max) HoldDuration = (120, 2 * MinutesPerDay);
     private static readonly (int Min, int Max) WorkDuration = (30, 3 * MinutesPerDay);
     private static readonly (int Min, int Max) ArticlePublishDelay = (30, 240);
+    private static readonly (int Min, int Max) RatingDelay = (10, 3 * MinutesPerDay);
 
     // One block of the status cycle: mostly completed work, some of every other state.
     private const int CompletedPerBlock = 11;
@@ -108,6 +112,8 @@ internal sealed partial class PilotSeedSession(
         [.. PilotSeedData.Locations.Where(l => PilotSeedData.Locations.All(c => c.Parent != l.Name))];
 
     private readonly Random _random = new(PilotSeed.RandomSeed);
+    // Ratings draw from their own sequence, so they do not shift the draws of the other seeded data.
+    private readonly Random _ratingRandom = new(PilotSeed.RandomSeed + 1);
     private readonly DateTimeOffset _windowStart = realNow.AddDays(-PilotSeedVolumes.DaysBack);
     private readonly Dictionary<string, Guid> _departments = new(StringComparer.Ordinal);
     private readonly Dictionary<string, Guid> _locations = new(StringComparer.Ordinal);
@@ -482,6 +488,23 @@ internal sealed partial class PilotSeedSession(
         var rootCause = _random.Next(Hundred) < RootCausePercent ? PilotSeedData.RootCause : null;
         var command = new CompleteTicketCommand(ticket.Number, current, Pick(PilotSeedData.Resolutions), outcome, rootCause);
         await ActAsync<CompleteTicketHandler, TicketDetail>(worker, at, (h, ct) => h.HandleAsync(command, ct));
+        await MaybeRateAsync(ticket.Number, requester, at);
+    }
+
+    /// <summary>The requester rates some completed tickets inside the rating window (ADR-0044).</summary>
+    private async Task MaybeRateAsync(string number, Guid requester, DateTimeOffset completedAt)
+    {
+        if (_ratingRandom.Next(Hundred) >= RatedPercent)
+        {
+            return;
+        }
+
+        var score = PilotSeedData.RatingScores[_ratingRandom.Next(PilotSeedData.RatingScores.Length)];
+        var comment = _ratingRandom.Next(Hundred) < RatingCommentPercent
+            ? PilotSeedData.RatingComments[_ratingRandom.Next(PilotSeedData.RatingComments.Length)]
+            : null;
+        var at = Clamp(completedAt.AddMinutes(_ratingRandom.Next(RatingDelay.Min, RatingDelay.Max)));
+        await ActAsync<RateTicketHandler, TicketDetail>(requester, at, (h, ct) => h.HandleAsync(new RateTicketCommand(number, score, comment), ct));
     }
 
     private async Task HoldAsync(string number, Guid worker, DateTimeOffset at)

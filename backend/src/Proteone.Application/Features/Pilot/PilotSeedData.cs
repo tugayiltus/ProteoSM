@@ -177,6 +177,16 @@ internal static class PilotSeedData
         "Talep karşılandı, kullanıcı bilgilendirildi.",
     ];
 
+    /// <summary>Scores the requesters give, weighted towards content users like a real pilot.</summary>
+    public static readonly int[] RatingScores = [5, 5, 5, 4, 4, 4, 3, 2, 1];
+
+    public static readonly string[] RatingComments =
+    [
+        "Hızlı ve ilgili destek için teşekkürler.",
+        "Sorun çözüldü ama biraz uzun sürdü.",
+        "Aynı sorun tekrar yaşandı.",
+    ];
+
     public static readonly PilotArticle[] Articles =
     [
         new("VPN", "VPN bağlantısı nasıl kurulur", "Evden şirket ağına güvenli bağlanma adımları.", "1. VPN istemcisini açın.\n2. Şirket e-posta adresinizle giriş yapın.\n3. Doğrulama kodunu girin.", ArticleVisibility.Employees),

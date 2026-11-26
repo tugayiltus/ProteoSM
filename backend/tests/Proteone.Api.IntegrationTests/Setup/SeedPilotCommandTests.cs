@@ -149,6 +149,16 @@ public sealed class SeedPilotCommandTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(tickets.Count, await db.AuditEvents.CountAsync(a => a.Action == AuditActions.TicketCreated, Ct));
         Assert.True(await db.AuditEvents.AnyAsync(a => a.Action == AuditActions.AssetCreated, Ct));
         Assert.True(await db.TicketComments.AnyAsync(Ct));
+        var ratings = await db.TicketRatings.AsNoTracking().ToListAsync(Ct);
+        Assert.NotEmpty(ratings);
+        Assert.True(ratings.Select(r => r.Score).Distinct().Count() > 1);
+        Assert.All(ratings, r =>
+        {
+            var rated = tickets.Single(t => t.Id == r.TicketId);
+            Assert.Equal(TicketStatus.Completed, rated.Status);
+            Assert.Contains(rated.Outcome!.Value, TicketRating.RateableOutcomes);
+            Assert.Equal(rated.RequesterId, r.RatedBy);
+        });
         Assert.Equal(Scaled(PilotSeedVolumes.Articles), await db.KnowledgeArticles.CountAsync(Ct));
         Assert.True(await db.Categories.AnyAsync(c => c.Name == PilotSeed.PilotCategoryName && c.Scope == CategoryScope.Incident, Ct));
 
