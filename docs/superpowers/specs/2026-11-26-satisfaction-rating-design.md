@@ -56,7 +56,7 @@ New table `ticket_ratings`: `id` (uuid v7), `ticket_id` (unique, FK), `score` (s
 - **Ticket page (requester, rateable):** a "Bu kayıt nasıl çözüldü?" section under the resolution: five choices (1–5, labelled, keyboard reachable), optional comment, "Gönder". `?rate=1` scrolls to the section and focuses the first choice. After sending, the section shows the score with "Değiştir" until the window ends.
 - **Ticket page (IT staff, admin):** the score and the comment in the details area; "Puan yok" when not rated.
 - **Home page (employee):** a card "Puan bekleyen kayıtlar" with up to five rows from `queue=to_rate`; hidden when empty.
-- **Reports:** new figures on the incident and request reports: average score, response rate (rated / rateable in the period), score distribution. Filters: period, team. Drill-down lists rated tickets with score and comment; Excel export follows the existing export pipeline.
+- **Reports:** new figures on the incident and request reports: average score, response rate (rated / rateable in the period), score distribution. Filters: period, team. Drill-down opens per score bucket and lists those tickets; the comment is read on the ticket page (my call: reuses the existing ticket drill-down rows); Excel export follows the existing export pipeline.
 
 ```
 Kayıt INC-2026-000123 · Tamamlandı
