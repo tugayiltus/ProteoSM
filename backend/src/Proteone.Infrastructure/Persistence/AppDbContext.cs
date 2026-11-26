@@ -47,6 +47,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<TicketComment> TicketComments => Set<TicketComment>();
     public DbSet<TicketAttachment> TicketAttachments => Set<TicketAttachment>();
     public DbSet<TicketEvent> TicketEvents => Set<TicketEvent>();
+    public DbSet<TicketRating> TicketRatings => Set<TicketRating>();
     public DbSet<WorkTask> WorkTasks => Set<WorkTask>();
     public DbSet<TaskEvent> TaskEvents => Set<TaskEvent>();
     public DbSet<TaskAssignment> TaskAssignments => Set<TaskAssignment>();

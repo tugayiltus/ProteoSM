@@ -45,6 +45,7 @@ public interface IAppDbContext
     DbSet<TicketComment> TicketComments { get; }
     DbSet<TicketAttachment> TicketAttachments { get; }
     DbSet<TicketEvent> TicketEvents { get; }
+    DbSet<TicketRating> TicketRatings { get; }
     DbSet<WorkTask> WorkTasks { get; }
     DbSet<TaskEvent> TaskEvents { get; }
     DbSet<TaskAssignment> TaskAssignments { get; }

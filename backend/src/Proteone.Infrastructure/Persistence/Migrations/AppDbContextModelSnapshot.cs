@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261125115929_AddSettingsAndAnnouncements";
+    public override string LastMigrationId => "20261126100951_AddTicketRatings";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -4210,6 +4210,73 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     });
             });
 
+        modelBuilder.Entity("Proteone.Domain.Tickets.TicketRating", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid?>("AssigneeId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("assignee_id");
+
+                b.Property<string>("Comment")
+                    .HasMaxLength(500)
+                    .HasColumnType("character varying(500)")
+                    .HasColumnName("comment");
+
+                b.Property<DateTimeOffset>("RatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("rated_at");
+
+                b.Property<Guid>("RatedBy")
+                    .HasColumnType("uuid")
+                    .HasColumnName("rated_by");
+
+                b.Property<short>("Score")
+                    .HasColumnType("smallint")
+                    .HasColumnName("score");
+
+                b.Property<Guid>("TeamId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("team_id");
+
+                b.Property<Guid>("TicketId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("ticket_id");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_ticket_ratings");
+
+                b.HasIndex("AssigneeId")
+                    .HasDatabaseName("ix_ticket_ratings_assignee_id");
+
+                b.HasIndex("RatedBy")
+                    .HasDatabaseName("ix_ticket_ratings_rated_by");
+
+                b.HasIndex("TicketId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_ticket_ratings_ticket_id");
+
+                b.HasIndex("TeamId", "RatedAt")
+                    .HasDatabaseName("ix_ticket_ratings_team_id_rated_at");
+
+                b.ToTable("ticket_ratings", t =>
+                    {
+                        t.HasCheckConstraint("ck_ticket_ratings_score", "score BETWEEN 1 AND 5");
+                    });
+            });
+
         modelBuilder.Entity("Proteone.Domain.Tickets.TicketRelation", b =>
             {
                 b.Property<Guid>("Id")
@@ -5453,6 +5520,36 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired()
                     .HasConstraintName("fk_ticket_events_tickets_ticket_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Tickets.TicketRating", b =>
+            {
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("AssigneeId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_ticket_ratings_users_assignee_id");
+
+                b.HasOne("Proteone.Domain.Users.User", null)
+                    .WithMany()
+                    .HasForeignKey("RatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_ticket_ratings_users_rated_by");
+
+                b.HasOne("Proteone.Domain.Organization.Team", null)
+                    .WithMany()
+                    .HasForeignKey("TeamId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_ticket_ratings_teams_team_id");
+
+                b.HasOne("Proteone.Domain.Tickets.Ticket", null)
+                    .WithMany()
+                    .HasForeignKey("TicketId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_ticket_ratings_tickets_ticket_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Tickets.TicketRelation", b =>
