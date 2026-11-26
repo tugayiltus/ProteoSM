@@ -54,6 +54,11 @@ public sealed class AuthSettingsTests
         Assert.Equal(["sirket.com"], settings.EntraAllowedDomains);
     }
 
+    // Stored rows hold fingerprints of the old formula: a different value would make every tested provider untested.
+    [Fact]
+    public void Ldap_fingerprint_keeps_its_stored_format() =>
+        Assert.Equal("A1ACD3795B93701115D8547278F9E6295B91B5E129496E14DC9E1E78F73DC8A5", WithLdap().Fingerprint(LoginMethod.Ldap));
+
     [Fact]
     public void Allowed_domains_drop_the_at_sign_case_and_spaces()
     {

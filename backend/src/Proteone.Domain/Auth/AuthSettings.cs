@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 using Proteone.Domain.Common;
 
 namespace Proteone.Domain.Auth;
@@ -70,7 +68,7 @@ public sealed class AuthSettings
             LoginMethod.Ldap => new[] { LdapHost, LdapPort.ToString(CultureInfo.InvariantCulture), LdapSecurity.ToString(), LdapBaseDn, LdapBindDn, LdapBindPasswordProtected ?? string.Empty, LdapUserFilter ?? string.Empty },
             _ => [],
         };
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join('\n', parts))));
+        return SettingsFingerprint.Compute(parts);
     }
 
     public void MarkTested(LoginMethod method)
