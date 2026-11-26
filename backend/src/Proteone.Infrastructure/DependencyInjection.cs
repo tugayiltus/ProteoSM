@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddSingleton<IAuthSecretProtector, AuthSecretProtector>();
         services.AddSingleton<IMonitoringSecretProtector, MonitoringSecretProtector>();
         services.AddSingleton<ILicenceKeyProtector, LicenceKeyProtector>();
+        services.AddSingleton<IEmailSecretProtector, EmailSecretProtector>();
         services.AddSingleton<ILdapDirectory, Identity.NovellLdapDirectory>();
         // One client for the occasional connection test; the Worker composes this too, so it lives here, not in Proteone.Api.
         services.AddSingleton<IEntraConnectionTester>(_ => new Identity.EntraConnectionTester(new HttpClient()));
@@ -56,6 +57,8 @@ public static class DependencyInjection
         // throws immediately ("fail fast when missing"). Proteone.Worker additionally marks EmailOptions
         // ValidateOnStart so a bad Mode fails the host at startup, not at the first send.
         services.AddOptions<EmailOptions>().BindConfiguration(EmailOptions.SectionName);
+        services.AddSingleton<IEmailEnvironment, EmailEnvironment>();
+        services.AddScoped<IEmailTestSender, MailKitEmailTestSender>();
         services.AddScoped<IEmailSender>(provider =>
         {
             var mode = provider.GetRequiredService<IOptionsMonitor<EmailOptions>>().CurrentValue.Mode;
