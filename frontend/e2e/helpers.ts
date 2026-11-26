@@ -26,14 +26,30 @@ async function openSelect(scope: Page | Locator, label: string | RegExp): Promis
   return page;
 }
 
+/**
+ * Clicks an option after its popup stops its open animation.
+ * A click on a moving option retries, and the fourth try scrolls the option to the top with `block: 'start'`.
+ * That scroll also moves the page; the popup then follows its trigger, the click lands outside it and the list closes.
+ */
+export async function clickOption(option: Locator): Promise<void> {
+  await option.evaluate(async (element) => {
+    const opening = document.getAnimations().filter((animation) => {
+      const target = animation.effect instanceof KeyframeEffect ? animation.effect.target : null;
+      return target !== null && target.contains(element) && Number.isFinite(Number(animation.effect?.getComputedTiming().endTime));
+    });
+    await Promise.all(opening.map((animation) => animation.finished.catch(() => undefined)));
+  });
+  await option.click();
+}
+
 export async function chooseOption(scope: Page | Locator, label: string | RegExp, option: string): Promise<void> {
   const page = await openSelect(scope, label);
-  await page.getByRole('option', { name: option, exact: true }).click();
+  await clickOption(page.getByRole('option', { name: option, exact: true }));
 }
 
 export async function chooseFirstOption(scope: Page | Locator, label: string | RegExp): Promise<void> {
   const page = await openSelect(scope, label);
-  await page.getByRole('option').first().click();
+  await clickOption(page.getByRole('option').first());
 }
 
 /** A whole-card link (Astryx ClickableCard): its anchor is an invisible layer, so the person clicks the card's title. */

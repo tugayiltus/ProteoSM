@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 
 import { expect, test } from '@playwright/test';
 
-import { chooseOption, expectNoHorizontalScroll } from './helpers';
+import { chooseOption, clickOption, expectNoHorizontalScroll } from './helpers';
 import { adminSession, seedChange, seedWorld, userSession } from './world';
 
 const MODULES_TEST_TIMEOUT_MS = 180_000;
@@ -53,7 +53,7 @@ test('licence: IT assigns the only seat, the employee sees the software, a secon
 
   async function chooseFirstUser(scope: typeof dialog) {
     await scope.getByRole('combobox', { name: 'Kullanıcı' }).click();
-    await staff.page.getByRole('option').first().click();
+    await clickOption(staff.page.getByRole('option').first());
   }
 });
 
@@ -103,7 +103,7 @@ test('monitoring: a signed event opens an incident, a wrong signature does not',
   await dialog.getByRole('textbox', { name: /^Ad/ }).fill(name);
   await chooseOption(dialog, /^Ekip/, world.teamName);
   await dialog.getByRole('combobox', { name: /^Talep sahibi/ }).click();
-  await admin.page.getByRole('option', { name: new RegExp(world.itEmail) }).click();
+  await clickOption(admin.page.getByRole('option', { name: new RegExp(world.itEmail) }));
   await dialog.getByRole('button', { name: 'Oluştur' }).click();
   dialog = admin.page.getByRole('dialog', { name: `${name} anahtarı` });
   const secret = (await dialog.getByText(/^[0-9a-f]{64}$/).textContent()) ?? '';

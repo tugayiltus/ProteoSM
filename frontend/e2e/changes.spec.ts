@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { chooseOption, expectNoHorizontalScroll } from './helpers';
+import { chooseOption, clickOption, expectNoHorizontalScroll } from './helpers';
 import { adminSession, seedChange, seedChangeTask, seedSecondAdmin, seedSecondTeam, seedWorld, submitChange, userSession, type Session } from './world';
 
 const CHANGE_URL = /\/changes\/CHG-\d{4}-\d{6}$/;
@@ -77,7 +77,7 @@ test('change: planned by one team, approved by a second admin, implemented acros
   await form.getByLabel('Geri dönüş planı').fill('Önceki sürüme dön');
   await form.getByLabel('Varlık ara').fill(world.assetTag);
   await form.getByRole('combobox', { name: 'Varlık ekle' }).click();
-  await page.getByRole('option', { name: new RegExp(world.assetTag) }).click();
+  await clickOption(page.getByRole('option', { name: new RegExp(world.assetTag) }));
   await form.getByRole('button', { name: 'Değişikliği oluştur' }).click();
   await expect(page).toHaveURL(CHANGE_URL);
   const changePath = new URL(page.url()).pathname;
