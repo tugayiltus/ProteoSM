@@ -23,6 +23,9 @@ internal sealed class ReportFixture(ReportWorld world)
 
     private int _counter;
 
+    /// <summary>False for ratios whose numerator is a sum (MTTR seconds, rating scores), not a count of the numerator rows.</summary>
+    public static bool NumeratorCountsRows(string metricKey) => metricKey is not (IncidentMetrics.Mttr or RatingMetrics.Average);
+
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     public ReportWorld World { get; } = world;
@@ -118,11 +121,10 @@ internal sealed class ReportFixture(ReportWorld world)
         await using var db = World.Db();
         var scope = new ReportScope(db, new FixedActor(World.Admin.Id));
         var source = new TicketReportSource(db, new TestClock());
-        var effective = ReportCatalog.EffectiveFilter(report, filter);
-        var context = new ReportContext(db, now, source.Window(effective));
+        var viewer = await scope.ViewerAsync(Ct);
         foreach (var metric in ReportCatalog.Get(report).Cast<ReportMetric>())
         {
-            var filtered = source.Apply(await scope.TicketsAsync(Ct), effective, metric.DateBasis);
+            var (filtered, context, _) = ReportPipeline.Tickets(scope, source, db, viewer, report, filter, metric, now);
             var figure = await metric.ComputeAsync(filtered, context, Ct);
             var rows = await metric.Rows(filtered, context).CountAsync(Ct);
             var denominator = metric.DenominatorRows(filtered, context);
@@ -146,7 +148,7 @@ internal sealed class ReportFixture(ReportWorld world)
                 default:
                     Assert.NotNull(denominator);
                     Assert.Equal(await denominator.CountAsync(Ct), figure.Denominator);
-                    if (metric.Key != IncidentMetrics.Mttr)
+                    if (NumeratorCountsRows(metric.Key))
                     {
                         Assert.Equal(rows, figure.Numerator);
                     }

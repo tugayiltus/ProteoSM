@@ -35,12 +35,18 @@ public sealed record TaskPipeline(IQueryable<WorkTask> Filtered, TaskReportConte
 /// </summary>
 public static class ReportPipeline
 {
+    /// <summary>
+    /// The tickets <paramref name="metric"/> reads. A metric that applies the team filter itself gets the tickets without it and the
+    /// team in its context; the viewer's scope (current team for IT staff) always applies.
+    /// </summary>
     public static TicketPipeline Tickets(
-        ReportScope scope, TicketReportSource source, IAppDbContext db, ReportViewer viewer, ReportName report, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
+        ReportScope scope, TicketReportSource source, IAppDbContext db, ReportViewer viewer, ReportName report, ReportFilter filter, ReportMetric metric, DateTimeOffset now)
     {
         var effective = ReportCatalog.EffectiveFilter(report, filter);
-        var filtered = source.Apply(scope.TicketsFor(viewer), effective, basis);
-        return new TicketPipeline(filtered, new ReportContext(db, now, source.Window(effective)), effective);
+        var ticketFilter = metric.AppliesTeamFilter ? effective with { TeamId = null } : effective;
+        var filtered = source.Apply(scope.TicketsFor(viewer), ticketFilter, metric.DateBasis);
+        var teamId = metric.AppliesTeamFilter ? effective.TeamId : null;
+        return new TicketPipeline(filtered, new ReportContext(db, now, source.Window(effective), teamId), effective);
     }
 
     public static ChangePipeline Changes(

@@ -100,10 +100,20 @@
     "licences_ending_30": "30 gün içinde bitenler",
     "licences_ending_60": "60 gün içinde bitenler",
     "licences_ending_90": "90 gün içinde bitenler",
-    "licences_expired": "Süresi bitenler"
+    "licences_expired": "Süresi bitenler",
+    "rating_average": "Ortalama memnuniyet puanı",
+    "rating_response_rate": "Puanlanma oranı",
+    "rating_distribution": "Puan dağılımı"
   },
   "serviceBuckets": {
     "none": "Hizmet yok"
+  },
+  "ratingBuckets": {
+    "1": "1 puan",
+    "2": "2 puan",
+    "3": "3 puan",
+    "4": "4 puan",
+    "5": "5 puan"
   },
   "buckets": {
     "1": "1 arıza",

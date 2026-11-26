@@ -26,6 +26,9 @@ public static class MetricKeys
     public const string UnitProblems = "problems";
     public const string UnitLicences = "licences";
     public const string UnitSeconds = "seconds";
+
+    /// <summary>A satisfaction score (1–5); a ratio in this unit is an average score, not a share.</summary>
+    public const string UnitScore = "score";
 }
 
 /// <summary>Row rules shared by the metrics of the incident and request reports.</summary>

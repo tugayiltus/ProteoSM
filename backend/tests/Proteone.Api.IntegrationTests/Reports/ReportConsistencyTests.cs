@@ -55,6 +55,12 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         var done = await fx.IncidentAsync(T0, t => t.Complete("cozuldu", TicketOutcome.Resolved, false, false, T0.AddHours(3)));
         await fx.SlaAsync(done, SlaMetric.Resolution, T0, ReportFixture.StopAfter(T0, TimeSpan.FromMinutes(30), TimeSpan.Zero, SlaResult.Met));
         await fx.SlaAsync(done, SlaMetric.FirstResponse, T0, ReportFixture.StopAfter(T0, TimeSpan.FromMinutes(10), TimeSpan.Zero, SlaResult.Met));
+        await using (var ratingDb = world.Db())
+        {
+            ratingDb.TicketRatings.Add(TicketRating.Create(done, world.Employee.Id, 4, null, T0.AddHours(4)));
+            await ratingDb.SaveChangesAsync(Ct);
+        }
+
         var late = await fx.IncidentAsync(T0.AddDays(1), t => t.Complete("gec", TicketOutcome.Resolved, false, false, T0.AddDays(3)));
         await fx.SlaAsync(late, SlaMetric.Resolution, T0.AddDays(1), ReportFixture.StopAfter(T0.AddDays(1), TimeSpan.FromHours(5), TimeSpan.FromMinutes(20), SlaResult.Breached));
         await fx.IncidentAsync(T0.AddDays(2), t => t.Cancel("vazgecildi", T0.AddDays(2).AddHours(1)));
@@ -167,7 +173,7 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
                             break;
                         default:
                             Assert.Equal(figure.Denominator, await TotalAsync(part: ReportDrillPart.Denominator));
-                            if (metric.Key != IncidentMetrics.Mttr)
+                            if (ReportFixture.NumeratorCountsRows(metric.Key))
                             {
                                 Assert.Equal(figure.Numerator, await TotalAsync());
                             }

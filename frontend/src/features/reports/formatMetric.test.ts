@@ -97,4 +97,13 @@ describe('median line', () => {
     expect(bucketLabel('by_service', { key: SERVICE_ID, label: 'none' })).toBe('none'); // a service named "none" keeps its name
     expect(bucketLabel('by_department', { key: 'none', label: null })).toBe('Belirtilmemiş');
   });
+
+  it('names the rating figures and their score buckets in Turkish', () => {
+    expect(metricLabel('rating_average')).toBe('Ortalama memnuniyet puanı');
+    expect(metricLabel('rating_response_rate')).toBe('Puanlanma oranı');
+    expect(metricLabel('rating_distribution')).toBe('Puan dağılımı');
+    expect(bucketLabel('rating_distribution', { key: '1', label: null })).toBe('1 puan');
+    expect(bucketLabel('rating_distribution', { key: '5', label: null })).toBe('5 puan');
+    expect(bucketLabel('incidents_per_problem', { key: '1', label: null })).toBe('1 arıza');
+  });
 });

@@ -40,13 +40,14 @@ export function formatDuration(seconds: number): string {
 
 export const metricLabel = (metric: string): string => translateOr(`reports:metrics.${metric}`, metric);
 
-/** Null-label bucket keys whose names live with their domain (hold reasons, asset types and statuses). */
+/** Null-label bucket keys whose names live with their domain (hold reasons, asset types and statuses) or their figure (rating scores). */
 const BUCKET_NAMESPACES: Readonly<Record<string, string>> = {
   hold_reasons: 'tickets:holdReasons',
   by_type: 'assets:types',
   by_status: 'assets:statuses',
   maintenance_lost_retired: 'assets:statuses',
   by_service: 'reports:serviceBuckets',
+  rating_distribution: 'reports:ratingBuckets',
 };
 
 /** The server's label (team, person, place) or the Turkish name of a key (ageing band, enum value, "none"). */

@@ -50,7 +50,7 @@ public sealed class GetReportHandler(ReportScope scope, TicketReportSource sourc
         var figures = new List<ReportFigure>();
         foreach (var metric in ReportCatalog.Get(query.Report).OfType<ReportMetric>())
         {
-            var pipeline = ReportPipeline.Tickets(scope, source, db, viewer, query.Report, query.Filter, metric.DateBasis, now);
+            var pipeline = ReportPipeline.Tickets(scope, source, db, viewer, query.Report, query.Filter, metric, now);
             figures.Add(await metric.ComputeAsync(pipeline.Filtered, pipeline.Context, cancellationToken));
         }
 

@@ -20,6 +20,9 @@ public sealed class ExportHeadersCoverageTests
     /// <summary>The service figure's own text for records without a service.</summary>
     private static readonly string ServiceNoneKey = $"metric_buckets.{MetricKeys.ByService}.{OperationsMetrics.None}";
 
+    /// <summary>The rating figure's own text per score, so "1" does not read as the problem figure's "1 arıza".</summary>
+    private static readonly IReadOnlyList<string> RatingScoreKeys = [.. RatingMetrics.DistributionBuckets.Select(k => $"metric_buckets.{RatingMetrics.Distribution}.{k}")];
+
     private static IEnumerable<string> MetricKeysOfAllReports() =>
         Enum.GetValues<ReportName>().SelectMany(r => ReportCatalog.Get(r)).Select(m => m.Key).Distinct();
 
@@ -35,6 +38,8 @@ public sealed class ExportHeadersCoverageTests
     {
         Assert.All(MetricKeysOfAllReports(), key => Assert.Contains($"metrics.{key}", Keys));
         Assert.All(FixedBucketKeys(), key => Assert.Contains($"buckets.{key}", Keys));
+        Assert.All(RatingScoreKeys, key => Assert.Contains(key, Keys));
+        Assert.Equal("1 puan", ExportHeaders.Bucket(RatingMetrics.Distribution, "1"));
         Assert.Equal("8+ gün", ExportHeaders.Bucket(IncidentMetrics.OpenBacklog, "8+"));
         Assert.Equal("0190a1b2-0000-7000-8000-000000000000", ExportHeaders.Bucket(MetricKeys.ByService, "0190a1b2-0000-7000-8000-000000000000")); // unresolved id
     }
@@ -121,6 +126,7 @@ public sealed class ExportHeadersCoverageTests
             .Concat(MetricKeysOfAllReports().Select(k => $"metrics.{k}"))
             .Concat(FixedBucketKeys().Select(k => $"buckets.{k}"))
             .Append(ServiceNoneKey)
+            .Concat(RatingScoreKeys)
             .Concat(ExportHeaders.EnumTypes.SelectMany(t => Enum.GetNames(t).Select(n => $"values.{ExportHeaders.GroupOf(t)}.{System.Text.Json.JsonNamingPolicy.SnakeCaseLower.ConvertName(n)}")))
             .ToHashSet();
         Assert.Empty(Keys.Except(expected));

@@ -101,7 +101,7 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
         }
 
         var ticketMetric = (ReportMetric)metric;
-        var pipeline = ReportPipeline.Tickets(scope, source, db, viewer, report, filter, ticketMetric.DateBasis, now);
+        var pipeline = ReportPipeline.Tickets(scope, source, db, viewer, report, filter, ticketMetric, now);
         var rows = TicketRows(ticketMetric, pipeline.Filtered, pipeline.Context, bucket, part);
         return new DrilldownRows(DrilldownKind.Tickets, ProjectTickets(rows), null, null, null, null);
     }

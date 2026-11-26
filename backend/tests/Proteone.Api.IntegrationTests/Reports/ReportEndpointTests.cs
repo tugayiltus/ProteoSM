@@ -27,7 +27,7 @@ public sealed class ReportEndpointTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal("incidents", body.GetProperty("report").GetString());
         Assert.Equal("teams", body.GetProperty("scopeLabel").GetString());
         var keys = body.GetProperty("figures").EnumerateArray().Select(f => f.GetProperty("metric").GetString()).ToArray();
-        Assert.Equal(["volume", "first_response_time", "resolution_time", "mttr", "open_backlog", "sla_compliance", "by_service", "excluded_outcomes"], keys);
+        Assert.Equal(["volume", "first_response_time", "resolution_time", "mttr", "open_backlog", "sla_compliance", "by_service", "excluded_outcomes", "rating_average", "rating_response_rate", "rating_distribution"], keys);
         var compliance = body.GetProperty("figures").EnumerateArray().Single(f => f.GetProperty("metric").GetString() == "sla_compliance");
         Assert.Equal(JsonValueKind.Null, compliance.GetProperty("value").ValueKind);
         Assert.Equal(0, compliance.GetProperty("denominator").GetInt64());

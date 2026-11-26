@@ -10,9 +10,10 @@ namespace Proteone.Application.Reports;
 
 /// <summary>
 /// What a ticket metric needs besides the filtered tickets: the database (SLA instances, approvals), the current instant and the
-/// report's day window, for metrics whose dated rows are not tickets (assignment history, ticket relations).
+/// report's day window, for metrics whose dated rows are not tickets (assignment history, ticket relations). <c>TeamId</c> is the
+/// report's team filter, set only for a metric that applies it itself (<see cref="ReportMetric.AppliesTeamFilter"/>).
 /// </summary>
-public sealed record ReportContext(IAppDbContext Db, DateTimeOffset Now, ReportWindow Window);
+public sealed record ReportContext(IAppDbContext Db, DateTimeOffset Now, ReportWindow Window, Guid? TeamId = null);
 
 /// <summary>What every metric states about itself, ticket-based or asset-based.</summary>
 public interface IReportMetric
@@ -36,6 +37,12 @@ public abstract class ReportMetric : IReportMetric
     public abstract ReportDateBasis DateBasis { get; }
 
     public abstract MetricShape Shape { get; }
+
+    /// <summary>
+    /// True when the metric applies the report's team filter to its own rows (<see cref="ReportContext.TeamId"/>); the pipeline then
+    /// leaves the team off the filtered tickets. Rating figures use this, because they count under the team copied at rating time.
+    /// </summary>
+    public virtual bool AppliesTeamFilter => false;
 
     public abstract IQueryable<Ticket> Rows(IQueryable<Ticket> filtered, ReportContext context);
 
