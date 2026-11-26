@@ -11,7 +11,7 @@ const trail = () => within(screen.getByRole('navigation', { name: 'Sayfa yolu' }
 
 describe('role-based home', () => {
   it('puts the two report actions first for an employee and lists the latest records', async () => {
-    const api = mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, 'GET /api/v1/tickets': { status: 200, body: pageOf([LIST_ITEM]) } });
+    const api = mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, 'GET /api/v1/tickets': (request) => ({ status: 200, body: pageOf(new URL(request.url).searchParams.get('queue') === 'to_rate' ? [] : [LIST_ITEM]) }) });
     renderRoute('/');
     const main = await screen.findByRole('main');
     const links = await within(main).findAllByRole('link');

@@ -15,13 +15,13 @@ import { ProblemQueueCard } from '../problems/ProblemQueueCard';
 import type { TaskQueue } from '../tasks/api';
 import { TaskQueueCard } from '../tasks/TaskQueueCard';
 import { WorkItemList } from '../tasks/WorkItemList';
-import { WORKSPACE_QUEUES, type TicketQueue } from '../tickets/api';
+import { WORKSPACE_QUEUES, type WorkQueue } from '../tickets/api';
 import { TicketList } from '../tickets/TicketList';
 
 import { QueueCard } from './QueueCard';
 import { ALL_QUEUE, QUEUE_PARAM } from './queuePath';
 
-const DEFAULT_QUEUE: TicketQueue = 'team';
+const DEFAULT_QUEUE: WorkQueue = 'team';
 /** Task queues shown as cards beside the ticket queues (ADR-0031). */
 const TASK_CARD_QUEUES: readonly TaskQueue[] = ['mine', 'team', 'overdue'];
 /** Queue cards reflow from one column on phones to one row on wide screens. */

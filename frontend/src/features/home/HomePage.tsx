@@ -20,17 +20,18 @@ import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { ActionCard, type ActionCardProps } from '../../shared/page/ActionCard';
-import { ROUTES, ticketPath } from '../../shared/routes';
+import { ROUTES, ticketPath, ticketRatePath } from '../../shared/routes';
 import { isItStaffOrAdmin, useSession } from '../auth/session';
-import { useTickets, type TicketQueue, type TicketStatus } from '../tickets/api';
+import { useTickets, type WorkQueue, type TicketStatus } from '../tickets/api';
 import { TicketStatusBadge } from '../tickets/TicketBadges';
 import { QueueCard } from '../workspace/QueueCard';
 
 import { Announcements } from './Announcements';
 
 const RECENT_COUNT = 5;
+const RATE_COUNT = 5;
 const FIRST_PAGE = 1;
-const HOME_QUEUES: readonly TicketQueue[] = ['assigned_to_me', 'team', 'sla_risk'];
+const HOME_QUEUES: readonly WorkQueue[] = ['assigned_to_me', 'team', 'sla_risk'];
 
 /** Cards reflow from one column on phones to several on wide screens. */
 const CARD_MIN_WIDTH = 260;
@@ -51,12 +52,12 @@ function ReportActions() {
   );
 }
 
-function RecentTicketRow({ number, subject, status, state }: { number: string; subject: string; status: TicketStatus; state: ReturnType<typeof linkState> }) {
+function RecentTicketRow({ number, subject, status, state, href = ticketPath(number) }: { number: string; subject: string; status: TicketStatus; state: ReturnType<typeof linkState>; href?: string }) {
   const link = useRef<HTMLAnchorElement>(null);
   return (
     <ListItem
       label={
-        <StateLink href={ticketPath(number)} state={state} ref={link}>
+        <StateLink href={href} state={state} ref={link}>
           {subject}
         </StateLink>
       }
@@ -88,6 +89,31 @@ function RecentTickets() {
             ))}
           </List>
         )}
+      </VStack>
+    </Card>
+  );
+}
+
+/** Shows only while the requester has completed tickets without a rating; stays absent on load, error and empty. */
+function TicketsToRate() {
+  const { t } = useTranslation('tickets');
+  const location = useLocation();
+  const tickets = useTickets({ queue: 'to_rate', status: undefined, kind: undefined, priority: undefined, search: '', page: FIRST_PAGE, pageSize: RATE_COUNT });
+  const items = tickets.data?.items ?? [];
+  if (items.length === 0) {
+    return null;
+  }
+  return (
+    <Card padding={0}>
+      <VStack gap={0}>
+        <HStack padding={4}>
+          <Heading level={2}>{t('home.rateTitle')}</Heading>
+        </HStack>
+        <List hasDividers aria-label={t('home.rateTitle')}>
+          {items.map((ticket) => (
+            <RecentTicketRow key={ticket.number} number={ticket.number} subject={ticket.subject} status={ticket.status} state={linkState(location)} href={ticketRatePath(ticket.number)} />
+          ))}
+        </List>
       </VStack>
     </Card>
   );
@@ -135,6 +161,7 @@ export function HomePage() {
           </Grid>
         </VStack>
       )}
+      <TicketsToRate />
       <RecentTickets />
       <MoreLinks />
     </VStack>

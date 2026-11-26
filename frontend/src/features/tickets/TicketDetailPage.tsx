@@ -24,7 +24,7 @@ import { PageHeader } from '../../shared/navigation/PageHeader';
 import { useReturnTo } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { SectionCard } from '../../shared/page/SectionCard';
-import { ROUTES } from '../../shared/routes';
+import { RATE_PARAM, RATE_PARAM_ON, ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { isItStaffOrAdmin, useSession } from '../auth/session';
 import { ServiceField } from '../services/ServiceField';
@@ -46,9 +46,6 @@ import { Timeline } from './Timeline';
 const WIDE_COLUMNS = 3;
 const MAIN_SPAN = 2;
 const META_SEPARATOR = ' · ';
-/** The completion email links here with `?rate=1`; the rating form then takes the focus. */
-const RATE_PARAM = 'rate';
-const RATE_PARAM_ON = '1';
 
 const LINE_BREAK = /\r?\n/;
 

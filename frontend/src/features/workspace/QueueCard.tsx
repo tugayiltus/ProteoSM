@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionCard } from '../../shared/page/ActionCard';
 import type { AppIcon } from '../../shared/ui/icons';
-import { useTickets, type TicketQueue } from '../tickets/api';
+import { useTickets, type WorkQueue } from '../tickets/api';
 
 import { queuePath } from './queuePath';
 
@@ -15,7 +15,7 @@ const COUNT_PAGE_SIZE = 1;
 const FIRST_PAGE = 1;
 const PENDING_COUNT = '…';
 
-const QUEUE_ICON: Record<TicketQueue, AppIcon> = {
+const QUEUE_ICON: Record<WorkQueue, AppIcon> = {
   mine: 'user',
   assigned_to_me: 'user',
   team: 'group',
@@ -25,7 +25,7 @@ const QUEUE_ICON: Record<TicketQueue, AppIcon> = {
 };
 
 /** The count is the list endpoint's total for a one-row page. It is part of the link name, e.g. "SLA riski 3 kayıt". */
-export function QueueCard({ queue }: { queue: TicketQueue }) {
+export function QueueCard({ queue }: { queue: WorkQueue }) {
   const { t } = useTranslation('tickets');
   const count = useTickets({ queue, status: undefined, kind: undefined, priority: undefined, search: '', page: FIRST_PAGE, pageSize: COUNT_PAGE_SIZE });
   const title = t(`workspace.${queue}`);

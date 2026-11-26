@@ -60,6 +60,10 @@ export const newIncidentPath = (assetId: string) => `${ROUTES.newIncident}?${new
 export const assetLabelsPath = (id: string) => `${ROUTES.assetLabels}?${new URLSearchParams({ ids: id }).toString()}`;
 
 export const ticketPath = (number: string) => `${ROUTES.tickets}/${number}`;
+/** The completion email and the home card link a ticket with `?rate=1`; the rating form then takes the focus. */
+export const RATE_PARAM = 'rate';
+export const RATE_PARAM_ON = '1';
+export const ticketRatePath = (number: string) => `${ticketPath(number)}?${new URLSearchParams({ [RATE_PARAM]: RATE_PARAM_ON }).toString()}`;
 export const taskPath = (number: string) => `${ROUTES.tasks}/${number}`;
 export const servicePath = (id: string) => `${ROUTES.services}/${id}`;
 /** Query parameter of the staff ticket, change and problem lists that keeps only one service's records. */
