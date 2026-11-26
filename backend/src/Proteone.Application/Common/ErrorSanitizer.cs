@@ -9,7 +9,7 @@ namespace Proteone.Application.Common;
 /// </summary>
 public static partial class ErrorSanitizer
 {
-    private const string RedactedValue = "[redacted]";
+    private const string RedactedValue = SecretRedactor.RedactedValue;
 
     // Generic, not tied to the configured SMTP password's exact value: a credential-shaped key=value or key: value
     // pair anywhere in an exception's type/message is replaced, regardless of which library produced it.

@@ -13,8 +13,6 @@ namespace Proteone.Infrastructure.Email;
 /// </summary>
 internal sealed class MailKitEmailTestSender(IOptionsMonitor<EmailOptions> options) : IEmailTestSender
 {
-    private const string RedactedValue = "[redacted]";
-
     public async Task<EmailTestResult> SendTestAsync(SmtpTransport transport, EmailMessage message, CancellationToken cancellationToken)
     {
         var settings = options.CurrentValue;
@@ -34,24 +32,18 @@ internal sealed class MailKitEmailTestSender(IOptionsMonitor<EmailOptions> optio
         }
         catch (SmtpStageException failure)
         {
-            return new EmailTestResult(false, SmtpFailureClassifier.Classify(failure), Detail(failure.Inner, transport.Password));
+            return new EmailTestResult(false, SmtpFailureClassifier.Classify(failure), Detail(failure.Inner, transport));
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            return new EmailTestResult(false, ErrorCodes.EmailSettingsSendFailed, Detail(exception, transport.Password));
+            return new EmailTestResult(false, ErrorCodes.EmailSettingsSendFailed, Detail(exception, transport));
         }
     }
 
-    // Some servers echo the AUTH line, so the plain password is replaced too, not only credential-shaped text. It is
-    // replaced before the text is shortened, so no part of it can stay at the cut.
-    private static string Detail(Exception exception, string? password)
+    // Redact at full length, then cut: a cut first could leave part of a secret that no longer matches.
+    private static string Detail(Exception exception, SmtpTransport transport)
     {
-        var detail = ErrorSanitizer.Sanitize(exception, int.MaxValue);
-        if (!string.IsNullOrEmpty(password))
-        {
-            detail = detail.Replace(password, RedactedValue, StringComparison.Ordinal);
-        }
-
+        var detail = SecretRedactor.Redact(ErrorSanitizer.Sanitize(exception, int.MaxValue), transport.UserName, transport.Password);
         return detail.Length > EmailSettings.TestDetailMaxLength ? detail[..EmailSettings.TestDetailMaxLength] : detail;
     }
 }

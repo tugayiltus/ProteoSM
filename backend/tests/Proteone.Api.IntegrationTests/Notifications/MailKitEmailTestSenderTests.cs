@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Abstractions;
@@ -181,6 +182,37 @@ public sealed class MailKitEmailTestSenderTests : IDisposable
 
         Assert.NotNull(result.Detail);
         Assert.Contains("[redacted]", result.Detail, StringComparison.Ordinal);
+        Assert.DoesNotContain(Password, result.Detail, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Detail_redacts_the_auth_plain_blob_echoed_by_the_server()
+    {
+        var plainBlob = Convert.ToBase64String(Encoding.UTF8.GetBytes($"\0{UserName}\0{Password}"));
+        await using var server = ScriptedSmtpServer.Start(new SmtpScript(OfferAuth: true, AuthReply: AuthRejected, AuthReplyText: $"rejected AUTH PLAIN {plainBlob}"));
+
+        var result = await SendAsync(Transport(server.Port, userName: UserName, password: Password));
+
+        AssertRedacted(result, plainBlob);
+    }
+
+    [Fact]
+    public async Task Detail_redacts_the_auth_login_password_echoed_by_the_server()
+    {
+        var loginBlob = Convert.ToBase64String(Encoding.UTF8.GetBytes(Password));
+        await using var server = ScriptedSmtpServer.Start(new SmtpScript(OfferAuth: true, AuthReply: AuthRejected, AuthReplyText: $"rejected {loginBlob}"));
+
+        var result = await SendAsync(Transport(server.Port, userName: UserName, password: Password));
+
+        AssertRedacted(result, loginBlob);
+    }
+
+    private static void AssertRedacted(EmailTestResult result, string blob)
+    {
+        Assert.Equal(ErrorCodes.EmailSettingsAuthFailed, result.ErrorCode);
+        Assert.NotNull(result.Detail);
+        Assert.Contains("[redacted]", result.Detail, StringComparison.Ordinal);
+        Assert.DoesNotContain(blob, result.Detail, StringComparison.Ordinal);
         Assert.DoesNotContain(Password, result.Detail, StringComparison.Ordinal);
     }
 

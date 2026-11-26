@@ -109,7 +109,7 @@ public sealed class ScriptedSmtpServer : IAsyncDisposable
                 }
             }
         }
-        catch (Exception exception) when (exception is IOException or OperationCanceledException or ObjectDisposedException)
+        catch (Exception exception) when (exception is IOException or SocketException or OperationCanceledException or ObjectDisposedException)
         {
             // The client closed the connection or the server stopped.
         }
