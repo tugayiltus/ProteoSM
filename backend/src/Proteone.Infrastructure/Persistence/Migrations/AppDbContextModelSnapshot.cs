@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261126105650_RatingLinkInCompletedTemplate";
+    public override string LastMigrationId => "20261126154704_AddEmailSettings";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1182,6 +1182,94 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.ToTable("change_ticket_links", t =>
                     {
                         t.HasCheckConstraint("ck_change_ticket_links_kind", "kind IN ('prompted', 'caused')");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Email.EmailSettings", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Host")
+                    .IsRequired()
+                    .HasMaxLength(253)
+                    .HasColumnType("character varying(253)")
+                    .HasColumnName("host");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("LastTestErrorCode")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("last_test_error_code");
+
+                b.Property<bool?>("LastTestSucceeded")
+                    .HasColumnType("boolean")
+                    .HasColumnName("last_test_succeeded");
+
+                b.Property<DateTimeOffset?>("LastTestedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_tested_at");
+
+                b.Property<string>("PasswordProtected")
+                    .HasColumnType("text")
+                    .HasColumnName("password_protected");
+
+                b.Property<int>("Port")
+                    .HasColumnType("integer")
+                    .HasColumnName("port");
+
+                b.Property<string>("Provider")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("provider");
+
+                b.Property<string>("Security")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("security");
+
+                b.Property<string>("SenderAddress")
+                    .IsRequired()
+                    .HasMaxLength(254)
+                    .HasColumnType("character varying(254)")
+                    .HasColumnName("sender_address");
+
+                b.Property<string>("SenderName")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("sender_name");
+
+                b.Property<string>("TestedFingerprint")
+                    .HasColumnType("text")
+                    .HasColumnName("tested_fingerprint");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<string>("UserName")
+                    .HasMaxLength(254)
+                    .HasColumnType("character varying(254)")
+                    .HasColumnName("user_name");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.HasKey("Id")
+                    .HasName("pk_email_settings");
+
+                b.ToTable("email_settings", t =>
+                    {
+                        t.HasCheckConstraint("ck_email_settings_port", "port BETWEEN 1 AND 65535");
                     });
             });
 

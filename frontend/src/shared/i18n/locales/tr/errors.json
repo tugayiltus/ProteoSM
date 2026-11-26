@@ -229,5 +229,18 @@
   },
   "announcements": {
     "invalid_period": "Bitiş, başlangıçtan sonra olmalı."
+  },
+  "email_settings": {
+    "not_tested": "Bu ayarlar henüz test edilmedi. Önce test maili gönderin, başarılı olursa kullanıma alın.",
+    "plain_text_login": "Kullanıcı adıyla giriş için güvenli bağlantı gerekir. Güvenlik için STARTTLS veya SSL/TLS seçin.",
+    "not_configured": "Önce gönderen adresi ve sunucuyu girin.",
+    "password_missing": "Kullanıcı adı girildi ama şifre kayıtlı değil. Şifreyi yazın.",
+    "connect_failed": "Sunucuya bağlanılamadı. Sunucu adını ve portu kontrol edin.",
+    "tls_failed": "Güvenli bağlantı kurulamadı. Güvenlik seçeneğini ve portu kontrol edin.",
+    "auth_failed": "Sunucu kullanıcı adını veya şifreyi kabul etmedi. Google için uygulama şifresi kullanın.",
+    "sender_rejected": "Sunucu gönderen adresini kabul etmedi. Bu hesabın bu adresten gönderme izni olmalı.",
+    "recipient_rejected": "Sunucu alıcı adresini kabul etmedi.",
+    "timeout": "Sunucu zamanında yanıt vermedi. Daha sonra tekrar deneyin.",
+    "send_failed": "Test maili gönderilemedi. Ayrıntıya bakın."
   }
 }

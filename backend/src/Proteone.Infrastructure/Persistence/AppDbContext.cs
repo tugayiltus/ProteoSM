@@ -6,6 +6,7 @@ using Proteone.Domain.Announcements;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Auth;
 using Proteone.Domain.Catalog;
+using Proteone.Domain.Email;
 using Proteone.Domain.Knowledge;
 using Proteone.Domain.Licences;
 using Proteone.Domain.Changes;
@@ -84,6 +85,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<TicketCounter> TicketCounters => Set<TicketCounter>();
     public DbSet<AssetTagCounter> AssetTagCounters => Set<AssetTagCounter>();
     public DbSet<AuthSettings> AuthSettings => Set<AuthSettings>();
+    public DbSet<EmailSettings> EmailSettings => Set<EmailSettings>();
     public DbSet<LdapSignInFailure> LdapSignInFailures => Set<LdapSignInFailure>();
     public DbSet<WorkerHeartbeat> WorkerHeartbeats => Set<WorkerHeartbeat>();
     public DbSet<OutboxEvent> OutboxEvents => Set<OutboxEvent>();
@@ -156,6 +158,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     }
 
     public void SetExpectedVersion(AuthSettings settings, uint expectedVersion) =>
+        Entry(settings).Property(s => s.Version).OriginalValue = expectedVersion;
+
+    public void SetExpectedVersion(EmailSettings settings, uint expectedVersion) =>
         Entry(settings).Property(s => s.Version).OriginalValue = expectedVersion;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

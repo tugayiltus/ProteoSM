@@ -3,6 +3,7 @@ using Proteone.Domain.Announcements;
 using Proteone.Domain.Assets;
 using Proteone.Domain.Auth;
 using Proteone.Domain.Catalog;
+using Proteone.Domain.Email;
 using Proteone.Domain.Knowledge;
 using Proteone.Domain.Licences;
 using Proteone.Domain.Changes;
@@ -28,6 +29,7 @@ public interface IAppDbContext
 {
     DbSet<User> Users { get; }
     DbSet<AuthSettings> AuthSettings { get; }
+    DbSet<EmailSettings> EmailSettings { get; }
     DbSet<Department> Departments { get; }
     DbSet<Location> Locations { get; }
     DbSet<Team> Teams { get; }
@@ -107,6 +109,9 @@ public interface IAppDbContext
 
     /// <summary>The same check for the login settings row, which is not an <see cref="Entity"/> (fixed singleton id).</summary>
     void SetExpectedVersion(AuthSettings settings, uint expectedVersion);
+
+    /// <summary>The same check for the outgoing mail settings row (fixed singleton id).</summary>
+    void SetExpectedVersion(EmailSettings settings, uint expectedVersion);
 
     /// <summary>Runs <paramref name="work"/> in one transaction (several saves commit together).</summary>
     Task RunInTransactionAsync(Func<CancellationToken, Task> work, CancellationToken cancellationToken);

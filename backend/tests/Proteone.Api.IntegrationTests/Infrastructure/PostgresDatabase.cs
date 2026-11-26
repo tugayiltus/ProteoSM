@@ -22,6 +22,10 @@ public sealed class PostgresDatabase : IAsyncLifetime
         + "TRUNCATE auth_settings; "
         + "INSERT INTO auth_settings (id, method, entra_tenant_id, entra_client_id, entra_allowed_domains, ldap_host, ldap_port, ldap_security, ldap_base_dn, ldap_bind_dn, updated_at) "
         + "VALUES ('00000000-0000-7000-8000-00000000a07e', 'local', '', '', '{{}}', '', 636, 'ldaps', '', '', now()); "
+        // The single mail settings row goes back to its migration default: Google preset, not active.
+        + "TRUNCATE email_settings; "
+        + "INSERT INTO email_settings (id, provider, sender_address, host, port, security, is_active, updated_at) "
+        + "VALUES ('00000000-0000-7000-8000-00000000e3a1', 'google', '', 'smtp.gmail.com', 587, 'start_tls', false, now()); "
         + "UPDATE system_settings SET licence_notice_days = 30, warranty_window_days = 90; "
         + "SET session_replication_role = origin;";
 

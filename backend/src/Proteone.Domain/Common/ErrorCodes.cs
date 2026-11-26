@@ -86,6 +86,18 @@ public static class ErrorCodes
     public const string AuthLdapBaseDnNotFound = "auth.ldap_base_dn_not_found";
     public const string TicketAssetNotReportable = "tickets.asset_not_reportable";
 
+    public const string EmailSettingsNotTested = "email_settings.not_tested";
+    public const string EmailSettingsPlainTextLogin = "email_settings.plain_text_login";
+    public const string EmailSettingsNotConfigured = "email_settings.not_configured";
+    public const string EmailSettingsPasswordMissing = "email_settings.password_missing";
+    public const string EmailSettingsConnectFailed = "email_settings.connect_failed";
+    public const string EmailSettingsTlsFailed = "email_settings.tls_failed";
+    public const string EmailSettingsAuthFailed = "email_settings.auth_failed";
+    public const string EmailSettingsSenderRejected = "email_settings.sender_rejected";
+    public const string EmailSettingsRecipientRejected = "email_settings.recipient_rejected";
+    public const string EmailSettingsTimeout = "email_settings.timeout";
+    public const string EmailSettingsSendFailed = "email_settings.send_failed";
+
     public const string ImportInvalidHeader = "imports.invalid_header";
     public const string ImportEncoding = "imports.encoding";
     public const string ImportFileTooLarge = "imports.file_too_large";
