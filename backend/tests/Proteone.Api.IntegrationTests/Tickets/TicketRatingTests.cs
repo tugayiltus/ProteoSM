@@ -31,6 +31,7 @@ internal static class TicketRatingSteps
 public sealed class TicketRatingTests(ApiFactory factory) : IAsyncLifetime
 {
     private const int ParallelRounds = 10;
+    private const string ServiceAction = "service";
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     public async ValueTask InitializeAsync() => await factory.ResetAsync();
@@ -77,9 +78,27 @@ public sealed class TicketRatingTests(ApiFactory factory) : IAsyncLifetime
 
         using var rate = await TicketRatingSteps.RateAsync(world.Employee, completed, 5);
         var fresh = await TicketWorld.ReadAsync(world.Desk, TicketWorld.PathOf(completed));
+        // Setting the service is allowed on a completed ticket and checks the version; a null service changes nothing.
+        using var setService = await world.Desk.PutAsync(TicketWorld.PathOf(completed, ServiceAction), new { serviceId = (Guid?)null, version = TicketWorld.VersionOf(fresh) });
 
         Assert.Equal(HttpStatusCode.OK, rate.StatusCode);
         Assert.Equal(5, fresh.GetProperty("rating").GetProperty("score").GetInt32());
+        Assert.Equal(HttpStatusCode.OK, setService.StatusCode);
+    }
+
+    [Fact]
+    public async Task Comment_of_500_chars_with_surrounding_spaces_is_stored_trimmed()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var completed = await TicketRatingSteps.CompleteAsync(world.Desk, await TicketWorld.CreateIncidentAsync(world.Employee));
+        var comment = new string('a', RatingLimits.CommentMaxLength);
+
+        using var rate = await TicketRatingSteps.RateAsync(world.Employee, completed, 4, "  " + comment + "  ");
+
+        Assert.Equal(HttpStatusCode.OK, rate.StatusCode);
+        await using var db = factory.Database.CreateDbContext();
+        var stored = await db.TicketRatings.SingleAsync(Ct);
+        Assert.Equal(comment, stored.Comment);
     }
 
     [Fact]

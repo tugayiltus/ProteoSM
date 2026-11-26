@@ -17,7 +17,10 @@ internal sealed class RateTicketValidator : AbstractValidator<RateTicketCommand>
     public RateTicketValidator()
     {
         RuleFor(c => c.Score).InclusiveBetween(RatingLimits.MinScore, RatingLimits.MaxScore);
-        RuleFor(c => c.Comment).MaximumLength(RatingLimits.CommentMaxLength);
+        // The domain stores the trimmed comment, so the limit applies to the trimmed text.
+        RuleFor(c => c.Comment == null ? null : c.Comment.Trim())
+            .MaximumLength(RatingLimits.CommentMaxLength)
+            .OverridePropertyName(nameof(RateTicketCommand.Comment));
     }
 }
 
