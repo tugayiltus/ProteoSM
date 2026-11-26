@@ -192,6 +192,11 @@
     "asset_not_linkable": "Kullanım dışı veya kayıp cihaz hizmete bağlanamaz.",
     "asset_link_exists": "Bu cihaz zaten bu hizmete bağlı."
   },
+  "ratings": {
+    "not_requester": "Bu kaydı yalnızca açan kişi puanlayabilir.",
+    "not_rateable": "Bu kayıt puanlanamaz.",
+    "window_closed": "Puan verme süresi doldu."
+  },
   "search": {
     "query_invalid": "Arama metni 2 ile 100 karakter arasında olmalı."
   },

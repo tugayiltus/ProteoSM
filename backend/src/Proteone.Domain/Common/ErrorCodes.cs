@@ -195,4 +195,8 @@ public static class ErrorCodes
     public const string ServiceInactive = "services.inactive";
     public const string ServiceAssetNotLinkable = "services.asset_not_linkable";
     public const string ServiceAssetLinkExists = "services.asset_link_exists";
+
+    public const string RatingNotRequester = "ratings.not_requester";
+    public const string RatingNotRateable = "ratings.not_rateable";
+    public const string RatingWindowClosed = "ratings.window_closed";
 }
