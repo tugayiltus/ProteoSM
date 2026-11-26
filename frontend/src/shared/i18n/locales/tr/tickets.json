@@ -299,6 +299,7 @@
     "change": "Değiştir",
     "cancel": "Vazgeç",
     "changeUntil": "{{date}} tarihine kadar değiştirebilirsiniz.",
-    "none": "Puan yok"
+    "none": "Puan yok",
+    "windowClosed": "Bu kaydı puanlama süresi doldu."
   }
 }

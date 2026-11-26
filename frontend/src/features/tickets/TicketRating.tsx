@@ -1,6 +1,6 @@
 /**
  * @input A ticket and a flag that moves the focus to the first choice.
- * @output The requester's rating form or their score with a change button; IT staff read the score and comment.
+ * @output The requester's rating form, their score with a change button, or a closed-window note; IT staff read the score and comment.
  * @position "Memnuniyet" card under the description and resolution on the ticket detail page.
  */
 import { Button } from '@astryxdesign/core/Button';
@@ -164,7 +164,8 @@ export interface TicketRatingProps {
 
 /**
  * The satisfaction rating card. It renders nothing while the ticket has no rating to show,
- * so an open ticket or a not rateable outcome shows no empty card.
+ * so an open ticket or a not rateable outcome shows no empty card. A requester who did not rate
+ * in time reads that the window closed.
  *
  * @example
  * ```
@@ -183,6 +184,9 @@ export function TicketRating({ ticket, focusOnMount }: TicketRatingProps) {
     content = <RatingView rating={ticket.rating} />;
   } else if (isRateable && isItStaffOrAdmin(me.role)) {
     content = <Text type="supporting">{t('rating.none')}</Text>;
+  } else if (ticket.rateUntil !== null && ticket.requesterId === me.id) {
+    // The server denies the requester a rateable ticket only after the window closes.
+    content = <Text type="supporting">{t('rating.windowClosed')}</Text>;
   }
   if (content === null) {
     return null;

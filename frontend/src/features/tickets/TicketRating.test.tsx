@@ -130,6 +130,24 @@ describe('Ticket rating section', () => {
     await waitFor(() => expect(within(region).getByRole('radio', { name: 'Çok kötü' })).toHaveFocus());
   });
 
+  it('requester_reads_that_the_window_closed_when_the_rating_link_opens_too_late', async () => {
+    mockApi(routes({ ...COMPLETED, canRate: false, rateUntil: RATE_UNTIL }, EMPLOYEE_ME) as never);
+    renderRoute(`${PATH}?rate=1`);
+
+    const region = await section();
+    expect(within(region).getByText('Bu kaydı puanlama süresi doldu.')).toBeInTheDocument();
+    expect(within(region).queryByRole('radio')).not.toBeInTheDocument();
+  });
+
+  it('desk_view_shows_puan_yok_not_the_requester_window_text_after_the_window', async () => {
+    mockApi(routes({ ...COMPLETED, canRate: false, rateUntil: RATE_UNTIL, canWork: true }, IT_ME) as never);
+    renderRoute(PATH);
+
+    const region = await section();
+    expect(within(region).getByText('Puan yok')).toBeInTheDocument();
+    expect(within(region).queryByText('Bu kaydı puanlama süresi doldu.')).not.toBeInTheDocument();
+  });
+
   it('server_window_closed_error_shows_in_the_form_alert', async () => {
     mockApi(routes(RATEABLE, EMPLOYEE_ME, { [RATING_KEY]: { status: 409, body: { code: 'ratings.window_closed' } } }) as never);
     const { user } = renderRoute(PATH);
