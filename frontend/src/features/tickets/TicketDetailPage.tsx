@@ -1,6 +1,6 @@
 /**
  * @input The ticket number from the route.
- * @output The ticket: status, description, links, articles, comments, history, actions, SLA and details (IT staff also see the service).
+ * @output The ticket: status, description, rating, links, articles, comments, history, actions, SLA and details (IT staff also see the service).
  * @position `/tickets/:number`, inside the app shell.
  */
 import { Banner } from '@astryxdesign/core/Banner';
@@ -13,7 +13,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useParams } from 'react-router';
+import { useLocation, useParams, useSearchParams } from 'react-router';
 
 import { FormAlert } from '../../shared/feedback/FormAlert';
 import { ErrorState, LoadingState } from '../../shared/feedback/States';
@@ -38,6 +38,7 @@ import { PriorityBadge, TicketStatusBadge } from './TicketBadges';
 import { TicketChangeLinks } from './TicketChangeLinks';
 import { TicketLinks } from './TicketLinks';
 import { TicketProblemCard } from './TicketProblemCard';
+import { TicketRating } from './TicketRating';
 import { TicketTasks } from './TicketTasks';
 import { Timeline } from './Timeline';
 
@@ -45,6 +46,9 @@ import { Timeline } from './Timeline';
 const WIDE_COLUMNS = 3;
 const MAIN_SPAN = 2;
 const META_SEPARATOR = ' · ';
+/** The completion email links here with `?rate=1`; the rating form then takes the focus. */
+const RATE_PARAM = 'rate';
+const RATE_PARAM_ON = '1';
 
 const LINE_BREAK = /\r?\n/;
 
@@ -105,6 +109,7 @@ export function TicketDetailPage() {
 function TicketDetail({ number }: { number: string }) {
   const { t } = useTranslation('tickets');
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const uploadError = (location.state as TicketDetailState | null)?.uploadError ?? null;
   const me = useSession();
   const ticket = useTicket(number);
@@ -157,6 +162,7 @@ function TicketDetail({ number }: { number: string }) {
           {item.cancelReason && <Field label={t('detail.cancelReason')} value={item.cancelReason} />}
         </MetadataList>
       </SectionCard>
+      <TicketRating ticket={item} focusOnMount={searchParams.get(RATE_PARAM) === RATE_PARAM_ON} />
       <SectionCard title={t('detail.comments')}>
         {comments.isError && <ErrorState error={comments.error} onRetry={() => void comments.refetch()} />}
         {comments.data && <CommentList ticket={item} comments={comments.data} />}

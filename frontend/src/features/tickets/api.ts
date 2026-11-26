@@ -19,6 +19,8 @@ export type TimelineItem = Schemas['TimelineItem'];
 export type TicketAssetItem = Schemas['TicketAssetItem'];
 export type MyApprovalItem = Schemas['MyApprovalItem'];
 export type TicketSla = Schemas['TicketSla'];
+export type TicketRatingView = Schemas['TicketRatingView'];
+export type RateTicketInput = Schemas['RateTicketRequest'];
 export type TicketQueue = 'mine' | 'team' | 'assigned_to_me' | 'unassigned' | 'on_hold' | 'sla_risk';
 
 export const TICKET_STATUSES: readonly TicketStatus[] = ['open', 'in_progress', 'on_hold', 'completed', 'cancelled'];
@@ -242,6 +244,15 @@ export function useCreateRelatedRequest(number: string) {
   const invalidate = useInvalidateTickets();
   return useMutation({
     mutationFn: (requestTypeId: string) => unwrap(api.POST('/api/v1/tickets/{number}/related-request', { params: { path: { number } }, body: { requestTypeId } })),
+    onSuccess: invalidate,
+  });
+}
+
+/** The requester's score and comment; the answer is the updated ticket, so every ticket query reloads. */
+export function useRateTicket(number: string) {
+  const invalidate = useInvalidateTickets();
+  return useMutation({
+    mutationFn: (input: RateTicketInput) => unwrap(api.PUT('/api/v1/tickets/{number}/rating', { params: { path: { number } }, body: input })),
     onSuccess: invalidate,
   });
 }

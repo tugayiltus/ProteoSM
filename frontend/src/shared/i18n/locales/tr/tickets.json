@@ -281,5 +281,23 @@
     },
     "due": "Hedef: {{date}}",
     "none": "SLA bilgisi yok"
+  },
+  "rating": {
+    "title": "Memnuniyet",
+    "question": "Bu kayıt nasıl çözüldü?",
+    "scores": {
+      "1": "Çok kötü",
+      "2": "Kötü",
+      "3": "Orta",
+      "4": "İyi",
+      "5": "Çok iyi"
+    },
+    "scoreValue": "{{score}} / {{max}} · {{label}}",
+    "comment": "Yorum",
+    "send": "Gönder",
+    "change": "Değiştir",
+    "cancel": "Vazgeç",
+    "changeUntil": "{{date}} tarihine kadar değiştirebilirsiniz.",
+    "none": "Puan yok"
   }
 }
