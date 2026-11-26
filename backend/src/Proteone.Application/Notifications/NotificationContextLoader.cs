@@ -5,6 +5,7 @@ using Proteone.Application.Abstractions;
 using Proteone.Application.Common;
 using Proteone.Domain.Changes;
 using Proteone.Domain.Notifications;
+using Proteone.Domain.Tickets;
 
 namespace Proteone.Application.Notifications;
 
@@ -19,6 +20,7 @@ namespace Proteone.Application.Notifications;
 public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock clock, IOptionsMonitor<AppOptions> options)
 {
     private const string TicketUrlPathFormat = "/tickets/{0}";
+    private const string RatingQuery = "?rate=1";
     private const string TaskUrlPathFormat = "/tasks/{0}";
     private const string ChangeUrlPathFormat = "/changes/{0}";
     private const string LicenceUrlPathFormat = "/licences/{0}";
@@ -46,6 +48,8 @@ public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock cl
             Set(TemplateVariables.Subject, ticket.Subject);
             Set(TemplateVariables.Status, TicketStatusLabels.Of(ticket.Status));
             Set(TemplateVariables.TicketUrl, TicketUrl(ticket.Number));
+            // Only a ticket the requester can rate gets the link; the ticket page opens its rating form for `rate=1`.
+            Set(TemplateVariables.RatingUrl, TicketRating.IsRateable(ticket) ? TicketUrl(ticket.Number) + RatingQuery : string.Empty);
             Set(TemplateVariables.Resolution, ticket.Resolution);
             Set(TemplateVariables.CompletedAt, ticket.CompletedAt is { } completedAt ? clock.Format(completedAt) : null);
         }

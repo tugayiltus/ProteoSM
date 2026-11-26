@@ -13,6 +13,7 @@ public static class TemplateVariables
     public const string Resolution = "resolution";
     public const string CompletedAt = "completedAt";
     public const string TicketUrl = "ticketUrl";
+    public const string RatingUrl = "ratingUrl";
     public const string RecipientName = "recipientName";
     public const string ActionUrl = "actionUrl";
     public const string ExpiresAt = "expiresAt";
@@ -38,7 +39,7 @@ public static class TemplateVariables
         TicketNumber, Subject, Status, TicketUrl, RecipientName,
     };
 
-    private static readonly IReadOnlySet<string> TicketCompletedSet = Union(TicketCommon, Resolution, CompletedAt);
+    private static readonly IReadOnlySet<string> TicketCompletedSet = Union(TicketCommon, Resolution, CompletedAt, RatingUrl);
 
     private static readonly IReadOnlySet<string> SlaSet = Union(TicketCommon, SlaMetric, DueAt);
 
@@ -84,7 +85,7 @@ public static class TemplateVariables
     /// <summary>Every variable name recognized anywhere, regardless of event; a name outside this set is unknown.</summary>
     public static readonly IReadOnlySet<string> AllVariables = new HashSet<string>(StringComparer.Ordinal)
     {
-        TicketNumber, Subject, Status, Resolution, CompletedAt, TicketUrl, RecipientName, ActionUrl, ExpiresAt, SlaMetric, DueAt,
+        TicketNumber, Subject, Status, Resolution, CompletedAt, TicketUrl, RatingUrl, RecipientName, ActionUrl, ExpiresAt, SlaMetric, DueAt,
         TaskNumber, TaskUrl, TeamName, DueDate,
         ChangeNumber, ChangeUrl, WindowStart, WindowEnd, Risk, Reason,
         LicenceName, LicenceUrl, SoftwareName, ExpiresOn,
