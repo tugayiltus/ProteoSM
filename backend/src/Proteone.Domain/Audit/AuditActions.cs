@@ -144,6 +144,8 @@ public static class AuditActions
     public const string KnowledgeVisibilityChanged = "knowledge.visibility_changed";
     public const string TicketArticleLinked = "tickets.article_linked";
     public const string TicketArticleUnlinked = "tickets.article_unlinked";
+    public const string RatingSubmitted = "ratings.submitted";
+    public const string RatingUpdated = "ratings.updated";
 
     /// <summary>Written by the migration that replaced the former product name (ADR-0037).</summary>
     public const string ProductNameReplaced = "audit.product_name_replaced";

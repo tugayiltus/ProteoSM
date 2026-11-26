@@ -5953,6 +5953,83 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tickets/{number}/rating": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    number: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RateTicketRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TicketDetail"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tickets/{number}/comments": {
         parameters: {
             query?: never;
@@ -14727,6 +14804,11 @@ export interface components {
             /** Format: date-time */
             occurredAt: string;
         };
+        RateTicketRequest: {
+            /** Format: int32 */
+            score: number;
+            comment: null | string;
+        };
         ReassignApproverRequest: {
             /** Format: uuid */
             approverId: string;
@@ -15248,11 +15330,15 @@ export interface components {
             /** Format: int32 */
             openTaskCount: number;
             tasks: components["schemas"]["TicketTaskItem"][];
+            rating: null | components["schemas"]["TicketRatingView"];
+            canRate: boolean;
+            /** Format: date-time */
+            rateUntil: null | string;
             service?: null | components["schemas"]["ServiceRef"];
             monitoringSource?: null | string;
         };
         /** @enum {unknown} */
-        TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked" | "service_set" | "service_cleared";
+        TicketEventKind: "created" | "assigned" | "transferred" | "status_changed" | "public_comment" | "internal_note" | "priority_changed" | "approval_requested" | "approval_decided" | "approval_voided" | "approval_reassigned" | "related_request_created" | "asset_linked" | "asset_unlinked" | "completed" | "cancelled" | "change_linked" | "change_unlinked" | "problem_linked" | "problem_unlinked" | "service_set" | "service_cleared" | "rating_given";
         /** @enum {unknown} */
         TicketKind: "incident" | "request";
         TicketListItem: {
@@ -15281,6 +15367,13 @@ export interface components {
             status: components["schemas"]["ProblemStatus"];
             workaround: null | string;
             ownerTeamName: string;
+        };
+        TicketRatingView: {
+            /** Format: int32 */
+            score: number;
+            comment: null | string;
+            /** Format: date-time */
+            ratedAt: string;
         };
         TicketReasonRequest: {
             /** Format: uint32 */

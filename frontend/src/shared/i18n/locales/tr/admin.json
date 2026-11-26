@@ -374,6 +374,10 @@
       "created": "Yazılım oluşturuldu",
       "updated": "Yazılım güncellendi"
     },
+    "ratings": {
+      "submitted": "Kayıt puanlandı",
+      "updated": "Kayıt puanı değiştirildi"
+    },
     "licences": {
       "created": "Lisans oluşturuldu",
       "updated": "Lisans güncellendi",

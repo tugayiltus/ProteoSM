@@ -18,6 +18,6 @@ public sealed class TicketWork(IAppDbContext db, TicketScope scope, Proteone.App
         db.SetExpectedVersion(ticket, version);
         await change(ticket, viewer, clock.GetUtcNow());
         await db.SaveChangesAsync(cancellationToken);
-        return await TicketQueries.LoadDetailAsync(db, sla, ticket.Id, viewer, cancellationToken);
+        return await TicketQueries.LoadDetailAsync(db, sla, clock, ticket.Id, viewer, cancellationToken);
     }
 }

@@ -45,6 +45,9 @@ internal sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) :
             case ConcurrencyException:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status409Conflict, ErrorCodes.ConcurrencyConflict);
                 break;
+            case DomainException { Code: ErrorCodes.RatingNotRequester } notRequester:
+                await ApiProblem.WriteAsync(context, StatusCodes.Status403Forbidden, notRequester.Code);
+                break;
             case DomainException { Code: ErrorCodes.ChangeSelfApproval } selfApproval:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status403Forbidden, selfApproval.Code);
                 break;

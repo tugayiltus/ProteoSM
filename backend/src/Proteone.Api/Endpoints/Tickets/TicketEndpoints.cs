@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Proteone.Api.Http;
 using Proteone.Application.Common.Paging;
+using Proteone.Application.Features.Ratings;
 using Proteone.Application.Features.Tickets;
 using Proteone.Domain.Tickets;
 
 namespace Proteone.Api.Endpoints.Tickets;
+
+public sealed record RateTicketRequest(int Score, string? Comment);
 
 internal static partial class TicketEndpoints
 {
@@ -34,6 +37,10 @@ internal static partial class TicketEndpoints
                     ? TypedResults.Ok(problem)
                     : TypedResults.NoContent())
             .ProducesProblem(StatusCodes.Status404NotFound);
+        tickets.MapPut("/{number}/rating", async (string number, RateTicketRequest r, RateTicketHandler handler, CancellationToken ct) =>
+                TypedResults.Ok(await handler.HandleAsync(new RateTicketCommand(number, r.Score, r.Comment), ct)))
+            .ProducesProblem(StatusCodes.Status400BadRequest).ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound).ProducesProblem(StatusCodes.Status409Conflict);
 
         tickets.MapTicketActionEndpoints();
         return tickets;

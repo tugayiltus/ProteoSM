@@ -93,7 +93,7 @@ public sealed class DecideApprovalHandler(
             newValues: new { ticket.Number, approval.Status }, reason: approval.Reason);
         outbox.Add(NotificationEventTypes.ApprovalDecided, ticket.Id, userId: null);
         await db.SaveChangesAsync(cancellationToken);
-        return await TicketQueries.LoadDetailAsync(db, slaReader, ticket.Id, await scope.ViewerAsync(cancellationToken), cancellationToken);
+        return await TicketQueries.LoadDetailAsync(db, slaReader, clock, ticket.Id, await scope.ViewerAsync(cancellationToken), cancellationToken);
     }
 }
 
@@ -116,7 +116,7 @@ public sealed class ReassignApproverHandler(IAppDbContext db, IValidator<Reassig
         TicketTimeline.Record(db, ticket, TicketEventKind.ApprovalReassigned, Visibility.Internal, viewer.UserId, clock.GetUtcNow(), new { command.ApproverId });
         audit.Record(AuditActions.ApprovalReassigned, AuditEntityTypes.Approval, approval.Id, before, new { approval.ApproverId }, command.Reason.Trim());
         await db.SaveChangesAsync(cancellationToken);
-        return await TicketQueries.LoadDetailAsync(db, slaReader, ticket.Id, viewer, cancellationToken);
+        return await TicketQueries.LoadDetailAsync(db, slaReader, clock, ticket.Id, viewer, cancellationToken);
     }
 }
 

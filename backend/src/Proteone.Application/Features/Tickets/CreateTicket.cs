@@ -68,7 +68,7 @@ public sealed class TicketFactory(
             await db.SaveChangesAsync(ct);
         }, cancellationToken);
 
-        return await TicketQueries.LoadDetailAsync(db, slaReader, ticket!.Id, await scope.ViewerAsync(cancellationToken), cancellationToken);
+        return await TicketQueries.LoadDetailAsync(db, slaReader, clock, ticket!.Id, await scope.ViewerAsync(cancellationToken), cancellationToken);
     }
 
     private async Task EnsureReferencesAsync(TicketKind kind, Guid? categoryId, Guid? locationId, CancellationToken cancellationToken)

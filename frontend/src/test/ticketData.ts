@@ -39,6 +39,9 @@ export const INCIDENT: TicketDetail = {
   sla: [],
   openTaskCount: 0,
   tasks: [],
+  rating: null,
+  canRate: false,
+  rateUntil: null,
 };
 
 export const LIST_ITEM: TicketListItem = {

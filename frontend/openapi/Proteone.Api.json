@@ -5657,6 +5657,85 @@
         }
       }
     },
+    "/api/v1/tickets/{number}/rating": {
+      "put": {
+        "tags": [
+          "Tickets"
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateTicketRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/tickets/{number}/comments": {
       "post": {
         "tags": [
@@ -19436,6 +19515,25 @@
           }
         }
       },
+      "RateTicketRequest": {
+        "required": [
+          "score",
+          "comment"
+        ],
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "ReassignApproverRequest": {
         "required": [
           "approverId",
@@ -21244,7 +21342,10 @@
           "version",
           "sla",
           "openTaskCount",
-          "tasks"
+          "tasks",
+          "rating",
+          "canRate",
+          "rateUntil"
         ],
         "type": "object",
         "properties": {
@@ -21443,6 +21544,26 @@
               "$ref": "#/components/schemas/TicketTaskItem"
             }
           },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TicketRatingView"
+              }
+            ]
+          },
+          "canRate": {
+            "type": "boolean"
+          },
+          "rateUntil": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
           "service": {
             "oneOf": [
               {
@@ -21484,7 +21605,8 @@
           "problem_linked",
           "problem_unlinked",
           "service_set",
-          "service_cleared"
+          "service_cleared",
+          "rating_given"
         ]
       },
       "TicketKind": {
@@ -21604,6 +21726,30 @@
           },
           "ownerTeamName": {
             "type": "string"
+          }
+        }
+      },
+      "TicketRatingView": {
+        "required": [
+          "score",
+          "comment",
+          "ratedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ratedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

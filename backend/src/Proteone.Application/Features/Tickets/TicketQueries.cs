@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
+using Proteone.Application.Features.Ratings;
 using Proteone.Application.Sla;
 using Proteone.Application.Features.Services;
 using Proteone.Application.Features.Tasks;
@@ -22,7 +23,8 @@ internal static class TicketQueries
                 a.Reason, a.CreatedAt, a.DecidedAt))
             .FirstOrDefaultAsync(cancellationToken);
 
-    public static async Task<TicketDetail> LoadDetailAsync(IAppDbContext db, TicketSlaReader slaReader, Guid ticketId, TicketViewer viewer, CancellationToken cancellationToken)
+    public static async Task<TicketDetail> LoadDetailAsync(
+        IAppDbContext db, TicketSlaReader slaReader, TimeProvider clock, Guid ticketId, TicketViewer viewer, CancellationToken cancellationToken)
     {
         var t = await db.Tickets.AsNoTracking().SingleAsync(x => x.Id == ticketId, cancellationToken);
         var userIds = new[] { t.RequesterId, t.AssigneeId ?? t.RequesterId };
@@ -52,13 +54,26 @@ internal static class TicketQueries
                 where a.TicketId == t.Id
                 select s.Name).SingleOrDefaultAsync(cancellationToken)
             : null;
+        var rating = await RatingAsync(db, t, viewer, cancellationToken);
+        var rateUntil = TicketRating.RateUntil(t);
+        var canRate = t.RequesterId == viewer.UserId && rateUntil is { } until && clock.GetUtcNow() < until;
         return new TicketDetail(
             t.Id, t.Number, t.Kind, t.Subject, t.Description, t.Status, t.HoldReason, t.HoldNote, t.Impact, t.Urgency, t.Priority,
             t.CategoryId, category, t.LocationId, location, t.RequesterId, UserName(t.RequesterId)!, t.TeamId, team, t.AssigneeId, UserName(t.AssigneeId),
             t.RequestTypeId, requestType, t.RequiresApproval,
             viewer.SeesInternal ? t.RootCause : null,
             t.Resolution, t.Outcome, t.CancelReason, t.CreatedAt, t.UpdatedAt, t.CompletedAt, approval, related, viewer.CanWork(t), t.Version, sla,
-            openTaskCount, tasks, service, monitoring);
+            openTaskCount, tasks, rating, canRate, rateUntil, service, monitoring);
+    }
+
+    /// <summary>Everyone who sees the ticket reads the score; the comment only the requester and IT.</summary>
+    private static async Task<TicketRatingView?> RatingAsync(IAppDbContext db, Ticket ticket, TicketViewer viewer, CancellationToken cancellationToken)
+    {
+        var rating = await db.TicketRatings.AsNoTracking().Where(r => r.TicketId == ticket.Id)
+            .Select(r => new { r.Score, r.Comment, r.RatedAt })
+            .SingleOrDefaultAsync(cancellationToken);
+        var readsComment = viewer.SeesInternal || ticket.RequesterId == viewer.UserId;
+        return rating is null ? null : new TicketRatingView(rating.Score, readsComment ? rating.Comment : null, rating.RatedAt);
     }
 
     /// <summary>

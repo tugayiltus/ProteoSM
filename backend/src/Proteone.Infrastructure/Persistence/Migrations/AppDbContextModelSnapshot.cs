@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261126100951_AddTicketRatings";
+    public override string LastMigrationId => "20261126101825_AddRatingGivenTicketEvent";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -4204,7 +4204,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 
                 b.ToTable("ticket_events", t =>
                     {
-                        t.HasCheckConstraint("ck_ticket_events_kind", "kind IN ('created', 'assigned', 'transferred', 'status_changed', 'public_comment', 'internal_note', 'priority_changed', 'approval_requested', 'approval_decided', 'approval_voided', 'approval_reassigned', 'related_request_created', 'asset_linked', 'asset_unlinked', 'completed', 'cancelled', 'change_linked', 'change_unlinked', 'problem_linked', 'problem_unlinked', 'service_set', 'service_cleared')");
+                        t.HasCheckConstraint("ck_ticket_events_kind", "kind IN ('created', 'assigned', 'transferred', 'status_changed', 'public_comment', 'internal_note', 'priority_changed', 'approval_requested', 'approval_decided', 'approval_voided', 'approval_reassigned', 'related_request_created', 'asset_linked', 'asset_unlinked', 'completed', 'cancelled', 'change_linked', 'change_unlinked', 'problem_linked', 'problem_unlinked', 'service_set', 'service_cleared', 'rating_given')");
 
                         t.HasCheckConstraint("ck_ticket_events_visibility", "visibility IN ('public', 'internal')");
                     });

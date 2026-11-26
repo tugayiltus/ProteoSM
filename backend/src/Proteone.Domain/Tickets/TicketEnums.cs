@@ -107,4 +107,5 @@ public enum TicketEventKind
     ProblemUnlinked,
     ServiceSet,
     ServiceCleared,
+    RatingGiven,
 }
