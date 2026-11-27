@@ -26,7 +26,19 @@ Date: 2026-11-27. Owner: Tugay İLTUŞ. Request: owner brief "ProteoneSM — Mar
 6. **P3 — admin setup and operations UX** (brief section P3).
 7. **Backlog documents** (no code): ITSM backlog items 1–9 and the operations backlog, each with gap, screen sketch, dependency and acceptance scenario, written against current ADRs and code; Odoo ITSM Pack used as a workflow reference only.
 
+## Acceptance per phase
+
+- **P0:** the admin route smoke spec is green on the built preview; a deliberately broken lazy import shows the error screen with both actions (unit test); CI builds both entries.
+- **Brand:** old/new identity table in the ADR; migration drill report `docs/release/proteonesm-migration-drill.md` green for the fresh install and the Proteone-backup move (users, tickets, links, attachments, report files, default/custom templates, encrypted values, audit compared); `FormerProductNameTests` fails on a bare "Proteone" outside its allow list; full tests, E2E and UI QA green.
+- **Audit:** `docs/release/proteonesm-audit.md` — one table: screen, role, path, observation, change, verification (live / from code / action-tested); screenshots in `docs/release/proteonesm-screens/`.
+- **P1 (E2E):** a technician finds a risky ticket from the SLA-risk view, sees its due time on the detail, "Yanıtla" moves focus to the reply box, and returning restores filter, sort and page; on a phone the first screen shows subject, status, due time and the main action.
+- **P2/P3:** each touched list shows first-use empty, no filter result and load error differently (tests); report figure, drill-down and Excel agree on isolated data (test); previews never publish or send (test); readable durations ("150 iş dakikası = 2 sa 30 dk").
+- **Backlog:** one short design per item under `docs/superpowers/specs/` (gap, screen sketch, dependency, acceptance scenario); kept decisions: P1–P4 matrix, satisfaction rating, no reopen.
+
 ## Working rules for this run
+
+- Test-first per task (project rule and TDD); long runs once per phase end; whole-branch review on the most capable model per phase with one fix wave.
+- Odoo ITSM Pack is a workflow reference only: no copying of its screens, text or visual design.
 
 - Code first, then tests, review, verification (owner process note). Dev services may be stopped while building; they are restarted at the end of each phase.
 - Each phase is its own commit series on `feature/proteonesm`, verified before the next. Long runs (full tests, E2E, UI QA, guide PDF) once per phase end.
