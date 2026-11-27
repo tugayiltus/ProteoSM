@@ -31,8 +31,9 @@ import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
 import { OpenOnlyFilter } from '../services/OpenOnlyFilter';
 import { ServiceFilter } from '../services/ServiceFilter';
+import { SlaSummary } from '../tickets/SlaBadge';
 
-import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, URL_QUEUES, useProblems, type ProblemListItem } from './api';
+import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, toSlaEntry, URL_QUEUES, useProblems, type ProblemListItem } from './api';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
 import { ProblemFormDialog } from './ProblemFormDialog';
 
@@ -73,6 +74,7 @@ export function ProblemListPage() {
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
     { key: 'status', header: t('list.columns.status'), renderCell: (x) => <ProblemStatusBadge status={x.status} /> },
     { key: 'impact', header: t('list.columns.impact'), renderCell: (x) => <ImpactBadge impact={x.impact} /> },
+    { key: 'sla', header: t('list.columns.sla'), renderCell: (x) => (x.sla ? <SlaSummary sla={[toSlaEntry(x.sla)]} /> : tc('none')) },
     { key: 'incidents', header: t('list.columns.incidents'), renderCell: (x) => x.incidentCount },
     { key: 'team', header: t('list.columns.team'), renderCell: (x) => x.ownerTeamName },
     { key: 'owner', header: t('list.columns.owner'), renderCell: (x) => x.ownerName ?? tc('none') },
@@ -98,6 +100,7 @@ export function ProblemListPage() {
         <ImpactBadge impact={x.impact} />
         <Text type="supporting">{t('list.incidentCount', { count: x.incidentCount })}</Text>
       </HStack>
+      {x.sla && <SlaSummary sla={[toSlaEntry(x.sla)]} />}
       <OpenLink problem={x} />
     </VStack>
   );

@@ -9,6 +9,17 @@ import { chooseOption, findSelect } from '../../test/select';
 const PAGE = { items: [PROBLEM_ROW], page: 1, pageSize: 20, totalCount: 1 };
 
 describe('ProblemListPage', () => {
+  it('list_shows_sla_state', async () => {
+    const sla = { metric: 'known_error', dueAt: '2026-11-24T09:00:00Z', remainingSeconds: -3660, isPaused: false, isWarned: true, isBreached: true, result: null };
+    const withSla = { ...PAGE, items: [{ ...PROBLEM_ROW, sla }, { ...PROBLEM_ROW, id: 'prb-2', number: 'PRB-2026-000002', sla: null }] };
+    mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: withSla } }) as never);
+    renderRoute('/problems');
+
+    const table = await screen.findByRole('table', { name: 'Problem listesi' });
+    expect(within(table).getAllByText('İhlal · 1 sa 1 dk gecikme')).toHaveLength(1);
+    expect(within(table).getAllByText('Bilinen hataya kadar:')).toHaveLength(1);
+  });
+
   it('lists problems and keeps the queue, status, impact and search filters in the URL', async () => {
     const api = mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: PAGE } }) as never);
     const { user, router } = renderRoute('/problems?queue=team');

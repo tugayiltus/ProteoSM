@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Sla;
 using Proteone.Domain.Tickets;
 
 namespace Proteone.Application.Reports.Metrics;
@@ -8,7 +9,7 @@ namespace Proteone.Application.Reports.Metrics;
 /// <summary>
 /// The figures of the problem report (ADR-0034). <see cref="KnownErrorsOpen"/> is a snapshot and ignores the period;
 /// <see cref="Resolved"/> and <see cref="ResolutionTime"/> date problems by their resolution (cancelled problems never count);
-/// <see cref="ByImpact"/> and <see cref="IncidentsPerProblem"/> date them by creation.
+/// <see cref="ByImpact"/> and <see cref="IncidentsPerProblem"/> date them by creation; <see cref="KnownErrorSlaCompliance"/> dates them by the stop of the timer.
 /// </summary>
 public static class ProblemMetrics
 {
@@ -17,6 +18,7 @@ public static class ProblemMetrics
     public const string ResolutionTime = "resolution_time";
     public const string ByImpact = "by_impact";
     public const string IncidentsPerProblem = "incidents_per_problem";
+    public const string KnownErrorSlaCompliance = "known_error_sla_compliance";
     public const string ByService = MetricKeys.ByService;
 
     public const string OneIncident = "1";
@@ -40,7 +42,7 @@ public static class ProblemMetrics
     ];
 
     internal static IReadOnlyList<IReportMetric> All { get; } =
-        [new KnownErrorsOpenMetric(), new ResolvedMetric(), new ResolutionTimeMetric(), new ImpactMetric(), new IncidentsPerProblemMetric(), new ServiceMetric()];
+        [new KnownErrorsOpenMetric(), new ResolvedMetric(), new ResolutionTimeMetric(), new ImpactMetric(), new IncidentsPerProblemMetric(), new ServiceMetric(), new KnownErrorSlaComplianceMetric()];
 
     private static ReportFigure CountFigure(string key, long count) => new(key, MetricShape.Count, count, null, null, null, MetricKeys.UnitProblems);
 
@@ -198,5 +200,28 @@ public static class ProblemMetrics
 
             return new ReportFigure(Key, Shape, buckets.Sum(b => b.Count), null, null, buckets, MetricKeys.UnitProblems);
         }
+    }
+
+    /// <summary>
+    /// Known-error timers met ÷ timers stopped in the period. Cancelled timers are on neither side; the rows are the problems behind
+    /// the timers.
+    /// </summary>
+    private sealed class KnownErrorSlaComplianceMetric : ProblemReportMetric
+    {
+        public override string Key => KnownErrorSlaCompliance;
+
+        public override ReportName Report => ReportName.Problems;
+
+        public override ReportDateBasis DateBasis => ReportDateBasis.SlaStopped;
+
+        public override MetricShape Shape => MetricShape.Ratio;
+
+        public override IQueryable<Problem> Rows(IQueryable<Problem> filtered, ReportContext context) =>
+            filtered.Where(p => context.Db.ProblemSlaTimers.Any(i => i.ProblemId == p.Id && i.Result == SlaResult.Met));
+
+        public override IQueryable<Problem>? DenominatorRows(IQueryable<Problem> filtered, ReportContext context) => filtered;
+
+        public override async Task<ReportFigure> ComputeAsync(IQueryable<Problem> filtered, ReportContext context, CancellationToken cancellationToken) =>
+            ReportFigure.Ratio(Key, await Rows(filtered, context).LongCountAsync(cancellationToken), await filtered.LongCountAsync(cancellationToken));
     }
 }

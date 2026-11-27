@@ -5,10 +5,13 @@ import type { TicketSla } from './api';
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
 
+/** One timer as the badge shows it: a ticket timer, or the known-error timer of a problem (its `metric` is `known_error`). */
+export type SlaEntry = Omit<TicketSla, 'metric'> & { metric: TicketSla['metric'] | 'known_error' };
+
 export type SlaState = 'running' | 'paused' | 'warned' | 'breached' | 'met' | 'metBreached' | 'cancelled';
 
 /** A stopped timer shows its result; a running one shows how close it is to the target. */
-export function slaState(sla: TicketSla): SlaState {
+export function slaState(sla: SlaEntry): SlaState {
   if (sla.result === 'met') {
     return 'met';
   }

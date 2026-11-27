@@ -26,8 +26,9 @@ import { ROUTES } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { Field } from '../changes/Field';
 import { ServiceField } from '../services/ServiceField';
+import { SlaSummary } from '../tickets/SlaBadge';
 
-import { isClosed, useProblem, useSetProblemService, type ProblemDetail } from './api';
+import { isClosed, toSlaEntry, useProblem, useSetProblemService, type ProblemDetail } from './api';
 import { ProblemActions } from './ProblemActions';
 import { ProblemArticleBox } from './ProblemArticleBox';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
@@ -47,6 +48,11 @@ function ProblemView({ problem }: { problem: ProblemDetail }) {
   const side = (
     <VStack gap={4}>
       <ProblemActions problem={problem} />
+      {problem.sla && (
+        <SectionCard title={t('detail.sla')}>
+          <SlaSummary sla={[toSlaEntry(problem.sla)]} showDue />
+        </SectionCard>
+      )}
       <SectionCard title={t('detail.sideSection')}>
         <MetadataList>
           <Field label={t('detail.team')} value={problem.ownerTeamName} />

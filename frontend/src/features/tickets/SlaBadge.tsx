@@ -1,7 +1,7 @@
 /**
  * @input One SLA timer, or all timers of a ticket.
  * @output The metric name with the remaining or overdue business time, or the final result.
- * @position Ticket lists and ticket detail.
+ * @position Ticket and problem lists, ticket and problem detail.
  */
 import { HStack } from '@astryxdesign/core/HStack';
 import { StatusDot } from '@astryxdesign/core/StatusDot';
@@ -12,8 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 import { formatDateTime } from '../../shared/lib/format';
 
-import type { TicketSla } from './api';
-import { slaState, useFormatBusinessDuration, type SlaState } from './slaState';
+import { slaState, useFormatBusinessDuration, type SlaEntry, type SlaState } from './slaState';
 
 type DotVariant = ComponentProps<typeof StatusDot>['variant'];
 
@@ -28,7 +27,7 @@ const STATE_DOT: Record<SlaState, DotVariant> = {
 };
 
 /** `data-sla-state` lets E2E tests read the state without parsing the text. */
-export function SlaBadge({ sla }: { sla: TicketSla }) {
+export function SlaBadge({ sla }: { sla: SlaEntry }) {
   const { t } = useTranslation('tickets');
   const formatDuration = useFormatBusinessDuration();
   const state = slaState(sla);
@@ -42,7 +41,7 @@ export function SlaBadge({ sla }: { sla: TicketSla }) {
   );
 }
 
-export function SlaSummary({ sla, showDue = false }: { sla: readonly TicketSla[]; showDue?: boolean }) {
+export function SlaSummary({ sla, showDue = false }: { sla: readonly SlaEntry[]; showDue?: boolean }) {
   const { t } = useTranslation('tickets');
   if (sla.length === 0) {
     return <Text type="supporting">{t('sla.none')}</Text>;

@@ -68,7 +68,7 @@ public static class ReportPipeline
         ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
     {
         var window = filter.Window(companyClock.Zone);
-        return new ProblemPipeline(ProblemReportSource.Apply(scope.ProblemsFor(viewer), filter, basis, window), new ReportContext(db, now, window));
+        return new ProblemPipeline(ProblemReportSource.Apply(scope.ProblemsFor(viewer), filter, basis, window, db), new ReportContext(db, now, window));
     }
 
     /// <summary>Only the owner team narrows the licence report; it has no period.</summary>

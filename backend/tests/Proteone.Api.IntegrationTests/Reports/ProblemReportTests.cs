@@ -5,6 +5,7 @@ using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Common;
 using Proteone.Application.Reports;
 using Proteone.Application.Reports.Metrics;
+using Proteone.Domain.Sla;
 using Proteone.Domain.Tickets;
 using Proteone.Domain.Users;
 
@@ -237,5 +238,39 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
             Assert.Equal(1, body.GetProperty("problems").GetProperty("totalCount").GetInt64());
             Assert.Equal(number, items[0].GetProperty("number").GetString());
         }
+    }
+
+    [Fact]
+    public async Task Known_error_sla_compliance_counts_met_over_stopped_excluding_cancelled()
+    {
+        var fx = new ProblemReportFixture(await ReportWorld.CreateAsync(factory));
+        var stoppedInMarch = T0.AddDays(2);
+        var met = await fx.ProblemAsync(ProblemEnding.KnownError, T0);
+        var breached = await fx.ProblemAsync(ProblemEnding.KnownError, T0);
+        var cancelled = await fx.ProblemAsync(ProblemEnding.Cancelled, T0);
+        var running = await fx.ProblemAsync(ProblemEnding.Open, T0);
+        var stoppedEarlier = await fx.ProblemAsync(ProblemEnding.KnownError, T0.AddDays(-60));
+        await fx.ProblemAsync(ProblemEnding.KnownError, T0); // no timer: a problem from before the feature
+        await fx.TimerAsync(met, SlaResult.Met, stoppedInMarch);
+        await fx.TimerAsync(breached, SlaResult.Breached, stoppedInMarch);
+        await fx.TimerAsync(cancelled, SlaResult.Cancelled, stoppedInMarch);
+        await fx.TimerAsync(running, null, stoppedInMarch);
+        await fx.TimerAsync(stoppedEarlier, SlaResult.Met, T0.AddDays(-50));
+        var (admin, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.Admin, "boss@example.com");
+
+        var figure = Figure(await fx.RunAsync(fx.World.Admin.Id, MarchFilter), ProblemMetrics.KnownErrorSlaCompliance);
+
+        Assert.Equal((1L, 2L, 0.5), (figure.Numerator, figure.Denominator, figure.Value));
+        var query = $"metric={ProblemMetrics.KnownErrorSlaCompliance}&{March}&pageSize=100";
+        Assert.Equal([met.Number], await DrilledNumbersAsync(admin, query));
+        Assert.Equal([met.Number, breached.Number], await DrilledNumbersAsync(admin, $"{query}&part=denominator"));
+    }
+
+    private async Task<List<string?>> DrilledNumbersAsync(ApiClient admin, string query)
+    {
+        using var drill = await admin.GetAsync($"{ReportsPath}/drilldown?{query}");
+        Assert.Equal(HttpStatusCode.OK, drill.StatusCode);
+        var body = await admin.ReadJsonAsync<JsonElement>(drill);
+        return body.GetProperty("problems").GetProperty("items").EnumerateArray().Select(r => r.GetProperty("number").GetString()).ToList();
     }
 }

@@ -265,7 +265,8 @@
     "listColumn": "SLA",
     "metrics": {
       "first_response": "İlk yanıt",
-      "resolution": "Çözüm"
+      "resolution": "Çözüm",
+      "known_error": "Bilinen hataya kadar"
     },
     "states": {
       "running": "Kalan {{duration}}",

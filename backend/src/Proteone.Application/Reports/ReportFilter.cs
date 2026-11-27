@@ -24,6 +24,9 @@ public enum ReportDateBasis
     /// <summary>The decision of an approval (approved or rejected).</summary>
     Decided,
 
+    /// <summary>The stop of the problem known-error timer (cancelled timers do not count).</summary>
+    SlaStopped,
+
     /// <summary>No window: a snapshot of tickets as they are now (open backlog).</summary>
     None,
 }

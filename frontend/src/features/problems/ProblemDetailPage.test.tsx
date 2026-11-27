@@ -21,7 +21,33 @@ const TIMELINE = [
   { id: 'e-3', kind: 'commented', actorName: 'Can Demir', data: { text: 'Loglar toplandı' }, occurredAt: '2026-11-20T09:30:00Z' },
 ];
 
+const KNOWN_ERROR_SLA: NonNullable<ProblemDetail['sla']> = {
+  metric: 'known_error',
+  dueAt: '2026-11-24T09:00:00Z',
+  remainingSeconds: 9000,
+  isPaused: false,
+  isWarned: false,
+  isBreached: false,
+  result: null,
+};
+
 describe('ProblemDetailPage', () => {
+  it('detail_shows_known_error_sla_badge', async () => {
+    mockApi(problemRoutes({ ...PROBLEM, sla: KNOWN_ERROR_SLA }) as never);
+    renderRoute(`/problems/${PROBLEM.number}`);
+
+    expect(await screen.findByText('Bilinen hataya kadar:')).toBeInTheDocument();
+    expect(screen.getByText('Kalan 2 sa 30 dk')).toBeInTheDocument();
+  });
+
+  it('old_problem_shows_no_badge', async () => {
+    mockApi(problemRoutes({ ...PROBLEM, sla: null }) as never);
+    renderRoute(`/problems/${PROBLEM.number}`);
+
+    expect(await screen.findByRole('heading', { name: PROBLEM.title })).toBeInTheDocument();
+    expect(screen.queryByText('Bilinen hataya kadar:')).not.toBeInTheDocument();
+  });
+
   it('shows the problem sections, linked records and history', async () => {
     mockApi(
       problemRoutes(DIAGNOSED, {

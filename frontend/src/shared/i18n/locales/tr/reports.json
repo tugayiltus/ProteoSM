@@ -94,6 +94,7 @@
     "resolved": "Çözülen problemler",
     "by_impact": "Etkiye göre problemler",
     "incidents_per_problem": "Problem başına arıza",
+    "known_error_sla_compliance": "Bilinen hata SLA uyumu",
     "by_service": "Hizmete göre",
     "licences_all": "Tüm lisanslar",
     "licences_full": "Dolu lisanslar",

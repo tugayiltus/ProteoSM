@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Time.Testing;
 using Proteone.Application.Reports;
+using Proteone.Domain.Common;
 using Proteone.Domain.Problems;
 using Proteone.Domain.Reports;
+using Proteone.Domain.Sla;
 using Proteone.Domain.Tickets;
 
 namespace Proteone.Api.IntegrationTests.Reports;
@@ -21,6 +23,11 @@ internal sealed class ProblemReportFixture(ReportWorld world)
 {
     // Linked incidents get numbers far above the ones other fixtures hand out in the same world.
     private const int IncidentNumberBase = 900_000;
+
+    private const int TimerCloseHour = 23;
+    private const int MetTargetMinutes = 100_000;
+    private const int BreachedTargetMinutes = 1;
+    private const int TimerWarningPercent = 80;
 
     private int _counter;
     private int _incidents;
@@ -70,6 +77,32 @@ internal sealed class ProblemReportFixture(ReportWorld world)
         db.ProblemTicketLinks.AddRange(links);
         await db.SaveChangesAsync(Ct);
         return problem;
+    }
+
+    /// <summary>
+    /// Stores a known-error timer for <paramref name="problem"/> that ends at <paramref name="stoppedAt"/> with <paramref name="result"/>
+    /// (met or breached through the real stop rule, cancelled through cancel); a null result leaves the timer running.
+    /// </summary>
+    public async Task TimerAsync(Problem problem, SlaResult? result, DateTimeOffset stoppedAt)
+    {
+        var hours = new WorkingRange(new TimeOnly(0, 0), new TimeOnly(TimerCloseHour, 0));
+        var rules = new BusinessCalendarRules(
+            TimeZoneInfo.Utc, Enum.GetValues<DayOfWeek>().ToDictionary(d => d, _ => hours), new HashSet<DateOnly>());
+        var target = result == SlaResult.Breached ? BreachedTargetMinutes : MetTargetMinutes;
+        var timer = ProblemSlaTimer.Start(problem.Id, target, TimerWarningPercent, problem.CreatedAt, rules);
+        switch (result)
+        {
+            case SlaResult.Cancelled:
+                timer.Cancel(stoppedAt);
+                break;
+            case not null:
+                timer.Stop(stoppedAt);
+                break;
+        }
+
+        await using var db = World.Db();
+        db.ProblemSlaTimers.Add(timer);
+        await db.SaveChangesAsync(Ct);
     }
 
     public async Task<ReportResult> RunAsync(Guid userId, ReportFilter? filter = null, DateTimeOffset? now = null)

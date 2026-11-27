@@ -40,11 +40,13 @@
       "team": "Sahip ekip",
       "owner": "Sahip",
       "incidents": "Arıza",
-      "updated": "Güncellendi"
+      "updated": "Güncellendi",
+      "sla": "SLA"
     }
   },
   "detail": {
     "back": "Listeye dön",
+    "sla": "SLA",
     "contentSection": "Problem",
     "sideSection": "Bilgiler",
     "impact": "Etki",

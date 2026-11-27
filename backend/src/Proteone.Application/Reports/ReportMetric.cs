@@ -161,5 +161,8 @@ public abstract class ProblemReportMetric : IReportMetric
     public virtual IQueryable<Problem> BucketRows(IQueryable<Problem> filtered, ReportContext context, string bucket) =>
         throw new NotSupportedException($"Metric '{Key}' has no buckets.");
 
+    /// <summary>Rows behind a ratio's denominator; null for other shapes.</summary>
+    public virtual IQueryable<Problem>? DenominatorRows(IQueryable<Problem> filtered, ReportContext context) => null;
+
     public abstract Task<ReportFigure> ComputeAsync(IQueryable<Problem> filtered, ReportContext context, CancellationToken cancellationToken);
 }

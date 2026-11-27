@@ -233,16 +233,13 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
 
     private DrilldownRows OpenProblems(ReportViewer viewer, ProblemReportMetric metric, string? bucket, ReportDrillPart part, ReportFilter filter, DateTimeOffset now)
     {
-        if (part == ReportDrillPart.Denominator)
-        {
-            throw Invalid(PartField);
-        }
-
         var pipeline = ReportPipeline.Problems(scope, db, companyClock, viewer, filter, metric.DateBasis, now);
         IQueryable<Problem> rows;
         try
         {
-            rows = bucket is null ? metric.Rows(pipeline.Filtered, pipeline.Context) : metric.BucketRows(pipeline.Filtered, pipeline.Context, bucket);
+            rows = part == ReportDrillPart.Denominator
+                ? bucket is null ? metric.DenominatorRows(pipeline.Filtered, pipeline.Context) ?? throw Invalid(PartField) : throw Invalid(BucketField)
+                : bucket is null ? metric.Rows(pipeline.Filtered, pipeline.Context) : metric.BucketRows(pipeline.Filtered, pipeline.Context, bucket);
         }
         catch (NotSupportedException)
         {
