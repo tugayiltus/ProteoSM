@@ -5,7 +5,7 @@ Proteone is a web-based IT service management tool for one company, made for sma
 | Area | What it covers |
 |---|---|
 | Support | Incidents, requests, approvals, SLA, email, attachments, knowledge base, central search |
-| Change and problem | Tasks, changes with approval and a maintenance calendar, problems, releases |
+| Change and problem | Tasks, changes with approval and a maintenance calendar, problems with an SLA to known error and problem email (ADR-0046), releases |
 | Assets and services | Inventory, assignments, QR labels, service catalogue with a light CMDB, software and licences |
 | Insight | Reports with drill-down and Excel export |
 | Integration | Microsoft Entra ID or Active Directory sign-in, signed monitoring webhook |

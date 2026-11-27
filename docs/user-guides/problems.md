@@ -71,6 +71,16 @@ Diğer işlemler:
 
 **Geçmiş ve notlar** bölümü problemde olan her şeyi sırayla gösterir. **Not ekle** ile iç not yazın.
 
+## Bilinen hata süresi (SLA)
+
+Her yeni problemin, etkisine göre bir **Bilinen hataya kadar** süresi vardır (hedefleri yönetici belirler, bkz. [Yönetim: SLA](admin-sla.md)). Problem sayfasındaki **SLA** kartı ve listedeki **Durum ve SLA** sütunu kalan süreyi, riski, ihlali veya karşılandığını gösterir. Süre problem **Bilinen hata** veya **Çözüldü** olunca durur. Etki değişirse hedef yeniden hesaplanır.
+
+## Problem e-postaları
+
+- Problem açılınca sahip ekibin üyelerine, sahip atanınca sahibe, problem başka ekibe aktarılınca yeni ekibe e-posta gider. İşlemi yapan kişiye gitmez.
+- Problem **Bilinen hata** veya **Çözüldü** olunca bağlı açık arızaların atanan kişisine (yoksa ekibine) e-posta gider.
+- Bağlı açık arızayı açan çalışana "Kaydın nedeni bulundu" ve "Kaydın sorunu giderildi" e-postaları gider. Bu e-postalarda yalnızca çalışanın kendi kaydı yazar; problem numarası veya iç bilgi yazmaz.
+
 Siz problemi açtıktan sonra başka biri onu değiştirdiyse işleminiz reddedilir ve sayfa yenilenir. Güncel bilgiye bakıp işlemi tekrar yapın.
 
 ## Arıza ve değişiklik bağlama

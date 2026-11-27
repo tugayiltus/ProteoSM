@@ -754,6 +754,16 @@ Diğer işlemler:
 
 **Geçmiş ve notlar** bölümü problemde olan her şeyi sırayla gösterir. **Not ekle** ile iç not yazın.
 
+## Bilinen hata süresi (SLA)
+
+Her yeni problemin, etkisine göre bir **Bilinen hataya kadar** süresi vardır (hedefleri yönetici belirler, bkz. [Yönetim: SLA](#yönetim-sla)). Problem sayfasındaki **SLA** kartı ve listedeki **Durum ve SLA** sütunu kalan süreyi, riski, ihlali veya karşılandığını gösterir. Süre problem **Bilinen hata** veya **Çözüldü** olunca durur. Etki değişirse hedef yeniden hesaplanır.
+
+## Problem e-postaları
+
+- Problem açılınca sahip ekibin üyelerine, sahip atanınca sahibe, problem başka ekibe aktarılınca yeni ekibe e-posta gider. İşlemi yapan kişiye gitmez.
+- Problem **Bilinen hata** veya **Çözüldü** olunca bağlı açık arızaların atanan kişisine (yoksa ekibine) e-posta gider.
+- Bağlı açık arızayı açan çalışana "Kaydın nedeni bulundu" ve "Kaydın sorunu giderildi" e-postaları gider. Bu e-postalarda yalnızca çalışanın kendi kaydı yazar; problem numarası veya iç bilgi yazmaz.
+
 Siz problemi açtıktan sonra başka biri onu değiştirdiyse işleminiz reddedilir ve sayfa yenilenir. Güncel bilgiye bakıp işlemi tekrar yapın.
 
 ## Arıza ve değişiklik bağlama
@@ -1078,7 +1088,7 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
    - **Garanti**: Garantisi bitmiş, bitecek ve garanti tarihi girilmemiş cihazlar.
    - **Değişiklikler**: Döneme göre kapanan değişikliklerin sonuç dağılımı, başarı oranı, riske göre değişiklikler ve iptal edilenler. **Sorun çıkaran değişiklikler** kartı, dönemde kapanan ve en az bir arızaya yol açtığı bağlanan değişiklikleri sayar; sayıya basınca bu değişikliklerin listesi açılır.
    - **Görevler**: Gecikmiş görevler, duruma ve ekibe göre görevler, görevlerin tamamlanma süresi.
-   - **Problemler**: Açık bilinen hatalar, dönemde çözülen problemler, çözüm süresi, etkiye göre problemler ve problem başına arıza sayısı.
+   - **Problemler**: Açık bilinen hatalar, dönemde çözülen problemler, çözüm süresi, etkiye göre problemler ve problem başına arıza sayısı, **Bilinen hata SLA uyumu** (süresi içinde bilinen hataya ulaşan problemlerin oranı).
 
 ![Olaylar raporu](images/reports-incidents-desktop.png)
 
@@ -1415,6 +1425,14 @@ Tatil günlerinde SLA süresi işlemez. Yanlış eklenen tatili **Kaldır** ile 
 Değişiklikleri **Yeni sürüm olarak kaydet** ile kaydedin. Sayfanın üstünde geçerli sürüm numarası yazar.
 
 Hedefler 1 veya daha büyük, uyarı yüzdesi 1 ile 99 arasında olmalıdır.
+
+### Problem hedefleri
+
+Aynı sayfanın altındaki **Problem hedefleri (iş dakikası)** bölümü, bir problemin **Bilinen hata** durumuna ulaşması için tanınan süreyi etkiye göre (Yüksek, Orta, Düşük) belirler. Her etki için hedef süreyi ve uyarı yüzdesini girip **Kaydet** düğmesine basın.
+
+- Süre problem açılınca başlar. Problem **Bilinen hata** veya **Çözüldü** olunca durur. İptal edilen problem sayılmaz.
+- Uyarı eşiği dolunca problemin sahibine (sahip yoksa ekibine) "Problem SLA uyarısı", süre dolunca "Problem SLA ihlali" e-postası gider.
+- Yeni hedefler bundan sonra açılan problemlere ve etkisi değişen problemlere uygulanır. Çalışan sayaçlar başladıkları hedefle devam eder.
 
 ## Değişiklikler mevcut kayıtları nasıl etkiler
 

@@ -42,6 +42,14 @@ Değişiklikleri **Yeni sürüm olarak kaydet** ile kaydedin. Sayfanın üstünd
 
 Hedefler 1 veya daha büyük, uyarı yüzdesi 1 ile 99 arasında olmalıdır.
 
+### Problem hedefleri
+
+Aynı sayfanın altındaki **Problem hedefleri (iş dakikası)** bölümü, bir problemin **Bilinen hata** durumuna ulaşması için tanınan süreyi etkiye göre (Yüksek, Orta, Düşük) belirler. Her etki için hedef süreyi ve uyarı yüzdesini girip **Kaydet** düğmesine basın.
+
+- Süre problem açılınca başlar. Problem **Bilinen hata** veya **Çözüldü** olunca durur. İptal edilen problem sayılmaz.
+- Uyarı eşiği dolunca problemin sahibine (sahip yoksa ekibine) "Problem SLA uyarısı", süre dolunca "Problem SLA ihlali" e-postası gider.
+- Yeni hedefler bundan sonra açılan problemlere ve etkisi değişen problemlere uygulanır. Çalışan sayaçlar başladıkları hedefle devam eder.
+
 ## Değişiklikler mevcut kayıtları nasıl etkiler
 
 - Yeni sürüm yalnızca bundan sonra açılan kayıtlara uygulanır. Açık kayıtlar başladıkları sürümün hedefleriyle devam eder.
