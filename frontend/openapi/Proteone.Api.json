@@ -4278,6 +4278,179 @@
         }
       }
     },
+    "/api/v1/admin/email-settings": {
+      "get": {
+        "tags": [
+          "Admin: Email sending"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSettingsDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin: Email sending"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmailSettingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSettingsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/email-settings/test": {
+      "post": {
+        "tags": [
+          "Admin: Email sending"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTestResult"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/email-settings/activate": {
+      "post": {
+        "tags": [
+          "Admin: Email sending"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSettingsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/email-settings/use-environment": {
+      "post": {
+        "tags": [
+          "Admin: Email sending"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSettingsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/system/workers": {
       "get": {
         "tags": [
@@ -17127,6 +17300,124 @@
           }
         }
       },
+      "EmailProvider": {
+        "enum": [
+          "google",
+          "smtp"
+        ]
+      },
+      "EmailSecurity": {
+        "enum": [
+          "start_tls",
+          "ssl_tls",
+          "none"
+        ]
+      },
+      "EmailSettingsDto": {
+        "required": [
+          "provider",
+          "senderName",
+          "senderAddress",
+          "host",
+          "port",
+          "security",
+          "userName",
+          "hasPassword",
+          "isTested",
+          "isActive",
+          "lastTestedAt",
+          "lastTestSucceeded",
+          "lastTestErrorCode",
+          "isPickup",
+          "environmentFrom",
+          "environmentHost",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/EmailProvider"
+          },
+          "senderName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "senderAddress": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "security": {
+            "$ref": "#/components/schemas/EmailSecurity"
+          },
+          "userName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hasPassword": {
+            "type": "boolean"
+          },
+          "isTested": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "lastTestedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "lastTestSucceeded": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "lastTestErrorCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isPickup": {
+            "type": "boolean"
+          },
+          "environmentFrom": {
+            "type": "string"
+          },
+          "environmentHost": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
+      "EmailSourceRequest": {
+        "required": [
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "EmailTemplateItem": {
         "required": [
           "id",
@@ -17170,6 +17461,31 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "EmailTestResult": {
+        "required": [
+          "ok",
+          "errorCode",
+          "detail"
+        ],
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -22231,6 +22547,60 @@
           }
         }
       },
+      "UpdateEmailSettingsRequest": {
+        "required": [
+          "provider",
+          "senderName",
+          "senderAddress",
+          "host",
+          "port",
+          "security",
+          "userName",
+          "password",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/EmailProvider"
+          },
+          "senderName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "senderAddress": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "security": {
+            "$ref": "#/components/schemas/EmailSecurity"
+          },
+          "userName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "UpdateEmailTemplateRequest": {
         "required": [
           "version",
@@ -23038,6 +23408,9 @@
     },
     {
       "name": "Admin: Email deliveries"
+    },
+    {
+      "name": "Admin: Email sending"
     },
     {
       "name": "Admin: Email templates"

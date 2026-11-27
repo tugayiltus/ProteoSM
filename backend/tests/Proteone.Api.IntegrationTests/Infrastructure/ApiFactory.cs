@@ -35,6 +35,9 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     /// </summary>
     public FakeEmailSender EmailSender { get; } = new();
 
+    /// <summary>Replaces the real test sender of the outgoing mail settings: no network, programmable results.</summary>
+    public FakeEmailTestSender EmailTestSender { get; } = new();
+
     /// <summary>Replaces the real LDAP client: tests program users and outages on it (ADR-0030).</summary>
     public FakeLdapDirectory LdapDirectory { get; } = new();
 
@@ -96,6 +99,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.ConfigureTestServices(services =>
         {
             services.AddScoped<IEmailSender>(_ => EmailSender);
+            services.AddScoped<IEmailTestSender>(_ => EmailTestSender);
             services.AddSingleton<ILdapDirectory>(LdapDirectory);
             // No network in tests: Microsoft's metadata is replaced by endpoints derived from the configured authority,
             // so the tenant in the redirect still comes from the login settings (ADR-0030).

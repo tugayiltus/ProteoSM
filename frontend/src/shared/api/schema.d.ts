@@ -4487,6 +4487,222 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/email-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EmailSettingsDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateEmailSettingsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EmailSettingsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/email-settings/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EmailTestResult"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/email-settings/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EmailSourceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EmailSettingsDto"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/email-settings/use-environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EmailSourceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EmailSettingsDto"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/system/workers": {
         parameters: {
             query?: never;
@@ -14142,6 +14358,36 @@ export interface components {
             /** Format: date-time */
             eventCreatedAt: string;
         };
+        /** @enum {unknown} */
+        EmailProvider: "google" | "smtp";
+        /** @enum {unknown} */
+        EmailSecurity: "start_tls" | "ssl_tls" | "none";
+        EmailSettingsDto: {
+            provider: components["schemas"]["EmailProvider"];
+            senderName: null | string;
+            senderAddress: string;
+            host: string;
+            /** Format: int32 */
+            port: number;
+            security: components["schemas"]["EmailSecurity"];
+            userName: null | string;
+            hasPassword: boolean;
+            isTested: boolean;
+            isActive: boolean;
+            /** Format: date-time */
+            lastTestedAt: null | string;
+            lastTestSucceeded: null | boolean;
+            lastTestErrorCode: null | string;
+            isPickup: boolean;
+            environmentFrom: string;
+            environmentHost: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        EmailSourceRequest: {
+            /** Format: uint32 */
+            version: number;
+        };
         EmailTemplateItem: {
             /** Format: uuid */
             id: string;
@@ -14155,6 +14401,11 @@ export interface components {
             /** Format: uint32 */
             version: number;
             allowedVariables: string[];
+        };
+        EmailTestResult: {
+            ok: boolean;
+            errorCode: null | string;
+            detail: null | string;
         };
         EntraSettingsDto: {
             tenantId: string;
@@ -15503,6 +15754,19 @@ export interface components {
             name: string;
             /** Format: uuid */
             approverUserId: null | string;
+        };
+        UpdateEmailSettingsRequest: {
+            provider: components["schemas"]["EmailProvider"];
+            senderName: null | string;
+            senderAddress: string;
+            host: string;
+            /** Format: int32 */
+            port: number;
+            security: components["schemas"]["EmailSecurity"];
+            userName: null | string;
+            password: null | string;
+            /** Format: uint32 */
+            version: number;
         };
         UpdateEmailTemplateRequest: {
             /** Format: uint32 */
