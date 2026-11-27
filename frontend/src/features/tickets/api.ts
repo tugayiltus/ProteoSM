@@ -42,6 +42,8 @@ export const TRANSFER_REASONS: readonly TransferReason[] = [
   'other',
 ];
 export const WORKSPACE_QUEUES: readonly WorkQueue[] = ['assigned_to_me', 'team', 'unassigned', 'on_hold', 'sla_risk'];
+/** Ticket queues behind "Diğer kuyruklar": the three counted views sit beside the title. */
+export const OTHER_TICKET_QUEUES: readonly WorkQueue[] = ['team', 'on_hold'];
 
 export const ticketKeys = {
   all: ['tickets'],

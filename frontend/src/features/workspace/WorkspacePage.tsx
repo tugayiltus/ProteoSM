@@ -1,52 +1,37 @@
 /**
  * @input `queue` query parameter on the queue page.
- * @output The IT workspace (ticket, task, change and problem queue cards, then all work assigned to me) and the queue page (its ticket list).
+ * @output İş listem: the title, the counted views, then the combined list of my open work; and the queue page (a ticket list) under the same title and views.
  * @position `/workspace` and `/workspace/queue`, inside the app shell.
  */
-import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
 import { VStack } from '@astryxdesign/core/VStack';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
-import { ChangeQueueCard } from '../changes/ChangeQueueCard';
-import { ProblemQueueCard } from '../problems/ProblemQueueCard';
-import type { TaskQueue } from '../tasks/api';
-import { TaskQueueCard } from '../tasks/TaskQueueCard';
 import { WorkItemList } from '../tasks/WorkItemList';
 import { WORKSPACE_QUEUES, type WorkQueue } from '../tickets/api';
 import { TicketList } from '../tickets/TicketList';
 
-import { QueueCard } from './QueueCard';
 import { ALL_QUEUE, QUEUE_PARAM } from './queuePath';
+import { WorkViewBar, type WorkView } from './WorkViewBar';
 
 const DEFAULT_QUEUE: WorkQueue = 'team';
-/** Task queues shown as cards beside the ticket queues (ADR-0031). */
-const TASK_CARD_QUEUES: readonly TaskQueue[] = ['mine', 'team', 'overdue'];
-/** Queue cards reflow from one column on phones to one row on wide screens. */
-const QUEUE_COLUMNS = { minWidth: 200 } as const;
 
 export function WorkspacePage() {
   const { t } = useTranslation('tickets');
   return (
     <VStack gap={4}>
       <PageHeader icon={ROUTE_META.workspace.icon} titleOverride={t('workspace.title')} />
-      <Grid columns={QUEUE_COLUMNS} gap={3}>
-        {WORKSPACE_QUEUES.map((queue) => (
-          <QueueCard key={queue} queue={queue} />
-        ))}
-        {TASK_CARD_QUEUES.map((queue) => (
-          <TaskQueueCard key={queue} queue={queue} />
-        ))}
-        <ChangeQueueCard queue="mine" />
-        <ChangeQueueCard queue="this_week" />
-        <ProblemQueueCard />
-      </Grid>
+      <WorkViewBar view="assigned" />
       <WorkItemList />
     </VStack>
   );
 }
+
+/** Only these two queues have their own counted view; every other queue falls under "Diğer kuyruklar". */
+const queueView = (queue: WorkQueue | typeof ALL_QUEUE): WorkView => (queue === 'unassigned' || queue === 'sla_risk' ? queue : 'other');
 
 export function QueuePage() {
   const { t } = useTranslation('tickets');
@@ -54,10 +39,13 @@ export function QueuePage() {
   const requested = params.get(QUEUE_PARAM);
   const isAll = requested === ALL_QUEUE;
   const queue = WORKSPACE_QUEUES.find((q) => q === requested) ?? DEFAULT_QUEUE;
+  const scope = isAll ? ALL_QUEUE : queue;
   return (
     <VStack gap={4}>
-      <PageHeader icon={ROUTE_META.workspaceQueue.icon} titleOverride={isAll ? t('workspace.all') : t(`workspace.${queue}`)} />
-      <TicketList key={isAll ? ALL_QUEUE : queue} queue={isAll ? undefined : queue} showWorkColumns />
+      <PageHeader icon={ROUTE_META.workspace.icon} titleOverride={t('workspace.title')} />
+      <WorkViewBar key={queueView(scope)} view={queueView(scope)} />
+      <Heading level={2}>{t(`workspace.listTitles.${scope}`)}</Heading>
+      <TicketList key={scope} queue={isAll ? undefined : queue} showWorkColumns title={t(`workspace.listTitles.${scope}`)} />
     </VStack>
   );
 }

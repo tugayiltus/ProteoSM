@@ -23568,6 +23568,13 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "dueAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },

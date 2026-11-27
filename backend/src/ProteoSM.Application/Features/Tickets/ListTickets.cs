@@ -89,9 +89,16 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
                 : tickets.Where(t => EF.Functions.Like(t.SearchText, LikePattern.Containing(key), LikePattern.EscapeText));
         }
 
-        var ordered = query.Queue == TicketQueue.ToRate
-            ? tickets.OrderByDescending(t => t.CompletedAt).ThenByDescending(t => t.Id)
-            : tickets.OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id);
+        // SLA risk: the nearest due time of an at-risk timer first; a paused timer has none and sorts last.
+        var ordered = query.Queue switch
+        {
+            TicketQueue.ToRate => tickets.OrderByDescending(t => t.CompletedAt).ThenByDescending(t => t.Id),
+            TicketQueue.SlaRisk => tickets
+                .OrderBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null && (i.WarnedAt != null || i.BreachedAt != null)).Min(i => i.DueAt) == null)
+                .ThenBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null && (i.WarnedAt != null || i.BreachedAt != null)).Min(i => i.DueAt))
+                .ThenByDescending(t => t.Id),
+            _ => tickets.OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id),
+        };
         var page = await ordered
             .Select(t => new TicketListItem(
                 t.Id, t.Number, t.Kind, t.Subject, t.Status, t.HoldReason, t.Priority,

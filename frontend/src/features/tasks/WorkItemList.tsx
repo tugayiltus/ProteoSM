@@ -1,6 +1,6 @@
 /**
  * @input Nothing; it reads the signed-in person's open work.
- * @output One list of the open tickets, tasks and changes assigned to the person, newest first, with paging; change rows show risk and window.
+ * @output One list of the open tickets, tasks and changes assigned to the person, newest first, with paging in the URL; rows show subject, type, status, team and due time (change rows: risk and window).
  * @position IT workspace (İş listem), below the queue cards.
  */
 import { HStack } from '@astryxdesign/core/HStack';
@@ -9,24 +9,26 @@ import { StackItem } from '@astryxdesign/core/Stack';
 import { Text } from '@astryxdesign/core/Text';
 import { Token } from '@astryxdesign/core/Token';
 import { VStack } from '@astryxdesign/core/VStack';
-import { useState, type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
 import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDate, formatDateTime } from '../../shared/lib/format';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
+import { useListParams } from '../../shared/list/useListParams';
 import { linkState } from '../../shared/navigation/returnTo';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { SectionCard } from '../../shared/page/SectionCard';
 import { changePath, taskPath, ticketPath } from '../../shared/routes';
 import { ChangeStatusBadge, RiskBadge } from '../changes/ChangeBadges';
+import { useFormatDue } from '../tickets/slaState';
 import { PriorityBadge } from '../tickets/TicketBadges';
 
 import { useWorkItems, type WorkItemRow } from './api';
 
 const PAGE_SIZE = 20;
-const FIRST_PAGE = 1;
+const NO_FILTERS: readonly never[] = [];
 const SKELETON_ROWS = 3;
 const TASK_KIND = 'task';
 const CHANGE_KIND = 'change';
@@ -86,11 +88,15 @@ function WindowStart({ row }: { row: WorkItemRow }) {
   return <Text type="supporting">{row.windowStart ? t('workspace.windowStart', { start: formatDateTime(row.windowStart) }) : tc('none')}</Text>;
 }
 
-/** A change has a maintenance window instead of a due date; the row carries only its start. */
+/** A ticket is due when its SLA timer ends, a task on its due date, and a change has a maintenance window; the row carries only its start. */
 function DueOrWindow({ row }: { row: WorkItemRow }) {
   const { t: tc } = useTranslation();
+  const formatDue = useFormatDue();
   if (row.kind === CHANGE_KIND) {
     return <WindowStart row={row} />;
+  }
+  if (row.dueAt) {
+    return <Text>{formatDue(row.dueAt)}</Text>;
   }
 
   return row.dueDate ? formatDate(row.dueDate) : tc('none');
@@ -98,16 +104,17 @@ function DueOrWindow({ row }: { row: WorkItemRow }) {
 
 export function WorkItemList() {
   const { t } = useTranslation('tasks');
-  const [page, setPage] = useState(FIRST_PAGE);
-  const items = useWorkItems({ queue: 'assigned_to_me', page, pageSize: PAGE_SIZE });
+  // The page is in the URL, so a return from a record opens the same page.
+  const list = useListParams(NO_FILTERS);
+  const items = useWorkItems({ queue: 'assigned_to_me', page: list.page, pageSize: PAGE_SIZE });
   const columns: DataColumn<WorkItemRow>[] = [
-    { key: 'kind', header: '', renderCell: (x) => <KindToken kind={x.kind} /> },
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <NumberLink row={x} /> },
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
+    { key: 'kind', header: t('list.columns.kind'), renderCell: (x) => <KindToken kind={x.kind} /> },
     { key: 'status', header: t('list.columns.status'), renderCell: (x) => <StatusText row={x} /> },
-    { key: 'priority', header: t('list.columns.priority'), renderCell: (x) => <PriorityOrRisk row={x} /> },
-    { key: 'due', header: t('list.columns.due'), renderCell: (x) => <DueOrWindow row={x} /> },
     { key: 'team', header: t('list.columns.team'), renderCell: (x) => x.teamName },
+    { key: 'due', header: t('list.columns.due'), renderCell: (x) => <DueOrWindow row={x} /> },
+    { key: 'priority', header: t('list.columns.priority'), renderCell: (x) => <PriorityOrRisk row={x} /> },
   ];
   const renderCard = (x: WorkItemRow) => (
     <VStack gap={2}>
@@ -127,7 +134,8 @@ export function WorkItemList() {
       <HStack gap={2} vAlign="center" wrap="wrap">
         <PriorityOrRisk row={x} />
         <StatusText row={x} />
-        {x.kind === CHANGE_KIND ? <WindowStart row={x} /> : x.dueDate && <Text type="supporting">{formatDate(x.dueDate)}</Text>}
+        <Text type="supporting">{x.teamName}</Text>
+        <DueOrWindow row={x} />
       </HStack>
     </VStack>
   );
@@ -140,7 +148,7 @@ export function WorkItemList() {
         <DataList items={items.data.items} columns={columns} getKey={(x) => x.number} renderCard={renderCard} caption={t('workspace.allWorkCaption')} />
       )}
       {items.data && items.data.totalCount > items.data.pageSize && (
-        <Pagination page={items.data.page} pageSize={items.data.pageSize} totalItems={items.data.totalCount} onChange={setPage} />
+        <Pagination page={items.data.page} pageSize={items.data.pageSize} totalItems={items.data.totalCount} onChange={list.setPage} />
       )}
     </SectionCard>
   );

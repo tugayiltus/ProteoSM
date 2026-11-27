@@ -26,7 +26,7 @@ describe('role-based home', () => {
     renderRoute('/');
     const main = await screen.findByRole('main');
     expect(await within(main).findByRole('link', { name: /Bana atanan/ })).toHaveAttribute('href', '/workspace/queue?queue=assigned_to_me');
-    expect(within(main).getByRole('link', { name: /SLA Riski/ })).toBeInTheDocument();
+    expect(within(main).getByRole('link', { name: /SLA riski/ })).toBeInTheDocument();
     await waitFor(() => expect(within(main).getAllByText('3 kayıt').length).toBeGreaterThan(0));
     const queues = listCalls(api).map((c) => new URL(c.url).searchParams.get('queue'));
     expect(queues).toEqual(expect.arrayContaining(['assigned_to_me', 'team', 'sla_risk']));

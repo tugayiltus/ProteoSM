@@ -16085,6 +16085,8 @@ export interface components {
             risk?: null | components["schemas"]["Level"];
             /** Format: date-time */
             windowStart?: null | string;
+            /** Format: date-time */
+            dueAt?: null | string;
         };
         /** @enum {unknown} */
         WorkTaskStatus: "open" | "in_progress" | "on_hold" | "completed" | "cancelled";

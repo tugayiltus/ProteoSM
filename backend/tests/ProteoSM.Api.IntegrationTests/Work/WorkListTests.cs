@@ -110,6 +110,24 @@ public sealed class WorkListTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Ticket_row_carries_the_nearest_due_time_of_its_running_sla_timers()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var incident = await TicketWorld.CreateIncidentAsync(world.Employee);
+        using (var claim = await world.Desk.PostAsync(TicketWorld.PathOf(incident, "claim"), new { version = TicketWorld.VersionOf(incident) }))
+        {
+            claim.EnsureSuccessStatusCode();
+        }
+
+        var detail = await TicketWorld.ReadAsync(world.Desk, TicketWorld.PathOf(incident));
+        var expected = detail.GetProperty("sla").EnumerateArray().Select(s => s.GetProperty("dueAt").GetDateTimeOffset()).Min();
+
+        var row = (await PageAsync(world.Desk, "?queue=assigned_to_me")).GetProperty("items")[0];
+
+        Assert.Equal(expected, row.GetProperty("dueAt").GetDateTimeOffset());
+    }
+
+    [Fact]
     public async Task Change_row_has_risk_and_window_but_no_priority()
     {
         var world = await TicketWorld.CreateAsync(factory);

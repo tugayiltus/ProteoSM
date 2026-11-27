@@ -119,7 +119,9 @@
       "priority": "Öncelik",
       "team": "Ekip",
       "assignee": "Atanan",
-      "updated": "Son işlem"
+      "updated": "Son işlem",
+      "kind": "Tür",
+      "due": "Son tarih"
     }
   },
   "problem": {
@@ -170,7 +172,8 @@
     "by": "{{name}}",
     "download": "İndir",
     "openTasksWarning": "Bu kayda bağlı {{count}} açık görev var. Kaydı yine de tamamlayabilirsiniz; görevler açık kalır.",
-    "monitoring": "İzleme"
+    "monitoring": "İzleme",
+    "noRelated": "İlgili kayıt yok."
   },
   "comment": {
     "public": "Yanıt",
@@ -182,7 +185,7 @@
   },
   "actions": {
     "title": "İşlemler",
-    "claim": "Üstlen",
+    "claim": "Üzerime al",
     "start": "Başla",
     "hold": "Beklet",
     "resume": "Devam et",
@@ -193,7 +196,8 @@
     "relatedRequest": "İlgili talep oluştur",
     "invalidate": "Onayı geçersiz kıl",
     "linkAsset": "Cihaz bağla",
-    "unlinkAsset": "Ayır"
+    "unlinkAsset": "Ayır",
+    "reply": "Yanıtla"
   },
   "fields": {
     "reason": "Neden",
@@ -222,8 +226,21 @@
     "mine": "Açtıklarım",
     "count": "{{count}} kayıt",
     "back": "İş listesine dön",
-    "sla_risk": "SLA Riski",
-    "all": "Tüm kayıtlar"
+    "sla_risk": "SLA riski",
+    "all": "Tüm kayıtlar",
+    "viewsLabel": "İş görünümleri",
+    "others": "Diğer kuyruklar",
+    "othersPanel": "Diğer kuyruklar",
+    "listTitles": {
+      "assigned_to_me": "Bana atanan arıza ve talepler",
+      "team": "Ekibimin arıza ve talepleri",
+      "unassigned": "Atanmamış arıza ve talepler",
+      "on_hold": "Beklemedeki arıza ve talepler",
+      "sla_risk": "SLA riski olan arıza ve talepler",
+      "mine": "Açtığım arıza ve talepler",
+      "all": "Tüm arıza ve talepler"
+    },
+    "countUnknown": "sayı alınamadı"
   },
   "approvals": {
     "title": "Onay bekleyenler",
@@ -282,7 +299,25 @@
       "minutes": "{{minutes}} dk"
     },
     "due": "Hedef: {{date}}",
-    "none": "SLA bilgisi yok"
+    "none": "SLA yok",
+    "loading": "SLA yükleniyor",
+    "error": "SLA bilgisi alınamadı",
+    "today": "Bugün {{time}}",
+    "tomorrow": "Yarın {{time}}",
+    "dueLine": "Son tarih {{date}}",
+    "headerMetrics": {
+      "first_response": "İlk yanıt SLA'sı",
+      "resolution": "Çözüm SLA'sı"
+    },
+    "headerStates": {
+      "running": "sürüyor",
+      "paused": "duraklatıldı",
+      "warned": "risk altında",
+      "breached": "ihlal edildi",
+      "met": "karşılandı",
+      "metBreached": "ihlal edildi",
+      "cancelled": "iptal edildi"
+    }
   },
   "rating": {
     "title": "Memnuniyet",

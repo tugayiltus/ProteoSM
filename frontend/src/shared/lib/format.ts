@@ -17,3 +17,19 @@ const dateFormatter = new Intl.DateTimeFormat(TURKISH_LOCALE, { dateStyle: 'medi
 
 /** Formats an ISO calendar date ("2027-12-31"); read as UTC midnight so no time zone moves it to another day. */
 export const formatDate = (isoDate: string): string => dateFormatter.format(new Date(`${isoDate}${MIDNIGHT_UTC}`));
+
+const timeFormatter = new Intl.DateTimeFormat(TURKISH_LOCALE, { timeStyle: 'short', timeZone: APP_TIME_ZONE });
+/** Calendar day in the display time zone, as a comparable key. */
+const dayKeyFormatter = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short', timeZone: APP_TIME_ZONE });
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+export const formatTime = (iso: string): string => timeFormatter.format(new Date(iso));
+
+/** How far a moment lies from today in the display time zone. */
+export function dayRelation(iso: string, now: Date = new Date()): 'today' | 'tomorrow' | 'other' {
+  const key = dayKeyFormatter.format(new Date(iso));
+  if (key === dayKeyFormatter.format(now)) {
+    return 'today';
+  }
+  return key === dayKeyFormatter.format(new Date(now.getTime() + MS_PER_DAY)) ? 'tomorrow' : 'other';
+}

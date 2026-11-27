@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
+import { dayRelation, formatDateTime, formatTime } from '../../shared/lib/format';
+
 import type { TicketSla } from './api';
 
 const SECONDS_PER_MINUTE = 60;
@@ -40,5 +42,24 @@ export function useFormatBusinessDuration() {
     const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
     const minutes = totalMinutes % MINUTES_PER_HOUR;
     return hours > 0 ? t('sla.duration.hoursMinutes', { hours, minutes }) : t('sla.duration.minutes', { minutes });
+  };
+}
+
+/**
+ * The timer that sets the date to watch: the running timer due first. Without a due date (paused) the first running timer
+ * stands in, and when every timer has stopped the first one tells the result. An empty list gives `null`.
+ */
+export function currentSla<T extends SlaEntry>(sla: readonly T[]): T | null {
+  const running = sla.filter((item) => item.result === null);
+  const due = running.filter((item) => item.dueAt !== null).sort((a, b) => Date.parse(a.dueAt ?? '') - Date.parse(b.dueAt ?? ''));
+  return due[0] ?? running[0] ?? sla[0] ?? null;
+}
+
+/** "Bugün 11:00", "Yarın 11:00" or the full date and time. */
+export function useFormatDue() {
+  const { t } = useTranslation('tickets');
+  return (iso: string, now: Date = new Date()) => {
+    const relation = dayRelation(iso, now);
+    return relation === 'other' ? formatDateTime(iso) : t(`sla.${relation}`, { time: formatTime(iso) });
   };
 }

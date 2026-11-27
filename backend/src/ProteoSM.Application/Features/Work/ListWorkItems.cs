@@ -25,9 +25,9 @@ public static class WorkItemKinds
     public const string Change = "change";
 }
 
-/// <summary>One row of İş listem: a ticket, a task or a change in one shape (ADR-0031).</summary>
+/// <summary>One row of İş listem: a ticket, a task or a change in one shape (ADR-0031). A ticket row carries the nearest due time of its running SLA timers in <c>DueAt</c>; a task has a <c>DueDate</c>; a change has a window.</summary>
 public sealed record WorkItemRow(
-    string Kind, string Number, string Title, string Status, Priority? Priority, DateOnly? DueDate, string TeamName, string? AssigneeName, DateTimeOffset UpdatedAt, Level? Risk = null, DateTimeOffset? WindowStart = null);
+    string Kind, string Number, string Title, string Status, Priority? Priority, DateOnly? DueDate, string TeamName, string? AssigneeName, DateTimeOffset UpdatedAt, Level? Risk = null, DateTimeOffset? WindowStart = null, DateTimeOffset? DueAt = null);
 
 public sealed record ListWorkItemsQuery(WorkQueue? Queue, int Page, int PageSize);
 
@@ -99,6 +99,7 @@ public sealed class ListWorkItemsHandler(IAppDbContext db, TicketScope tickets, 
                 t.UpdatedAt,
                 Team = db.Teams.Where(x => x.Id == t.TeamId).Select(x => x.Name).First(),
                 Assignee = db.Users.Where(u => u.Id == t.AssigneeId).Select(u => u.FirstName + NameSeparator + u.LastName).FirstOrDefault(),
+                SlaDueAt = db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null).Min(i => i.DueAt),
             })
             .ToListAsync(cancellationToken);
         var taskRows = await db.WorkTasks.AsNoTracking().Where(t => taskIds.Contains(t.Id))
@@ -131,7 +132,7 @@ public sealed class ListWorkItemsHandler(IAppDbContext db, TicketScope tickets, 
             .ToListAsync(cancellationToken);
         var rows = ticketRows.ToDictionary(
             t => t.Id,
-            t => new WorkItemRow(Snake(t.Kind), t.Number, t.Subject, Snake(t.Status), t.Priority, null, t.Team, t.Assignee, t.UpdatedAt));
+            t => new WorkItemRow(Snake(t.Kind), t.Number, t.Subject, Snake(t.Status), t.Priority, null, t.Team, t.Assignee, t.UpdatedAt, DueAt: t.SlaDueAt));
         foreach (var t in taskRows)
         {
             rows[t.Id] = new WorkItemRow(WorkItemKinds.Task, t.Number, t.Title, Snake(t.Status), t.Priority, t.DueDate, t.Team, t.Assignee, t.UpdatedAt);

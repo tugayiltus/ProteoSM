@@ -31,6 +31,7 @@ describe('İş listem tasks', () => {
     mockApi(routes() as never);
     const { user, router } = renderRoute('/workspace');
 
+    await user.click(await screen.findByRole('button', { name: 'Diğer kuyruklar' }));
     expect(await screen.findByRole('link', { name: /Görevlerim 2 görev/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Ekibimin görevleri 6 görev/ })).toBeInTheDocument();
     await user.click(screen.getByRole('link', { name: /Geciken görevler 1 görev/ }));
@@ -54,6 +55,7 @@ describe('İş listem tasks', () => {
     mockApi(routes() as never);
     const { user, router } = renderRoute('/workspace');
 
+    await user.click(await screen.findByRole('button', { name: 'Diğer kuyruklar' }));
     await user.click(await screen.findByRole('link', { name: /Değişikliklerim 3 değişiklik/ }));
 
     await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe('/changes?queue=mine'));

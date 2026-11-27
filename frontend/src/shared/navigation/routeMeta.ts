@@ -109,7 +109,7 @@ export const ROUTE_META: Record<RouteId, RouteMeta> = {
   newRequest: app({ path: ROUTES.newRequest, titleKey: 'routes.newRequest', parent: 'myTickets' }),
   ticketDetail: app({ path: `${ROUTES.tickets}/:number`, titleKey: 'routes.ticketDetail', parent: 'myTickets', dynamic: true }),
   workspace: app({ path: ROUTES.workspace, icon: 'task', titleKey: 'routes.workspace', parent: 'home', group: 'itOps', menu: { order: 10, roles: IT_STAFF_OR_ADMIN } }),
-  workspaceQueue: app({ path: ROUTES.workspaceQueue, icon: 'inbox', titleKey: 'routes.workspaceQueue', parent: 'workspace', group: 'itOps', menu: { order: 20, roles: IT_STAFF_OR_ADMIN } }),
+  workspaceQueue: app({ path: ROUTES.workspaceQueue, icon: 'inbox', titleKey: 'routes.workspaceQueue', parent: 'workspace', group: 'itOps' }),
   tasks: app({ path: ROUTES.tasks, icon: 'listChecks', titleKey: 'routes.tasks', parent: 'workspace', group: 'itOps', menu: { order: 25, roles: IT_STAFF_OR_ADMIN } }),
   taskDetail: app({ path: `${ROUTES.tasks}/:number`, titleKey: 'routes.taskDetail', parent: 'tasks', dynamic: true }),
   problems: app({ path: ROUTES.problems, icon: 'problems', titleKey: 'routes.problems', parent: 'workspace', group: 'changeOps', menu: { order: 26, roles: IT_STAFF_OR_ADMIN } }),

@@ -108,6 +108,19 @@ public sealed class TicketSlaTests(FakeClockApiFactory factory) : IClassFixture<
     }
 
     [Fact]
+    public async Task Risk_queue_lists_the_nearest_due_time_first()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var earlier = await TicketWorld.CreateIncidentAsync(world.Employee, "Önce açılan");
+        factory.Clock.Advance(TimeSpan.FromMinutes(OneHourMinutes));
+        var later = await TicketWorld.CreateIncidentAsync(world.Employee, "Sonra açılan");
+        factory.Clock.Advance(TimeSpan.FromMinutes(PastWarningMinutes));
+        await MonitorAsync();
+
+        Assert.Equal([TicketWorld.NumberOf(earlier), TicketWorld.NumberOf(later)], await RiskAsync(world.Desk));
+    }
+
+    [Fact]
     public async Task Risk_queue_keeps_paused_and_breached_only_instances_but_not_stopped_ones()
     {
         var world = await TicketWorld.CreateAsync(factory);
