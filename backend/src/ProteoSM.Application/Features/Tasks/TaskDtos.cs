@@ -1,0 +1,44 @@
+using ProteoSM.Domain.Changes;
+using ProteoSM.Domain.Tasks;
+using ProteoSM.Domain.Tickets;
+
+namespace ProteoSM.Application.Features.Tasks;
+
+/// <summary>
+/// The ticket a task is linked to. Outside the viewer's ticket scope only <see cref="Accessible"/> = false is
+/// shown, never the number or title (ADR-0031).
+/// </summary>
+public sealed record LinkedTicket(bool Accessible, string? Number, TicketKind? Kind, string? Title, TicketStatus? Status);
+
+/// <summary>
+/// The change a task belongs to and the task's phase. Without full or summary access to the change only
+/// <see cref="Accessible"/> = false and the phase are shown, never the number, title or status (ADR-0032).
+/// </summary>
+public sealed record LinkedChange(string? Number, string? Title, ChangeStatus? Status, ChangePhase Phase, bool Accessible);
+
+public sealed record TaskDetail(
+    Guid Id,
+    string Number,
+    string Title,
+    string? Description,
+    WorkTaskStatus Status,
+    HoldReason? HoldReason,
+    string? HoldNote,
+    Priority Priority,
+    DateOnly? DueDate,
+    bool IsOverdue,
+    Guid TeamId,
+    string TeamName,
+    Guid? AssigneeId,
+    string? AssigneeName,
+    Guid CreatedById,
+    string CreatedByName,
+    LinkedTicket? Link,
+    LinkedChange? ChangeLink,
+    string? ResultNote,
+    string? CancelReason,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset UpdatedAt,
+    DateTimeOffset? ClosedAt,
+    bool CanWork,
+    uint Version);

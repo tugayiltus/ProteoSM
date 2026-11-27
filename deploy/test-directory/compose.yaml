@@ -64,7 +64,7 @@ services:
     environment:
       SERVER_PORT: "8080"
       # The issuer id is the tenant id, so the issuer is http://127.0.0.1:8089/<tenant>. Tokens are shaped per client
-      # id; the client ids and claims must match OidcContractTests (backend/tests/Proteone.Api.IntegrationTests/Auth).
+      # id; the client ids and claims must match OidcContractTests (backend/tests/ProteoSM.Api.IntegrationTests/Auth).
       #   proteone-member          member of the configured tenant with an allowed domain: signs in
       #   proteone-other-tenant    tid of another tenant (9e2d4c6b-...): refused
       #   proteone-foreign-domain  configured tenant, sign-in name outside the allowed domains: refused

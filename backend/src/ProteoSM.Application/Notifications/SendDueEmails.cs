@@ -1,0 +1,185 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ProteoSM.Application.Abstractions;
+using ProteoSM.Application.Common;
+using ProteoSM.Domain.Notifications;
+using ProteoSM.Domain.Users;
+
+namespace ProteoSM.Application.Notifications;
+
+/// <summary>
+/// Worker-side use case behind <c>EmailSenderJob</c> (ADR-0014, ADR-0015, spec §3.2 step 3): claims a batch of due
+/// <see cref="EmailDelivery"/> rows, then sends each one — render an account-link body at send time when needed,
+/// hand it to <see cref="IEmailSender"/>, mark it sent or record the failure — in its own DI scope and its own
+/// <see cref="IAppDbContext"/>, one delivery per scope. Same reasoning as <c>DispatchOutboxHandler</c>: a fresh
+/// scope per delivery means one delivery's failure (a bad recipient, an unprotectable secret, an SMTP outage)
+/// cannot silently wipe another already-claimed delivery's own not-yet-saved success in the same batch, and
+/// <c>IEmailDeliveryClaimer</c> claims in id order, so a single permanently-failing row cannot starve the rest.
+/// </summary>
+public sealed class SendDueEmailsHandler(
+    IEmailDeliveryClaimer claimer,
+    IServiceScopeFactory scopes,
+    TimeProvider clock,
+    ILogger<SendDueEmailsHandler> logger)
+{
+    public const string RecipientEmailChangedError = "Recipient email address changed after this account email was queued.";
+
+    public async Task<int> HandleAsync(int batch, TimeSpan lease, CancellationToken cancellationToken)
+    {
+        // Two worker instances calling HandleAsync at once claim disjoint rows (ADR-0014); the claimed entities
+        // are only used for their id here, every actual read and write happens through a fresh per-delivery scope.
+        var claimed = await claimer.ClaimAsync(batch, lease, cancellationToken);
+        var processed = 0;
+        foreach (var delivery in claimed)
+        {
+            // The batch lease covers the whole batch and can run out before this row is reached (a slow SMTP
+            // server); another run may then have re-claimed and even sent it. Re-claim this one row first, with the
+            // lease value the batch claim wrote as the ownership token, and skip it when someone else now holds it.
+            var token = delivery.LockedUntil is { } batchToken
+                ? await claimer.ClaimOneAsync(delivery.Id, batchToken, lease, cancellationToken)
+                : null;
+            if (token is null)
+            {
+                logger.LogInformation("Email delivery {DeliveryId} was taken over by another run; skipping it.", delivery.Id);
+                continue;
+            }
+
+            await using var scope = scopes.CreateAsyncScope();
+            try
+            {
+                await SendOneAsync(scope.ServiceProvider, delivery.Id, cancellationToken);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                logger.LogError(exception, "Email delivery {DeliveryId} failed to send.", delivery.Id);
+                await TryRecordFailureAsync(delivery.Id, token.Value, exception.Message, cancellationToken);
+            }
+
+            processed++;
+        }
+
+        return processed;
+    }
+
+    /// <summary>
+    /// Records the failure in a fresh scope and <see cref="IAppDbContext"/> that reloads the row: the failed
+    /// attempt's context may still track unsaved Sent/cleared state (e.g. the final save threw after the transport
+    /// succeeded), and saving from it would persist that state. A failure to record is logged, never rethrown, so
+    /// the rest of the claimed batch is still processed; the row then stays leased and is re-claimed on expiry.
+    /// </summary>
+    private async Task TryRecordFailureAsync(Guid deliveryId, DateTimeOffset token, string error, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var failureScope = scopes.CreateAsyncScope();
+            await RecordFailureAsync(failureScope.ServiceProvider, deliveryId, token, error, cancellationToken);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogError(exception, "Recording the failure of email delivery {DeliveryId} failed.", deliveryId);
+        }
+    }
+
+    private async Task RecordFailureAsync(IServiceProvider scoped, Guid deliveryId, DateTimeOffset token, string error, CancellationToken cancellationToken)
+    {
+        var db = scoped.GetRequiredService<IAppDbContext>();
+        var delivery = await db.EmailDeliveries.SingleAsync(d => d.Id == deliveryId, cancellationToken);
+
+        // Only the run still holding the row may record a failure on it. Once another run has re-claimed it (its
+        // lease expired mid-send) or already marked it sent, recording here would turn a sent row back into a
+        // pending retry. The save below is xmin-guarded, so a takeover between this check and the save throws
+        // instead (and is logged by the caller) — the check and the write together form one conditional update.
+        if (delivery.Status != DeliveryStatus.Sending || delivery.LockedUntil != token)
+        {
+            logger.LogWarning("Email delivery {DeliveryId} is no longer held by this run; its failure is not recorded.", deliveryId);
+            return;
+        }
+
+        delivery.RecordFailure(error, clock.GetUtcNow());
+
+        // Only a *terminal* failure clears the account-link secret/body (spec §3.2 step 5): a still-retryable
+        // failure must leave the token in place, or the next retry could never render the link again.
+        if (delivery.Status == DeliveryStatus.Failed && IsAccountEvent(delivery.TemplateType))
+        {
+            var outboxEvent = await db.OutboxEvents.SingleAsync(e => e.Id == delivery.OutboxId, cancellationToken);
+            delivery.ClearBody();
+            outboxEvent.ClearProtectedSecret();
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task SendOneAsync(IServiceProvider scoped, Guid deliveryId, CancellationToken cancellationToken)
+    {
+        var db = scoped.GetRequiredService<IAppDbContext>();
+        var sender = scoped.GetRequiredService<IEmailSender>();
+
+        var delivery = await db.EmailDeliveries.SingleAsync(d => d.Id == deliveryId, cancellationToken);
+        delivery.MarkSending(clock.GetUtcNow());
+        await db.SaveChangesAsync(cancellationToken);
+
+        var isAccountEvent = IsAccountEvent(delivery.TemplateType);
+        var outboxEvent = isAccountEvent
+            ? await db.OutboxEvents.SingleAsync(e => e.Id == delivery.OutboxId, cancellationToken)
+            : null;
+        var recipient = await db.Users.AsNoTracking().SingleAsync(u => u.Id == delivery.RecipientUserId, cancellationToken);
+        if (isAccountEvent && recipient.NormalizedEmail != User.NormalizeEmail(delivery.RecipientEmail))
+        {
+            // The address changed after the account email was queued (its link was revoked with the change): never
+            // send a password link to the old address.
+            delivery.Abandon(RecipientEmailChangedError, clock.GetUtcNow());
+            delivery.ClearBody();
+            outboxEvent!.ClearProtectedSecret();
+            await db.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        var body = isAccountEvent
+            ? await RenderAccountBodyAsync(scoped, db, delivery, outboxEvent!, recipient, cancellationToken)
+            : delivery.Body ?? string.Empty;
+
+        await sender.SendAsync(new EmailMessage(delivery.RecipientEmail, FullNameOf(recipient), delivery.Subject, body), cancellationToken);
+
+        delivery.MarkSent(clock.GetUtcNow());
+        if (isAccountEvent)
+        {
+            delivery.ClearBody();
+            outboxEvent!.ClearProtectedSecret();
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Account-link bodies render at send time from the outbox event's <see cref="OutboxEvent.ProtectedSecret"/>
+    /// (ADR-0015): nothing before this point ever sees the token. The other variables (<c>recipientName</c>,
+    /// <c>expiresAt</c>) come from <see cref="NotificationContextLoader"/>, like every other event's.
+    /// </summary>
+    private static async Task<string> RenderAccountBodyAsync(
+        IServiceProvider scoped, IAppDbContext db, EmailDelivery delivery, OutboxEvent outboxEvent, User recipient, CancellationToken cancellationToken)
+    {
+        var protector = scoped.GetRequiredService<IAccountLinkProtector>();
+        var appOptions = scoped.GetRequiredService<IOptionsMonitor<AppOptions>>();
+
+        var secret = outboxEvent.ProtectedSecret
+            ?? throw new InvalidOperationException("Account email delivery has no link token left to render.");
+        var token = protector.Unprotect(secret);
+        var actionUrl = AccountLinkUrl.Build(appOptions.CurrentValue.PublicBaseUrl, token);
+
+        var template = await db.EmailTemplates.AsNoTracking().SingleAsync(t => t.EventType == delivery.TemplateType, cancellationToken);
+        var context = scoped.GetRequiredService<NotificationContextLoader>();
+        var loaded = await context.LoadAsync(outboxEvent, new Recipient(recipient.Id, delivery.RecipientEmail, FullNameOf(recipient)), cancellationToken);
+        var values = new Dictionary<string, string>(loaded, StringComparer.Ordinal)
+        {
+            [TemplateVariables.ActionUrl] = actionUrl,
+        };
+        return TemplateRenderer.Render(template.Body, values);
+    }
+
+    private static bool IsAccountEvent(string templateType) =>
+        templateType is NotificationEventTypes.AccountActivation or NotificationEventTypes.PasswordReset;
+
+    private static string FullNameOf(User user) => $"{user.FirstName} {user.LastName}";
+}

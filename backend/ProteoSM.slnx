@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ProteoSM.Api/ProteoSM.Api.csproj" />
+    <Project Path="src/ProteoSM.Application/ProteoSM.Application.csproj" />
+    <Project Path="src/ProteoSM.Domain/ProteoSM.Domain.csproj" />
+    <Project Path="src/ProteoSM.Infrastructure/ProteoSM.Infrastructure.csproj" />
+    <Project Path="src/ProteoSM.Worker/ProteoSM.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ProteoSM.Api.IntegrationTests/ProteoSM.Api.IntegrationTests.csproj" />
+    <Project Path="tests/ProteoSM.Application.Tests/ProteoSM.Application.Tests.csproj" />
+    <Project Path="tests/ProteoSM.ArchitectureTests/ProteoSM.ArchitectureTests.csproj" />
+    <Project Path="tests/ProteoSM.Domain.Tests/ProteoSM.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

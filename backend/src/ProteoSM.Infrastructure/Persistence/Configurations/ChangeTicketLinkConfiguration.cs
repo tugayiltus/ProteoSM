@@ -1,0 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProteoSM.Domain.Changes;
+using ProteoSM.Domain.Tickets;
+using ProteoSM.Domain.Users;
+using ProteoSM.Infrastructure.Persistence.Converters;
+
+namespace ProteoSM.Infrastructure.Persistence.Configurations;
+
+internal sealed class ChangeTicketLinkConfiguration : IEntityTypeConfiguration<ChangeTicketLink>
+{
+    public void Configure(EntityTypeBuilder<ChangeTicketLink> builder)
+    {
+        builder.ToTable("change_ticket_links", table => table.HasCheckConstraint("ck_change_ticket_links_kind", SnakeCaseEnumConversion<ChangeTicketLinkKind>.CheckSql("kind")));
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.Id).ValueGeneratedNever();
+        builder.Property(l => l.Kind).HasEnumName();
+        builder.HasIndex(l => new { l.ChangeId, l.TicketId }).IsUnique().HasDatabaseName("ux_change_ticket_links_change_ticket");
+        builder.HasIndex(l => l.TicketId).HasDatabaseName("ix_change_ticket_links_ticket_id");
+        builder.HasOne<ChangeRequest>().WithMany().HasForeignKey(l => l.ChangeId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<Ticket>().WithMany().HasForeignKey(l => l.TicketId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<User>().WithMany().HasForeignKey(l => l.CreatedById).OnDelete(DeleteBehavior.Restrict);
+    }
+}

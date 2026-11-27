@@ -33,6 +33,6 @@ if [[ "${CI:-}" == "true" ]]; then
 fi
 
 dotnet user-secrets set "ConnectionStrings:Default" "Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER" \
-  --project backend/src/Proteone.Api >/dev/null
+  --project backend/src/ProteoSM.Api >/dev/null
 
 echo "Database $DB_NAME is ready on $DB_HOST (role $DB_USER)."

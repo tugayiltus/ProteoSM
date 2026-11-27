@@ -5,8 +5,8 @@ PostgreSQL 17 database (`tools/test.sh`); E2E specs run on a fresh `proteone_e2e
 width (`tools/e2e.sh`).
 
 - Test names are `Class.Method` (backend, xUnit) or `file › test title` (frontend Vitest / Playwright).
-- Project prefixes: `Api` = `backend/tests/Proteone.Api.IntegrationTests`, `App` = `backend/tests/Proteone.Application.Tests`,
-  `Dom` = `backend/tests/Proteone.Domain.Tests`, `e2e` = `frontend/e2e`, `fe` = `frontend/src`.
+- Project prefixes: `Api` = `backend/tests/ProteoSM.Api.IntegrationTests`, `App` = `backend/tests/ProteoSM.Application.Tests`,
+  `Dom` = `backend/tests/ProteoSM.Domain.Tests`, `e2e` = `frontend/e2e`, `fe` = `frontend/src`.
 - Commit column: the commit that added the evidence. `5163bfe` is the branch head the pre-existing evidence was verified
   on; `2897b34` (`test: acceptance evidence for the first release`) added the gap tests marked "Gap". Every gap test passed
   on first run; each was proven meaningful by temporarily breaking the production code it guards (named in the evidence),

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="coverlet.MTP" />
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ProteoSM.Domain\ProteoSM.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ProteoSM.Application\ProteoSM.Application.csproj" />
+    <ProjectReference Include="..\..\src\ProteoSM.Infrastructure\ProteoSM.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ProteoSM.Api\ProteoSM.Api.csproj" />
+    <ProjectReference Include="..\..\src\ProteoSM.Worker\ProteoSM.Worker.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

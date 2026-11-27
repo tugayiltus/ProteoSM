@@ -1,0 +1,189 @@
+namespace ProteoSM.Domain.Notifications;
+
+/// <summary>
+/// Transactional outbox row (ADR-0015): a handler adds one in the same save as its change, through
+/// <c>INotificationOutbox</c>; the worker's <c>OutboxDispatcher</c> later resolves recipients, renders email and
+/// moves it to <see cref="OutboxStatus.Dispatched"/> or <see cref="OutboxStatus.Skipped"/>.
+/// </summary>
+public sealed class OutboxEvent
+{
+    public const int EventTypeMaxLength = 50;
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding the acting user's id (the person who caused the event), so a later
+    /// dispatcher can exclude them from a recipient list where spec §3.3 says "not sent to: the actor/author".
+    /// Written by <c>NotificationOutbox</c> on every event; read back with <c>JsonDocument</c>, not deserialized
+    /// into a typed model, since the rest of the payload is event-specific.
+    /// </summary>
+    public const string ActorIdKey = "actorId";
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding which SLA metric an <c>sla_warning</c>/<c>sla_breached</c> event is about
+    /// (e.g. first response, resolution). Written by the SLA monitor (a later task); <c>NotificationContextLoader</c>
+    /// reads it back to fill the <c>slaMetric</c> template variable.
+    /// </summary>
+    public const string SlaMetricKey = "metric";
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding that metric's due time (ISO 8601), read back to fill the <c>dueAt</c>
+    /// template variable.
+    /// </summary>
+    public const string SlaDueAtKey = "dueAt";
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding an account-link event's expiry (ISO 8601), read back to fill the
+    /// <c>expiresAt</c> template variable. The expiry is not secret, so it lives in the payload; only the token
+    /// itself goes into <see cref="ProtectedSecret"/> (ADR-0015).
+    /// </summary>
+    public const string LinkExpiresAtKey = "expiresAt";
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding the normalized email of an <see cref="InternalEventTypes.PasswordResetRequested"/>
+    /// event, which the dispatcher resolves to an account.
+    /// </summary>
+    public const string RequestedEmailKey = "email";
+
+    /// <summary>
+    /// <see cref="Payload"/> key holding the one admin a <c>change_approval_requested</c> event is for (the admin who
+    /// approved a plan that was then voided); without it the event goes to every eligible admin.
+    /// </summary>
+    public const string ApproverIdKey = "approverId";
+
+    /// <summary>change_approval_decided: the decided approval row, so the mail shows that row's outcome and reason.</summary>
+    public const string ApprovalIdKey = "approvalId";
+
+    /// <summary>Dispatch attempts stop retrying once <see cref="Attempts"/> reaches this (spec: retry plan, max 5 attempts).</summary>
+    public const int MaxAttempts = RetryBackoff.MaxAttempts;
+
+    /// <summary>
+    /// Data Protection purpose string for <see cref="ProtectedSecret"/> (ADR-0015, ADR-0017): <c>PasswordTokenIssuer</c> protects an
+    /// account-link token with a protector created from this purpose; <c>EmailSender</c> unprotects it
+    /// at send time with a protector created from the same purpose. One named constant so both sides can never drift.
+    /// </summary>
+    public const string ProtectedSecretPurpose = "Tgysm.Notifications.AccountLinkToken";
+
+    private const string RoundTripDateFormat = "O";
+
+    private OutboxEvent()
+    {
+    }
+
+    public Guid Id { get; private init; } = Guid.CreateVersion7();
+
+    /// <summary>One of <see cref="NotificationEventTypes"/>.</summary>
+    public string EventType { get; private init; } = string.Empty;
+
+    public Guid? TicketId { get; private init; }
+
+    /// <summary>One of <see cref="OutboxSubjectTypes"/>, or null for account events (ADR-0031).</summary>
+    public string? SubjectType { get; private init; }
+
+    public Guid? SubjectId { get; private init; }
+
+    /// <summary>The user this event is about (e.g. the new assignee, the reply's author); recipients are resolved separately.</summary>
+    public Guid? UserId { get; private init; }
+
+    /// <summary>Ids and reason codes only (jsonb); never subject or resolution text.</summary>
+    public string Payload { get; private set; } = "{}";
+
+    /// <summary>Data Protection–encrypted account-link token; account events only.</summary>
+    public string? ProtectedSecret { get; private set; }
+
+    public OutboxStatus Status { get; private set; } = OutboxStatus.Pending;
+
+    public DateTimeOffset CreatedAt { get; private init; }
+
+    /// <summary>Set by <c>RowLease</c> while the dispatcher holds this row; cleared implicitly once it moves out of <see cref="OutboxStatus.Pending"/>.</summary>
+    public DateTimeOffset? LockedUntil { get; private set; }
+
+    /// <summary>When the dispatcher moved this event to <see cref="OutboxStatus.Dispatched"/> or <see cref="OutboxStatus.Skipped"/>.</summary>
+    public DateTimeOffset? DispatchedAt { get; private set; }
+
+    /// <summary>How many dispatch attempts have failed for this event.</summary>
+    public int Attempts { get; private set; }
+
+    /// <summary>The most recent dispatch failure's message, truncated (never a secret: dispatch never touches <see cref="ProtectedSecret"/>).</summary>
+    public string? LastError { get; private set; }
+
+    public static OutboxEvent Create(string eventType, Guid? ticketId, Guid? userId, string payload, string? protectedSecret, DateTimeOffset now) =>
+        new()
+        {
+            EventType = eventType,
+            TicketId = ticketId,
+            SubjectType = ticketId is null ? null : OutboxSubjectTypes.Ticket,
+            SubjectId = ticketId,
+            UserId = userId,
+            Payload = payload,
+            ProtectedSecret = protectedSecret,
+            CreatedAt = now,
+        };
+
+    /// <summary>An event about a record that is not a ticket, such as a task; <see cref="TicketId"/> stays null.</summary>
+    public static OutboxEvent CreateForSubject(string eventType, string subjectType, Guid subjectId, Guid? userId, string payload, DateTimeOffset now) =>
+        new()
+        {
+            EventType = eventType,
+            SubjectType = subjectType,
+            SubjectId = subjectId,
+            UserId = userId,
+            Payload = payload,
+            CreatedAt = now,
+        };
+
+    /// <summary>The dispatcher resolved at least one recipient and inserted deliveries for it (spec §3.2 step 2).</summary>
+    public void MarkDispatched(DateTimeOffset now)
+    {
+        Status = OutboxStatus.Dispatched;
+        DispatchedAt = now;
+    }
+
+    /// <summary>The dispatcher found no recipient (none resolved, or every candidate was inactive); nothing to send.</summary>
+    public void MarkSkipped(DateTimeOffset now)
+    {
+        Status = OutboxStatus.Skipped;
+        DispatchedAt = now;
+    }
+
+    /// <summary>
+    /// Records one failed dispatch attempt: still-pending rows back off per <see cref="BackoffIntervals"/> so the
+    /// dispatcher's next batch skips them until <see cref="LockedUntil"/> passes; the <see cref="MaxAttempts"/>-th
+    /// failure moves the event to <see cref="OutboxStatus.Failed"/> instead, so one bad event can never blockade a
+    /// batch forever (the claim query orders by id, otherwise re-claiming the same never-clearing row every run).
+    /// </summary>
+    public void RecordFailure(string error, DateTimeOffset now)
+    {
+        Attempts++;
+        LastError = error.Length > EmailDelivery.LastErrorMaxLength ? error[..EmailDelivery.LastErrorMaxLength] : error;
+
+        var next = RetryBackoff.NextAttemptAt(Attempts, now);
+        if (next is null)
+        {
+            Status = OutboxStatus.Failed;
+            LockedUntil = null;
+        }
+        else
+        {
+            LockedUntil = next;
+        }
+    }
+
+    /// <summary>
+    /// Called once the dispatcher's downstream <see cref="EmailDelivery"/> for this account-link event has reached
+    /// <c>Sent</c> or <c>Failed</c> (spec §3.2 step 5): the token is no longer needed and must not sit in the row
+    /// any longer than sending required.
+    /// </summary>
+    public void ClearProtectedSecret() => ProtectedSecret = null;
+
+    /// <summary>
+    /// Puts a freshly issued account-link token on this event for an admin retry of its failed delivery (final
+    /// review F4): the new protected secret replaces the cleared one and the payload's <see cref="LinkExpiresAtKey"/>
+    /// moves to the new token's expiry; every other payload key is kept.
+    /// </summary>
+    public void RenewAccountLink(string protectedSecret, DateTimeOffset expiresAt)
+    {
+        var payload = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(Payload) ?? [];
+        payload[LinkExpiresAtKey] = expiresAt.ToString(RoundTripDateFormat, System.Globalization.CultureInfo.InvariantCulture);
+        Payload = System.Text.Json.JsonSerializer.Serialize(payload);
+        ProtectedSecret = protectedSecret;
+    }
+}

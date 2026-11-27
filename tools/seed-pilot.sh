@@ -88,4 +88,4 @@ fi
 
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
 export ASPNETCORE_ENVIRONMENT="Development"
-dotnet run --project backend/src/Proteone.Api --no-launch-profile -v quiet -- "$COMMAND" "${seed_args[@]+"${seed_args[@]}"}"
+dotnet run --project backend/src/ProteoSM.Api --no-launch-profile -v quiet -- "$COMMAND" "${seed_args[@]+"${seed_args[@]}"}"

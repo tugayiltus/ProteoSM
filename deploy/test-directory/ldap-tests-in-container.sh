@@ -11,7 +11,7 @@ readonly CA_TARGET=/usr/local/share/ca-certificates/proteone-test-directory-ca.c
 readonly REPO=/repo
 readonly WORK=/work
 # Only the project with the contract class: other test projects would run zero tests and fail with exit code 8.
-readonly TEST_PROJECT=backend/tests/Proteone.Api.IntegrationTests
+readonly TEST_PROJECT=backend/tests/ProteoSM.Api.IntegrationTests
 
 if [[ $# -eq 0 ]]; then
   echo "usage: ldap-tests-in-container.sh <dotnet test filter options, e.g. --filter-class Ns.Class>" >&2

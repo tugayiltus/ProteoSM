@@ -9,4 +9,4 @@ readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
 
 tools/migrate.sh
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
-dotnet run --project backend/src/Proteone.Api --no-launch-profile -- setup-admin "$@"
+dotnet run --project backend/src/ProteoSM.Api --no-launch-profile -- setup-admin "$@"

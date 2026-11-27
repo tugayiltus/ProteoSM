@@ -13,8 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:11.0 AS dotnet-build
 WORKDIR /src
 COPY global.json ./
 COPY backend/ backend/
-RUN dotnet publish backend/src/Proteone.Api -c Release -o /out/api --nologo \
- && dotnet publish backend/src/Proteone.Worker -c Release -o /out/worker --nologo
+RUN dotnet publish backend/src/ProteoSM.Api -c Release -o /out/api --nologo \
+ && dotnet publish backend/src/ProteoSM.Worker -c Release -o /out/worker --nologo
 
 # Shared data folders: file store and Data Protection key ring, owned by the non-root app user.
 # The key folder is private to that user (0700): the keys decrypt account-link tokens.
@@ -36,7 +36,7 @@ COPY --from=dotnet-build /out/api ./
 COPY --from=frontend-build /src/frontend/dist ./wwwroot
 USER $APP_UID
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "Proteone.Api.dll"]
+ENTRYPOINT ["dotnet", "ProteoSM.Api.dll"]
 
 # The Worker references Infrastructure, which uses ASP.NET Core Data Protection, so it needs the ASP.NET runtime too.
 FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS worker
@@ -54,4 +54,4 @@ RUN apt-get update \
  && chmod 0700 /data/keys
 COPY --from=dotnet-build /out/worker ./
 USER $APP_UID
-ENTRYPOINT ["dotnet", "Proteone.Worker.dll"]
+ENTRYPOINT ["dotnet", "ProteoSM.Worker.dll"]

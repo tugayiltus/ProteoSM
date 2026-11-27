@@ -1,0 +1,84 @@
+using ProteoSM.Application.Abstractions;
+using ProteoSM.Application.Common;
+using ProteoSM.Application.Reports.Metrics;
+using ProteoSM.Domain.Assets;
+using ProteoSM.Domain.Changes;
+using ProteoSM.Domain.Licences;
+using ProteoSM.Domain.Problems;
+using ProteoSM.Domain.Reports;
+using ProteoSM.Domain.Tasks;
+using ProteoSM.Domain.Tickets;
+
+namespace ProteoSM.Application.Reports;
+
+/// <summary>The scoped, filtered tickets of one ticket metric with the context it computes in.</summary>
+public sealed record TicketPipeline(IQueryable<Ticket> Filtered, ReportContext Context, ReportFilter Effective);
+
+/// <summary>The scoped, filtered assets of an asset report with the context it computes in.</summary>
+public sealed record AssetPipeline(IQueryable<Asset> Filtered, AssetReportContext Context);
+
+/// <summary>The scoped, filtered changes of one change metric with the context it computes in.</summary>
+public sealed record ChangePipeline(IQueryable<ChangeRequest> Filtered, ReportContext Context);
+
+/// <summary>The scoped, filtered problems of one problem metric with the context it computes in.</summary>
+public sealed record ProblemPipeline(IQueryable<Problem> Filtered, ReportContext Context);
+
+/// <summary>The scoped, filtered licences of the licence report with the context it computes in.</summary>
+public sealed record LicencePipeline(IQueryable<Licence> Filtered, LicenceReportContext Context);
+
+/// <summary>The scoped, filtered tasks of one task metric with the context it computes in.</summary>
+public sealed record TaskPipeline(IQueryable<WorkTask> Filtered, TaskReportContext Context);
+
+/// <summary>
+/// The one path from a viewer and a filter to the rows a metric reads: scope, effective filter, filter application, window. The
+/// report figures, the drill-down and the export all go through it, so they cannot disagree about which rows are in play.
+/// </summary>
+public static class ReportPipeline
+{
+    /// <summary>
+    /// The tickets <paramref name="metric"/> reads. A metric that applies the team filter itself gets the tickets without it and the
+    /// team in its context; the viewer's scope (current team for IT staff) always applies.
+    /// </summary>
+    public static TicketPipeline Tickets(
+        ReportScope scope, TicketReportSource source, IAppDbContext db, ReportViewer viewer, ReportName report, ReportFilter filter, ReportMetric metric, DateTimeOffset now)
+    {
+        var effective = ReportCatalog.EffectiveFilter(report, filter);
+        var ticketFilter = metric.AppliesTeamFilter ? effective with { TeamId = null } : effective;
+        var filtered = source.Apply(scope.TicketsFor(viewer), ticketFilter, metric.DateBasis);
+        var teamId = metric.AppliesTeamFilter ? effective.TeamId : null;
+        return new TicketPipeline(filtered, new ReportContext(db, now, source.Window(effective), teamId), effective);
+    }
+
+    public static ChangePipeline Changes(
+        ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
+    {
+        var window = filter.Window(companyClock.Zone);
+        return new ChangePipeline(ChangeReportSource.Apply(scope.ChangesFor(viewer), filter, basis, window), new ReportContext(db, now, window));
+    }
+
+    public static TaskPipeline Tasks(
+        ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
+    {
+        var window = filter.Window(companyClock.Zone);
+        var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(now, companyClock.Zone).DateTime);
+        return new TaskPipeline(TaskReportSource.Apply(scope.TasksFor(viewer), filter, basis, window), new TaskReportContext(db, now, window, today));
+    }
+
+    public static ProblemPipeline Problems(
+        ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, ReportDateBasis basis, DateTimeOffset now)
+    {
+        var window = filter.Window(companyClock.Zone);
+        return new ProblemPipeline(ProblemReportSource.Apply(scope.ProblemsFor(viewer), filter, basis, window, db), new ReportContext(db, now, window));
+    }
+
+    /// <summary>Only the owner team narrows the licence report; it has no period.</summary>
+    public static LicencePipeline Licences(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now)
+    {
+        var licences = scope.LicencesFor(viewer);
+        return new LicencePipeline(
+            filter.TeamId is { } teamId ? licences.Where(l => l.OwnerTeamId == teamId) : licences, new LicenceReportContext(db, companyClock.DateOf(now)));
+    }
+
+    public static AssetPipeline Assets(ReportScope scope, IAppDbContext db, ICompanyClock companyClock, ReportViewer viewer, ReportFilter filter, DateTimeOffset now, int warrantyWindowDays) =>
+        new(AssetReportSource.Apply(scope.AssetsFor(viewer), filter), AssetReportContext.Create(db, filter, now, companyClock.Zone, warrantyWindowDays));
+}

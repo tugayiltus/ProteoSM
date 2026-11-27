@@ -22,8 +22,8 @@ readonly API_URL="http://localhost:$API_PORT"
 readonly PREVIEW_URL="http://localhost:$PREVIEW_PORT"
 readonly READY_PATH="/api/v1/auth/csrf"
 readonly READY_TIMEOUT_SECONDS=60
-readonly API_BIN_DIR="backend/src/Proteone.Api/bin/Release/net11.0"
-readonly WORKER_BIN_DIR="backend/src/Proteone.Worker/bin/Release/net11.0"
+readonly API_BIN_DIR="backend/src/ProteoSM.Api/bin/Release/net11.0"
+readonly WORKER_BIN_DIR="backend/src/ProteoSM.Worker/bin/Release/net11.0"
 # Short job intervals, as in tools/e2e.sh, so every job has reported before the Sistem page is shot.
 readonly JOB_INTERVAL_SECONDS=2
 readonly WORKER_JOB_COUNT=5
@@ -74,8 +74,8 @@ wait_for() {
 }
 
 mkdir -p "$LOG_DIR"
-dotnet build backend/src/Proteone.Api -c Release --nologo -v quiet
-dotnet build backend/src/Proteone.Worker -c Release --nologo -v quiet
+dotnet build backend/src/ProteoSM.Api -c Release --nologo -v quiet
+dotnet build backend/src/ProteoSM.Worker -c Release --nologo -v quiet
 (cd frontend && npm run build >/dev/null)
 
 export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
@@ -89,11 +89,11 @@ export Worker__Jobs__EmailSender__IntervalSeconds="$JOB_INTERVAL_SECONDS"
 export Worker__Jobs__SlaMonitor__IntervalSeconds="$JOB_INTERVAL_SECONDS"
 export Worker__Jobs__ExportRunner__IntervalSeconds="$JOB_INTERVAL_SECONDS"
 export Worker__Jobs__Cleanup__IntervalSeconds="$JOB_INTERVAL_SECONDS"
-(cd "$API_BIN_DIR" && exec dotnet Proteone.Api.dll --urls "$API_URL") >"$LOG_DIR/api-guide.log" 2>&1 &
+(cd "$API_BIN_DIR" && exec dotnet ProteoSM.Api.dll --urls "$API_URL") >"$LOG_DIR/api-guide.log" 2>&1 &
 api_pid=$!
 (cd frontend && exec env PROTEONE_API_URL="$API_URL" node node_modules/vite/bin/vite.js preview) >"$LOG_DIR/preview-guide.log" 2>&1 &
 preview_pid=$!
-(cd "$WORKER_BIN_DIR" && exec dotnet Proteone.Worker.dll) >"$LOG_DIR/worker-guide.log" 2>&1 &
+(cd "$WORKER_BIN_DIR" && exec dotnet ProteoSM.Worker.dll) >"$LOG_DIR/worker-guide.log" 2>&1 &
 worker_pid=$!
 wait_for "$API_URL$READY_PATH" "$api_pid"
 wait_for "$PREVIEW_URL$READY_PATH" "$preview_pid"

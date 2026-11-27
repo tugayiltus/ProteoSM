@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-readonly OPENAPI_FILE="openapi/Proteone.Api.json"
+readonly OPENAPI_FILE="openapi/ProteoSM.Api.json"
 readonly SCHEMA_FILE="src/shared/api/schema.d.ts"
 
 mkdir -p frontend/openapi
@@ -16,7 +16,7 @@ KEYS_ROOT="$(mktemp -d)"
 trap 'rm -rf "$FILES_ROOT" "$KEYS_ROOT"' EXIT
 export Files__RootPath="$FILES_ROOT"
 export DataProtection__KeysPath="$KEYS_ROOT"
-dotnet build backend/src/Proteone.Api --nologo -p:OpenApiGenerateDocuments=true
+dotnet build backend/src/ProteoSM.Api --nologo -p:OpenApiGenerateDocuments=true
 cd frontend
 npx openapi-typescript "$OPENAPI_FILE" -o "$SCHEMA_FILE"
 echo "Generated $OPENAPI_FILE and $SCHEMA_FILE"
