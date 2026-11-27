@@ -237,9 +237,18 @@ public sealed class ReportRowSource(ReportScope scope, TicketReportSource source
         IQueryable<Problem> rows;
         try
         {
-            rows = part == ReportDrillPart.Denominator
-                ? bucket is null ? metric.DenominatorRows(pipeline.Filtered, pipeline.Context) ?? throw Invalid(PartField) : throw Invalid(BucketField)
-                : bucket is null ? metric.Rows(pipeline.Filtered, pipeline.Context) : metric.BucketRows(pipeline.Filtered, pipeline.Context, bucket);
+            if (part == ReportDrillPart.Denominator)
+            {
+                rows = metric.DenominatorRows(pipeline.Filtered, pipeline.Context) ?? throw Invalid(PartField);
+                if (bucket is not null)
+                {
+                    throw Invalid(BucketField);
+                }
+            }
+            else
+            {
+                rows = bucket is null ? metric.Rows(pipeline.Filtered, pipeline.Context) : metric.BucketRows(pipeline.Filtered, pipeline.Context, bucket);
+            }
         }
         catch (NotSupportedException)
         {

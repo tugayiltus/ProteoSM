@@ -5,10 +5,22 @@ import { mockApi } from '../../test/mockApi';
 import { PROBLEM, PROBLEM_ROW, problemRoutes } from '../../test/problemData';
 import { renderRoute } from '../../test/renderRoute';
 import { chooseOption, findSelect } from '../../test/select';
+import { stubPhoneViewport } from '../../test/viewport';
 
 const PAGE = { items: [PROBLEM_ROW], page: 1, pageSize: 20, totalCount: 1 };
 
 describe('ProblemListPage', () => {
+  it('phone_card_shows_sla_line', async () => {
+    stubPhoneViewport();
+    const sla = { metric: 'known_error', dueAt: '2026-11-24T09:00:00Z', remainingSeconds: 9000, isPaused: false, isWarned: false, isBreached: false, result: null };
+    mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: { ...PAGE, items: [{ ...PROBLEM_ROW, sla }] } } }) as never);
+    renderRoute('/problems');
+
+    expect(await screen.findByText('Bilinen hataya kadar:')).toBeInTheDocument();
+    expect(screen.getByText('Kalan 2 sa 30 dk')).toBeInTheDocument();
+    expect(screen.queryByRole('table', { name: 'Problem listesi' })).not.toBeInTheDocument();
+  });
+
   it('list_shows_sla_state', async () => {
     const sla = { metric: 'known_error', dueAt: '2026-11-24T09:00:00Z', remainingSeconds: -3660, isPaused: false, isWarned: true, isBreached: true, result: null };
     const withSla = { ...PAGE, items: [{ ...PROBLEM_ROW, sla }, { ...PROBLEM_ROW, id: 'prb-2', number: 'PRB-2026-000002', sla: null }] };

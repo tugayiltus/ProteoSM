@@ -264,6 +264,14 @@ public sealed class ProblemReportTests(ApiFactory factory) : IAsyncLifetime
         var query = $"metric={ProblemMetrics.KnownErrorSlaCompliance}&{March}&pageSize=100";
         Assert.Equal([met.Number], await DrilledNumbersAsync(admin, query));
         Assert.Equal([met.Number, breached.Number], await DrilledNumbersAsync(admin, $"{query}&part=denominator"));
+
+        using var export = await admin.GetAsync($"{ReportsPath}/export?{query}");
+        Assert.Equal(HttpStatusCode.OK, export.StatusCode);
+        using var workbook = new XLWorkbook(new MemoryStream(await export.Content.ReadAsByteArrayAsync(Ct)));
+        var sheet = workbook.Worksheet(RecordsSheet);
+        Assert.Equal(ExpectedHeaders, sheet.Row(1).CellsUsed().Select(c => c.GetString()));
+        Assert.Equal(2, sheet.LastRowUsed()!.RowNumber()); // header plus the one met problem
+        Assert.Equal(met.Number, sheet.Cell(2, 1).GetString());
     }
 
     private async Task<List<string?>> DrilledNumbersAsync(ApiClient admin, string query)

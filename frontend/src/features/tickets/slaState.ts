@@ -6,7 +6,10 @@ const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
 
 /** One timer as the badge shows it: a ticket timer, or the known-error timer of a problem (its `metric` is `known_error`). */
-export type SlaEntry = Omit<TicketSla, 'metric'> & { metric: TicketSla['metric'] | 'known_error' };
+/** Metric name of the known-error timer of a problem. */
+export const KNOWN_ERROR_METRIC = 'known_error';
+
+export type SlaEntry = Omit<TicketSla, 'metric'> & { metric: TicketSla['metric'] | typeof KNOWN_ERROR_METRIC };
 
 export type SlaState = 'running' | 'paused' | 'warned' | 'breached' | 'met' | 'metBreached' | 'cancelled';
 

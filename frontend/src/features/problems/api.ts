@@ -6,7 +6,7 @@ import { useReloadOnConflict } from '../../shared/api/useReloadOnConflict';
 import { ROUTES } from '../../shared/routes';
 import { changeKeys } from '../changes/api';
 import { ticketKeys } from '../tickets/api';
-import type { SlaEntry } from '../tickets/slaState';
+import { KNOWN_ERROR_METRIC, type SlaEntry } from '../tickets/slaState';
 
 type Schemas = components['schemas'];
 export type ProblemDetail = Schemas['ProblemDetail'];
@@ -23,7 +23,7 @@ export type ProblemQueue = 'mine' | 'team' | 'team_open' | 'open' | 'known_error
 
 /** The API names the timer by a plain string; its only value is the known-error timer, which the badge knows by name. */
 export function toSlaEntry(sla: ProblemSla): SlaEntry {
-  return { ...sla, metric: 'known_error' };
+  return { ...sla, metric: KNOWN_ERROR_METRIC };
 }
 
 /** Queues offered in the list filter. */
