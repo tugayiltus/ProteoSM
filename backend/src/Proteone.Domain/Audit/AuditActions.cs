@@ -129,6 +129,12 @@ public static class AuditActions
     public const string ApprovalVoided = "approvals.voided";
 
     public const string EmailTemplateUpdated = "email_templates.updated";
+
+    public const string EmailSettingsUpdated = "email_settings.updated";
+    public const string EmailSettingsTested = "email_settings.tested";
+    public const string EmailSettingsActivated = "email_settings.activated";
+    public const string EmailSettingsEnvironmentRestored = "email_settings.environment_restored";
+
     public const string EmailDeliveryRetried = "email_delivery.retried";
 
     public const string SlaCalendarUpdated = "sla.calendar_updated";

@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddSingleton<ITemporaryPasswordGenerator, TemporaryPasswordGenerator>();
         services.AddScoped<PasswordTokenIssuer>();
         services.AddScoped<Features.Auth.Settings.LoginProviderTester>();
+        services.AddScoped<Features.Email.Settings.EmailSettingsTester>();
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<OrganizationReferences>();
         services.AddScoped<LastAdminGuard>();

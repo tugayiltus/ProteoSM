@@ -172,6 +172,7 @@
     "attachment": "Dosya",
     "email_template": "E-posta şablonu",
     "email_delivery": "E-posta gönderimi",
+    "email_settings": "E-posta gönderim ayarları",
     "sla_calendar": "SLA takvimi",
     "holiday": "Tatil günü",
     "sla_policy": "SLA politikası",
@@ -295,6 +296,12 @@
     },
     "email_delivery": {
       "retried": "E-posta yeniden gönderime alındı"
+    },
+    "email_settings": {
+      "updated": "E-posta gönderim ayarları değiştirildi",
+      "tested": "E-posta gönderimi test edildi",
+      "activated": "Panel e-posta ayarları kullanıma alındı",
+      "environment_restored": "E-posta gönderimi .env ayarlarına döndü"
     },
     "sla": {
       "calendar_updated": "SLA takvimi güncellendi",
