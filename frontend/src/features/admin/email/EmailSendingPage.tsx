@@ -1,6 +1,6 @@
 /**
  * @input Nothing; reads the outgoing mail settings.
- * @output "E-posta gönderimi": which sender is in use, the panel settings form with the Google preset, a test send,
+ * @output "Giden posta ayarları": which sender is in use, the panel settings form with the Google preset, a test send,
  *   "Kullanıma al" and the way back to the `.env` values.
  * @position `/admin/email-sending`, admin only.
  */

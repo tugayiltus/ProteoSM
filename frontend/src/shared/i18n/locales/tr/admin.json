@@ -514,8 +514,8 @@
     }
   },
   "emailDeliveries": {
-    "title": "E-posta gönderimleri",
-    "listCaption": "E-posta gönderimleri listesi",
+    "title": "E-posta teslimatları",
+    "listCaption": "E-posta teslimatları listesi",
     "retry": "Yeniden dene",
     "filters": {
       "status": "Durum",

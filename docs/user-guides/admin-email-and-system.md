@@ -15,11 +15,11 @@ Her bildirim türünün bir şablonu vardır: "Kayıt oluşturuldu", "Kamuya aç
 
 Değişiklik bundan sonra gönderilen e-postalarda geçerli olur.
 
-## E-posta gönderimi
+## Giden posta ayarları
 
-**E-posta gönderimi** sayfası (menüde **Sistem ve denetim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
+**Giden posta ayarları** sayfası (menüde **Duyuru ve bildirim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
 
-![E-posta gönderimi](images/admin-email-sending-desktop.png)
+![Giden posta ayarları](images/admin-email-sending-desktop.png)
 
 Panel ayarlarını kullanıma almak için:
 
@@ -38,11 +38,11 @@ Notlar:
 - **.env ayarlarına dön** gönderimi kurulumda girilen sunucuya geri alır. Panel ayarları silinmez.
 - Bazı kurulumlar e-postaları dosyaya yazar (Pickup). Bu durumda sayfada bir uyarı görünür ve panel ayarları kullanılmaz.
 
-## E-posta gönderimleri
+## E-posta teslimatları
 
-**E-posta gönderimleri** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve tarih.
+**E-posta teslimatları** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve tarih.
 
-![E-posta gönderimleri](images/admin-email-deliveries-desktop.png)
+![E-posta teslimatları](images/admin-email-deliveries-desktop.png)
 
 - **Durum**, **Bildirim** ve **Alıcı** filtreleriyle arayın.
 - Durumlar: **Bekliyor**, **Gönderiliyor**, **Gönderildi**, **Başarısız**.
@@ -105,4 +105,4 @@ Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 ## İpuçları
 
 - Şablon metinlerini kısa tutun ve kaydı açan bağlantıyı silmeyin; kullanıcılar e-postadan kayda bu bağlantıyla gider.
-- Kullanıcı "e-posta gelmedi" derse önce **E-posta gönderimleri** sayfasında alıcıya göre arayın.
+- Kullanıcı "e-posta gelmedi" derse önce **E-posta teslimatları** sayfasında alıcıya göre arayın.

@@ -1,7 +1,7 @@
 /**
  * @input Nothing; talks to `/api/v1/admin/email-settings`.
  * @output Hooks to read and save the outgoing mail settings, send a test mail and switch the sender.
- * @position The admin "E-posta gönderimi" page.
+ * @position The admin "Giden posta ayarları" page.
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

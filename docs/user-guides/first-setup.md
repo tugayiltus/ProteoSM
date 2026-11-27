@@ -66,7 +66,7 @@ Uygulamaya dönüp **Envanter** sayfasında **İçe aktar** ile mevcut cihazlar�
 
 1. **Genel bakış** sayfasında **Kurulum kontrolleri** kartına bakın. **Eksik kurulum tanımı bulunmadı.** yazmalıdır.
 2. **Sistem** sayfasında **Tüm işler zamanında çalışıyor.** yazmalıdır.
-3. Bir çalışan hesabıyla deneme arızası açın; kaydın kayıt alan ekibe düştüğünü ve e-postanın geldiğini kontrol edin. **E-posta gönderimleri** sayfasında gönderimi görebilirsiniz.
+3. Bir çalışan hesabıyla deneme arızası açın; kaydın kayıt alan ekibe düştüğünü ve e-postanın geldiğini kontrol edin. **E-posta teslimatları** sayfasında gönderimi görebilirsiniz.
 
 ![Kurulum kontrolleri](images/admin-overview-desktop.png)
 

@@ -225,16 +225,16 @@ describe('EmailSendingPage', () => {
     expect(await screen.findByText(/^Gönderim şu an: \.env ayarları/)).toBeInTheDocument();
   });
 
-  it('admin_menu_lists_e_posta_gonderimi_under_sistem_ve_denetim', async () => {
+  it('admin_menu_lists_giden_posta_ayarlari_under_duyuru_ve_bildirim', async () => {
     await openPage();
     const nav = screen.getByRole('navigation', { name: 'Yönetim menüsü' });
     const links = within(nav).getAllByRole('link').map((link) => link.textContent);
-    const at = links.indexOf('E-posta gönderimi');
+    const at = links.indexOf('Giden posta ayarları');
     expect(at).toBeGreaterThan(-1);
-    expect(links[at - 1]).toBe('Giriş yöntemi');
-    expect(links[at + 1]).toBe('İzleme kaynakları');
-    expect(within(nav).getByRole('link', { name: 'E-posta gönderimi' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('heading', { level: 1, name: 'E-posta gönderimi' })).toBeInTheDocument();
+    expect(links[at - 1]).toBe('E-posta teslimatları');
+    expect(links[at + 1]).toBe('Genel ayarlar');
+    expect(within(nav).getByRole('link', { name: 'Giden posta ayarları' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('heading', { level: 1, name: 'Giden posta ayarları' })).toBeInTheDocument();
   });
 
   it('pickup_mode_shows_the_file_banner', async () => {

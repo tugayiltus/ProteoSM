@@ -39,7 +39,7 @@ test('admin_tests_and_activates_the_panel_sender_and_returns_to_env', async ({ b
 
   await page.goto('/admin');
   const menu = await openMenu(page);
-  await menu.getByRole('group', { name: 'Sistem ve denetim' }).getByRole('link', { name: 'E-posta gönderimi' }).click();
+  await menu.getByRole('group', { name: 'Duyuru ve bildirim' }).getByRole('link', { name: 'Giden posta ayarları' }).click();
   await expect(page).toHaveURL(/\/admin\/email-sending$/);
 
   const status = page.getByRole('region', { name: 'Gönderim durumu' });

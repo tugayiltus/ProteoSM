@@ -64,7 +64,7 @@ CSV dosyasını Excel'de "CSV UTF-8 (virgülle ayrılmış)" biçiminde kaydedin
 ### E-posta gelmiyor
 
 1. İstenmeyen e-posta (spam) klasörüne bakın.
-2. Yöneticiniz **E-posta gönderimleri** sayfasında size giden e-postayı arayabilir; **Başarısız** ise **Yeniden dene** ile tekrar gönderebilir.
+2. Yöneticiniz **E-posta teslimatları** sayfasında size giden e-postayı arayabilir; **Başarısız** ise **Yeniden dene** ile tekrar gönderebilir.
 
 ## Telefonda kullanım
 

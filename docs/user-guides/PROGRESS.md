@@ -24,7 +24,7 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 | `admin-users-and-organization.md` | Done | `admin-overview-desktop.png`, `admin-users-desktop.png`, `admin-user-new-desktop.png`, `admin-departments-desktop.png`, `admin-locations-desktop.png`, `admin-teams-desktop.png`, `admin-audit-desktop.png` |
 | `admin-catalogs.md` | Done (Hizmetler text 2026-11-24) | `admin-brands-desktop.png`, `admin-models-desktop.png`, `admin-categories-desktop.png`, `admin-request-types-desktop.png` |
 | `admin-sla.md` | Done (Problem hedefleri section 2026-11-27, text only; policy shot retaken, the section is below its fold) | `admin-sla-calendar-desktop.png`, `admin-sla-policy-desktop.png` |
-| `admin-email-and-system.md` | Done (E-posta gönderimi section and shot 2026-11-27) | `admin-email-sending-desktop.png`, `admin-email-templates-desktop.png`, `admin-email-deliveries-desktop.png`, `admin-monitoring-desktop.png`, `admin-system-desktop.png` |
+| `admin-email-and-system.md` | Done (Giden posta ayarları section and shot 2026-11-27) | `admin-email-sending-desktop.png`, `admin-email-templates-desktop.png`, `admin-email-deliveries-desktop.png`, `admin-monitoring-desktop.png`, `admin-system-desktop.png` |
 | `feedback.md` | Done | `feedback-incident-mobile.png` |
 | `troubleshooting.md` | Done | Not needed |
 | `combined.md` / `combined.pdf` | Generated | All images above |
