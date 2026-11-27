@@ -36,6 +36,8 @@ export const ERROR_CODES = {
   serviceNameTaken: 'services.name_taken',
   serviceOwnerTeamInactive: 'services.owner_team_inactive',
   reportExportTooLarge: 'reports.export_too_large',
+  emailSettingsNotTested: 'email_settings.not_tested',
+  emailSettingsPlainTextLogin: 'email_settings.plain_text_login',
 } as const;
 
 const NETWORK_STATUS = 0;

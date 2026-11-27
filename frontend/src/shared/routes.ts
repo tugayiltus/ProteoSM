@@ -44,6 +44,7 @@ export const ROUTES = {
   adminAnnouncements: '/admin/announcements',
   adminMonitoring: '/admin/monitoring',
   adminLoginMethod: '/admin/login-method',
+  adminEmailSending: '/admin/email-sending',
   adminSlaCalendar: '/admin/sla/calendar',
   adminSlaPolicy: '/admin/sla/policy',
   adminCategories: '/admin/categories',

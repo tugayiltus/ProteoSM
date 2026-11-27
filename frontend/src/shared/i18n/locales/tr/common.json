@@ -116,6 +116,7 @@
     "adminSlaPolicy": "SLA politikası",
     "adminSystem": "Sistem",
     "adminLoginMethod": "Giriş yöntemi",
+    "adminEmailSending": "E-posta gönderimi",
     "adminAudit": "Denetim kayıtları",
     "adminBrands": "Markalar",
     "adminModels": "Modeller",

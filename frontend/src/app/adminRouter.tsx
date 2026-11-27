@@ -44,6 +44,7 @@ export const adminPages: RouteObject[] = [
               { id: 'adminSlaCalendar', path: ROUTES.adminSlaCalendar, lazy: async () => ({ Component: (await import('../features/admin/sla/SlaCalendarPage')).SlaCalendarPage }) },
               { id: 'adminSlaPolicy', path: ROUTES.adminSlaPolicy, lazy: async () => ({ Component: (await import('../features/admin/sla/SlaPolicyPage')).SlaPolicyPage }) },
               { id: 'adminLoginMethod', path: ROUTES.adminLoginMethod, lazy: async () => ({ Component: (await import('../features/admin/auth/LoginMethodPage')).LoginMethodPage }) },
+              { id: 'adminEmailSending', path: ROUTES.adminEmailSending, lazy: async () => ({ Component: (await import('../features/admin/email/EmailSendingPage')).EmailSendingPage }) },
               { id: 'adminMonitoring', path: ROUTES.adminMonitoring, lazy: async () => ({ Component: (await import('../features/admin/monitoring/MonitoringPage')).MonitoringPage }) },
               { id: 'adminSystem', path: ROUTES.adminSystem, lazy: async () => ({ Component: (await import('../features/admin/system/SystemPage')).SystemPage }) },
               { id: 'adminSettings', path: ROUTES.adminSettings, lazy: async () => ({ Component: (await import('../features/admin/settings/SettingsPage')).SettingsPage }) },

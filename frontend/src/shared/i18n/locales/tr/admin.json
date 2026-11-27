@@ -529,6 +529,52 @@
       "actions": "İşlemler"
     }
   },
+  "emailSending": {
+    "intro": "Bildirim e-postalarının hangi sunucudan gönderileceğini seçin. Panel ayarları ancak test maili başarılı olunca kullanıma alınır.",
+    "statusTitle": "Gönderim durumu",
+    "current": {
+      "panel": "Gönderim şu an: Panel ayarları",
+      "panelTestOk": "Gönderim şu an: Panel ayarları (son test {{date}}, başarılı)",
+      "panelTestFailed": "Gönderim şu an: Panel ayarları (son test {{date}}, başarısız)",
+      "environment": "Gönderim şu an: .env ayarları ({{from}}, {{host}})",
+      "pickup": "Gönderim şu an: Dosyaya yazma (Pickup)"
+    },
+    "pickupBanner": "Bu kurulum e-postaları dosyaya yazar (Pickup). Panel ve .env SMTP ayarları kullanılmaz.",
+    "useEnvironment": ".env ayarlarına dön",
+    "useEnvironmentConfirm": "Gönderim .env ayarlarına dönsün mü? Panel ayarları silinmez.",
+    "settingsTitle": "Panel ayarları",
+    "fields": {
+      "provider": "Sağlayıcı",
+      "senderName": "Gönderen adı",
+      "senderAddress": "Gönderen adres",
+      "host": "Sunucu",
+      "port": "Port",
+      "security": "Güvenlik",
+      "userName": "Kullanıcı",
+      "password": "Şifre"
+    },
+    "providers": {
+      "google": "Google",
+      "smtp": "Diğer SMTP"
+    },
+    "securities": {
+      "start_tls": "STARTTLS",
+      "ssl_tls": "SSL/TLS",
+      "none": "Yok"
+    },
+    "passwordStored": "kayıtlı — değiştirmek için yazın",
+    "googleHint": "Google hesabında iki adımlı doğrulama açık olmalı; Şifre alanına uygulama şifresini yazın.",
+    "googlePreset": "Google için sunucu, port ve güvenlik sabittir.",
+    "noneNeedsNoUser": "Kullanıcı adı varken seçilemez: şifre açık metin olarak gönderilmez.",
+    "save": "Kaydet",
+    "saved": "E-posta gönderim ayarları kaydedildi.",
+    "test": "Test maili gönder",
+    "testOk": "Test maili gönderildi.",
+    "testDetail": "Sunucu yanıtı: {{detail}}",
+    "testNeedsSave": "Test maili kayıtlı ayarlarla gider. Önce değişiklikleri kaydedin.",
+    "activate": "Kullanıma al",
+    "activateNeedsTest": "Kullanıma almak için önce bu ayarlarla başarılı bir test maili gönderin."
+  },
   "loginMethod": {
     "intro": "Kullanıcıların nasıl giriş yapacağını seçin. Aynı anda tek yöntem açıktır; yöneticiler her yöntemde yerel şifreleriyle de girebilir.",
     "active": "Etkin yöntem",
