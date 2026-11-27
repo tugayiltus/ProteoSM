@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 import { login } from './helpers';
 import { adminSession, seedWorld, userSession } from './world';
 
-const ADMIN_TITLE = 'Proteone Yönetim';
-const APP_TITLE = 'Proteone';
+const ADMIN_TITLE = 'ProteoSM Yönetim';
+const APP_TITLE = 'ProteoSM';
 
 test('areas: each area loads its own entry, deep links survive a reload and sign-in returns to the admin page', async ({ browser, baseURL }) => {
   const admin = await adminSession(browser);

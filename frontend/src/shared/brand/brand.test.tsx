@@ -15,7 +15,7 @@ describe('brand', () => {
   });
 
   it('names the product in the title of both entries', () => {
-    expect(common.appName).toBe('Proteone');
+    expect(common.appName).toBe('ProteoSM');
     expect(indexHtml).toContain(`<title>${common.appName}</title>`);
     expect(adminHtml).toContain(`<title>${common.appName} Yönetim</title>`);
   });

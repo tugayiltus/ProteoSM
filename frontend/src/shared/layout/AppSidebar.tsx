@@ -5,6 +5,7 @@
  */
 import { Icon } from '@astryxdesign/core/Icon';
 import { SideNav, SideNavHeading, SideNavItem, SideNavSection } from '@astryxdesign/core/SideNav';
+import { Text } from '@astryxdesign/core/Text';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '../../features/auth/session';
@@ -30,7 +31,7 @@ export interface AppSidebarProps {
 }
 
 export function AppSidebar({ area, label, title, isCollapsed, onCollapsedChange, onNavigate }: AppSidebarProps) {
-  useTranslation();
+  const { t } = useTranslation();
   const me = useSession();
   const groups = menuFor(area, me.role);
   const active = activeMenuItem(useCurrentRouteId(), groups);
@@ -38,6 +39,7 @@ export function AppSidebar({ area, label, title, isCollapsed, onCollapsedChange,
     <SideNav
       aria-label={label}
       collapsible={{ isCollapsed, onCollapsedChange }}
+      footer={isCollapsed ? undefined : <Text type="supporting">{t('byUmbrella')}</Text>}
       header={<SideNavHeading heading={title} headingHref={AREA_HOME[area]} icon={<Icon icon={Icons.brand} size="sm" />} />}
     >
       {groups.map((group) => (

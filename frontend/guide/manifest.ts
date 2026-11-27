@@ -137,7 +137,7 @@ const SERVICE_REPORT_CARD = 'Hizmete göre';
 const SERVICE_ASSETS_BUTTON = /^Varlıklar /;
 
 /** Seed names the guide shows in its examples (backend Features/Pilot). */
-const PILOT_CATEGORY = 'Proteone Pilot';
+const PILOT_CATEGORY = 'ProteoSM Pilot';
 const APPROVAL_REQUEST_TYPE = 'Yeni bilgisayar';
 
 export const MANIFEST: readonly GuideShot[] = [

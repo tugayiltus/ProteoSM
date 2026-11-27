@@ -70,6 +70,7 @@ describe('sign-in look', () => {
     for (const label of ['E-posta', 'Şifre']) {
       expect(screen.getByLabelText(label).parentElement?.querySelector('svg')).not.toBeNull();
     }
-    expect(within(screen.getByRole('main')).getByRole('heading', { level: 2, name: 'Proteone' })).toBeInTheDocument();
+    expect(within(screen.getByRole('main')).getByRole('heading', { level: 2, name: 'ProteoSM' })).toBeInTheDocument();
+    expect(within(screen.getByRole('main')).getByText('ProteoSM · bir ProteONE ürünü')).toBeInTheDocument();
   });
 });

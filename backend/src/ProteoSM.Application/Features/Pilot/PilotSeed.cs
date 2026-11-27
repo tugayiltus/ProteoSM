@@ -56,8 +56,8 @@ public sealed class PilotSeed(IServiceScopeFactory scopes, PilotSeedActor actor,
 {
     public const int RandomSeed = 20_261_009;
 
-    /// <summary>Incident category in which pilot users report problems with Proteone itself (user guide "Sorun bildirme").</summary>
-    public const string PilotCategoryName = "Proteone Pilot";
+    /// <summary>Incident category in which pilot users report problems with ProteoSM itself (user guide "Sorun bildirme").</summary>
+    public const string PilotCategoryName = "ProteoSM Pilot";
 
     /// <summary>Reserved domain (RFC 2606): notification mail for seeded accounts never reaches a real mailbox.</summary>
     public const string EmailDomain = "pilot.example.com";

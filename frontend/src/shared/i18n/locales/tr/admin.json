@@ -591,7 +591,7 @@
     "intro": "Kullanıcıların nasıl giriş yapacağını seçin. Aynı anda tek yöntem açıktır; yöneticiler her yöntemde yerel şifreleriyle de girebilir.",
     "active": "Etkin yöntem",
     "methods": {
-      "local": "Yerel (Proteone şifresi)",
+      "local": "Yerel (ProteoSM şifresi)",
       "entra": "Microsoft (Entra ID)",
       "ldap": "Active Directory (LDAP)"
     },
@@ -620,7 +620,7 @@
       "bindDn": "Servis hesabı DN",
       "bindPassword": "Servis hesabı şifresi",
       "userFilter": "Ek kullanıcı filtresi (isteğe bağlı)",
-      "userFilterHint": "Ör. (memberOf=CN=Proteone,OU=Gruplar,DC=sirket,DC=local)"
+      "userFilterHint": "Ör. (memberOf=CN=ProteoSM,OU=Gruplar,DC=sirket,DC=local)"
     },
     "security": {
       "ldaps": "LDAPS (636)",

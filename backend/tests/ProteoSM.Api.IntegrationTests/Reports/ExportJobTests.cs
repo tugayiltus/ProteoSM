@@ -191,7 +191,7 @@ public sealed class ExportJobTests(FakeClockApiFactory factory) : IClassFixture<
         using var download = await admin.GetAsync(DownloadPath(id));
         Assert.Equal(HttpStatusCode.OK, download.StatusCode);
         Assert.Equal(XlsxType, download.Content.Headers.ContentType!.MediaType);
-        Assert.StartsWith("proteone-incidents-volume-", download.Content.Headers.ContentDisposition!.FileNameStar ?? download.Content.Headers.ContentDisposition.FileName);
+        Assert.StartsWith("proteosm-incidents-volume-", download.Content.Headers.ContentDisposition!.FileNameStar ?? download.Content.Headers.ContentDisposition.FileName);
         using var workbook = new XLWorkbook(new MemoryStream(await download.Content.ReadAsByteArrayAsync(Ct)));
         Assert.Equal(total, workbook.Worksheet(RecordsSheet).LastRowUsed()!.RowNumber() - 1);
 

@@ -1,5 +1,6 @@
 {
-  "appName": "Proteone",
+  "appName": "ProteoSM",
+  "byUmbrella": "ProteoSM · bir ProteONE ürünü",
   "none": "Yok",
   "network": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.",
   "actions": {

@@ -19,7 +19,7 @@ const ADMIN_DATA = {
 };
 
 const mainNav = () => screen.findByRole('navigation', { name: 'Ana menü' });
-const APP_BRAND = 'Proteone';
+const APP_BRAND = 'ProteoSM';
 /** Menu item names; the brand link at the top of the side navigation is not a menu item. */
 const linkNames = (nav: HTMLElement) =>
   within(nav)
@@ -35,6 +35,14 @@ describe('AppLayout sidebar', () => {
     expect(linkNames(nav)).toEqual(['Ana sayfa', 'Kayıtlarım', 'Zimmetlerim', 'Yazılımlarım', 'Bilgi bankası']);
     expect(within(nav).queryByText('Destek')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Yönetim' })).not.toBeInTheDocument();
+  });
+
+  it('names the product family under the application menu', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME } });
+    renderRoute('/profile');
+    const nav = await mainNav();
+    expect(within(nav).getByRole('link', { name: 'ProteoSM' })).toHaveAttribute('href', '/');
+    expect(within(nav).getByText('ProteoSM · bir ProteONE ürünü')).toBeInTheDocument();
   });
 
   it('shows IT staff the support, change, inventory and analysis groups without approvals or admin', async () => {
@@ -177,6 +185,14 @@ describe('AdminLayout', () => {
     expect(await screen.findByRole('link', { name: 'Muhasebe' })).toHaveAttribute('href', '/admin/departments');
     expect(screen.getByText('Varsayılan karşılama ekibi seçilmemiş.')).toBeInTheDocument();
     expect(screen.getByText('Arka plan işlerinden en az biri sorunlu.')).toBeInTheDocument();
+  });
+
+  it('names the product family under the admin menu', async () => {
+    window.localStorage.clear();
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, ...ADMIN_DATA });
+    renderRoute('/admin');
+    const nav = await screen.findByRole('navigation', { name: 'Yönetim menüsü' });
+    expect(await within(nav).findByText('ProteoSM · bir ProteONE ürünü')).toBeInTheDocument();
   });
 
   it('marks the admin page of a deep route as current', async () => {

@@ -153,7 +153,7 @@ async function render(markdown: string): Promise<string> {
   });
   const body = await renderer.parse(markdown);
   const base = pathToFileURL(`${GUIDE_DIR}/`).href;
-  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><base href="${base}"><title>Proteone Kullanıcı Rehberi</title><style>${PRINT_CSS}</style></head><body>${body}</body></html>`;
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><base href="${base}"><title>ProteoSM Kullanıcı Rehberi</title><style>${PRINT_CSS}</style></head><body>${body}</body></html>`;
 }
 
 /** Every in-document link target (from the lexer, code excluded) is an `id` of the rendered HTML. */

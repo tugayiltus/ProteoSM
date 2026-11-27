@@ -14,7 +14,7 @@ namespace ProteoSM.Application.Features.Email.Settings;
 /// </summary>
 public static class EmailTestMessageText
 {
-    public const string Subject = "Proteone test e-postası";
+    public const string Subject = "ProteoSM test e-postası";
     public const string Body = "Bu e-posta, yönetim panelindeki giden posta ayarlarını denemek için gönderildi. Yanıt vermeniz gerekmez.";
 }
 

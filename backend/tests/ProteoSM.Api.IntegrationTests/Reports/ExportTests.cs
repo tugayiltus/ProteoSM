@@ -131,7 +131,7 @@ public sealed class ExportTests(ApiFactory factory) : IAsyncLifetime
 
         using var response = await admin.GetAsync(
             $"{ReportsPath}/incidents/export?metric=volume&{March}&priority=p2&status=open&teamId={fx.World.DeskTeam.Id}");
-        Assert.Matches(@"^proteone-incidents-volume-\d{12}\.xlsx$", response.Content.Headers.ContentDisposition!.FileNameStar ?? response.Content.Headers.ContentDisposition.FileName);
+        Assert.Matches(@"^proteosm-incidents-volume-\d{12}\.xlsx$", response.Content.Headers.ContentDisposition!.FileNameStar ?? response.Content.Headers.ContentDisposition.FileName);
         using var workbook = Open(await response.Content.ReadAsByteArrayAsync(Ct));
 
         var records = workbook.Worksheet(RecordsSheet);

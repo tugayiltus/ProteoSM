@@ -5,8 +5,10 @@
  */
 import { Card } from '@astryxdesign/core/Card';
 import { Center } from '@astryxdesign/core/Center';
+import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import type { PropsWithChildren } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { BrandLogo } from '../brand/BrandLogo';
 
@@ -14,6 +16,7 @@ import { BrandLogo } from '../brand/BrandLogo';
 const CARD_MAX_WIDTH = 440;
 
 export function AuthCard({ children }: PropsWithChildren) {
+  const { t } = useTranslation();
   return (
     // No app shell here, so this screen supplies the main landmark itself.
     <main>
@@ -23,6 +26,7 @@ export function AuthCard({ children }: PropsWithChildren) {
         <Card padding={6} width="100%">
           <VStack gap={3}>{children}</VStack>
         </Card>
+        <Text type="supporting">{t('byUmbrella')}</Text>
         </VStack>
       </Center>
     </main>
