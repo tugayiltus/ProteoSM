@@ -133,6 +133,7 @@ Envanter, cihazın ne olduğunu ve nerede bulunduğunu gösterir. Asset Manageme
 - Çok sorulu memnuniyet anketi, anket tasarımcısı ve NPS. Tamamlanan (çözüldü/karşılandı) arıza ve talepte talep sahibinin tek 1–5 puanı ve isteğe bağlı yorumu (tamamlanma e-postasındaki bağlantı oturum açılmış uygulamaya gider, 14 günlük süre, raporda ortalama puan, yanıt oranı ve dağılım) Kasım 2026'da kapsama alındı (ADR-0044).
 - Çok aşamalı onay, genel amaçlı BPM/otomasyon motoru.
 - Gelen e-postadan kayıt açma, SMS, WhatsApp, chatbot.
+- Office 365 / Microsoft Graph ile e-posta gönderimi. Giden posta (gönderen, SMTP sunucusu, güvenlik, kullanıcı, şifre) `/admin` içinde "E-posta gönderimi" sayfasında ayarlanır ve test maili başarılı olunca kullanıma alınır; panel ayarı yokken `.env` değerleri kullanılır (ADR-0045).
 - Native mobil uygulama, çevrimdışı işlem ve uzaktan masaüstü.
 
 ## 3. Kurum ve kullanıcı modeli
@@ -595,6 +596,7 @@ Ekip büyüklüğü, çalışma kapasitesi ve yayın ortamı bilinmediğinden ta
 | 12 — Hizmet kataloğu | Hafif hizmet kataloğu ve CMDB: `/admin` hizmet yönetimi, hizmet ↔ varlık bağlantısı, arıza/talep, değişiklik ve problemde "Hizmet" alanı ve liste filtresi, hizmet etki sayfası (varlıklar, açık kayıtlar, değişiklikler, açık problemler), raporda hizmet dağılımı, merkezi aramada hizmetler | Faz 11 | Kapsam ve erişim testleri yeşil; çalışan hizmet görmez; hizmet atama ve etki sayfası E2E |
 | Kasım 2026 modülleri | Yazılım lisansları (ADR-0039), hafif sürüm kaydı (ADR-0040), imzalı izleme webhook'u (ADR-0041) | Faz 9, 12 | Lisans hakkı aşılmaz, anahtar yalnız denetimli görünür; sürüm değişiklik onayını etkilemez; imzasız veya tekrarlanan istek etkisizdir |
 | Memnuniyet puanı | Tamamlanan arıza ve talepte talep sahibinin 1–5 puanı ve yorumu, e-postadaki "Puan ver" bağlantısı, kayıt sayfası bölümü ve ana sayfa kartı, arıza/talep raporunda ortalama, yanıt oranı ve dağılım (ADR-0044) | Faz 3–5 | Yalnız talep sahibi 14 gün içinde puan verir; oturumsuz puan yolu yoktur; puan, puanlandığı andaki ekipte raporlanır |
+| Giden posta ayarları | `/admin` "E-posta gönderimi": Google veya diğer SMTP, test maili, "Kullanıma al", ".env ayarlarına dön"; şifre yalnız yazılır ve korunur; Worker değişikliği yeniden başlatmadan alır (ADR-0045) | Faz 4, ADR-0030 | Test edilmemiş ayar kullanıma alınmaz; etkin ayarda başarısız test gönderimi değiştirmez; şifre hiçbir yanıtta, kayıtta veya hata metninde görünmez |
 
 Bilgi bankası çalışması ekip kapasitesi uygunsa veri sözleşmeleri sabitlendikten sonra paralel yürütülebilir. Envanter, onay, SLA ve rapor veri modeli kritik bağımlılıklardır. Kapsam değişiminde etkilenen faz ve kabul ölçütleri güncellenir; özellikler sessizce sonraki sürüme taşınmaz.
 
