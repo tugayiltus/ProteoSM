@@ -1,6 +1,6 @@
 # Başlarken
 
-Bu sayfa herkes içindir: Proteone'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
+Bu sayfa herkes içindir: ProteoSM'e nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
 
 ## Hesabınız ve rolünüz
 
@@ -29,7 +29,7 @@ Bağlantı sınırlı bir süre geçerlidir. Süresi dolduysa giriş ekranındak
 
 ## Giriş yapma
 
-1. Tarayıcınızda Proteone adresini açın. **Giriş yap** ekranı gelir.
+1. Tarayıcınızda ProteoSM adresini açın. **Giriş yap** ekranı gelir.
 2. **E-posta** alanına iş e-posta adresinizi, **Şifre** alanına şifrenizi yazın.
 3. **Giriş yap** düğmesine basın.
 
@@ -1151,7 +1151,7 @@ Dışa aktarım durumları: **Sırada**, **Hazırlanıyor**, **Hazır**, **Başa
 
 # İlk kurulum
 
-Bu sayfa yöneticiler içindir: Proteone'yi ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
+Bu sayfa yöneticiler içindir: ProteoSM'i ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
 
 İlk yönetici hesabını sistemi kuran kişi açar ve size e-posta adresinizi ve geçici şifrenizi verir. Giriş yapıp şifrenizi değiştirin (bkz. [Başlarken](#başlarken)), sonra üst çubuktaki **Yönetim** bağlantısına basın.
 
@@ -1187,7 +1187,7 @@ Kullanıcılar, cihazlar ve kayıtlar bir lokasyona bağlanır; önce lokasyon a
 
 1. **Kategoriler** sayfasında ana kategorileri ve alt kategorileri ekleyin (en fazla iki seviye).
 2. Her kategorinin **Kullanım** alanını seçin: **Arıza**, **Talep** veya **Arıza ve talep**.
-3. Pilot dönemi için "Proteone Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](#sorun-bildirme-ve-geri-bildirim)).
+3. Pilot dönemi için "ProteoSM Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](#sorun-bildirme-ve-geri-bildirim)).
 
 ## Adım 7: Talep tipleri
 
@@ -1555,7 +1555,7 @@ Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 
 # Sorun bildirme ve geri bildirim
 
-Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. Proteone'nin kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu Proteone üzerinden bildirin.
+Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. ProteoSM'in kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu ProteoSM üzerinden bildirin.
 
 ## Ne bildirilir
 
@@ -1564,7 +1564,7 @@ Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. Proteone'nin kendisiyl
 - Bir işlem çok yavaş.
 - Bir şeyi yapmanın daha kolay bir yolu olmalı (öneri).
 
-Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "Proteone Pilot" kategorisi yalnızca Proteone'nin kendisi içindir.
+Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "ProteoSM Pilot" kategorisi yalnızca ProteoSM'in kendisi içindir.
 
 ## Nasıl bildirilir
 
@@ -1576,18 +1576,18 @@ Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her
    - Ne oldu, ne olmasını bekliyordunuz?
    - Ekranda bir hata mesajı çıktıysa tam metni.
    - Hangi cihazı ve tarayıcıyı kullandınız (örneğin "telefon, Safari" veya "bilgisayar, Chrome").
-4. **Kategori** listesinden "Proteone Pilot" seçin.
+4. **Kategori** listesinden "ProteoSM Pilot" seçin.
 5. **Lokasyon** seçin.
 6. Mümkünse ekran görüntüsünü **Dosya ekle (en fazla 5, her biri en fazla 10 MB)** alanından ekleyin.
 7. **Gönder** düğmesine basın.
 
-![Proteone Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
+![ProteoSM Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
 
 ## Sonra ne olur
 
 Bildiriminiz diğer kayıtlar gibi IT ekibine düşer. Durumunu **Kayıtlarım** sayfasından izleyebilir, soru gelirse **Yazışmalar** bölümünden yanıtlayabilirsiniz (bkz. [Kayıtlarım](#kayıtlarım)).
 
-## Proteone'ye hiç giremiyorsanız
+## ProteoSM'e hiç giremiyorsanız
 
 Giriş yapamıyor veya kayıt açamıyorsanız IT ekibine telefonla veya e-postayla ulaşın. Önce [Sorun giderme](#sorun-giderme) sayfasına bakın.
 

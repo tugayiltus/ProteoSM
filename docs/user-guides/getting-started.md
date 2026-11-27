@@ -1,6 +1,6 @@
 # Başlarken
 
-Bu sayfa herkes içindir: Proteone'ye nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
+Bu sayfa herkes içindir: ProteoSM'e nasıl girilir, şifre nasıl belirlenir ve ekranlar nasıl kullanılır.
 
 ## Hesabınız ve rolünüz
 
@@ -29,7 +29,7 @@ Bağlantı sınırlı bir süre geçerlidir. Süresi dolduysa giriş ekranındak
 
 ## Giriş yapma
 
-1. Tarayıcınızda Proteone adresini açın. **Giriş yap** ekranı gelir.
+1. Tarayıcınızda ProteoSM adresini açın. **Giriş yap** ekranı gelir.
 2. **E-posta** alanına iş e-posta adresinizi, **Şifre** alanına şifrenizi yazın.
 3. **Giriş yap** düğmesine basın.
 

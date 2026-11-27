@@ -1,6 +1,6 @@
 # First release acceptance evidence
 
-Acceptance criteria from `proteone.md` §20, each mapped to the automated tests that prove it. Backend tests run against a real
+Acceptance criteria from `proteosm.md` §20, each mapped to the automated tests that prove it. Backend tests run against a real
 PostgreSQL 17 database (`tools/test.sh`); E2E specs run on a fresh `proteone_e2e` database at 360 px (`mobile-360`) and desktop
 width (`tools/e2e.sh`).
 
@@ -21,7 +21,7 @@ width (`tools/e2e.sh`).
   through nginx over HTTPS → `200 {"status":"ok"}`); `tools/restore-drill.sh` exit 0 (14/14 checks pass).
 - CI (GitHub Actions): pending owner-approved push.
 
-| # | Kriter (`proteone.md` §20) | Evidence | Result | Commit |
+| # | Kriter (`proteosm.md` §20) | Evidence | Result | Commit |
 |---|---|---|---|---|
 | 1 | Anonim kullanıcı hesap açamaz; çalışan/IT kullanıcı oluşturma API'sine erişemez. | **Gap (`2897b34`):** `Api` `AnonymousAccessTests.Only_sign_in_password_link_csrf_health_and_fallback_endpoints_allow_anonymous_callers` (allowlist of every `IAllowAnonymous` endpoint; no sign-up route), `AnonymousAccessTests.Anonymous_user_creation_is_unauthenticated_and_creates_nobody` (broken by `.AllowAnonymous()` on `POST /api/v1/admin/users`: both fail). Existing: `UserAdminTests.Non_admin_roles_are_forbidden_including_direct_id_access` (employee + IT `POST` create → 403), `UserAdminTests.Anonymous_request_is_unauthenticated`. | Pass | `2897b34` |
 | 2 | Kurulum ilk yönetici oluşturulduktan sonra tekrar hesap oluşturma yolu açmaz. | `Api` `SetupFirstAdminTests.Refuses_when_any_user_exists`, `SetupFirstAdminTests.Cli_prints_temporary_password_once_and_then_refuses`, `SetupFirstAdminTests.Creates_admin_with_temporary_password_when_no_user_exists`; anonymous endpoint allowlist of criterion 1 (no setup route in the API). | Pass | `5163bfe` |

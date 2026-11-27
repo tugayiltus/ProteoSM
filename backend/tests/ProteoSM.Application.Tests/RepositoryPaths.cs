@@ -2,7 +2,7 @@ namespace ProteoSM.Application.Tests;
 
 internal static class RepositoryPaths
 {
-    private const string MarkerFile = "proteone.md";
+    private const string MarkerFile = "proteosm.md";
 
     public static string Root { get; } = FindRoot();
 

@@ -1,6 +1,6 @@
 # İlk kurulum
 
-Bu sayfa yöneticiler içindir: Proteone'yi ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
+Bu sayfa yöneticiler içindir: ProteoSM'i ilk kez kullanıma hazırlarken tanımların hangi sırayla girileceği. Sıra önemlidir; her adım bir öncekinde girilen bilgiyi kullanır.
 
 İlk yönetici hesabını sistemi kuran kişi açar ve size e-posta adresinizi ve geçici şifrenizi verir. Giriş yapıp şifrenizi değiştirin (bkz. [Başlarken](getting-started.md)), sonra üst çubuktaki **Yönetim** bağlantısına basın.
 
@@ -36,7 +36,7 @@ Kullanıcılar, cihazlar ve kayıtlar bir lokasyona bağlanır; önce lokasyon a
 
 1. **Kategoriler** sayfasında ana kategorileri ve alt kategorileri ekleyin (en fazla iki seviye).
 2. Her kategorinin **Kullanım** alanını seçin: **Arıza**, **Talep** veya **Arıza ve talep**.
-3. Pilot dönemi için "Proteone Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](feedback.md)).
+3. Pilot dönemi için "ProteoSM Pilot" adında, **Kullanım** değeri **Arıza** olan bir ana kategori ekleyin. Kullanıcılar sistemle ilgili sorunları bu kategoriyle bildirir (bkz. [Sorun bildirme ve geri bildirim](feedback.md)).
 
 ## Adım 7: Talep tipleri
 

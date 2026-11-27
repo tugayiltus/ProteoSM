@@ -1,6 +1,6 @@
 # Sorun bildirme ve geri bildirim
 
-Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. Proteone'nin kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu Proteone üzerinden bildirin.
+Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. ProteoSM'in kendisiyle ilgili bir sorun görürseniz veya bir öneriniz varsa bunu ProteoSM üzerinden bildirin.
 
 ## Ne bildirilir
 
@@ -9,7 +9,7 @@ Bu sayfa pilot dönemindeki tüm kullanıcılar içindir. Proteone'nin kendisiyl
 - Bir işlem çok yavaş.
 - Bir şeyi yapmanın daha kolay bir yolu olmalı (öneri).
 
-Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "Proteone Pilot" kategorisi yalnızca Proteone'nin kendisi içindir.
+Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her zamanki gibi kendi kategorileriyle bildirin. "ProteoSM Pilot" kategorisi yalnızca ProteoSM'in kendisi içindir.
 
 ## Nasıl bildirilir
 
@@ -21,17 +21,17 @@ Bilgisayarınız, yazıcınız veya e-postanız gibi normal IT sorunlarını her
    - Ne oldu, ne olmasını bekliyordunuz?
    - Ekranda bir hata mesajı çıktıysa tam metni.
    - Hangi cihazı ve tarayıcıyı kullandınız (örneğin "telefon, Safari" veya "bilgisayar, Chrome").
-4. **Kategori** listesinden "Proteone Pilot" seçin.
+4. **Kategori** listesinden "ProteoSM Pilot" seçin.
 5. **Lokasyon** seçin.
 6. Mümkünse ekran görüntüsünü **Dosya ekle (en fazla 5, her biri en fazla 10 MB)** alanından ekleyin.
 7. **Gönder** düğmesine basın.
 
-![Proteone Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
+![ProteoSM Pilot kategorisiyle sorun bildirme (telefon)](images/feedback-incident-mobile.png)
 
 ## Sonra ne olur
 
 Bildiriminiz diğer kayıtlar gibi IT ekibine düşer. Durumunu **Kayıtlarım** sayfasından izleyebilir, soru gelirse **Yazışmalar** bölümünden yanıtlayabilirsiniz (bkz. [Kayıtlarım](my-tickets.md)).
 
-## Proteone'ye hiç giremiyorsanız
+## ProteoSM'e hiç giremiyorsanız
 
 Giriş yapamıyor veya kayıt açamıyorsanız IT ekibine telefonla veya e-postayla ulaşın. Önce [Sorun giderme](troubleshooting.md) sayfasına bakın.

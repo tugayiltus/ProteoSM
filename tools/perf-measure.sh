@@ -115,7 +115,7 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 {
   echo "# Performance measurement"
   echo
-  echo "Run by \`tools/perf-measure.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\`. Spec 5.2; acceptance criterion 18 of \`proteone.md\` section 20."
+  echo "Run by \`tools/perf-measure.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\`. Spec 5.2; acceptance criterion 18 of \`proteosm.md\` section 20."
   echo
   echo "- Target: $target."
   echo "- Machine: $machine."

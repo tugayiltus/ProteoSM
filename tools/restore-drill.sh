@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Restore drill (proteone.md §20 item 19, ADR-0025). Self-contained: starts a throw-away source stack, creates data
+# Restore drill (proteosm.md §20 item 19, ADR-0025). Self-contained: starts a throw-away source stack, creates data
 # (attachment, background export, deactivated user, a signed-in session), backs it up, then restores the archive into a
 # second throw-away stack and checks it. Never touches the production stack or its volumes. Needs the images from
 # tools/docker-build.sh and a certificate pair in deploy/certs/. Writes docs/release/restore-drill.md.
@@ -158,7 +158,7 @@ mkdir -p "$(dirname "$REPORT")"
   echo "# Restore drill"
   echo
   echo "Run by \`tools/restore-drill.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\` (images \`$(docker image inspect "proteosm-api:$PROTEOSM_VERSION" --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^APP_VERSION=//p')\`)."
-  echo "Archive: \`$(basename "$archive")\` ($(du -h "$archive" | cut -f1 | tr -d ' ')). Acceptance criterion 19 of \`proteone.md\` §20; ADR-0025."
+  echo "Archive: \`$(basename "$archive")\` ($(du -h "$archive" | cut -f1 | tr -d ' ')). Acceptance criterion 19 of \`proteosm.md\` §20; ADR-0025."
   echo
   echo "| Check | Expected | Actual | Result |"
   echo "|---|---|---|---|"

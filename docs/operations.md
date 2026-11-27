@@ -1,6 +1,6 @@
-# Proteone Operator Manual
+# ProteoSM Operator Manual
 
-For the person who installs, updates, backs up and restores a Proteone host. The stack is one Docker Compose project on one host (ADR-0024); backups and restore follow ADR-0025. End-user help is in [`docs/user-guides/`](user-guides/README.md).
+For the person who installs, updates, backs up and restores a ProteoSM host. The stack is one Docker Compose project on one host (ADR-0024); backups and restore follow ADR-0025. End-user help is in [`docs/user-guides/`](user-guides/README.md).
 
 Every command below runs from the repository root on the host. `tools/compose.sh` is `docker compose -f deploy/compose.yaml --env-file deploy/.env`; any `docker compose` subcommand works through it.
 
@@ -50,7 +50,7 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
    | `TZ`, `APP_TIME_ZONE` | Container clock (backup schedule) and business time zone (`App:TimeZone`); default `Europe/Istanbul`. |
    | `PROTEOSM_SUBNET` | Internal Docker network; the API trusts `X-Forwarded-For` / `X-Forwarded-Proto` only from it (`Http:KnownProxyNetworks`). |
    | `EMAIL_MODE` | `Smtp` in production; `Pickup` writes `.eml` files to `/data/files/email-pickup` (test hosts). |
-   | `EMAIL_FROM` | Sender, e.g. `Proteone <no-reply@example.com>`. |
+   | `EMAIL_FROM` | Sender, e.g. `ProteoSM <no-reply@example.com>`. |
    | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USE_STARTTLS`, `SMTP_USERNAME`, `SMTP_PASSWORD` | SMTP relay (`Email:Smtp:*`). |
    | `BACKUP_TIME`, `BACKUP_RETENTION_DAYS` | Nightly backup time (`HH:MM` in `TZ`, default `02:30`) and retention in days (default 14). |
    | `BACKUP_HOST_DIR` | Optional absolute host folder for archives; empty means the `backups` volume. |

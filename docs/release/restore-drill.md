@@ -1,7 +1,7 @@
 # Restore drill
 
 Run by `tools/restore-drill.sh` on 2026-11-24T23:24:45Z at commit `dabbb59` (images `dabbb59`).
-Archive: `proteone-20261124-232315.tar.gz` (44K). Acceptance criterion 19 of `proteone.md` §20; ADR-0025.
+Archive: `proteone-20261124-232315.tar.gz` (44K). Acceptance criterion 19 of `proteosm.md` §20; ADR-0025.
 
 | Check | Expected | Actual | Result |
 |---|---|---|---|

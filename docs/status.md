@@ -1,6 +1,6 @@
-# Proteone — durum özeti
+# ProteoSM — durum özeti
 
-Güncel: 2026-11-25. Geliştirme: `tugayiltus/Proteone`.
+Güncel: 2026-11-25. Geliştirme: `tugayiltus/ProteoSM` (eski adres yönlendirilir).
 
 ## Ürün
 
@@ -17,4 +17,4 @@ Güncel: 2026-11-25. Geliştirme: `tugayiltus/Proteone`.
 
 ## Planlanan ve açık işler
 
-Tek iş listesi: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Gereksinimler: `proteone.md`.
+Tek iş listesi: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Gereksinimler: `proteosm.md`.

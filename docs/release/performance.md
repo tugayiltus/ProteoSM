@@ -1,6 +1,6 @@
 # Performance measurement
 
-Run by `tools/perf-measure.sh` on 2026-11-24T23:16:24Z at commit `7110322`. Spec 5.2; acceptance criterion 18 of `proteone.md` section 20.
+Run by `tools/perf-measure.sh` on 2026-11-24T23:16:24Z at commit `7110322`. Spec 5.2; acceptance criterion 18 of `proteosm.md` section 20.
 
 - Target: local Release API on http://localhost:5313, database proteone_pilot.
 - Machine: Apple M1, 8 logical cores, 16 GiB RAM, macOS 26.7.

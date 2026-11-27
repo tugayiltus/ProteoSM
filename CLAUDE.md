@@ -1,6 +1,6 @@
-# Proteone — ITSM web platform
+# ProteoSM by ProteONE — ITSM web platform
 
-Single-company ITSM: incident and request management, IT inventory and asset management, SLA, email, knowledge base and reports. UI: Astryx (ADR-0027), user application plus `/admin` (ADR-0038). Goal: ServiceNow-like for small and medium teams, without its complexity. Merges to `master` only with owner approval. Work queue: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Status: `docs/status.md`. Requirements: `proteone.md`.
+Single-company ITSM: incident and request management, IT inventory and asset management, SLA, email, knowledge base and reports. UI: Astryx (ADR-0027), user application plus `/admin` (ADR-0038). Goal: ServiceNow-like for small and medium teams, without its complexity. Merges to `master` only with owner approval. Work queue: `docs/superpowers/plans/2026-11-25-proteone-next.md`. Status: `docs/status.md`. Requirements: `proteosm.md`.
 
 ## Stack & Architecture
 - **Backend:** .NET 11 modular monolith (ADR-0001, runtime ADR-0035) — `backend/src/ProteoSM.Domain` (rules, no framework deps) → `ProteoSM.Application` (handlers + FluentValidation, ports) → `ProteoSM.Infrastructure` (EF Core + Npgsql, migrations) → `ProteoSM.Api` (Minimal APIs, auth, CLI). `backend/src/ProteoSM.Worker` (Generic Host, jobs `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner`, `Cleanup`, row leases; references Application + Infrastructure, never Api; ADR-0014/0015) runs next to the API. Solution: `backend/ProteoSM.slnx`.
@@ -26,8 +26,8 @@ Run through `tools/` scripts.
 - `tools/gen-api-types.sh` — regenerate OpenAPI JSON and `schema.d.ts` after API contract changes.
 - `tools/build.sh` — lint + tests, then Release build + frontend build with chunk sizes.
 - `tools/docker-build.sh` — build `proteosm-api`/`proteosm-worker` images (tags: Git short hash, `latest`).
-- `tools/deploy.sh [--skip-gates] [--fresh-install]` — gates, images, compose up, wait for health through nginx; refuses an empty start beside a Proteone stack's `proteone_pgdata` unless `--fresh-install`.
-- `tools/proteosm-move-drill.sh [git ref]` — Proteone to ProteoSM move drill on throw-away stacks (Docker); writes `docs/release/proteosm-migration-drill.md`.
+- `tools/deploy.sh [--skip-gates] [--fresh-install]` — gates, images, compose up, wait for health through nginx; refuses an empty start beside a former-name stack's `proteone_pgdata` unless `--fresh-install`.
+- `tools/proteosm-move-drill.sh [git ref]` — move drill for a former-name install on throw-away stacks (Docker); writes `docs/release/proteosm-migration-drill.md`.
 - Env names: `PROTEOSM_*`; `tools/lib/product-env.sh` still reads a `PROTEONE_*` variable while the new one is unset.
 - `tools/compose.sh <args>` — `docker compose` with `deploy/compose.yaml` + `deploy/.env`.
 - `tools/gen-self-signed-cert.sh [host]` — test certificate in `deploy/certs/`.

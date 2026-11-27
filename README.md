@@ -1,6 +1,6 @@
-# Proteone
+# ProteoSM
 
-Proteone is a web-based IT service management tool for one company, made for small and medium teams: the parts of a large service desk suite that are used every day, without a workflow engine or training. Employees report faults and request services in plain language; IT staff work team queues; admins run everything from a separate `/admin` area. The UI is Turkish and mobile-first; code and URLs are English. One HTTPS site per company host.
+ProteoSM by ProteONE: ProteoSM is a web-based IT service management tool for one company, made for small and medium teams: the parts of a large service desk suite that are used every day, without a workflow engine or training. Employees report faults and request services in plain language; IT staff work team queues; admins run everything from a separate `/admin` area. The UI is Turkish and mobile-first; code and URLs are English. One HTTPS site per company host.
 
 | Area | What it covers |
 |---|---|
@@ -11,7 +11,7 @@ Proteone is a web-based IT service management tool for one company, made for sma
 | Integration | Microsoft Entra ID or Active Directory sign-in, signed monitoring webhook |
 | Administration | Users, organization, catalogs, SLA, email templates, announcements, general settings, login method, audit |
 
-Requirements: [`proteone.md`](proteone.md). Open work: [`docs/status.md`](docs/status.md).
+Requirements: [`proteosm.md`](proteosm.md). Open work: [`docs/status.md`](docs/status.md).
 
 ## Architecture
 
@@ -108,4 +108,4 @@ Requires a running local PostgreSQL 17 (`brew services start postgresql@17`). Lo
 - [`docs/release/`](docs/release/acceptance.md) — acceptance evidence, `performance.md`, `restore-drill.md`, `directory-contract-test.md`
 - [`docs/user-guides/`](docs/user-guides/README.md) — end-user guide (Turkish, `combined.pdf`)
 - [`CLAUDE.md`](CLAUDE.md) — agent working notes
-- [`proteone.md`](proteone.md) — product analysis and roadmap
+- [`proteosm.md`](proteosm.md) — product analysis and roadmap
