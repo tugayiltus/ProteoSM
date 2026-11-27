@@ -49,3 +49,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0043](0043-no-upgrade-path-from-tgysm.md) | No Upgrade Path from a TGYSM Installation | accepted | 2026-11-25 |
 | [0044](0044-satisfaction-rating.md) | Satisfaction Rating on Completed Tickets | accepted | 2026-11-26 |
 | [0045](0045-outgoing-mail-settings.md) | Outgoing Mail Settings in the Admin Area | accepted | 2026-11-27 |
+| [0046](0046-problem-sla-and-email.md) | Problem SLA and Email | accepted | 2026-11-27 |
