@@ -58,3 +58,37 @@ describe.each(CASES)('$name list states', ({ route, endpoint, empty, firstUse })
     expect(screen.queryByText(NO_FILTER_MESSAGE)).not.toBeInTheDocument();
   });
 });
+
+interface PlainCase {
+  name: string;
+  route: string;
+  endpoint: string;
+  empty: unknown;
+  firstUse: string;
+}
+
+/** Lists with no search or filter: they tell first use from a load error, and have no "no result" state. */
+const PLAIN_CASES: PlainCase[] = [
+  { name: 'locations', route: '/admin/locations', endpoint: 'GET /api/v1/admin/locations', empty: [], firstUse: 'Henüz lokasyon yok. İlk lokasyonu ekleyin.' },
+  { name: 'announcements', route: '/admin/announcements', endpoint: 'GET /api/v1/admin/announcements', empty: [], firstUse: 'Duyuru yok.' },
+  { name: 'monitoring sources', route: '/admin/monitoring', endpoint: 'GET /api/v1/admin/monitoring-sources', empty: [], firstUse: 'İzleme kaynağı yok.' },
+  { name: 'background jobs', route: '/admin/system', endpoint: 'GET /api/v1/admin/system/workers', empty: { status: 'ok', jobs: [] }, firstUse: 'Henüz çalışan iş kaydı yok.' },
+];
+
+describe.each(PLAIN_CASES)('$name list states', ({ route, endpoint, empty, firstUse }) => {
+  it('shows the first-use text and no clear action', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, [endpoint]: { status: 200, body: empty } });
+    renderRoute(route);
+
+    expect(await screen.findByText(firstUse)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: CLEAR_LABEL })).not.toBeInTheDocument();
+  });
+
+  it('shows the load error with a retry action instead', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, [endpoint]: { status: 500, body: { code: 'server.error' } } });
+    renderRoute(route);
+
+    expect(await screen.findByRole('button', { name: RETRY_LABEL })).toBeInTheDocument();
+    expect(screen.queryByText(firstUse)).not.toBeInTheDocument();
+  });
+});
