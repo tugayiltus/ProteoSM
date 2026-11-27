@@ -654,6 +654,15 @@
     "security": {
       "ldaps": "LDAPS (636)",
       "start_tls": "StartTLS (389)"
+    },
+    "candidate": {
+      "tested": "{{method}}: bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir.",
+      "untested": "{{method}}: henüz test edilmedi."
+    },
+    "localAdmin": {
+      "title": "Yerel yönetici girişi",
+      "note": "Yöntem ne olursa olsun yöneticiler yerel Proteone şifreleriyle girebilir. Dizin veya Microsoft hesabı çalışmazsa bu yol açık kalır.",
+      "missing": "Hesabınızın yerel şifresi yok. Yöntem bozulursa yerel şifresi olan başka bir yöneticiyle girmeniz gerekir."
     }
   },
   "system": {

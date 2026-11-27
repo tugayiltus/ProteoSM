@@ -25,6 +25,7 @@ import { FormNumberInput, FormSelector, FormTextInput } from '../../../shared/fo
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { SectionCard } from '../../../shared/page/SectionCard';
+import { useSession } from '../../auth/session';
 
 import { useAuthSettings, useLocalSwitchPreview, useSaveEntra, useSaveLdap, useSwitchMethod, useTestProvider, type AuthSettings, type LoginMethod } from './api';
 
@@ -227,6 +228,28 @@ function BackToLocal({ settings }: { settings: AuthSettings }) {
   );
 }
 
+const CANDIDATES = ['entra', 'ldap'] as const;
+
+/** The running method, the tested candidates and the local admin path stay apart: switching is a separate action in each card. */
+function MethodStatus({ settings }: { settings: AuthSettings }) {
+  const { t } = useTranslation('admin');
+  const me = useSession();
+  return (
+    <VStack gap={2}>
+      <VStack gap={0}>
+        {CANDIDATES.map((method) => (
+          <Text key={method} type="supporting">
+            {t(`loginMethod.candidate.${settings[method].isTested ? 'tested' : 'untested'}`, { method: t(`loginMethod.methods.${method}`) })}
+          </Text>
+        ))}
+      </VStack>
+      <Text type="label">{t('loginMethod.localAdmin.title')}</Text>
+      <Text type="supporting">{t('loginMethod.localAdmin.note')}</Text>
+      {!me.hasLocalPassword && <Banner status="warning" title={t('loginMethod.localAdmin.missing')} />}
+    </VStack>
+  );
+}
+
 export function LoginMethodPage() {
   const { t } = useTranslation('admin');
   const settings = useAuthSettings();
@@ -240,6 +263,7 @@ export function LoginMethodPage() {
           <SectionCard title={t('loginMethod.active')}>
             <Text type="label">{t(`loginMethod.methods.${settings.data.method}`)}</Text>
             {settings.data.method !== 'local' && <BackToLocal settings={settings.data} />}
+            <MethodStatus settings={settings.data} />
           </SectionCard>
           {/* Each card remounts after a save or test so its form starts from the stored values and version. */}
           <EntraCard key={`entra-${settings.data.version}`} settings={settings.data} />

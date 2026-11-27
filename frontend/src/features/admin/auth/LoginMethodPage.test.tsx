@@ -89,4 +89,22 @@ describe('LoginMethodPage', () => {
     const { router } = renderRoute('/admin/login-method');
     await waitFor(() => expect(router.state.location.pathname).not.toBe('/admin/login-method'));
   });
+
+  it('keeps the running method, the tested candidates and the local admin path apart', async () => {
+    mockApi(routes());
+    renderRoute('/admin/login-method');
+
+    const active = await screen.findByRole('region', { name: 'Etkin yöntem' });
+    expect(within(active).getByText('Microsoft (Entra ID): henüz test edilmedi.')).toBeInTheDocument();
+    expect(within(active).getByText('Active Directory (LDAP): bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir.')).toBeInTheDocument();
+    expect(within(active).getByText('Yerel yönetici girişi')).toBeInTheDocument();
+    expect(within(active).queryByText(/yerel şifresi yok/)).not.toBeInTheDocument();
+  });
+
+  it('warns an admin who has no local password', async () => {
+    mockApi(routes({ 'GET /api/v1/auth/me': { status: 200, body: { ...ADMIN_ME, hasLocalPassword: false } } }) as never);
+    renderRoute('/admin/login-method');
+
+    expect(await screen.findByText(/Hesabınızın yerel şifresi yok/)).toBeInTheDocument();
+  });
 });
