@@ -1,6 +1,8 @@
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Proteone.Application.Abstractions;
+using Proteone.Application.Common;
 using Proteone.Application.Features.Users;
 using Proteone.Domain.Audit;
 using Proteone.Domain.Common;
@@ -62,11 +64,20 @@ public sealed class UpdateEmailSettingsHandler(
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
         var settings = await db.EmailSettings.SingleAsync(cancellationToken);
+        // Checked here and again at save: a stale save of active settings must fail before it sends a test mail.
+        if (settings.Version != command.Version)
+        {
+            throw new ConcurrencyException();
+        }
+
         db.SetExpectedVersion(settings, command.Version);
         var passwordChanged = !string.IsNullOrEmpty(command.Password);
+        var storedLogin = LoginTarget.Of(settings);
+        var hadPassword = settings.PasswordProtected is not null;
         var now = clock.GetUtcNow();
         settings.Update(command.Provider, command.SenderName, command.SenderAddress, command.Host, command.Port, command.Security, command.UserName,
             passwordChanged ? secrets.Protect(EmailSettings.NormalizePassword(command.Provider, command.Password!)) : null, now);
+        RequireNewPasswordForNewTarget(settings, storedLogin, hadPassword && !passwordChanged);
         // The password never goes into the audit: only whether one was sent.
         audit.Record(AuditActions.EmailSettingsUpdated, AuditEntityTypes.EmailSettings, settings.Id, newValues: new
         {
@@ -93,5 +104,30 @@ public sealed class UpdateEmailSettingsHandler(
 
         await db.SaveChangesAsync(cancellationToken);
         return EmailSettingsMapping.ToDto(await db.EmailSettings.AsNoTracking().SingleAsync(cancellationToken), environment.Current);
+    }
+
+    /// <summary>
+    /// The stored password belongs to one server and login. Without this rule an admin could point the settings at
+    /// another server and let the test send deliver the stored password there. The check runs on the values after
+    /// <see cref="EmailSettings.Update"/>, so the Google preset counts as the server it is.
+    /// </summary>
+    private static void RequireNewPasswordForNewTarget(EmailSettings settings, LoginTarget stored, bool reusesStoredPassword)
+    {
+        // Without a user name the stored password is dropped, so nothing is reused.
+        if (!reusesStoredPassword || settings.PasswordProtected is null || LoginTarget.Of(settings) == stored)
+        {
+            return;
+        }
+
+        throw new ValidationException([new ValidationFailure(nameof(UpdateEmailSettingsCommand.Password), "A new server or login needs the password again.")
+        {
+            ErrorCode = ErrorCodes.EmailSettingsPasswordMissing,
+        }]);
+    }
+
+    /// <summary>Where the stored password goes: the values that, when changed, need the password typed again.</summary>
+    private sealed record LoginTarget(EmailProvider Provider, string Host, int Port, EmailSecurity Security, string? UserName)
+    {
+        public static LoginTarget Of(EmailSettings settings) => new(settings.Provider, settings.Host, settings.Port, settings.Security, settings.UserName);
     }
 }

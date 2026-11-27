@@ -234,7 +234,7 @@
     "not_tested": "Bu ayarlar henüz test edilmedi. Önce test maili gönderin, başarılı olursa kullanıma alın.",
     "plain_text_login": "Kullanıcı adıyla giriş için güvenli bağlantı gerekir. Güvenlik için STARTTLS veya SSL/TLS seçin.",
     "not_configured": "Önce gönderen adresi ve sunucuyu girin.",
-    "password_missing": "Kullanıcı adı girildi ama şifre kayıtlı değil. Şifreyi yazın.",
+    "password_missing": "Şifreyi yazın. Kayıtlı şifre yok ya da sunucu, port, güvenlik veya kullanıcı değişti; kayıtlı şifre başka bir sunucuya gönderilmez.",
     "connect_failed": "Sunucuya bağlanılamadı. Sunucu adını ve portu kontrol edin.",
     "tls_failed": "Güvenli bağlantı kurulamadı. Güvenlik seçeneğini ve portu kontrol edin.",
     "auth_failed": "Sunucu kullanıcı adını veya şifreyi kabul etmedi. Google için uygulama şifresi kullanın.",

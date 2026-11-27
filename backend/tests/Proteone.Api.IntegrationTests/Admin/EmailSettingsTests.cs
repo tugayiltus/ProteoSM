@@ -248,7 +248,7 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
         using var save = await SaveAsync(admin);
         using var test = await admin.PostAsync(TestPath);
 
-        using var change = await SaveAsync(admin, password: null, port: 2525);
+        using var change = await SaveAsync(admin, port: 2525);
         using var activate = await ActivateAsync(admin);
 
         Assert.Equal(HttpStatusCode.OK, change.StatusCode);
@@ -282,7 +282,7 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
         await ActivateWorkingSettingsAsync(admin);
         factory.EmailTestSender.Reset();
 
-        using var save = await SaveAsync(admin, password: null, port: 2525);
+        using var save = await SaveAsync(admin, port: 2525);
 
         Assert.Equal(HttpStatusCode.OK, save.StatusCode);
         var (transport, _) = Assert.Single(factory.EmailTestSender.Sent);
@@ -320,13 +320,14 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
         factory.EmailTestSender.BeforeSend = async () =>
         {
             factory.EmailTestSender.BeforeSend = null;
-            using var racing = await SaveAsync(other, password: null, port: 2525);
+            using var racing = await SaveAsync(other, port: 2525);
             Assert.Equal(HttpStatusCode.OK, racing.StatusCode);
         };
 
         using var test = await admin.PostAsync(TestPath);
 
         Assert.Equal(HttpStatusCode.Conflict, test.StatusCode);
+        Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(test));
         var json = await GetAsync(admin);
         Assert.Equal(2525, json.GetProperty("port").GetInt32());
         Assert.False(json.GetProperty("isTested").GetBoolean());
@@ -340,11 +341,130 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
         using var first = await admin.PutAsync(SettingsPath, Smtp(version));
 
         using var stale = await admin.PutAsync(SettingsPath, Smtp(version));
-        using var staleActivate = await admin.PostAsync(ActivatePath, new { version });
 
         Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
         Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(stale));
+    }
+
+    [Fact]
+    public async Task Stale_version_on_activate_and_use_environment_is_409()
+    {
+        var (admin, _) = await AdminAsync();
+        await ActivateWorkingSettingsAsync(admin);
+        var version = await VersionAsync(admin);
+        using var restore = await admin.PostAsync(UseEnvironmentPath, new { version });
+        Assert.Equal(HttpStatusCode.OK, restore.StatusCode);
+
+        // The row is still tested, so only the version can refuse these.
+        using var staleActivate = await admin.PostAsync(ActivatePath, new { version });
+        using var staleRestore = await admin.PostAsync(UseEnvironmentPath, new { version });
+
         Assert.Equal(HttpStatusCode.Conflict, staleActivate.StatusCode);
+        Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(staleActivate));
+        Assert.Equal(HttpStatusCode.Conflict, staleRestore.StatusCode);
+        Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(staleRestore));
+        Assert.True((await GetAsync(admin)).GetProperty("isTested").GetBoolean());
+    }
+
+    [Fact]
+    public async Task Stale_save_of_active_settings_is_409_before_any_test_send()
+    {
+        var (admin, _) = await AdminAsync();
+        await ActivateWorkingSettingsAsync(admin);
+        var version = await VersionAsync(admin);
+        using var fresh = await admin.PutAsync(SettingsPath, Smtp(version));
+        Assert.Equal(HttpStatusCode.OK, fresh.StatusCode);
+        factory.EmailTestSender.Reset();
+
+        using var stale = await admin.PutAsync(SettingsPath, Smtp(version, port: 2525));
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal(ErrorCodes.ConcurrencyConflict, await ApiClient.ReadCodeAsync(stale));
+        Assert.Empty(factory.EmailTestSender.Sent);
+    }
+
+    [Fact]
+    public async Task Changing_the_server_without_a_new_password_is_refused()
+    {
+        var (admin, _) = await AdminAsync();
+        using var save = await SaveAsync(admin);
+        string? storedPassword;
+        await using (var db = factory.Database.CreateDbContext())
+        {
+            storedPassword = (await db.EmailSettings.AsNoTracking().SingleAsync(Ct)).PasswordProtected;
+        }
+
+        using var response = await SaveAsync(admin, password: null, host: "smtp.baska.local");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains(ErrorCodes.EmailSettingsPasswordMissing, (await ApiClient.ReadFieldCodesAsync(response))["password"]);
+        await using var check = factory.Database.CreateDbContext();
+        var row = await check.EmailSettings.AsNoTracking().SingleAsync(Ct);
+        Assert.Equal((Host, storedPassword), (row.Host, row.PasswordProtected));
+        Assert.Single(await AuditsAsync(AuditActions.EmailSettingsUpdated));
+    }
+
+    [Theory]
+    [InlineData("port")]
+    [InlineData("security")]
+    [InlineData("userName")]
+    [InlineData("provider")]
+    public async Task Any_login_or_endpoint_change_without_a_new_password_is_refused(string field)
+    {
+        var (admin, _) = await AdminAsync();
+        using var save = await SaveAsync(admin);
+        var version = await VersionAsync(admin);
+        object body = field switch
+        {
+            "port" => Smtp(version, password: null, port: 2525),
+            "security" => Smtp(version, password: null, port: 465, security: "ssl_tls"),
+            "userName" => Smtp(version, password: null, userName: "baska@sirket.com"),
+            _ => new { provider = "google", senderName = (string?)null, senderAddress = SenderAddress, host = "", port = 0, security = "start_tls", userName = MailUser, password = (string?)null, version },
+        };
+
+        using var response = await admin.PutAsync(SettingsPath, body);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains(ErrorCodes.EmailSettingsPasswordMissing, (await ApiClient.ReadFieldCodesAsync(response))["password"]);
+    }
+
+    [Fact]
+    public async Task Changing_the_server_with_a_new_password_is_saved()
+    {
+        var (admin, _) = await AdminAsync();
+        using var save = await SaveAsync(admin);
+
+        using var response = await SaveAsync(admin, password: "yeni-şifre-456", host: "smtp.baska.local");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("smtp.baska.local", (await admin.ReadJsonAsync<JsonElement>(response)).GetProperty("host").GetString());
+    }
+
+    [Fact]
+    public async Task Changing_only_the_sender_name_keeps_the_password()
+    {
+        var (admin, _) = await AdminAsync();
+        using var save = await SaveAsync(admin);
+        await using var db = factory.Database.CreateDbContext();
+        var storedPassword = (await db.EmailSettings.AsNoTracking().SingleAsync(Ct)).PasswordProtected;
+
+        using var response = await admin.PutAsync(SettingsPath, new
+        {
+            provider = "smtp",
+            senderName = "Başka Ad",
+            senderAddress = SenderAddress,
+            host = Host,
+            port = Port,
+            security = "start_tls",
+            userName = MailUser,
+            password = (string?)null,
+            version = await VersionAsync(admin),
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True((await admin.ReadJsonAsync<JsonElement>(response)).GetProperty("hasPassword").GetBoolean());
+        db.ChangeTracker.Clear();
+        Assert.Equal(storedPassword, (await db.EmailSettings.AsNoTracking().SingleAsync(Ct)).PasswordProtected);
     }
 
     [Theory]
