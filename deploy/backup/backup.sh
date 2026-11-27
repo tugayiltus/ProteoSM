@@ -15,6 +15,8 @@ readonly RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 readonly SKIP_RETENTION="${BACKUP_SKIP_RETENTION:-false}"
 readonly MINUTES_PER_DAY=1440
 readonly ARCHIVE_PREFIX="proteosm-"
+# Archives written before the ProteoSM rename; retention removes them like the current ones.
+readonly FORMER_ARCHIVE_PREFIX="proteone-"
 readonly PARTIAL_PREFIX=".partial-"
 # GNU tar exit code 1: a file changed while it was read (attachments are written while the backup runs).
 readonly TAR_FILE_CHANGED=1
@@ -72,7 +74,7 @@ echo "Backup written: $archive"
 if [[ "$SKIP_RETENTION" == true ]]; then
   echo "Retention skipped (BACKUP_SKIP_RETENTION=true): expired archives are kept."
 else
-  find "$BACKUP_DIR" -maxdepth 1 -name "$ARCHIVE_PREFIX*.tar.gz" -mmin "+$((RETENTION_DAYS * MINUTES_PER_DAY))" -print -delete
+  find "$BACKUP_DIR" -maxdepth 1 \( -name "$ARCHIVE_PREFIX*.tar.gz" -o -name "$FORMER_ARCHIVE_PREFIX*.tar.gz" \) -mmin "+$((RETENTION_DAYS * MINUTES_PER_DAY))" -print -delete
 fi
 # Leftovers of runs killed before their cleanup (power loss, OOM); a day old, so never a run in progress.
 find "$BACKUP_DIR" -maxdepth 1 -name "$PARTIAL_PREFIX*" -mmin "+$MINUTES_PER_DAY" -print -delete

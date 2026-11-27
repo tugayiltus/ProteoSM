@@ -7,6 +7,9 @@
 # --no-safety-backup skips it. Honors PROTEOSM_ENV_FILE and
 # COMPOSE_PROJECT_NAME like tools/compose.sh.
 #
+# An archive of a Proteone stack (proteone-*.tar.gz, before the ProteoSM rename) restores like a current one: the
+# checks read only its parts and manifest, and pg_restore --no-owner gives every object to the proteosm role.
+#
 #   tools/restore.sh <archive.tar.gz> [--force] [--no-safety-backup]
 set -euo pipefail
 cd "$(dirname "$0")/.."

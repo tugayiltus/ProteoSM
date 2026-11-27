@@ -162,6 +162,8 @@ def seed(base, state_path, admin_email, admin_temporary):
         "exportSize": len(export_bytes),
         "employeeCookies": jar_cookies,
         "adminCookies": admin_cookies,
+        "adminEmail": admin_email,
+        "employeeEmail": employee_email,
         "goneEmail": gone_email,
         "gonePassword": gone_password,
     }

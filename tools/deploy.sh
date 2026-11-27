@@ -2,7 +2,8 @@
 # Deploys the ProteoSM stack (ADR-0024): quality gates, image build, fresh third-party images, then compose up (migrate
 # runs before api/worker), then waits until the API answers through nginx. The deployed tag (Git short hash) is
 # recorded in deploy/.version, so later tools/compose.sh calls keep using it. Refuses a working tree with uncommitted
-# changes. --skip-gates skips lint and tests (explicit only).
+# changes. --skip-gates skips lint and tests (explicit only). --fresh-install starts an empty stack on a host that
+# still holds the data of a Proteone stack (refused otherwise; docs/operations.md, "Proteone to ProteoSM move").
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source tools/lib/product-env.sh
@@ -15,18 +16,36 @@ readonly VERSION_FILE="deploy/.version"
 readonly DEFAULT_HTTPS_PORT=443
 # Images compose pulls from a registry; proteosm-api and proteosm-worker are built locally.
 readonly THIRD_PARTY_SERVICES=(postgres nginx)
-readonly USAGE="usage: tools/deploy.sh [--skip-gates]"
+readonly USAGE="usage: tools/deploy.sh [--skip-gates] [--fresh-install]"
+# A Proteone stack on this host (Compose project "proteone", before the ProteoSM rename) keeps its data in this volume.
+readonly FORMER_DATA_VOLUME="proteone_pgdata"
+readonly DATA_VOLUME="${COMPOSE_PROJECT_NAME:-proteosm}_pgdata"
+readonly FORMER_CERTIFICATE="deploy/certs/proteone.crt"
 skip_gates=false
+fresh_install=false
 for argument in "$@"; do
   case "$argument" in
     --skip-gates) skip_gates=true ;;
+    --fresh-install) fresh_install=true ;;
     *) echo "$USAGE" >&2; exit 1 ;;
   esac
 done
 
+volume_exists() { docker volume inspect "$1" >/dev/null 2>&1; }
+# Without this check the new stack would start empty beside the old data and look as if everything were lost.
+if [[ "$fresh_install" == false ]] && volume_exists "$FORMER_DATA_VOLUME" && ! volume_exists "$DATA_VOLUME"; then
+  echo "Refused: this host has Proteone data ($FORMER_DATA_VOLUME) and no ProteoSM data yet ($DATA_VOLUME). Move it first" >&2
+  echo "(docs/operations.md, \"Proteone to ProteoSM move\"), or pass --fresh-install to start empty on purpose; the old" >&2
+  echo "volume is not touched." >&2
+  exit 1
+fi
+
 for file in deploy/certs/proteosm.crt deploy/certs/proteosm.key "$ENV_FILE"; do
   if [[ ! -f "$file" ]]; then
     echo "Missing $file (see docs/operations.md)." >&2
+    if [[ -f "$FORMER_CERTIFICATE" ]]; then
+      echo "The certificate of a Proteone host is $FORMER_CERTIFICATE (and .key): copy both to deploy/certs/proteosm.*." >&2
+    fi
     exit 1
   fi
 done
