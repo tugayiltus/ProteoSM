@@ -77,4 +77,15 @@ describe('MonitoringPage', () => {
     await waitFor(() => expect(api.calls.some((c) => c.url.includes('/auth/me'))).toBe(true));
     expect(api.calls.some((c) => c.url.includes('monitoring-sources'))).toBe(false);
   });
+
+  it('says before the confirmation that the old key stops working at once', async () => {
+    const api = mockApi(routes());
+    const { user } = renderRoute('/admin/monitoring');
+
+    await user.click(await screen.findByRole('button', { name: 'Anahtarı yenile Zabbix' }));
+    const dialog = await screen.findByRole('dialog');
+
+    expect(within(dialog).getByText('Zabbix kaynağının eski anahtarı hemen geçersiz olur.')).toBeInTheDocument();
+    expect(api.calls.some((call) => call.method === 'POST')).toBe(false);
+  });
 });

@@ -173,7 +173,14 @@
       "action": "İşlem",
       "entity": "Kayıt"
     },
-    "firstUse": "Henüz denetim kaydı yok."
+    "firstUse": "Henüz denetim kaydı yok.",
+    "actorFilter": "Kullanıcı",
+    "allActors": "Tüm kullanıcılar",
+    "actionFilter": "Eylem",
+    "allActions": "Tüm eylemler",
+    "fromFilter": "Başlangıç günü",
+    "toFilter": "Bitiş günü",
+    "access": "Denetim kayıtlarının ayrıntıları yalnızca yöneticilere açıktır."
   },
   "entityTypes": {
     "user": "Kullanıcı",
