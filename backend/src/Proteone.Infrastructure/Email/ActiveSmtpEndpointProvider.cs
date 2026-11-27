@@ -26,8 +26,12 @@ internal sealed class ActiveSmtpEndpointProvider(
     private readonly SemaphoreSlim _refresh = new(1, 1);
     private volatile CachedRow? _cached;
 
-    /// <summary>The row version seen at <paramref name="CheckedAt"/>, and the panel endpoint when the row was active.</summary>
-    private sealed record CachedRow(uint Version, SmtpEndpoint? Panel, DateTimeOffset CheckedAt);
+    /// <summary>
+    /// The row version seen at <paramref name="CheckedAt"/>, and the panel values when the row was active. Plain values,
+    /// not an <see cref="SmtpEndpoint"/>: MimeKit subscribes each message to its sender <c>MailboxAddress</c> and never
+    /// unsubscribes, so a shared address would keep every sent message in memory.
+    /// </summary>
+    private sealed record CachedRow(uint Version, SmtpTransport? Panel, DateTimeOffset CheckedAt);
 
     public async ValueTask<SmtpEndpoint> GetAsync(CancellationToken cancellationToken)
     {
@@ -38,7 +42,7 @@ internal sealed class ActiveSmtpEndpointProvider(
         }
 
         // The environment values are read on every call, so a changed Email:Smtp:* applies at once, as before.
-        return cached.Panel ?? SmtpEndpoint.FromEnvironment(options.CurrentValue);
+        return cached.Panel is { } panel ? SmtpEndpoint.FromTransport(panel) : SmtpEndpoint.FromEnvironment(options.CurrentValue);
     }
 
     public void Dispose() => _refresh.Dispose();
@@ -68,7 +72,7 @@ internal sealed class ActiveSmtpEndpointProvider(
             var row = await db.EmailSettings.AsNoTracking().SingleAsync(cancellationToken);
 
             // A failure throws before the cache changes, so the next send tries again.
-            return _cached = new CachedRow(row.Version, row.IsActive ? PanelEndpoint(row) : null, now);
+            return _cached = new CachedRow(row.Version, row.IsActive ? PanelTransport(row) : null, now);
         }
         finally
         {
@@ -76,7 +80,7 @@ internal sealed class ActiveSmtpEndpointProvider(
         }
     }
 
-    private SmtpEndpoint PanelEndpoint(EmailSettings row)
+    private SmtpTransport PanelTransport(EmailSettings row)
     {
         string? password;
         try
@@ -90,6 +94,6 @@ internal sealed class ActiveSmtpEndpointProvider(
             throw new InvalidOperationException(UnreadablePasswordMessage);
         }
 
-        return SmtpEndpoint.FromTransport(new SmtpTransport(row.SenderName, row.SenderAddress, row.Host, row.Port, row.Security, row.UserName, password));
+        return new SmtpTransport(row.SenderName, row.SenderAddress, row.Host, row.Port, row.Security, row.UserName, password);
     }
 }

@@ -183,6 +183,38 @@ public sealed class ActiveSmtpEndpointProviderTests(FakeClockApiFactory factory)
     }
 
     [Fact]
+    public async Task Each_call_builds_a_new_panel_sender_address()
+    {
+        // MimeKit subscribes every message to its sender address and never unsubscribes: a shared, cached address
+        // would keep each sent message in memory.
+        await ActivatePanelAsync();
+        var provider = Provider();
+
+        var first = await provider.GetAsync(Ct);
+        var second = await provider.GetAsync(Ct);
+
+        Assert.NotSame(first, second);
+        Assert.NotSame(first.From, second.From);
+        Assert.Equal(first.From.Address, second.From.Address);
+    }
+
+    [Fact]
+    public async Task Unreadable_password_after_a_good_one_never_reuses_the_cached_password()
+    {
+        await ActivatePanelAsync();
+        var provider = Provider();
+        Assert.Equal(PanelPassword, (await provider.GetAsync(Ct)).Password);
+
+        await SetProtectedPasswordAsync(BrokenProtectedPassword);
+        factory.Clock.Advance(ActiveSmtpEndpointProvider.CacheLifetime);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => provider.GetAsync(Ct).AsTask());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => provider.GetAsync(Ct).AsTask());
+        factory.Clock.Advance(ActiveSmtpEndpointProvider.CacheLifetime);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => provider.GetAsync(Ct).AsTask());
+    }
+
+    [Fact]
     public async Task Smtp_sender_uses_the_panel_sender_address()
     {
         await using var server = ScriptedSmtpServer.Start(new SmtpScript());
