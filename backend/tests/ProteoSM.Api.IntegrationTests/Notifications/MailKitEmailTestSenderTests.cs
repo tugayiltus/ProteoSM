@@ -25,9 +25,9 @@ public sealed class MailKitEmailTestSenderTests : IDisposable
     private const string UserName = "mailer@firma.com";
     private const string Password = "hunter2";
     private static readonly TimeSpan UpperBound = TimeSpan.FromSeconds(10);
-    private static readonly EmailMessage Message = new(Recipient, "Admin", "Proteone test e-postası", "Gövde");
+    private static readonly EmailMessage Message = new(Recipient, "Admin", "ProteoSM test e-postası", "Gövde");
 
-    private readonly string _pickupFolder = Path.Combine(Path.GetTempPath(), "proteone-test-send-" + Guid.NewGuid().ToString("N"));
+    private readonly string _pickupFolder = Path.Combine(Path.GetTempPath(), "proteosm-test-send-" + Guid.NewGuid().ToString("N"));
 
     private sealed class FixedOptionsMonitor(EmailOptions value) : IOptionsMonitor<EmailOptions>
     {

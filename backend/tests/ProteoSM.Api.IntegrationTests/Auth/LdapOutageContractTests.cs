@@ -12,7 +12,7 @@ namespace ProteoSM.Api.IntegrationTests.Auth;
 /// <summary>
 /// With the directory container stopped, an LDAP sign-in answers 503 <c>auth.directory_unavailable</c> instead of hanging
 /// or claiming a wrong password (ADR-0030). Runs only when tools/directory-contract-test.sh has stopped the container and
-/// set PROTEONE_TEST_LDAP_STOPPED=1 next to the PROTEONE_TEST_LDAP_* variables; skipped otherwise.
+/// set PROTEOSM_TEST_LDAP_STOPPED=1 next to the PROTEOSM_TEST_LDAP_* variables; skipped otherwise.
 /// </summary>
 public sealed class LdapOutageContractTests(LdapContractFixture fixture) : IClassFixture<LdapContractFixture>, IAsyncLifetime
 {

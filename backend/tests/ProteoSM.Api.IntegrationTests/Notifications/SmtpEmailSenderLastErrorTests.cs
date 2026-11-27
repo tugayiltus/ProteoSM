@@ -34,7 +34,7 @@ public sealed class SmtpEmailSenderLastErrorTests(ApiFactory factory) : IClassFi
     private static EmailOptions Environment(int port) => new()
     {
         Mode = EmailModes.Smtp,
-        From = "Proteone <no-reply@proteone.local>",
+        From = "ProteoSM <no-reply@proteosm.local>",
         Smtp = new SmtpOptions
         {
             Host = IPAddress.Loopback.ToString(),

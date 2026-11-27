@@ -7,15 +7,16 @@
 #   GUIDE_PASSWORD=<pilot password> tools/guide-screenshots.sh [id ...]
 #
 # Optional ids limit the run to those manifest entries. Environment: GUIDE_PASSWORD (required; never stored),
-# PROTEONE_DB_HOST / PROTEONE_DB_NAME / PROTEONE_DB_USER. Only databases named proteone_pilot* are used, never the development one.
+# PROTEOSM_DB_HOST / PROTEOSM_DB_NAME / PROTEOSM_DB_USER. Only databases named proteosm_pilot* are used, never the development one.
 # Uses API port 5313 and preview port 5312; both must be free (tools/e2e.sh and tools/perf-measure.sh use the same ports).
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
-readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
-readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_pilot}"
-readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
-readonly PILOT_DB_PREFIX="proteone_pilot"
+readonly DB_HOST="${PROTEOSM_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEOSM_DB_NAME:-proteosm_pilot}"
+readonly DB_USER="${PROTEOSM_DB_USER:-proteosm}"
+readonly PILOT_DB_PREFIX="proteosm_pilot"
 readonly API_PORT=5313
 readonly PREVIEW_PORT=5312
 readonly API_URL="http://localhost:$API_PORT"
@@ -49,7 +50,7 @@ done
 api_pid=""
 worker_pid=""
 preview_pid=""
-temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/proteone-guide.XXXXXX")"
+temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/proteosm-guide.XXXXXX")"
 cleanup() {
   if [[ -n "$api_pid" ]]; then kill "$api_pid" 2>/dev/null || true; fi
   if [[ -n "$worker_pid" ]]; then kill "$worker_pid" 2>/dev/null || true; fi
@@ -91,7 +92,7 @@ export Worker__Jobs__ExportRunner__IntervalSeconds="$JOB_INTERVAL_SECONDS"
 export Worker__Jobs__Cleanup__IntervalSeconds="$JOB_INTERVAL_SECONDS"
 (cd "$API_BIN_DIR" && exec dotnet ProteoSM.Api.dll --urls "$API_URL") >"$LOG_DIR/api-guide.log" 2>&1 &
 api_pid=$!
-(cd frontend && exec env PROTEONE_API_URL="$API_URL" node node_modules/vite/bin/vite.js preview) >"$LOG_DIR/preview-guide.log" 2>&1 &
+(cd frontend && exec env PROTEOSM_API_URL="$API_URL" node node_modules/vite/bin/vite.js preview) >"$LOG_DIR/preview-guide.log" 2>&1 &
 preview_pid=$!
 (cd "$WORKER_BIN_DIR" && exec dotnet ProteoSM.Worker.dll) >"$LOG_DIR/worker-guide.log" 2>&1 &
 worker_pid=$!

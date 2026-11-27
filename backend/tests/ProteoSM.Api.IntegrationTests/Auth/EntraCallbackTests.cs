@@ -10,7 +10,7 @@ using ProteoSM.Api.Security;
 namespace ProteoSM.Api.IntegrationTests.Auth;
 
 /// <summary>
-/// The step after Microsoft validated the token: the cookie must carry the Proteone session principal, never Microsoft's,
+/// The step after Microsoft validated the token: the cookie must carry the ProteoSM session principal, never Microsoft's,
 /// and a refusal must end at the login page (ADR-0030).
 /// </summary>
 [Collection(ApiCollection.Name)]

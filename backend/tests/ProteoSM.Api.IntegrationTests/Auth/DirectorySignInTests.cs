@@ -10,7 +10,7 @@ using ProteoSM.Domain.Users;
 
 namespace ProteoSM.Api.IntegrationTests.Auth;
 
-/// <summary>A verified directory identity becomes a Proteone user: linked, created or refreshed (ADR-0030).</summary>
+/// <summary>A verified directory identity becomes a ProteoSM user: linked, created or refreshed (ADR-0030).</summary>
 [Collection(ApiCollection.Name)]
 public sealed class DirectorySignInTests(ApiFactory factory) : IAsyncLifetime
 {

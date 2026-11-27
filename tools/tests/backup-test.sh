@@ -28,10 +28,10 @@ check_next "scheduler: after 02:30 runs the next night" "2026-10-10 00:00" "2026
 check_next "scheduler: exactly 02:30 runs the next night" "2026-10-09 23:30" "2026-10-10 23:30"
 
 # 2. A run writes one archive with dump, files, keys and manifest; an expired archive goes, a fresh one stays.
-in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteone-20000101-000000.tar.gz; touch $BACKUP_DIR/proteone-29990101-000000.tar.gz"
+in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteosm-20000101-000000.tar.gz; touch $BACKUP_DIR/proteosm-29990101-000000.tar.gz"
 in_backup "touch -d @\$((\$(date +%s) - $OLD_PARTIAL_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/.partial-20000101-000000.tar"
 if tools/backup.sh >/dev/null; then pass "backup: exit 0"; else fail "backup: exit 0"; fi
-latest="$(in_backup "ls -t $BACKUP_DIR/proteone-2[0-8]*.tar.gz | head -1")"
+latest="$(in_backup "ls -t $BACKUP_DIR/proteosm-2[0-8]*.tar.gz | head -1")"
 mode="$(in_backup "stat -c '%a' $latest")"
 if [[ "$mode" == "600" ]]; then pass "archive readable by its owner only (600)"; else fail "archive mode is $mode, expected 600"; fi
 contents="$(in_backup "tar -tzf $latest")"
@@ -50,29 +50,29 @@ recorded_files="$(sed -n 's/.*"fileCount": \([0-9]*\).*/\1/p' <<<"$manifest")"
 archived_files="$(grep -c '^files/.*[^/]$' <<<"$contents" || true)"
 if [[ "$recorded_files" == "$archived_files" ]]; then pass "manifest fileCount matches the archive ($archived_files)"; else fail "manifest fileCount $recorded_files vs $archived_files archived"; fi
 if in_backup "test ! -e $BACKUP_DIR/.partial-20000101-000000.tar"; then pass "retention removed a day-old .partial leftover"; else fail "retention removed a day-old .partial leftover"; fi
-if in_backup "test ! -e $BACKUP_DIR/proteone-20000101-000000.tar.gz"; then pass "retention removed the expired archive"; else fail "retention removed the expired archive"; fi
-if in_backup "test -e $BACKUP_DIR/proteone-29990101-000000.tar.gz"; then pass "retention kept a recent archive"; else fail "retention kept a recent archive"; fi
+if in_backup "test ! -e $BACKUP_DIR/proteosm-20000101-000000.tar.gz"; then pass "retention removed the expired archive"; else fail "retention removed the expired archive"; fi
+if in_backup "test -e $BACKUP_DIR/proteosm-29990101-000000.tar.gz"; then pass "retention kept a recent archive"; else fail "retention kept a recent archive"; fi
 
 # 3. The safety backup tools/restore.sh takes before --force skips retention: an expired archive (perhaps the one being
 # restored) survives it.
-in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteone-20000103-000000.tar.gz"
-count_before="$(in_backup "ls $BACKUP_DIR/proteone-*.tar.gz | wc -l")"
+in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteosm-20000103-000000.tar.gz"
+count_before="$(in_backup "ls $BACKUP_DIR/proteosm-*.tar.gz | wc -l")"
 if tools/backup.sh --safety >/dev/null; then pass "safety backup: exit 0"; else fail "safety backup: exit 0"; fi
-if in_backup "test -e $BACKUP_DIR/proteone-20000103-000000.tar.gz"; then pass "safety backup kept an expired archive"; else fail "safety backup kept an expired archive"; fi
-count_after="$(in_backup "ls $BACKUP_DIR/proteone-*.tar.gz | wc -l")"
+if in_backup "test -e $BACKUP_DIR/proteosm-20000103-000000.tar.gz"; then pass "safety backup kept an expired archive"; else fail "safety backup kept an expired archive"; fi
+count_after="$(in_backup "ls $BACKUP_DIR/proteosm-*.tar.gz | wc -l")"
 if (( count_after == count_before + 1 )); then pass "safety backup wrote one archive"; else fail "safety backup: archives $count_before -> $count_after"; fi
-in_backup "rm -f $BACKUP_DIR/proteone-20000103-000000.tar.gz"
+in_backup "rm -f $BACKUP_DIR/proteosm-20000103-000000.tar.gz"
 
 # 4. Database down: non-zero exit, no new archive, nothing deleted.
-in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteone-20000102-000000.tar.gz"
-count_before="$(in_backup "ls $BACKUP_DIR/proteone-*.tar.gz | wc -l")"
+in_backup "touch -d @\$((\$(date +%s) - $OLD_ARCHIVE_DAYS * $SECONDS_PER_DAY)) $BACKUP_DIR/proteosm-20000102-000000.tar.gz"
+count_before="$(in_backup "ls $BACKUP_DIR/proteosm-*.tar.gz | wc -l")"
 tools/compose.sh stop postgres >/dev/null 2>&1
 if tools/backup.sh >/dev/null 2>&1; then fail "failed backup: non-zero exit"; else pass "failed backup: non-zero exit"; fi
-count_after="$(in_backup "ls $BACKUP_DIR/proteone-*.tar.gz | wc -l")"
+count_after="$(in_backup "ls $BACKUP_DIR/proteosm-*.tar.gz | wc -l")"
 if [[ "$count_before" == "$count_after" ]]; then pass "failed backup: no archive added or removed"; else fail "failed backup: archives $count_before -> $count_after"; fi
-if in_backup "test -z \"\$(ls -A $BACKUP_DIR | grep -v '^proteone-')\""; then pass "failed backup: no partial files left"; else fail "failed backup: no partial files left"; fi
+if in_backup "test -z \"\$(ls -A $BACKUP_DIR | grep -v '^proteosm-')\""; then pass "failed backup: no partial files left"; else fail "failed backup: no partial files left"; fi
 tools/compose.sh start postgres >/dev/null 2>&1
-in_backup "rm -f $BACKUP_DIR/proteone-20000102-000000.tar.gz $BACKUP_DIR/proteone-29990101-000000.tar.gz"
+in_backup "rm -f $BACKUP_DIR/proteosm-20000102-000000.tar.gz $BACKUP_DIR/proteosm-29990101-000000.tar.gz"
 
 if [[ "$failures" -gt 0 ]]; then echo "$failures check(s) failed"; exit 1; fi
 echo "All backup checks passed"

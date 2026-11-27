@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Restores a Proteone backup archive into this stack (ADR-0025): stops the application, restores database, files and keys
+# Restores a ProteoSM backup archive into this stack (ADR-0025): stops the application, restores database, files and keys
 # (refused when the database is not empty unless --force, or when the archive is from a newer build or fails its
 # checksum/manifest checks), runs migrate, starts the stack and waits until the API is healthy. With --force on a
 # database that has tables, it first takes a safety backup of the current state (tools/backup.sh --safety, which skips
 # retention so an expired archive being restored from the backup folder survives) and stops if that fails;
-# --no-safety-backup skips it. Honors PROTEONE_ENV_FILE and
+# --no-safety-backup skips it. Honors PROTEOSM_ENV_FILE and
 # COMPOSE_PROJECT_NAME like tools/compose.sh.
 #
 #   tools/restore.sh <archive.tar.gz> [--force] [--no-safety-backup]
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
 readonly READY_TIMEOUT_SECONDS=180
 # Exit codes 2-4 of deploy/backup/restore.sh mean "refused before writing" (not an archive, newer build, database not empty).
@@ -49,11 +50,11 @@ restart_previous() {
 tools/compose.sh stop api worker backup nginx >/dev/null 2>&1 || true
 tools/compose.sh up -d postgres
 for ((second = 0; second < READY_TIMEOUT_SECONDS; second++)); do
-  if tools/compose.sh exec -T postgres pg_isready -q -U proteone -d proteone; then break; fi
+  if tools/compose.sh exec -T postgres pg_isready -q -U proteosm -d proteosm; then break; fi
   sleep 1
 done
 
-if ! existing="$(tools/compose.sh exec -T postgres psql -U proteone -d proteone -XtAc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'")"; then
+if ! existing="$(tools/compose.sh exec -T postgres psql -U proteosm -d proteosm -XtAc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'")"; then
   echo "The database did not answer; nothing was restored." >&2
   restart_previous
   exit 1

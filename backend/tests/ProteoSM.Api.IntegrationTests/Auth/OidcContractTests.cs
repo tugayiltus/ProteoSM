@@ -19,8 +19,8 @@ namespace ProteoSM.Api.IntegrationTests.Auth;
 /// <summary>
 /// Microsoft Entra sign-in end to end against a local OpenID Connect server (mock-oauth2-server,
 /// deploy/test-directory/compose.yaml): the real handler runs the code flow with PKCE, redeems the code over the network
-/// and validates the signed token; refusals must end at the login page (ADR-0030). Skipped unless PROTEONE_TEST_OIDC_URL
-/// and PROTEONE_TEST_OIDC_TENANT are set (tools/directory-contract-test.sh): CI has no such server.
+/// and validates the signed token; refusals must end at the login page (ADR-0030). Skipped unless PROTEOSM_TEST_OIDC_URL
+/// and PROTEOSM_TEST_OIDC_TENANT are set (tools/directory-contract-test.sh): CI has no such server.
 /// </summary>
 public sealed partial class OidcContractTests(OidcContractFixture fixture) : IClassFixture<OidcContractFixture>, IAsyncLifetime
 {
@@ -228,7 +228,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
     }
 
     /// <summary>
-    /// The token passed the handler's validation (signature, issuer, audience, nonce, PKCE redemption) and Proteone's own
+    /// The token passed the handler's validation (signature, issuer, audience, nonce, PKCE redemption) and ProteoSM's own
     /// checks refused it. Any earlier failure, such as a broken token exchange, fails here instead of passing as a refusal.
     /// </summary>
     private static ClaimsPrincipal AssertValidTokenRefusedByProteone(OidcContractFactory factory)
@@ -237,7 +237,7 @@ public sealed partial class OidcContractTests(OidcContractFixture fixture) : ICl
         return Assert.IsType<ClaimsPrincipal>(factory.Outcome.ValidatedPrincipal);
     }
 
-    /// <summary>The handler rejected the token itself, for exactly this reason; Proteone's checks never saw it.</summary>
+    /// <summary>The handler rejected the token itself, for exactly this reason; ProteoSM's checks never saw it.</summary>
     private static void AssertTokenRejectedFor<TException>(OidcContractFactory factory)
         where TException : Exception
     {

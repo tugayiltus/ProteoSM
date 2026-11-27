@@ -3,11 +3,12 @@
 # tools/dev-dotnet-host.sh). Used by tools/run.sh and by the launchd service (tools/dev-service.sh).
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
 readonly ROOT="$(pwd)"
-readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
-readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_dev}"
-readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
+readonly DB_HOST="${PROTEOSM_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEOSM_DB_NAME:-proteosm_dev}"
+readonly DB_USER="${PROTEOSM_DB_USER:-proteosm}"
 # The Worker has no user secrets of its own, so it gets the API's connection string through the environment.
 readonly WORKER_CONNECTION="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_USER"
 # Absolute: Email:PickupFolder is the only Worker setting whose development default is a relative path.

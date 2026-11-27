@@ -14,7 +14,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 readonly ROOT="$(pwd)"
-readonly LABEL_PREFIX="com.proteone.dev"
+readonly LABEL_PREFIX="com.proteosm.dev"
+# Agents installed before the ProteoSM rename; install, stop and uninstall remove them so two stacks never fight for the ports.
+readonly FORMER_LABEL_PREFIX="com.proteone.dev"
 readonly SERVICES=(api worker web)
 readonly AGENTS_DIR="$HOME/Library/LaunchAgents"
 readonly LOG_DIR="$ROOT/tmp/logs"
@@ -23,7 +25,7 @@ readonly DOMAIN="gui/$(id -u)"
 readonly RESTART_THROTTLE_SECONDS=10
 readonly LOG_TAIL_LINES=30
 readonly API_HEALTH_URL="http://localhost:5311/api/v1/health"
-readonly WEB_URL="http://proteone.localhost:5310"
+readonly WEB_URL="http://proteosm.localhost:5310"
 readonly HTTP_TIMEOUT_SECONDS=3
 
 # launchd starts agents with a minimal PATH; give them the toolchain this shell uses.
@@ -79,6 +81,16 @@ start_all() {
 stop_all() {
   for service in "${SERVICES[@]}"; do
     if loaded "$service"; then launchctl bootout "$DOMAIN/$(label "$service")"; fi
+  done
+  remove_former_agents
+}
+
+remove_former_agents() {
+  local former
+  for service in "${SERVICES[@]}"; do
+    former="$FORMER_LABEL_PREFIX.$service"
+    if launchctl print "$DOMAIN/$former" >/dev/null 2>&1; then launchctl bootout "$DOMAIN/$former"; fi
+    rm -f "$AGENTS_DIR/$former.plist"
   done
 }
 

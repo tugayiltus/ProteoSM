@@ -8,17 +8,17 @@ Every command below runs from the repository root on the host. `tools/compose.sh
 
 | Service | Image | Role |
 |---|---|---|
-| `postgres` | `postgres:17` | Database `proteone`, user `proteone`, volume `pgdata`. Not published to the host. |
-| `migrate` | `proteone-api` | One-shot `migrate` command: EF Core migrations plus post-migration data steps. `api` and `worker` start only after it exits 0. |
-| `api` | `proteone-api` | API and the web app on HTTP `8080` inside the network. Health check `GET /api/v1/health`. |
-| `worker` | `proteone-worker` | Background jobs (outbox, email, SLA monitor, exports, licence expiry, cleanup). No network listener. |
+| `postgres` | `postgres:17` | Database `proteosm`, user `proteosm`, volume `pgdata`. Not published to the host. |
+| `migrate` | `proteosm-api` | One-shot `migrate` command: EF Core migrations plus post-migration data steps. `api` and `worker` start only after it exits 0. |
+| `api` | `proteosm-api` | API and the web app on HTTP `8080` inside the network. Health check `GET /api/v1/health`. |
+| `worker` | `proteosm-worker` | Background jobs (outbox, email, SLA monitor, exports, licence expiry, cleanup). No network listener. |
 | `nginx` | `nginx:stable` | TLS on `HTTPS_PORT` (default 443); `HTTP_PORT` (default 80) redirects to HTTPS; proxies to `api:8080`. |
 | `backup` | `postgres:17` | Nightly backup at `BACKUP_TIME`. |
 | `restore` | `postgres:17` | Profile `restore` only; started by `tools/restore.sh`. |
 
 Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `/data/files`), `keys` (Data Protection key ring; `/data/keys`), `backups` (archives, unless `BACKUP_HOST_DIR` is set).
 
-`proteone-api` and `proteone-worker` run as the non-root `app` user (uid 1654) and contain no secrets. All settings come from `deploy/.env` at run time.
+`proteosm-api` and `proteosm-worker` run as the non-root `app` user (uid 1654) and contain no secrets. All settings come from `deploy/.env` at run time.
 
 ## Host requirements
 
@@ -26,7 +26,7 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
 - `git` (images are tagged with the Git short hash of the checkout), `bash`, `curl`, `openssl` (only for a self-signed test certificate).
 - Inbound TCP on `HTTP_PORT` and `HTTPS_PORT`. Outbound access to the SMTP relay (`SMTP_HOST:SMTP_PORT`).
 - A DNS name for the host that matches the certificate and `PUBLIC_BASE_URL`.
-- The subnet `PROTEONE_SUBNET` (default `172.28.0.0/24`) must not overlap a network the host already uses.
+- The subnet `PROTEOSM_SUBNET` (default `172.28.0.0/24`) must not overlap a network the host already uses.
 - Running the quality gates on the host (`tools/deploy.sh` without `--skip-gates`) additionally needs the development toolchain: .NET 11 SDK, Node 26 and a PostgreSQL 17 for the tests. A production host normally deploys with `--skip-gates` a commit whose CI run (`.github/workflows/ci.yml`) is green.
 - CPU, memory and disk sizing: TODO: decide after the pilot. Reference measurement: `docs/release/performance.md` (2,000 tickets, 500 assets).
 - On macOS with Colima (development machines only), Docker shares only the home folder with containers: keep the repository and any archive you restore under your home folder.
@@ -43,12 +43,12 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
 
    | Key | Meaning |
    |---|---|
-   | `PROTEONE_DEPLOYMENT` | Unset on a production host. `pilot` only on a pilot or test host: it allows `tools/seed-pilot.sh --compose` (see Pilot data). |
-   | `POSTGRES_PASSWORD` | Password of the `proteone` database user. Long random value. |
+   | `PROTEOSM_DEPLOYMENT` | Unset on a production host. `pilot` only on a pilot or test host: it allows `tools/seed-pilot.sh --compose` (see Pilot data). |
+   | `POSTGRES_PASSWORD` | Password of the `proteosm` database user. Long random value. |
    | `PUBLIC_BASE_URL` | Absolute `https://` address users open; used for links in email (`App:PublicBaseUrl`). |
    | `HTTP_PORT`, `HTTPS_PORT` | Host ports of nginx (80, 443). |
    | `TZ`, `APP_TIME_ZONE` | Container clock (backup schedule) and business time zone (`App:TimeZone`); default `Europe/Istanbul`. |
-   | `PROTEONE_SUBNET` | Internal Docker network; the API trusts `X-Forwarded-For` / `X-Forwarded-Proto` only from it (`Http:KnownProxyNetworks`). |
+   | `PROTEOSM_SUBNET` | Internal Docker network; the API trusts `X-Forwarded-For` / `X-Forwarded-Proto` only from it (`Http:KnownProxyNetworks`). |
    | `EMAIL_MODE` | `Smtp` in production; `Pickup` writes `.eml` files to `/data/files/email-pickup` (test hosts). |
    | `EMAIL_FROM` | Sender, e.g. `Proteone <no-reply@example.com>`. |
    | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USE_STARTTLS`, `SMTP_USERNAME`, `SMTP_PASSWORD` | SMTP relay (`Email:Smtp:*`). |
@@ -58,10 +58,10 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
    `deploy/.env` is git-ignored. It holds the database and SMTP passwords: keep it readable by the operator account only.
 
    `Files:RootPath=/data/files` and `DataProtection:KeysPath=/data/keys` are set in the images and need no entry.
-3. Put the certificate in place. nginx reads exactly `deploy/certs/proteone.crt` (certificate with its chain) and `deploy/certs/proteone.key` (private key), mounted read-only. Both are git-ignored.
+3. Put the certificate in place. nginx reads exactly `deploy/certs/proteosm.crt` (certificate with its chain) and `deploy/certs/proteosm.key` (private key), mounted read-only. Both are git-ignored.
 
    ```bash
-   chmod 600 deploy/certs/proteone.key
+   chmod 600 deploy/certs/proteosm.key
    ```
 
    For a test host without a company certificate: `tools/gen-self-signed-cert.sh <host-name>` (default `localhost`; valid 365 days). Browsers warn about a self-signed certificate.
@@ -71,9 +71,9 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
    tools/deploy.sh --skip-gates   # or tools/deploy.sh to run tools/lint.sh and tools/test.sh first
    ```
 
-   It refuses when `deploy/certs/proteone.crt`, `deploy/certs/proteone.key` or `deploy/.env` is missing, or when the working tree has uncommitted changes (the image tag must name the code it holds). It builds both images on fresh base images (`tools/docker-build.sh`, tags `<git short hash>` and `latest`), records the hash in `deploy/.version` (git-ignored), pulls `postgres` and `nginx`, runs `tools/compose.sh up -d --remove-orphans` and waits up to 180 s for `https://localhost:<HTTPS_PORT>/api/v1/health` through nginx. Exit 0 prints `Proteone is up on …`.
+   It refuses when `deploy/certs/proteosm.crt`, `deploy/certs/proteosm.key` or `deploy/.env` is missing, or when the working tree has uncommitted changes (the image tag must name the code it holds). It builds both images on fresh base images (`tools/docker-build.sh`, tags `<git short hash>` and `latest`), records the hash in `deploy/.version` (git-ignored), pulls `postgres` and `nginx`, runs `tools/compose.sh up -d --remove-orphans` and waits up to 180 s for `https://localhost:<HTTPS_PORT>/api/v1/health` through nginx. Exit 0 prints `Proteone is up on …`.
 
-   Image tag: every `tools/compose.sh` call (and so `tools/backup.sh`, `tools/restore.sh`) uses the tag in `deploy/.version`; a `PROTEONE_VERSION` set in the shell overrides it. Without the file the tag is `latest`. Container logs rotate (`json-file`, 5 files of 10 MB per container).
+   Image tag: every `tools/compose.sh` call (and so `tools/backup.sh`, `tools/restore.sh`) uses the tag in `deploy/.version`; a `PROTEOSM_VERSION` set in the shell overrides it. Without the file the tag is `latest`. Container logs rotate (`json-file`, 5 files of 10 MB per container).
 5. Create the first admin (works once; refused when any user exists, ADR-0007). The temporary password is printed once and must be changed at the first sign-in:
 
    ```bash
@@ -91,16 +91,16 @@ tools/compose.sh run --rm api reset-password --email <email>
 
 ### Pilot data (pilot hosts only)
 
-`tools/seed-pilot.sh --compose [--scale <factor>]` runs the `seed-pilot` command in a one-off `api` container with `ASPNETCORE_ENVIRONMENT=Pilot`. Because it sets that environment itself, the command's environment check does not protect a deployed host; the marker does: `--compose` refuses unless `deploy/.env` has `PROTEONE_DEPLOYMENT=pilot`. Set it only on a pilot host. The command refuses once the database has a ticket, and writes about 50 employees, 8 IT staff, 500 assets and 2,000 tickets over the past 90 days through the application handlers (`--scale` multiplies the volumes, at most 10). Accounts use the domain `pilot.example.com`; the pilot password is printed once.
+`tools/seed-pilot.sh --compose [--scale <factor>]` runs the `seed-pilot` command in a one-off `api` container with `ASPNETCORE_ENVIRONMENT=Pilot`. Because it sets that environment itself, the command's environment check does not protect a deployed host; the marker does: `--compose` refuses unless `deploy/.env` has `PROTEOSM_DEPLOYMENT=pilot`. Set it only on a pilot host. The command refuses once the database has a ticket, and writes about 50 employees, 8 IT staff, 500 assets and 2,000 tickets over the past 90 days through the application handlers (`--scale` multiplies the volumes, at most 10). Accounts use the domain `pilot.example.com`; the pilot password is printed once.
 
 - The seed closes the notification outbox rows it wrote, so those are never sent. The Worker's SLA monitor still raises breach notifications later for the open seeded tickets and problems, addressed to `@pilot.example.com`. While only seed data exists, run the pilot host with `EMAIL_MODE=Pickup` or with a relay that drops that domain.
 - A failed seed keeps what it wrote (its queued notifications are still closed). Take a backup before seeding; to start over, restore that backup (`tools/restore.sh <archive> --force`).
-- A seeded host is never promoted to production: the seeded accounts share one printed password. To go live, reinstall with empty volumes (recommended), or at least create a real admin, deactivate every seeded `@pilot.example.com` account and remove `PROTEONE_DEPLOYMENT` from `deploy/.env`.
+- A seeded host is never promoted to production: the seeded accounts share one printed password. To go live, reinstall with empty volumes (recommended), or at least create a real admin, deactivate every seeded `@pilot.example.com` account and remove `PROTEOSM_DEPLOYMENT` from `deploy/.env`.
 
 ## Updates
 
 1. Back up first: `tools/backup.sh`. Copy the archive off the host. This archive is the way back if the update must be undone (below).
-2. Note the running image tag: `cat deploy/.version` (all built tags: `docker image ls proteone-api`).
+2. Note the running image tag: `cat deploy/.version` (all built tags: `docker image ls proteosm-api`).
 3. Get the new release: `git pull` (or check out the release tag/commit).
 4. `tools/deploy.sh --skip-gates`. The `migrate` service runs before `api` and `worker`; when a migration fails, `api` and `worker` do not start and `tools/compose.sh logs migrate` names the failing migration (`Migration failed: …`).
 5. Check health (below) and `/admin/system`.
@@ -124,11 +124,11 @@ Images of earlier builds stay on the host under their Git short hash until remov
 
   Everything written after that backup is lost. `tools/restore.sh` asks the pinned image for its newest migration (`migrate --print-latest`), so pin the tag before restoring; an archive from a newer build is refused (exit 3).
 
-The next `tools/deploy.sh` overwrites `deploy/.version` with its own hash, so `tools/compose.sh` and `tools/restore.sh` always use the images that run. Do not set `PROTEONE_VERSION` in `deploy/.env`: `deploy/.version` overrides it.
+The next `tools/deploy.sh` overwrites `deploy/.version` with its own hash, so `tools/compose.sh` and `tools/restore.sh` always use the images that run. Do not set `PROTEOSM_VERSION` in `deploy/.env`: `deploy/.version` overrides it.
 
 ## Backups
 
-- **What:** one archive `proteone-YYYYMMDD-HHMMSS.tar.gz` (UTC time) per run with `db.dump` (`pg_dump -Fc`), `files/` (file store), `keys/` (Data Protection key ring) and `manifest.json` (app version, newest migration, creation time, SHA-256 of `db.dump`, number of files in the archive, row count of every table). Dump, counts and migration id come from one database snapshot. A file that changes while the file store is archived is tolerated (GNU tar exit 1); `fileCount` is what the archive holds.
+- **What:** one archive `proteosm-YYYYMMDD-HHMMSS.tar.gz` (UTC time) per run with `db.dump` (`pg_dump -Fc`), `files/` (file store), `keys/` (Data Protection key ring) and `manifest.json` (app version, newest migration, creation time, SHA-256 of `db.dump`, number of files in the archive, row count of every table). Dump, counts and migration id come from one database snapshot. A file that changes while the file store is archived is tolerated (GNU tar exit 1); `fileCount` is what the archive holds.
 - **When:** every night at `BACKUP_TIME` in `TZ` (service `backup`, `deploy/backup/scheduler.sh`). On demand: `tools/backup.sh` prints `Backup written: /backups/<archive>`.
 - **Where:** the `backups` volume, mounted at `/backups` in the `backup` service, or the host folder `BACKUP_HOST_DIR` when set. Archives are written with mode 600 under a temporary name and renamed when complete.
 - **Retention:** archives older than `BACKUP_RETENTION_DAYS` (default 14), and `.partial-*` leftovers of interrupted runs older than a day, are deleted after a successful run only. The safety backup `tools/restore.sh --force` takes (`tools/backup.sh --safety`) sets `BACKUP_SKIP_RETENTION=true` and deletes no archive, so an expired archive that is being restored from the backup folder is never removed first. A failed run exits non-zero, logs `Backup FAILED …` in `tools/compose.sh logs backup` and leaves every earlier archive.
@@ -164,7 +164,7 @@ Sessions issued before the backup stay valid after a restore, because the key ri
 
 ### Restore drill
 
-`tools/restore-drill.sh` proves backup and restore end to end without touching the production stack or its volumes. It needs the images (`tools/docker-build.sh`) and a certificate pair in `deploy/certs/`. It starts two throw-away compose projects (`proteone-drill-source` on ports 9080/9443, `proteone-drill-target` on 9081/9444, subnets `172.29.1.0/24` and `172.29.2.0/24`), creates data on the source (attachment, finished background export, deactivated user, a signed-in session), backs it up, checks the refusals (newer build, `db.dump` not matching its checksum, non-empty database without `--force`), restores into the empty target, restores again with `--force` (which must take a safety backup first), and checks health, row counts, the attachment and export downloads, the pre-backup session and the deactivated user's refused sign-in (`401 auth.invalid_credentials`). An unreachable target is a failed check: the drill also fails when the check script exits non-zero or reports fewer rows than it should. It tests the images tagged `latest`, not the tag in `deploy/.version`. It removes both projects and writes `docs/release/restore-drill.md` (pass/fail table). Last result: `docs/release/restore-drill.md`.
+`tools/restore-drill.sh` proves backup and restore end to end without touching the production stack or its volumes. It needs the images (`tools/docker-build.sh`) and a certificate pair in `deploy/certs/`. It starts two throw-away compose projects (`proteosm-drill-source` on ports 9080/9443, `proteosm-drill-target` on 9081/9444, subnets `172.29.1.0/24` and `172.29.2.0/24`), creates data on the source (attachment, finished background export, deactivated user, a signed-in session), backs it up, checks the refusals (newer build, `db.dump` not matching its checksum, non-empty database without `--force`), restores into the empty target, restores again with `--force` (which must take a safety backup first), and checks health, row counts, the attachment and export downloads, the pre-backup session and the deactivated user's refused sign-in (`401 auth.invalid_credentials`). An unreachable target is a failed check: the drill also fails when the check script exits non-zero or reports fewer rows than it should. It tests the images tagged `latest`, not the tag in `deploy/.version`. It removes both projects and writes `docs/release/restore-drill.md` (pass/fail table). Last result: `docs/release/restore-drill.md`.
 
 Run it after an update that changes the images or the backup scripts, and periodically to prove the archives restore.
 
@@ -208,7 +208,7 @@ The password lives only in `deploy/.env` and the container environment; it is ne
 
 ### Renewing the certificate
 
-Replace `deploy/certs/proteone.crt` and `deploy/certs/proteone.key`, then `tools/compose.sh restart nginx`.
+Replace `deploy/certs/proteosm.crt` and `deploy/certs/proteosm.key`, then `tools/compose.sh restart nginx`.
 
 ## Data Protection keys
 
@@ -232,7 +232,7 @@ Replace `deploy/certs/proteone.crt` and `deploy/certs/proteone.key`, then `tools
 | Restore | `tools/restore.sh <archive.tar.gz> [--force] [--no-safety-backup]` |
 | Restore drill | `tools/restore-drill.sh` |
 | Test certificate | `tools/gen-self-signed-cert.sh [host-name]` |
-| Pilot seed | `tools/seed-pilot.sh --compose [--scale <factor>]` (needs `PROTEONE_DEPLOYMENT=pilot`) |
+| Pilot seed | `tools/seed-pilot.sh --compose [--scale <factor>]` (needs `PROTEOSM_DEPLOYMENT=pilot`) |
 | Performance run against a host | `PERF_BASE_URL=https://<host> PERF_PASSWORD=… tools/perf-measure.sh` (writes 5,000 assets into that database on every run; pilot hosts only) |
 
-`tools/compose.sh`, `tools/backup.sh` and `tools/restore.sh` honor `PROTEONE_ENV_FILE` (another env file) and `COMPOSE_PROJECT_NAME`.
+`tools/compose.sh`, `tools/backup.sh` and `tools/restore.sh` honor `PROTEOSM_ENV_FILE` (another env file) and `COMPOSE_PROJECT_NAME`.

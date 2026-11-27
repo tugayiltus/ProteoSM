@@ -16,16 +16,16 @@ public sealed class MigrateCommandTests(ApiFactory factory) : IAsyncLifetime
     private const int CliFailure = 1;
     private const string AdminDatabase = "postgres";
     private const string LocalHost = "localhost";
-    private const string UnreachableHost = "proteone-no-such-host.invalid";
+    private const string UnreachableHost = "proteosm-no-such-host.invalid";
 
-    private readonly string _databaseName = "proteone_migrate_" + Guid.NewGuid().ToString("N");
+    private readonly string _databaseName = "proteosm_migrate_" + Guid.NewGuid().ToString("N");
     private string _adminConnectionString = string.Empty;
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     public async ValueTask InitializeAsync()
     {
-        _adminConnectionString = Environment.GetEnvironmentVariable(PostgresDatabase.AdminConnectionEnvironmentVariable)
+        _adminConnectionString = TestEnvironment.Get(PostgresDatabase.AdminConnectionSetting)
             ?? new NpgsqlConnectionStringBuilder { Host = LocalHost, Database = AdminDatabase, Username = Environment.UserName }.ConnectionString;
         await ExecuteAdminAsync($"CREATE DATABASE \"{_databaseName}\"");
     }

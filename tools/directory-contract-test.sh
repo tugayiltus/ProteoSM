@@ -10,6 +10,7 @@
 # A skipped test fails the run (--fail-skips on): a skip here means the settings never reached the test.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
 readonly COMPOSE_FILE=deploy/test-directory/compose.yaml
 # Only the project that holds the contract classes: with the whole solution, the other test projects run zero
@@ -41,7 +42,7 @@ readonly OIDC_URL="http://127.0.0.1:8089"
 readonly OIDC_TENANT="3c0f7a2e-5b1d-4e8a-9c6f-2d4b8e1a7f30"
 readonly OIDC_METADATA_PATH="/.well-known/openid-configuration"
 
-export PROTEONE_TEST_OIDC_TENANT="$OIDC_TENANT"
+export PROTEOSM_TEST_OIDC_TENANT="$OIDC_TENANT"
 
 colima_started_here=false
 
@@ -117,28 +118,28 @@ for account in "(sAMAccountName=$LDAP_USER)" "(mail=ece.deneme@proteone-test.exa
 done
 
 echo "==> OIDC contract against the mock (local PostgreSQL)"
-export PROTEONE_TEST_OIDC_URL="$OIDC_URL"
+export PROTEOSM_TEST_OIDC_URL="$OIDC_URL"
 tools/with-db.sh dotnet test --project "$TEST_PROJECT" --filter-class "$OIDC_TEST_CLASS" --fail-skips on
 
-export PROTEONE_TEST_LDAP_HOST="$LDAP_HOST_IN_COMPOSE"
-export PROTEONE_TEST_LDAP_BASE_DN="$LDAP_BASE_DN"
-export PROTEONE_TEST_LDAP_BIND_DN="$LDAP_BIND_DN"
-export PROTEONE_TEST_LDAP_BIND_PASSWORD="$LDAP_BIND_PASSWORD"
-export PROTEONE_TEST_LDAP_USER="$LDAP_USER"
-export PROTEONE_TEST_LDAP_PASSWORD="$LDAP_PASSWORD"
-export PROTEONE_TEST_LDAP_EMAIL="$LDAP_EMAIL"
+export PROTEOSM_TEST_LDAP_HOST="$LDAP_HOST_IN_COMPOSE"
+export PROTEOSM_TEST_LDAP_BASE_DN="$LDAP_BASE_DN"
+export PROTEOSM_TEST_LDAP_BIND_DN="$LDAP_BIND_DN"
+export PROTEOSM_TEST_LDAP_BIND_PASSWORD="$LDAP_BIND_PASSWORD"
+export PROTEOSM_TEST_LDAP_USER="$LDAP_USER"
+export PROTEOSM_TEST_LDAP_PASSWORD="$LDAP_PASSWORD"
+export PROTEOSM_TEST_LDAP_EMAIL="$LDAP_EMAIL"
 
 echo "==> LDAP contract over LDAPS (port $LDAPS_PORT)"
-export PROTEONE_TEST_LDAP_PORT="$LDAPS_PORT" PROTEONE_TEST_LDAP_SECURITY=Ldaps
+export PROTEOSM_TEST_LDAP_PORT="$LDAPS_PORT" PROTEOSM_TEST_LDAP_SECURITY=Ldaps
 compose --profile runner run --rm "$RUNNER_SERVICE" --filter-class "$LDAP_TEST_CLASS" --filter-class "$LDAP_API_TEST_CLASS"
 
 echo "==> LDAP contract over StartTLS (port $STARTTLS_PORT)"
-export PROTEONE_TEST_LDAP_PORT="$STARTTLS_PORT" PROTEONE_TEST_LDAP_SECURITY=StartTls
+export PROTEOSM_TEST_LDAP_PORT="$STARTTLS_PORT" PROTEOSM_TEST_LDAP_SECURITY=StartTls
 compose --profile runner run --rm "$RUNNER_SERVICE" --filter-class "$LDAP_TEST_CLASS" --filter-class "$LDAP_API_TEST_CLASS"
 
 echo "==> LDAP outage: OpenLDAP stopped, the API must answer 503"
 compose stop "$LDAP_SERVICE"
-export PROTEONE_TEST_LDAP_PORT="$LDAPS_PORT" PROTEONE_TEST_LDAP_SECURITY=Ldaps PROTEONE_TEST_LDAP_STOPPED=1
+export PROTEOSM_TEST_LDAP_PORT="$LDAPS_PORT" PROTEOSM_TEST_LDAP_SECURITY=Ldaps PROTEOSM_TEST_LDAP_STOPPED=1
 # --no-deps: the runner would otherwise start the stopped directory again (PostgreSQL is still up from the runs above).
 compose --profile runner run --rm --no-deps "$RUNNER_SERVICE" --filter-class "$LDAP_OUTAGE_TEST_CLASS"
 

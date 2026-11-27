@@ -23,7 +23,7 @@ Requirements: [`proteone.md`](proteone.md). Open work: [`docs/status.md`](docs/s
 | Worker | `backend/src/ProteoSM.Worker` | Generic Host running `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner` (background Excel exports) and `Cleanup` jobs on timers, row leases (`FOR UPDATE SKIP LOCKED`), heartbeats in `worker_heartbeats` (ADR-0014); references Application and Infrastructure, never Api |
 | API | `backend/src/ProteoSM.Api` | Minimal API endpoints under `/api/v1`, cookie auth, Microsoft Entra ID sign-in (OpenID Connect, ADR-0030), antiforgery, ProblemDetails, serves the built SPA from `wwwroot`; CLI commands `setup-admin`, `reset-password`, `migrate` (migrations + post-migration data steps; `--print-latest`) and `seed-pilot` (`backend/src/ProteoSM.Api/Cli/`) |
 | Web | `frontend/` | React application with two entry pages (users and `/admin`, ADR-0038) on the Astryx design system (left side navigation, breadcrumbs, light/dark/auto color modes; ADR-0027): tickets, tasks, changes, problems, IT workspace, inventory with QR labels, approvals, knowledge base, services with their impact view, reports and `/admin` (including the device catalog, the service catalogue and the login method) |
-| Deployment | `Dockerfile`, `deploy/` | Images `proteone-api` and `proteone-worker`; `deploy/compose.yaml` with `postgres`, one-shot `migrate`, `api`, `worker`, `nginx` (TLS), `backup` and the `restore` profile; `deploy/nginx/`, `deploy/backup/` (ADR-0024, ADR-0025) |
+| Deployment | `Dockerfile`, `deploy/` | Images `proteosm-api` and `proteosm-worker`; `deploy/compose.yaml` with `postgres`, one-shot `migrate`, `api`, `worker`, `nginx` (TLS), `backup` and the `restore` profile; `deploy/nginx/`, `deploy/backup/` (ADR-0024, ADR-0025) |
 | CI | `.github/` | GitHub Actions workflow `ci.yml` (lint, tests, E2E, both image builds on every push and pull request); Dependabot `dependabot.yml` |
 
 Solution: `backend/ProteoSM.slnx`. Device catalog and generated asset tags: ADR-0023, ADR-0029. Login method: ADR-0030. Tasks and the combined work list: ADR-0031. Change management and change approval: ADR-0031, ADR-0032. Ticket-change links and central search (`GET /api/v1/search`): ADR-0033. Problem management: ADR-0034. Service catalogue and service-asset links: ADR-0036. Knowledge base: ADR-0019. Reports and exports: ADR-0020 — small exports stream from the API; larger ones become `export_jobs` rows that the Worker's `ExportRunner` builds into the file store and the API serves for download. Notification flow: handlers write `notification_outbox` events in the same transaction as the change; the Worker dispatches them into `email_deliveries` and sends them (ADR-0015, ADR-0016). Browser and API are same-origin; Vite proxies `/api` in development (ADR-0003). In production nginx terminates TLS and proxies to the API, which trusts forwarded headers only from `Http:KnownProxyNetworks` (ADR-0024).
@@ -52,7 +52,7 @@ Solution: `backend/ProteoSM.slnx`. Device catalog and generated asset tags: ADR-
 | Create first admin | `tools/setup-admin.sh --email <email> --first-name <name> --last-name <name>` |
 | Issue a temporary password | `tools/reset-password.sh --email <email>` |
 | Add a migration | `tools/add-migration.sh <Name>` |
-| Run API + Worker + web in this terminal | `tools/run.sh` (API `http://localhost:5311`, web `http://proteone.localhost:5310`; Worker writes `.eml` files to `tmp/email-pickup`); refuses to start while the launchd dev services run |
+| Run API + Worker + web in this terminal | `tools/run.sh` (API `http://localhost:5311`, web `http://proteosm.localhost:5310`; Worker writes `.eml` files to `tmp/email-pickup`); refuses to start while the launchd dev services run |
 | Keep API + Worker + web running in the background (macOS launchd user agents, start at login, restart on exit; logs in `tmp/logs/`) | `tools/dev-service.sh install\|uninstall\|start\|stop\|restart\|status\|logs` |
 | Lint (`dotnet format`, ESLint, TypeScript, Astryx doctor, doc paths) | `tools/lint.sh` |
 | Tests (+ coverage gates) | `tools/test.sh` |
@@ -62,7 +62,7 @@ Solution: `backend/ProteoSM.slnx`. Device catalog and generated asset tags: ADR-
 | Build | `tools/build.sh` |
 | Lint the GitHub Actions workflows (`actionlint`) | `tools/ci-lint.sh` |
 | Check that every `tools/`… and `deploy/`… path named in the docs exists | `tools/check-doc-paths.sh [file ...]` |
-| Pilot seed data into a local `proteone_pilot` database (`--fresh` drops and recreates it, `--drop` removes it) | `tools/seed-pilot.sh [--fresh\|--drop] [--scale <factor>]` |
+| Pilot seed data into a local `proteosm_pilot` database (`--fresh` drops and recreates it, `--drop` removes it) | `tools/seed-pilot.sh [--fresh\|--drop] [--scale <factor>]` |
 | Performance measurement at pilot volume (writes `docs/release/performance.md`) | `PERF_PASSWORD=<pilot password> tools/perf-measure.sh` |
 | User-guide screenshots from the pilot database | `GUIDE_PASSWORD=<pilot password> tools/guide-screenshots.sh [id ...]` |
 | User guide `combined.md` + A4 `combined.pdf` | `tools/build-user-guide.sh` |
@@ -79,7 +79,7 @@ Full procedure, backups, restore, rollback and key handling: [`docs/operations.m
 
 | Task | Command |
 |---|---|
-| Build images `proteone-api`, `proteone-worker` (tags: Git short hash, `latest`) | `tools/docker-build.sh` |
+| Build images `proteosm-api`, `proteosm-worker` (tags: Git short hash, `latest`) | `tools/docker-build.sh` |
 | Deploy: gates, images, `compose up`, wait for health through nginx | `tools/deploy.sh [--skip-gates]` |
 | Any compose command on the stack (`deploy/compose.yaml` + `deploy/.env`) | `tools/compose.sh <args>` |
 | Self-signed test certificate in `deploy/certs/` | `tools/gen-self-signed-cert.sh [host-name]` |
@@ -89,7 +89,7 @@ Full procedure, backups, restore, rollback and key handling: [`docs/operations.m
 
 On macOS, Docker runs in Colima; Colima shares only the home folder with containers.
 
-Requires a running local PostgreSQL 17 (`brew services start postgresql@17`). Local ports use the block 5310–5313 so they do not collide with other local projects: web 5310 (`http://proteone.localhost:5310`; macOS resolves `*.localhost` to loopback, no hosts entry), API 5311, E2E and guide preview 5312, guide and performance API 5313. Development in Chrome or Firefox (Secure cookies on `*.localhost`).
+Requires a running local PostgreSQL 17 (`brew services start postgresql@17`). Local ports use the block 5310–5313 so they do not collide with other local projects: web 5310 (`http://proteosm.localhost:5310`; macOS resolves `*.localhost` to loopback, no hosts entry), API 5311, E2E and guide preview 5312, guide and performance API 5313. Development in Chrome or Firefox (Secure cookies on `*.localhost`).
 
 ## Quality gates
 

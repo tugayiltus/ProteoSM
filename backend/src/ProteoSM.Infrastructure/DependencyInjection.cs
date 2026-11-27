@@ -41,7 +41,7 @@ public static class DependencyInjection
 
         // Account-link tokens (ADR-0015, ADR-0017); the key ring is shared by the API and the Worker (ADR-0024).
         services.AddOptions<KeyStorageOptions>().BindConfiguration(KeyStorageOptions.SectionName);
-        services.AddProteoneDataProtection();
+        services.AddProteoSMDataProtection();
         services.AddSingleton<IAccountLinkProtector, AccountLinkProtector>();
         services.AddSingleton<IAuthSecretProtector, AuthSecretProtector>();
         services.AddSingleton<IMonitoringSecretProtector, MonitoringSecretProtector>();

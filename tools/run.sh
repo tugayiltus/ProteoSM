@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-if launchctl print "gui/$(id -u)/com.proteone.dev.api" >/dev/null 2>&1; then
+if launchctl print "gui/$(id -u)/com.proteosm.dev.api" >/dev/null 2>&1; then
   echo "The dev services are already running under launchd (tools/dev-service.sh status). Stop them first:" >&2
   echo "  tools/dev-service.sh stop" >&2
   exit 1

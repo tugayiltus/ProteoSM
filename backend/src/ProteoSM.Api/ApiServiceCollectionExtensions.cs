@@ -19,8 +19,8 @@ namespace ProteoSM.Api;
 
 internal static class ApiServiceCollectionExtensions
 {
-    private const string SessionCookieName = "__Host-proteone";
-    private const string AntiforgeryCookieName = "__Host-proteone-af";
+    private const string SessionCookieName = "__Host-proteosm";
+    private const string AntiforgeryCookieName = "__Host-proteosm-af";
     private const string UnknownClient = "unknown";
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromMinutes(1);
 

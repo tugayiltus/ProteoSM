@@ -21,3 +21,11 @@ env_value() {
   done < "$file"
   printf '%s' "$value"
 }
+
+# product_env_value <file> <suffix>   the value of PROTEOSM_<suffix>, or of PROTEONE_<suffix> (the name before the ProteoSM
+# rename) while the new key is missing or empty.
+product_env_value() {
+  local value
+  value="$(env_value "$1" "PROTEOSM_$2")"
+  printf '%s' "${value:-$(env_value "$1" "PROTEONE_$2")}"
+}

@@ -9,7 +9,7 @@
 # deployed pilot host) and starts nothing.
 #
 # Environment: PERF_PASSWORD (required; never stored), PERF_RUNS (default 5; calls per operation), PERF_BASE_URL,
-# PERF_IT_EMAIL / PERF_ADMIN_EMAIL (seed accounts by default), PROTEONE_DB_HOST / PROTEONE_DB_NAME / PROTEONE_DB_USER.
+# PERF_IT_EMAIL / PERF_ADMIN_EMAIL (seed accounts by default), PROTEOSM_DB_HOST / PROTEOSM_DB_NAME / PROTEOSM_DB_USER.
 #
 # WARNING: the CSV import commit writes 5,000 assets into the target database on every run, also in PERF_BASE_URL mode.
 # PERF_BASE_URL pointing at the dev API port (5311) is refused so the development database is never grown by accident.
@@ -17,11 +17,12 @@
 # once per run (one sample) while the preview is timed PERF_RUNS times. Re-seed with tools/seed-pilot.sh --fresh to reset.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
-readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
-readonly DB_NAME="${PROTEONE_DB_NAME:-proteone_pilot}"
-readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
-readonly PILOT_DB_PREFIX="proteone_pilot"
+readonly DB_HOST="${PROTEOSM_DB_HOST:-localhost}"
+readonly DB_NAME="${PROTEOSM_DB_NAME:-proteosm_pilot}"
+readonly DB_USER="${PROTEOSM_DB_USER:-proteosm}"
+readonly PILOT_DB_PREFIX="proteosm_pilot"
 readonly API_PORT=5313
 readonly DEV_API_PORT=5311
 readonly API_URL="http://localhost:$API_PORT"
@@ -41,7 +42,7 @@ if [[ -z "${PERF_PASSWORD:-}" ]]; then
 fi
 
 api_pid=""
-temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/proteone-perf.XXXXXX")"
+temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/proteosm-perf.XXXXXX")"
 cleanup() {
   if [[ -n "$api_pid" ]]; then kill "$api_pid" 2>/dev/null || true; fi
   wait 2>/dev/null || true

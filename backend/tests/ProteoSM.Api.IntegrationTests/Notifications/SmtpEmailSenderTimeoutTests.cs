@@ -25,7 +25,7 @@ public sealed class SmtpEmailSenderTimeoutTests(ApiFactory factory) : IClassFixt
         var options = new EmailOptions
         {
             Mode = EmailModes.Smtp,
-            From = "Proteone <no-reply@proteone.local>",
+            From = "ProteoSM <no-reply@proteosm.local>",
             Smtp = new SmtpOptions { Host = IPAddress.Loopback.ToString(), Port = port, UseStartTls = false, TimeoutSeconds = TimeoutSeconds },
         };
         var sender = SmtpSenders.Sender(factory, options);

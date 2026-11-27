@@ -11,7 +11,7 @@ public sealed class EntryPageTests(ApiFactory factory) : IDisposable
     private const string UserEntry = "user entry";
     private const string AdminEntry = "admin entry";
 
-    private readonly string _webRoot = Directory.CreateTempSubdirectory("proteone-web-").FullName;
+    private readonly string _webRoot = Directory.CreateTempSubdirectory("proteosm-web-").FullName;
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 

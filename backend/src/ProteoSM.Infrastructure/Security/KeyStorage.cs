@@ -59,7 +59,7 @@ public static class KeyStorage
     }
 
     /// <summary>Reads <see cref="KeyStorageOptions"/> from the options system; the caller binds it to configuration.</summary>
-    public static IServiceCollection AddProteoneDataProtection(this IServiceCollection services)
+    public static IServiceCollection AddProteoSMDataProtection(this IServiceCollection services)
     {
         services.AddDataProtection().SetApplicationName(ApplicationName);
         services.AddOptions<KeyManagementOptions>()

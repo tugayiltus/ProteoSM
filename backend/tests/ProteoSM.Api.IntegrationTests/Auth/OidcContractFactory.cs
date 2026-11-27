@@ -16,16 +16,16 @@ using ProteoSM.Infrastructure.Identity;
 namespace ProteoSM.Api.IntegrationTests.Auth;
 
 /// <summary>
-/// The local OpenID Connect server named by PROTEONE_TEST_OIDC_URL and PROTEONE_TEST_OIDC_TENANT
+/// The local OpenID Connect server named by PROTEOSM_TEST_OIDC_URL and PROTEOSM_TEST_OIDC_TENANT
 /// (tools/directory-contract-test.sh, deploy/test-directory/compose.yaml); null when either is missing.
 /// </summary>
 public sealed record OidcServer(Uri BaseUrl, string Tenant)
 {
-    private const string Prefix = "PROTEONE_TEST_OIDC_";
+    private const string Prefix = "TEST_OIDC_";
     private const string MetadataPath = ".well-known/openid-configuration";
 
     public static OidcServer? FromEnvironment() =>
-        Environment.GetEnvironmentVariable(Prefix + "URL") is { Length: > 0 } url && Environment.GetEnvironmentVariable(Prefix + "TENANT") is { Length: > 0 } tenant
+        TestEnvironment.Get(Prefix + "URL") is { Length: > 0 } url && TestEnvironment.Get(Prefix + "TENANT") is { Length: > 0 } tenant
             ? new OidcServer(new Uri(url.TrimEnd('/') + "/"), tenant)
             : null;
 
@@ -102,7 +102,7 @@ public sealed class OidcContractFactory(OidcServer server) : ApiFactory
                 var onTicketReceived = options.Events.OnTicketReceived;
                 options.Events.OnTicketReceived = context =>
                 {
-                    // The validated token's principal, before the production event swaps in the Proteone session principal.
+                    // The validated token's principal, before the production event swaps in the ProteoSM session principal.
                     Outcome.ValidatedPrincipal = context.Principal;
                     return onTicketReceived(context);
                 };
@@ -115,7 +115,7 @@ public sealed class OidcContractFactory(OidcServer server) : ApiFactory
 
 /// <summary>
 /// What the OpenID Connect handler saw on the last sign-in: a remote failure (token redemption or validation failed) or
-/// the principal of a token that passed validation and went on to the Proteone checks (tenant, domain, guest).
+/// the principal of a token that passed validation and went on to the ProteoSM checks (tenant, domain, guest).
 /// </summary>
 public sealed class OidcOutcome
 {

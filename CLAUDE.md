@@ -6,7 +6,7 @@ Single-company ITSM: incident and request management, IT inventory and asset man
 - **Backend:** .NET 11 modular monolith (ADR-0001, runtime ADR-0035) — `backend/src/ProteoSM.Domain` (rules, no framework deps) → `ProteoSM.Application` (handlers + FluentValidation, ports) → `ProteoSM.Infrastructure` (EF Core + Npgsql, migrations) → `ProteoSM.Api` (Minimal APIs, auth, CLI). `backend/src/ProteoSM.Worker` (Generic Host, jobs `OutboxDispatcher`, `EmailSender`, `SlaMonitor`, `ExportRunner`, `Cleanup`, row leases; references Application + Infrastructure, never Api; ADR-0014/0015) runs next to the API. Solution: `backend/ProteoSM.slnx`.
 - **Database:** PostgreSQL 17, local Homebrew (ADR-0002). snake_case, `uuid` v7, `xmin` concurrency.
 - **Frontend:** React 19 + Vite + TypeScript in `frontend/` (ADR-0008). Server state via TanStack Query; typed client `src/shared/api/client.ts` generated from OpenAPI. UI on Astryx (`@astryxdesign/core`, neutral theme, `AstryxProvider` in `src/shared/ui`, Lucide icons through the `Icons` map; ADR-0027) — UI code follows `frontend/CLAUDE.md` (look up components with `npx astryx component <Name>`). Shared pieces: `src/shared/form` (react-hook-form bound fields), `src/shared/list` (`DataList`, `ListToolbar`, URL filter state), `src/shared/feedback` (dialogs, states), `src/shared/page`, brand in `src/shared/brand`, two entry pages (`index.html`, `admin/index.html`; `src/app/router.tsx`, `src/app/adminRouter.tsx`; nothing outside the admin entry imports `src/features/admin`; ADR-0038), layout in `src/shared/layout`, breadcrumbs/route metadata in `src/shared/navigation`. `react-markdown` (KB, no raw HTML), Chart.js via `react-chartjs-2` (reports, ADR-0022); Rolldown chunk groups in `vite.config.ts` — new heavy dependency or feature folder gets its own group.
-- **Deployment:** `Dockerfile` (images `proteone-api`, `proteone-worker`, non-root), `deploy/compose.yaml` + `deploy/.env` (git-ignored; template `deploy/.env.example`), nginx TLS (`deploy/nginx/`, certs in git-ignored `deploy/certs/`), backup scripts in `deploy/backup/`. API CLI commands in `backend/src/ProteoSM.Api/Cli/`: `setup-admin`, `reset-password`, `migrate`, `seed-pilot`. Docker on macOS = Colima: start only for a Docker step, stop afterwards.
+- **Deployment:** `Dockerfile` (images `proteosm-api`, `proteosm-worker`, non-root), `deploy/compose.yaml` + `deploy/.env` (git-ignored; template `deploy/.env.example`), nginx TLS (`deploy/nginx/`, certs in git-ignored `deploy/certs/`), backup scripts in `deploy/backup/`. API CLI commands in `backend/src/ProteoSM.Api/Cli/`: `setup-admin`, `reset-password`, `migrate`, `seed-pilot`. Docker on macOS = Colima: start only for a Docker step, stop afterwards.
 - **CI:** `.github/workflows/ci.yml` (lint, test, E2E, image builds), `.github/dependabot.yml`.
 - Out of scope unless asked: mobile app.
 
@@ -17,20 +17,20 @@ Run through `tools/` scripts.
 - `tools/setup-admin.sh --email … --first-name … --last-name …` — create first admin (once).
 - `tools/reset-password.sh --email …` — temporary password from the console (locked-out operator).
 - `tools/add-migration.sh <Name>` — add an EF Core migration.
-- `tools/run.sh` — API on `http://localhost:5311`, Worker (email to `tmp/email-pickup`) + Vite on `http://proteone.localhost:5310`, in the terminal; refuses while the dev services run.
+- `tools/run.sh` — API on `http://localhost:5311`, Worker (email to `tmp/email-pickup`) + Vite on `http://proteosm.localhost:5310`, in the terminal; refuses while the dev services run.
 - `tools/dev-service.sh install|uninstall|start|stop|restart|status|logs` — launchd agents keep API/Worker/Vite running (last-good-build fallback via `tools/dev-dotnet-host.sh`). Stopping them for builds or E2E is fine, but restart them afterwards (`tools/dev-service.sh start`, or `restart` to pick up backend changes).
 - `tools/lint.sh` — `dotnet format --verify-no-changes` + ESLint + TypeScript.
 - `tools/test.sh` — backend tests with coverage gate + frontend tests with coverage gate. Backend uses Microsoft.Testing.Platform (repo-root `global.json`): `dotnet test --solution backend/ProteoSM.slnx`, filters `--filter-class` / `--filter-method`.
-- `tools/e2e.sh` — Playwright E2E on a fresh `proteone_e2e` database per viewport; refuses to start while `tools/run.sh` holds ports 5311/5312 (stop the dev services first). Also starts the Worker (`Email:Mode=Pickup` into a per-run temp folder, 2 s job intervals; E2E-only env overrides). Tests seed their data through the admin API (`frontend/e2e/world.ts`).
+- `tools/e2e.sh` — Playwright E2E on a fresh `proteosm_e2e` database per viewport; refuses to start while `tools/run.sh` holds ports 5311/5312 (stop the dev services first). Also starts the Worker (`Email:Mode=Pickup` into a per-run temp folder, 2 s job intervals; E2E-only env overrides). Tests seed their data through the admin API (`frontend/e2e/world.ts`).
 - `tools/ui-qa.sh` — browser QA sweep on a fresh E2E database: every screen in light/dark, phone and desktop, into `tmp/ui-qa/` (contact sheets + `problems.txt` for overflow/console errors); stops and restarts the dev services.
 - `tools/gen-api-types.sh` — regenerate OpenAPI JSON and `schema.d.ts` after API contract changes.
 - `tools/build.sh` — lint + tests, then Release build + frontend build with chunk sizes.
-- `tools/docker-build.sh` — build `proteone-api`/`proteone-worker` images (tags: Git short hash, `latest`).
+- `tools/docker-build.sh` — build `proteosm-api`/`proteosm-worker` images (tags: Git short hash, `latest`).
 - `tools/deploy.sh [--skip-gates]` — gates, images, compose up, wait for health through nginx.
 - `tools/compose.sh <args>` — `docker compose` with `deploy/compose.yaml` + `deploy/.env`.
 - `tools/gen-self-signed-cert.sh [host]` — test certificate in `deploy/certs/`.
 - `tools/backup.sh`, `tools/restore.sh <archive> [--force]`, `tools/restore-drill.sh` — backup now, restore, drill on throw-away stacks (writes `docs/release/restore-drill.md`).
-- `tools/seed-pilot.sh [--fresh|--drop|--compose] [--scale <f>]` — pilot data (local `proteone_pilot*` DB or deployed stack).
+- `tools/seed-pilot.sh [--fresh|--drop|--compose] [--scale <f>]` — pilot data (local `proteosm_pilot*` DB or deployed stack).
 - `tools/perf-measure.sh` (`PERF_PASSWORD`) — perf run, writes `docs/release/performance.md`.
 - `tools/guide-screenshots.sh` (`GUIDE_PASSWORD`), `tools/build-user-guide.sh` — guide screenshots; `combined.md` + A4 `combined.pdf`.
 - `tools/ci-lint.sh` — actionlint on the workflows.

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# E2E: for each Playwright project, recreate proteone_e2e, create the first admin, start API + preview, run the suite.
+# E2E: for each Playwright project, recreate proteosm_e2e, create the first admin, start API + preview, run the suite.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 
-readonly DB_HOST="${PROTEONE_DB_HOST:-localhost}"
-readonly DB_NAME="proteone_e2e"
-readonly DB_USER="${PROTEONE_DB_USER:-proteone}"
+readonly DB_HOST="${PROTEOSM_DB_HOST:-localhost}"
+readonly DB_NAME="proteosm_e2e"
+readonly DB_USER="${PROTEOSM_DB_USER:-proteosm}"
 readonly ADMIN_DB="postgres"
 readonly API_URL="http://localhost:5311"
 readonly PREVIEW_URL="http://localhost:5312"
@@ -78,12 +79,12 @@ export ConnectionStrings__Default="Host=$DB_HOST;Database=$DB_NAME;Username=$DB_
 export ASPNETCORE_ENVIRONMENT="Development"
 export DOTNET_ENVIRONMENT="Development"
 # Per run and absolute: the Worker runs from its own bin/ directory, and tests must see only this run's mail.
-pickup_folder="$(mktemp -d "${TMPDIR:-/tmp}/proteone-e2e-pickup.XXXXXX")"
+pickup_folder="$(mktemp -d "${TMPDIR:-/tmp}/proteosm-e2e-pickup.XXXXXX")"
 export Email__Mode="Pickup"
 export Email__PickupFolder="$pickup_folder"
 export E2E_EMAIL_PICKUP_FOLDER="$pickup_folder"
 # Per run and absolute, shared by the API and the Worker: the Worker writes export files the API serves (Files:RootPath).
-files_folder="$(mktemp -d "${TMPDIR:-/tmp}/proteone-e2e-files.XXXXXX")"
+files_folder="$(mktemp -d "${TMPDIR:-/tmp}/proteosm-e2e-files.XXXXXX")"
 export Files__RootPath="$files_folder"
 # The set-password link in the activation email points at the preview server the tests drive.
 export App__PublicBaseUrl="$PREVIEW_URL"
@@ -97,7 +98,7 @@ for project in "${PROJECTS[@]}"; do
   mkdir -p "$LOG_DIR"
   psql -h "$DB_HOST" -d "$ADMIN_DB" -qc "DROP DATABASE IF EXISTS \"$DB_NAME\" WITH (FORCE)"
   psql -h "$DB_HOST" -d "$ADMIN_DB" -qc "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\""
-  PROTEONE_DB_NAME="$DB_NAME" tools/migrate.sh >/dev/null
+  PROTEOSM_DB_NAME="$DB_NAME" tools/migrate.sh >/dev/null
 
   setup_output="$(cd "$API_BIN_DIR" && dotnet ProteoSM.Api.dll setup-admin --email "$ADMIN_EMAIL" --first-name E2E --last-name Yönetici)"
   temp_password="$(sed -n "s/^${TEMP_PASSWORD_PREFIX}//p" <<<"$setup_output")"

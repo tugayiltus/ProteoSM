@@ -12,7 +12,7 @@ namespace ProteoSM.Api.IntegrationTests.Auth;
 /// LDAP sign-in end to end through the API against a real directory (OpenLDAP from deploy/test-directory, run by
 /// tools/directory-contract-test.sh over LDAPS and StartTLS): the admin test and switch, sign-in by Windows user name and
 /// by email, wrong passwords, the lockout and the local admin break-glass sign-in (ADR-0030). Skipped unless the
-/// PROTEONE_TEST_LDAP_* variables (see <see cref="LdapDirectoryServer"/>) are set: CI has no directory.
+/// PROTEOSM_TEST_LDAP_* variables (see <see cref="LdapDirectoryServer"/>) are set: CI has no directory.
 /// </summary>
 public sealed class LdapApiContractTests(LdapContractFixture fixture) : IClassFixture<LdapContractFixture>, IAsyncLifetime
 {

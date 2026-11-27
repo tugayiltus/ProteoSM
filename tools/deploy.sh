@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# Deploys the Proteone stack (ADR-0024): quality gates, image build, fresh third-party images, then compose up (migrate
+# Deploys the ProteoSM stack (ADR-0024): quality gates, image build, fresh third-party images, then compose up (migrate
 # runs before api/worker), then waits until the API answers through nginx. The deployed tag (Git short hash) is
 # recorded in deploy/.version, so later tools/compose.sh calls keep using it. Refuses a working tree with uncommitted
 # changes. --skip-gates skips lint and tests (explicit only).
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source tools/lib/product-env.sh
 source tools/lib/env-file.sh
 
 readonly READY_TIMEOUT_SECONDS=180
 readonly HEALTH_PATH="/api/v1/health"
-readonly ENV_FILE="${PROTEONE_ENV_FILE:-deploy/.env}"
+readonly ENV_FILE="${PROTEOSM_ENV_FILE:-deploy/.env}"
 readonly VERSION_FILE="deploy/.version"
 readonly DEFAULT_HTTPS_PORT=443
-# Images compose pulls from a registry; proteone-api and proteone-worker are built locally.
+# Images compose pulls from a registry; proteosm-api and proteosm-worker are built locally.
 readonly THIRD_PARTY_SERVICES=(postgres nginx)
 readonly USAGE="usage: tools/deploy.sh [--skip-gates]"
 skip_gates=false
@@ -23,7 +24,7 @@ for argument in "$@"; do
   esac
 done
 
-for file in deploy/certs/proteone.crt deploy/certs/proteone.key "$ENV_FILE"; do
+for file in deploy/certs/proteosm.crt deploy/certs/proteosm.key "$ENV_FILE"; do
   if [[ ! -f "$file" ]]; then
     echo "Missing $file (see docs/operations.md)." >&2
     exit 1
@@ -52,7 +53,7 @@ https_port="$(env_value "$ENV_FILE" HTTPS_PORT)"
 https_port="${https_port:-$DEFAULT_HTTPS_PORT}"
 for ((second = 0; second < READY_TIMEOUT_SECONDS; second++)); do
   if curl -fsSk -o /dev/null "https://localhost:$https_port$HEALTH_PATH"; then
-    echo "Proteone is up on https://localhost:$https_port"
+    echo "ProteoSM is up on https://localhost:$https_port"
     exit 0
   fi
   sleep 1

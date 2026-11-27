@@ -53,7 +53,7 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
     private static string Base64(string text) => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text));
 
     private static object Smtp(uint version, string? password = Password, int port = Port, string host = Host, string security = "start_tls", string? userName = MailUser, string senderAddress = SenderAddress) =>
-        new { provider = "smtp", senderName = "Proteone Destek", senderAddress, host, port, security, userName, password, version };
+        new { provider = "smtp", senderName = "ProteoSM Destek", senderAddress, host, port, security, userName, password, version };
 
     private static async Task<HttpResponseMessage> SaveAsync(ApiClient client, string? password = Password, int port = Port, string host = Host) =>
         await client.PutAsync(SettingsPath, Smtp(await VersionAsync(client), password, port, host));

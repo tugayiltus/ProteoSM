@@ -1,5 +1,5 @@
 /**
- * @output The Proteone mark: one line that turns into a "P" and closes around a single point (one record, one source).
+ * @output The ProteoSM mark: one line that turns into a "P" and closes around a single point (one record, one source).
  * @position One source for the app icon; `public/favicon.svg` repeats the shapes and a test keeps them equal.
  */
 export const MARK_VIEW_BOX = '0 0 24 24';

@@ -9,8 +9,9 @@ namespace ProteoSM.Api.IntegrationTests.Infrastructure;
 /// <summary>Creates a throw-away database on local PostgreSQL 17, applies migrations, drops it at the end.</summary>
 public sealed class PostgresDatabase : IAsyncLifetime
 {
-    public const string AdminConnectionEnvironmentVariable = "PROTEONE_TEST_ADMIN_CONNECTION";
-    private const string DatabaseNamePrefix = "proteone_test_";
+    /// <summary>Admin connection of the test server, read through <see cref="TestEnvironment"/> (CI sets it).</summary>
+    public const string AdminConnectionSetting = "TEST_ADMIN_CONNECTION";
+    private const string DatabaseNamePrefix = "proteosm_test_";
     private const string AdminDatabase = "postgres";
     private const string LocalHost = "localhost";
 
@@ -43,7 +44,7 @@ public sealed class PostgresDatabase : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        _adminConnectionString = Environment.GetEnvironmentVariable(AdminConnectionEnvironmentVariable)
+        _adminConnectionString = TestEnvironment.Get(AdminConnectionSetting)
             ?? new NpgsqlConnectionStringBuilder { Host = LocalHost, Database = AdminDatabase, Username = Environment.UserName }.ConnectionString;
 
         await ExecuteAdminAsync($"CREATE DATABASE \"{_databaseName}\"");

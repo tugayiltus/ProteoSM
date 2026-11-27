@@ -37,7 +37,7 @@ internal static class EntraAuthentication
         return builder.AddOpenIdConnect(Scheme, _ => { });
     }
 
-    /// <summary>Replaces Microsoft's principal with the Proteone session principal, or ends at the login page with an error.</summary>
+    /// <summary>Replaces Microsoft's principal with the ProteoSM session principal, or ends at the login page with an error.</summary>
     internal static async Task OnTicketReceivedAsync(TicketReceivedContext context)
     {
         var handler = context.HttpContext.RequestServices.GetRequiredService<EntraSignInHandler>();

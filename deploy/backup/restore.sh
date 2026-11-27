@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Restores one Proteone archive (ADR-0025) into the stack's database and file/key volumes. Runs in the "restore" service.
-# Refuses, before writing anything: a file that is not a Proteone archive (missing parts, a manifest without a well-formed
+# Restores one ProteoSM archive (ADR-0025) into the stack's database and file/key volumes. Runs in the "restore" service.
+# Refuses, before writing anything: a file that is not a ProteoSM archive (missing parts, a manifest without a well-formed
 # latestMigration or dbSha256, a db.dump whose SHA-256 or a file count that differs from the manifest), an archive from
 # a newer build than MAX_MIGRATION, and a target database that already has tables (unless --force). Prints what the
 # archive holds before writing. The database is restored in one transaction; afterwards the table row counts are
@@ -12,7 +12,7 @@ readonly ARCHIVE="${1:?usage: restore.sh <archive> [--force]}"
 readonly FORCE="${2:-}"
 readonly DATA_DIR="${DATA_DIR:-/data}"
 readonly MAX_MIGRATION="${MAX_MIGRATION:?MAX_MIGRATION (newest migration of the app image) is required}"
-# The non-root user of the Proteone images (mcr.microsoft.com/dotnet APP_UID).
+# The non-root user of the ProteoSM images (mcr.microsoft.com/dotnet APP_UID).
 readonly APP_UID=1654
 readonly EXIT_NOT_ARCHIVE=2
 readonly EXIT_NEWER_ARCHIVE=3
@@ -26,7 +26,7 @@ readonly TABLE_COUNTS_SQL="SELECT json_object_agg(table_name, (xpath('/row/c/tex
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
-not_archive() { echo "Not a usable Proteone archive ($1): $ARCHIVE" >&2; exit "$EXIT_NOT_ARCHIVE"; }
+not_archive() { echo "Not a usable ProteoSM archive ($1): $ARCHIVE" >&2; exit "$EXIT_NOT_ARCHIVE"; }
 manifest_value() { sed -n "s/.*\"$1\": \"\{0,1\}\([^\",]*\)\"\{0,1\},\{0,1\}$/\1/p" "$work/manifest.json"; }
 
 if [[ ! "$MAX_MIGRATION" =~ $MIGRATION_PATTERN ]]; then

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One Proteone backup (ADR-0025): pg_dump (custom format) + file store + Data Protection keys + manifest.json in
-# proteone-YYYYMMDD-HHMMSS.tar.gz (UTC). The manifest carries the SHA-256 of db.dump and the number of files the archive
+# One ProteoSM backup (ADR-0025): pg_dump (custom format) + file store + Data Protection keys + manifest.json in
+# proteosm-YYYYMMDD-HHMMSS.tar.gz (UTC). The manifest carries the SHA-256 of db.dump and the number of files the archive
 # holds; restore checks both before writing. Written under a temporary name and renamed when complete; expired archives
 # and day-old temporary leftovers are deleted only after a successful run. BACKUP_SKIP_RETENTION=true keeps expired
 # archives (the safety backup tools/restore.sh takes before --force: the archive being restored may be an expired one in
@@ -14,7 +14,7 @@ readonly DATA_DIR="${DATA_DIR:-/data}"
 readonly RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 readonly SKIP_RETENTION="${BACKUP_SKIP_RETENTION:-false}"
 readonly MINUTES_PER_DAY=1440
-readonly ARCHIVE_PREFIX="proteone-"
+readonly ARCHIVE_PREFIX="proteosm-"
 readonly PARTIAL_PREFIX=".partial-"
 # GNU tar exit code 1: a file changed while it was read (attachments are written while the backup runs).
 readonly TAR_FILE_CHANGED=1

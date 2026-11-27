@@ -6,7 +6,7 @@ set -eu
 readonly CERT_DIR=/certs
 readonly VALID_DAYS=7
 readonly KEY_BITS=2048
-readonly CA_NAME="Proteone Test Directory CA"
+readonly CA_NAME="ProteoSM Test Directory CA"
 # The tests reach the server by its compose service name; localhost covers the health check and manual checks.
 readonly SERVER_NAME=openldap
 readonly SUBJECT_ALT_NAMES="DNS:openldap,DNS:localhost,IP:127.0.0.1"

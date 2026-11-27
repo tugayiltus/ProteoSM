@@ -8,7 +8,7 @@ dn: dc=proteone-test,dc=example
 objectClass: dcObject
 objectClass: organization
 dc: proteone-test
-o: Proteone Test Directory
+o: ProteoSM Test Directory
 
 dn: ou=service-accounts,dc=proteone-test,dc=example
 objectClass: organizationalUnit
@@ -18,14 +18,14 @@ dn: ou=people,dc=proteone-test,dc=example
 objectClass: organizationalUnit
 ou: people
 
-# The service account Proteone binds as to find users (PROTEONE_TEST_LDAP_BIND_DN / _BIND_PASSWORD).
+# The service account ProteoSM binds as to find users (PROTEOSM_TEST_LDAP_BIND_DN / _BIND_PASSWORD).
 dn: cn=svc-proteone,ou=service-accounts,dc=proteone-test,dc=example
 objectClass: inetOrgPerson
 cn: svc-proteone
 sn: svc-proteone
 userPassword: Svc-test-pass-2026
 
-# Signs in by Windows user name (PROTEONE_TEST_LDAP_USER / _PASSWORD).
+# Signs in by Windows user name (PROTEOSM_TEST_LDAP_USER / _PASSWORD).
 dn: cn=Deniz Test,ou=people,dc=proteone-test,dc=example
 objectClass: user
 cn: Deniz Test

@@ -23,7 +23,7 @@ public sealed class ActiveSmtpEndpointProviderTests(FakeClockApiFactory factory)
     private const string EnvironmentFrom = "Env <env@proteone.local>";
     private const string PanelHost = "smtp.sirket.local";
     private const string PanelAddress = "destek@sirket.com";
-    private const string PanelName = "Proteone Destek";
+    private const string PanelName = "ProteoSM Destek";
     private const string PanelUser = "destek@sirket.com";
     private const string PanelPassword = "panel-şifre-123";
     private const string BrokenProtectedPassword = "broken";
@@ -248,7 +248,7 @@ public sealed class ActiveSmtpEndpointProviderTests(FakeClockApiFactory factory)
         Assert.IsType<PickupFolderEmailSender>(sender);
         var eml = Assert.Single(Directory.GetFiles(factory.EmailPickupFolder, "*.eml"));
         var text = await File.ReadAllTextAsync(eml, Ct);
-        Assert.Contains("no-reply@proteone.local", text, StringComparison.Ordinal);
+        Assert.Contains("no-reply@proteosm.local", text, StringComparison.Ordinal);
         Assert.DoesNotContain(PanelAddress, text, StringComparison.Ordinal);
         Assert.Equal(0, server.ConnectionCount);
     }

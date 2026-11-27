@@ -89,7 +89,7 @@ public sealed class User : Entity
         UpdatedAt = now;
     }
 
-    /// <summary>Names and email follow the directory; role, organization and password stay as Proteone has them.</summary>
+    /// <summary>Names and email follow the directory; role, organization and password stay as ProteoSM has them.</summary>
     public void RefreshFromDirectory(string firstName, string lastName, string email, DateTimeOffset now) =>
         SetProfile(firstName, lastName, email, DepartmentId, LocationId, now);
 

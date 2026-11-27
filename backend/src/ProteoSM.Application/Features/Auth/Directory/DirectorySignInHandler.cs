@@ -8,7 +8,7 @@ using ProteoSM.Domain.Users;
 namespace ProteoSM.Application.Features.Auth.Directory;
 
 /// <summary>
-/// Turns a verified directory identity into a Proteone session (ADR-0030): match by the stored directory id, else link the
+/// Turns a verified directory identity into a ProteoSM session (ADR-0030): match by the stored directory id, else link the
 /// user with the same email, else create an employee. Names and email follow the directory; role, organization and any
 /// local password stay. Every refusal throws <see cref="AuthenticationFailedException"/> and is audited.
 /// </summary>
@@ -59,7 +59,7 @@ public sealed class DirectorySignInHandler(IAppDbContext db, IAuditLog audit, Ti
         return SessionUser.From(user);
     }
 
-    /// <summary>An email the directory moved to another Proteone user would merge two people; refuse until an admin resolves it.</summary>
+    /// <summary>An email the directory moved to another ProteoSM user would merge two people; refuse until an admin resolves it.</summary>
     private Task<bool> EmailHeldByAnotherAsync(User user, string email, CancellationToken cancellationToken) =>
         user.NormalizedEmail == email ? Task.FromResult(false) : db.Users.AnyAsync(u => u.Id != user.Id && u.NormalizedEmail == email, cancellationToken);
 
