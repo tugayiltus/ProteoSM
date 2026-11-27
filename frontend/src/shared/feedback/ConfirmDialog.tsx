@@ -10,6 +10,7 @@ import { HStack } from '@astryxdesign/core/HStack';
 import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { describeError } from '../api/errorMessage';
@@ -19,6 +20,8 @@ const DIALOG_WIDTH = 440;
 export interface ConfirmDialogProps {
   title: string;
   message: string;
+  /** Extra context under the message, for example the records an action touches. */
+  details?: ReactNode;
   confirmLabel: string;
   variant?: 'primary' | 'danger';
   isPending: boolean;
@@ -31,7 +34,7 @@ export interface ConfirmDialogProps {
  * A `Dialog`, not an `AlertDialog`: a failed action must show its error inside the dialog.
  * The dialog shows while it is rendered. The parent removes it on `onCancel`.
  */
-export function ConfirmDialog({ title, message, confirmLabel, variant = 'primary', isPending, error, onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ title, message, details, confirmLabel, variant = 'primary', isPending, error, onConfirm, onCancel }: ConfirmDialogProps) {
   const { t } = useTranslation();
   const close = (open: boolean) => {
     if (!open) {
@@ -46,6 +49,7 @@ export function ConfirmDialog({ title, message, confirmLabel, variant = 'primary
           <LayoutContent>
             <VStack gap={3}>
               <Text type="body">{message}</Text>
+              {details}
               {error ? <Banner status="error" title={describeError(error)} /> : null}
             </VStack>
           </LayoutContent>

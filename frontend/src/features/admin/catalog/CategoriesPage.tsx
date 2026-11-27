@@ -31,6 +31,7 @@ import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { ActiveToken } from '../../../shared/page/ActiveToken';
 import { RecordActions } from '../../../shared/page/RecordActions';
 import { Icons } from '../../../shared/ui/icons';
+import { DeactivationImpact } from '../shared/deactivationImpact';
 import { filterRows, readStatusFilter, STATUS_FILTER_KEY } from '../shared/statusFilter';
 import { StatusFilterSelector } from '../shared/StatusFilterSelector';
 
@@ -208,6 +209,7 @@ export function CategoriesPage() {
         <ConfirmDialog
           title={toggling.isActive ? tc('actions.deactivate') : tc('actions.reactivate')}
           message={toggling.isActive ? t('categories.confirmDeactivate', { name: toggling.name }) : t('categories.confirmReactivate', { name: toggling.name })}
+          details={toggling.isActive ? <DeactivationImpact kind="categories" id={toggling.id} /> : undefined}
           confirmLabel={tc('actions.confirm')}
           variant={toggling.isActive ? 'danger' : 'primary'}
           isPending={setActive.isPending}

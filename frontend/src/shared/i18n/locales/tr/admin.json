@@ -841,5 +841,23 @@
       "ended": "Bitti"
     },
     "cardMeta": "{{start}} – {{end}}"
+  },
+  "impact": {
+    "title": "Şu an bu kayda bağlı olanlar",
+    "unavailable": "Etkilenen kayıtlar sayılamadı. Pasife alma yine de yapılabilir.",
+    "note": "Pasife almak bu kayıtları değiştirmez; yalnızca yeni seçimlerde listeden çıkar.",
+    "counts": {
+      "models": "{{count}} model",
+      "active_models": "{{count}} aktif model",
+      "assets": "{{count}} varlık",
+      "active_children": "{{count}} aktif alt kategori",
+      "open_tickets": "{{count}} açık kayıt"
+    },
+    "service": {
+      "assets": "{{count}} bağlı varlık",
+      "tickets": "{{count}} açık olay ve talep",
+      "changes": "{{count}} açık değişiklik",
+      "problems": "{{count}} açık problem"
+    }
   }
 }

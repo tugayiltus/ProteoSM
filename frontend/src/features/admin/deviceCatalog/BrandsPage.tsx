@@ -31,6 +31,7 @@ import { RecordActions } from '../../../shared/page/RecordActions';
 import { ROUTES } from '../../../shared/routes';
 import { Icons } from '../../../shared/ui/icons';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
+import { DeactivationImpact } from '../shared/deactivationImpact';
 import { filterRows, readStatusFilter, STATUS_FILTER_KEY } from '../shared/statusFilter';
 import { StatusFilterSelector } from '../shared/StatusFilterSelector';
 
@@ -159,6 +160,7 @@ export function BrandsPage() {
         <ConfirmDialog
           title={toggling.isActive ? tc('actions.deactivate') : tc('actions.reactivate')}
           message={toggling.isActive ? t('deviceCatalog.brands.confirmDeactivate', { name: toggling.name }) : t('deviceCatalog.brands.confirmReactivate', { name: toggling.name })}
+          details={toggling.isActive ? <DeactivationImpact kind="brands" id={toggling.id} /> : undefined}
           confirmLabel={tc('actions.confirm')}
           variant={toggling.isActive ? 'danger' : 'primary'}
           isPending={setActive.isPending}

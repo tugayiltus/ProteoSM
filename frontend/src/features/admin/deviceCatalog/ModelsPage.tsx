@@ -33,6 +33,7 @@ import { ActiveToken } from '../../../shared/page/ActiveToken';
 import { RecordActions } from '../../../shared/page/RecordActions';
 import { Icons } from '../../../shared/ui/icons';
 import { ASSET_TYPES } from '../../assets/api';
+import { DeactivationImpact } from '../shared/deactivationImpact';
 import { filterRows, readStatusFilter, STATUS_FILTER_KEY } from '../shared/statusFilter';
 import { StatusFilterSelector } from '../shared/StatusFilterSelector';
 
@@ -224,6 +225,7 @@ export function ModelsPage() {
         <ConfirmDialog
           title={toggling.isActive ? tc('actions.deactivate') : tc('actions.reactivate')}
           message={toggling.isActive ? t('deviceCatalog.models.confirmDeactivate', { name: toggling.name }) : t('deviceCatalog.models.confirmReactivate', { name: toggling.name })}
+          details={toggling.isActive ? <DeactivationImpact kind="models" id={toggling.id} /> : undefined}
           confirmLabel={tc('actions.confirm')}
           variant={toggling.isActive ? 'danger' : 'primary'}
           isPending={setActive.isPending}

@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { ListStatus } from '../../../shared/feedback/ListStatus';
+import { LoadingState } from '../../../shared/feedback/States';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -26,7 +27,7 @@ import { ActiveToken } from '../../../shared/page/ActiveToken';
 import { RecordActions } from '../../../shared/page/RecordActions';
 import { Icons } from '../../../shared/ui/icons';
 import { recordActionLabel } from '../../../shared/ui/recordActionLabel';
-import { useAdminServices, useServiceDetail, useSetServiceActive, type ServiceListItem } from '../../services/serviceApi';
+import { useAdminServices, useServiceDetail, useServiceImpact, useSetServiceActive, type ServiceListItem } from '../../services/serviceApi';
 import { readStatusFilter, STATUS_FILTER_KEY } from '../shared/statusFilter';
 import { StatusFilterSelector } from '../shared/StatusFilterSelector';
 
@@ -38,6 +39,29 @@ const SKELETON_ROWS = 5;
 const SEARCH_DEBOUNCE_MS = 300;
 const FILTER_KEYS = [STATUS_FILTER_KEY] as const;
 
+/** Counts what the service still touches: the server's own impact view, not a guess. */
+function ServiceDeactivationImpact({ serviceId }: { serviceId: string }) {
+  const { t } = useTranslation('admin');
+  const impact = useServiceImpact(serviceId);
+  if (impact.isPending) {
+    return <LoadingState />;
+  }
+  if (impact.isError) {
+    return <Text type="supporting">{t('impact.unavailable')}</Text>;
+  }
+  const { assets, tickets, changes, problems } = impact.data;
+  return (
+    <VStack gap={1}>
+      <Text type="label">{t('impact.title')}</Text>
+      <Text>{t('impact.service.assets', { count: assets.total })}</Text>
+      <Text>{t('impact.service.tickets', { count: tickets.total })}</Text>
+      <Text>{t('impact.service.changes', { count: changes.total })}</Text>
+      <Text>{t('impact.service.problems', { count: problems.total })}</Text>
+      <Text type="supporting">{t('impact.note')}</Text>
+    </VStack>
+  );
+}
+
 /** Confirms (de)activation with the service's current version, which the list row does not carry. */
 function ToggleServiceDialog({ service, onClose }: { service: ServiceListItem; onClose: () => void }) {
   const { t } = useTranslation('admin');
@@ -48,6 +72,7 @@ function ToggleServiceDialog({ service, onClose }: { service: ServiceListItem; o
     <ConfirmDialog
       title={service.isActive ? t('services.deactivate') : t('services.activate')}
       message={service.isActive ? t('services.confirmDeactivate', { name: service.name }) : t('services.confirmActivate', { name: service.name })}
+      details={service.isActive ? <ServiceDeactivationImpact serviceId={service.id} /> : undefined}
       confirmLabel={tc('actions.confirm')}
       variant={service.isActive ? 'danger' : 'primary'}
       isPending={setActive.isPending || detail.isPending}

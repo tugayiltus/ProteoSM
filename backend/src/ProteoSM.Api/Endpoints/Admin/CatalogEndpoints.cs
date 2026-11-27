@@ -23,6 +23,8 @@ internal static class CatalogEndpoints
     public static RouteGroupBuilder MapCatalogEndpoints(this RouteGroupBuilder admin)
     {
         var categories = admin.MapGroup(ApiRoutes.Categories).WithTags(CategoriesTag);
+        categories.MapGet("/{id:guid}/deactivation-impact", async (Guid id, GetCategoryDeactivationImpactHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(id, ct)))
+            .ProducesProblem(StatusCodes.Status404NotFound);
         categories.MapGet("", async (ListCategoriesHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(ct)));
         categories.MapPost("", async (CreateCategoryCommand command, CreateCategoryHandler h, CancellationToken ct) =>
         {
@@ -38,6 +40,8 @@ internal static class CatalogEndpoints
             TypedResults.Ok(await h.HandleAsync(new SetCategoryActiveCommand(id, r.Version, IsActive: true), ct))).ProducesProblem(StatusCodes.Status409Conflict);
 
         var types = admin.MapGroup(ApiRoutes.RequestTypes).WithTags(RequestTypesTag);
+        types.MapGet("/{id:guid}/deactivation-impact", async (Guid id, GetRequestTypeDeactivationImpactHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(id, ct)))
+            .ProducesProblem(StatusCodes.Status404NotFound);
         types.MapGet("", async (ListRequestTypesHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(ct)));
         types.MapPost("", async (CreateRequestTypeCommand command, CreateRequestTypeHandler h, CancellationToken ct) =>
         {
@@ -52,6 +56,8 @@ internal static class CatalogEndpoints
         types.MapPost("/{id:guid}/reactivate", async (Guid id, VersionRequest r, SetRequestTypeActiveHandler h, CancellationToken ct) =>
             TypedResults.Ok(await h.HandleAsync(new SetRequestTypeActiveCommand(id, r.Version, IsActive: true), ct))).ProducesProblem(StatusCodes.Status409Conflict);
         var brands = admin.MapGroup(ApiRoutes.Brands).WithTags(DeviceCatalogTag);
+        brands.MapGet("/{id:guid}/deactivation-impact", async (Guid id, GetBrandDeactivationImpactHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(id, ct)))
+            .ProducesProblem(StatusCodes.Status404NotFound);
         brands.MapGet("", async (ListBrandsHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(ct)));
         brands.MapPost("", async (CreateBrandCommand command, CreateBrandHandler h, CancellationToken ct) =>
         {
@@ -67,6 +73,8 @@ internal static class CatalogEndpoints
             TypedResults.Ok(await h.HandleAsync(new SetBrandActiveCommand(id, r.Version, IsActive: true), ct))).ProducesProblem(StatusCodes.Status409Conflict);
 
         var models = admin.MapGroup(ApiRoutes.AssetModels).WithTags(DeviceCatalogTag);
+        models.MapGet("/{id:guid}/deactivation-impact", async (Guid id, GetAssetModelDeactivationImpactHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(id, ct)))
+            .ProducesProblem(StatusCodes.Status404NotFound);
         models.MapGet("", async (Guid? brandId, string? type, ListAssetModelsHandler h, CancellationToken ct) =>
                 TypedResults.Ok(await h.HandleAsync(new ListAssetModelsQuery(brandId, QueryParsing.ParseEnum<AssetType>(type, TypeParameter)), ct)))
             .ProducesProblem(StatusCodes.Status400BadRequest);
