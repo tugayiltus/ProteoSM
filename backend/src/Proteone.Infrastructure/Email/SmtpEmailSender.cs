@@ -36,12 +36,18 @@ internal sealed class SmtpEmailSender(IOptionsMonitor<EmailOptions> options, Act
             // No inner exception kept: a caller that logs this (e.g. ILogger.LogError(exception, ...)) must never
             // be able to print the original, unsanitized message (which could echo the password) via
             // Exception.ToString()'s inner-exception chain.
-            throw new InvalidOperationException(ErrorSanitizer.Sanitize(failure.Inner, EmailDelivery.LastErrorMaxLength));
+            throw new InvalidOperationException(LastError(failure.Inner, endpoint));
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw new InvalidOperationException(ErrorSanitizer.Sanitize(exception, EmailDelivery.LastErrorMaxLength));
+            throw new InvalidOperationException(LastError(exception, endpoint));
         }
     }
 
+    // Redact at full length, then cut: a cut first could leave part of a secret that no longer matches.
+    private static string LastError(Exception exception, SmtpEndpoint endpoint)
+    {
+        var text = SecretRedactor.Redact(ErrorSanitizer.Sanitize(exception, int.MaxValue), endpoint.UserName, endpoint.Password);
+        return text.Length > EmailDelivery.LastErrorMaxLength ? text[..EmailDelivery.LastErrorMaxLength] : text;
+    }
 }
