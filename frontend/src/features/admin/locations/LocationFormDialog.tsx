@@ -3,6 +3,7 @@
  * @output A form dialog with the name and the parent; a node cannot move under itself.
  * @position Opened from the location tree.
  */
+import { Text } from '@astryxdesign/core/Text';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -74,18 +75,21 @@ export function LocationFormDialog({ roots, target, onClose }: { roots: readonly
     }
   });
 
+  const parentPath = target.kind === 'create' && target.parentId ? findLocationNode(roots, target.parentId)?.path : undefined;
+  const dialogTitle = target.kind === 'edit' ? t('locations.edit') : parentPath ? t('locations.newChild') : t('locations.new');
   const alert = mutation.error && !isHandledByFields(mutation.error, FORM_FIELDS, CODE_FIELDS) ? describeError(mutation.error) : null;
 
   return (
     <FormDialog
       isDirty={isDirty}
-      title={target.kind === 'create' ? t('locations.new') : t('locations.edit')}
+      title={dialogTitle}
       submitLabel={target.kind === 'create' ? tc('actions.create') : tc('actions.save')}
       isPending={mutation.isPending}
       alert={alert}
       onSubmit={(event) => void onSubmit(event)}
       onClose={onClose}
     >
+      {parentPath && <Text type="supporting">{t('locations.parentNote', { path: parentPath })}</Text>}
       <FormTextInput control={control} name="name" label={t('locations.fields.name')} autoComplete="off" />
       <FormSelector control={control} name="parentId" label={t('locations.fields.parent')} options={parentOptions} placeholder={t('locations.noParent')} isClearable />
     </FormDialog>

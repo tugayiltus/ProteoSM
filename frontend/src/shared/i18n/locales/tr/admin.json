@@ -46,7 +46,12 @@
       "title": "Şifre sıfırla",
       "message": "{{name}} için şifre sıfırlansın mı? Kullanıcının açık oturumu kapanır."
     },
-    "firstUse": "Henüz kullanıcı yok. İlk kullanıcıyı ekleyin."
+    "firstUse": "Henüz kullanıcı yok. İlk kullanıcıyı ekleyin.",
+    "roleChange": {
+      "title": "Rol {{from}} yerine {{to}} olarak kaydedilecek.",
+      "effect": "Değişiklik denetim kaydına yazılır. Ekip üyelikleri otomatik değişmez; Çalışan rolündeki kişi yeni bir ekibe eklenemez.",
+      "fromAdmin": "Değişiklik denetim kaydına yazılır. Son aktif yönetici başka bir role geçirilemez. Ekip üyelikleri otomatik değişmez."
+    }
   },
   "departments": {
     "title": "Departmanlar",
@@ -80,7 +85,10 @@
       "parent": "Üst lokasyon"
     },
     "confirmDeactivate": "{{name}} pasifleştirilsin mi?",
-    "confirmReactivate": "{{name}} aktifleştirilsin mi?"
+    "confirmReactivate": "{{name}} aktifleştirilsin mi?",
+    "firstUse": "Henüz lokasyon yok. İlk lokasyonu ekleyin.",
+    "newChild": "Yeni alt lokasyon",
+    "parentNote": "Üst lokasyon: {{path}}"
   },
   "teams": {
     "title": "Ekipler",
@@ -109,7 +117,11 @@
     "confirmReactivate": "{{name}} aktifleştirilsin mi?",
     "intakeHint": "Yalnızca bir ekip seçilebilir; seçtiğinizde önceki ekipten kaldırılır.",
     "intakeBadge": "Kayıt alan ekip",
-    "firstUse": "Henüz ekip yok. İlk ekibi ekleyin."
+    "firstUse": "Henüz ekip yok. İlk ekibi ekleyin.",
+    "memberAdded": "{{name}} ekibe eklendi.",
+    "memberRemoved": "{{name}} ekipten çıkarıldı.",
+    "memberSavedNote": "Değişiklik hemen kaydedildi ve denetim kaydına yazıldı.",
+    "memberRule": "Yalnızca IT personeli ve yöneticiler ekibe eklenebilir. Ekle ve Çıkar işlemleri anında kaydedilir."
   },
   "services": {
     "title": "Hizmetler",

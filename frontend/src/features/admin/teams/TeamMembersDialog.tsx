@@ -3,12 +3,14 @@
  * @output A dialog to add a member from the candidates and to remove members.
  * @position Opened from the team list.
  */
+import { Banner } from '@astryxdesign/core/Banner';
 import { Button } from '@astryxdesign/core/Button';
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout';
 import { List, ListItem } from '@astryxdesign/core/List';
 import { Selector } from '@astryxdesign/core/Selector';
+import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +35,7 @@ export function TeamMembersDialog({ teamId, teamName, onClose }: { teamId: strin
   const add = useAddTeamMember();
   const remove = useRemoveTeamMember();
   const [selected, setSelected] = useState(NO_SELECTION);
+  const [result, setResult] = useState<string | null>(null);
 
   const memberIds = new Set(team.data?.members.map((member) => member.userId) ?? []);
   const options = candidates.filter((option) => !memberIds.has(option.value));
@@ -44,7 +47,17 @@ export function TeamMembersDialog({ teamId, teamName, onClose }: { teamId: strin
       return;
     }
     remove.reset();
-    add.mutate({ teamId, userId: selected }, { onSuccess: () => setSelected(NO_SELECTION) });
+    setResult(null);
+    const chosen = options.find((option) => option.value === selected);
+    add.mutate(
+      { teamId, userId: selected },
+      {
+        onSuccess: () => {
+          setSelected(NO_SELECTION);
+          setResult(t('teams.memberAdded', { name: chosen?.label ?? '' }));
+        },
+      },
+    );
   };
   const close = (open: boolean) => {
     if (!open) {
@@ -60,6 +73,8 @@ export function TeamMembersDialog({ teamId, teamName, onClose }: { teamId: strin
           <LayoutContent>
             <VStack gap={4}>
               <FormAlert message={error ? describeError(error) : null} />
+              {result !== null && !error && <Banner status="success" title={result} description={t('teams.memberSavedNote')} />}
+              <Text type="supporting">{t('teams.memberRule')}</Text>
               <form onSubmit={addSelected}>
                 <HStack gap={2} vAlign="end" wrap="wrap">
                   <Selector label={t('teams.memberToAdd')} value={selected} options={[...options]} placeholder={tc('none')} onChange={setSelected} />
@@ -88,7 +103,8 @@ export function TeamMembersDialog({ teamId, teamName, onClose }: { teamId: strin
                             isDisabled={remove.isPending}
                             onClick={() => {
                               add.reset();
-                              remove.mutate({ teamId, userId: member.userId });
+                              setResult(null);
+                              remove.mutate({ teamId, userId: member.userId }, { onSuccess: () => setResult(t('teams.memberRemoved', { name: fullName })) });
                             }}
                           />
                         }

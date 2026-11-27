@@ -260,4 +260,17 @@ describe('UsersPage', () => {
       expect(new URL(last!.url).searchParams.get('page')).toBe('1');
     });
   });
+
+  it('says what a role change saves before the admin confirms it', async () => {
+    setup();
+    const { user } = renderRoute('/admin/users');
+
+    await user.click((await screen.findAllByRole('button', { name: /^Düzenle/ }))[0]!);
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).queryByText(/olarak kaydedilecek/)).not.toBeInTheDocument();
+    await chooseOption(user, 'Rol', 'IT personeli', dialog);
+
+    expect(await within(dialog).findByText('Rol Çalışan yerine IT personeli olarak kaydedilecek.')).toBeInTheDocument();
+    expect(within(dialog).getByText(/Ekip üyelikleri otomatik değişmez/)).toBeInTheDocument();
+  });
 });

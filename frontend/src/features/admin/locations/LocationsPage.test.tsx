@@ -47,4 +47,19 @@ describe('LocationsPage', () => {
     expect(screen.queryByRole('option', { name: /A Blok/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Merkez Kampüs' })).not.toBeInTheDocument();
   });
+
+  it('names the parent location in the child form', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/locations': { status: 200, body: LOCATIONS },
+    });
+    const { user } = renderRoute('/admin/locations');
+
+    const blockRow = (await screen.findByText('A Blok')).closest<HTMLElement>('[role="listitem"]')!;
+    await user.click(within(blockRow).getByRole('button', { name: /^Alt lokasyon ekle/ }));
+    const dialog = await screen.findByRole('dialog');
+
+    expect(within(dialog).getByRole('heading', { name: 'Yeni alt lokasyon' })).toBeInTheDocument();
+    expect(within(dialog).getByText('Üst lokasyon: Merkez Kampüs / A Blok')).toBeInTheDocument();
+  });
 });

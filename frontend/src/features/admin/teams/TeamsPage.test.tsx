@@ -50,4 +50,28 @@ describe('TeamsPage', () => {
 
     expect(within(dialog).getByRole('button', { name: 'Çıkar Ali Er' })).toHaveAttribute('aria-disabled', 'true');
   });
+
+  it('shows the saved result after adding and removing a member', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/teams': { status: 200, body: pageOf([TEAM]) },
+      'GET /api/v1/admin/teams/t-1': { status: 200, body: { id: 't-1', name: 'Saha Destek', isActive: true, version: 3, members: [MEMBER] } },
+      'GET /api/v1/admin/users': { status: 200, body: pageOf([CANDIDATE]) },
+      'POST /api/v1/admin/teams/t-1/members': { status: 200, body: { id: 't-1', name: 'Saha Destek', isActive: true, version: 3, members: [MEMBER] } },
+      'DELETE /api/v1/admin/teams/t-1/members/m-1': { status: 204 },
+    });
+    const { user } = renderRoute('/admin/teams');
+
+    await user.click((await screen.findAllByRole('button', { name: /^Üyeleri yönet/ }))[0]!);
+    const dialog = await screen.findByRole('dialog');
+    expect(await within(dialog).findByText(/Yalnızca IT personeli ve yöneticiler ekibe eklenebilir/)).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('combobox', { name: 'Eklenecek kişi' }));
+    await user.click(await screen.findByRole('option', { name: /Elif Su/ }));
+    await user.click(within(dialog).getByRole('button', { name: 'Üye ekle' }));
+    expect(await within(dialog).findByText(/Elif Su.*ekibe eklendi/)).toBeInTheDocument();
+
+    await user.click(await within(dialog).findByRole('button', { name: 'Çıkar Mert Can' }));
+    expect(await within(dialog).findByText('Mert Can ekipten çıkarıldı.')).toBeInTheDocument();
+    expect(within(dialog).getByText(/hemen kaydedildi/)).toBeInTheDocument();
+  });
 });

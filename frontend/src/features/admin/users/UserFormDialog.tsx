@@ -3,11 +3,12 @@
  * @output A form dialog with name, e-mail, role, department, location and, on create, the credential delivery.
  * @position Opened from the user list.
  */
+import { Banner } from '@astryxdesign/core/Banner';
 import { Grid } from '@astryxdesign/core/Grid';
 import { Text } from '@astryxdesign/core/Text';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { applyServerErrors, describeError, isHandledByFields } from '../../../shared/api/errorMessage';
@@ -51,6 +52,9 @@ export function UserFormDialog({ user, onClose, onCreated }: UserFormDialogProps
     formState: { isDirty },
   } = useForm<UserFormValues>({ resolver: zodResolver(userFormSchema), defaultValues: toFormValues(user) });
 
+  const chosenRole = useWatch({ control, name: 'role' });
+  const roleChange = user !== null && chosenRole !== user.role ? { from: user.role, to: chosenRole } : null;
+
   // Closing while a create is in flight would unmount the dialog and lose the one-time temporary password.
   const close = () => {
     if (!mutation.isPending) {
@@ -90,6 +94,13 @@ export function UserFormDialog({ user, onClose, onCreated }: UserFormDialogProps
       </Grid>
       <FormTextInput control={control} name="email" label={t('users.fields.email')} type="email" autoComplete="off" />
       <FormSelector control={control} name="role" label={t('users.fields.role')} options={roleOptions} />
+      {roleChange !== null && (
+        <Banner
+          status="info"
+          title={t('users.roleChange.title', { from: tc(`roles.${roleChange.from}`), to: tc(`roles.${roleChange.to}`) })}
+          description={t(roleChange.from === 'admin' ? 'users.roleChange.fromAdmin' : 'users.roleChange.effect')}
+        />
+      )}
       <FormSelector control={control} name="departmentId" label={t('users.fields.department')} options={departmentOptions} placeholder={tc('none')} isClearable />
       <FormSelector control={control} name="locationId" label={t('users.fields.location')} options={locationOptions} placeholder={tc('none')} isClearable />
       {user === null && (viaDirectory ? <Text type="supporting">{t('users.directoryNote')}</Text> : <DeliveryChoice value={delivery} onChange={setDelivery} />)}

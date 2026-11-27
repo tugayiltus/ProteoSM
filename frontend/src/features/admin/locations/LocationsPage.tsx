@@ -100,7 +100,7 @@ export function LocationsPage() {
       <VStack gap={2} role="region" aria-label={t('locations.treeLabel')}>
         {locations.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {locations.isError && <ErrorState error={locations.error} onRetry={() => void locations.refetch()} />}
-        {locations.data && roots.length === 0 && <EmptyState />}
+        {locations.data && roots.length === 0 && <EmptyState message={t('locations.firstUse')} />}
         {roots.length > 0 && (
           <LocationTreeList
             nodes={roots}
