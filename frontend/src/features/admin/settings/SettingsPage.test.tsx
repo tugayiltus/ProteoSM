@@ -53,4 +53,12 @@ describe('SettingsPage', () => {
     const body: unknown = await api.calls.filter((c) => c.method === 'PUT').at(-1)?.clone().json();
     expect(body).toEqual({ licenceNoticeDays: 45, warrantyWindowDays: 60, version: 9 });
   });
+
+  it('names the flow each setting changes', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, [`GET ${PATH}`]: { status: 200, body: SETTINGS } });
+    renderRoute('/admin/settings');
+
+    expect(await screen.findByText(/Etkilediği akış: Lisans bitiş uyarısı e-postaları ve Lisanslar ekranı\./)).toBeInTheDocument();
+    expect(screen.getByText(/Etkilediği akış: Garanti raporu \(Raporlar\)\./)).toBeInTheDocument();
+  });
 });

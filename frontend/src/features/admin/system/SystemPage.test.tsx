@@ -45,4 +45,21 @@ describe('SystemPage', () => {
 
     expect(await screen.findByText('Henüz çalışan iş kaydı yok.')).toBeInTheDocument();
   });
+
+  it('links a failing mail job to the failed deliveries and the outgoing mail settings', async () => {
+    setup('degraded', [job('EmailSender', true, 'SMTP kapalı')]);
+    renderRoute('/admin/system');
+
+    expect(await screen.findByRole('link', { name: 'Başarısız e-posta teslimatları' })).toHaveAttribute('href', '/admin/email-deliveries?status=failed');
+    expect(screen.getByRole('link', { name: 'Giden posta ayarlarını kontrol et' })).toHaveAttribute('href', '/admin/email-sending');
+    expect(screen.queryByRole('link', { name: 'Dışa aktarma işleri' })).not.toBeInTheDocument();
+  });
+
+  it('offers no review link while every job is healthy', async () => {
+    setup('ok', [job('EmailSender', false)]);
+    renderRoute('/admin/system');
+
+    expect(await screen.findByText('Tüm işler zamanında çalışıyor.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Başarısız e-posta teslimatları' })).not.toBeInTheDocument();
+  });
 });

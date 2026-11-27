@@ -70,6 +70,14 @@ export function EmailDeliveriesPage() {
   const retry = useRetryEmailDelivery();
   const eventLabel = (type: string) => (isEmailEventType(type) ? t(`emailEvents.${type}`) : type);
 
+  /** The server keeps no last-attempt time: a sent mail shows when it left, a queued retry shows when it runs next. */
+  const attemptText = (delivery: EmailDeliveryItem) => {
+    if (delivery.status === 'sent' && delivery.sentAt !== null) {
+      return t('emailDeliveries.sentAt', { date: formatDateTime(delivery.sentAt) });
+    }
+    return delivery.status === 'pending' && delivery.attempts > 0 ? t('emailDeliveries.nextAttempt', { date: formatDateTime(delivery.nextAttemptAt) }) : '';
+  };
+
   const retryButton = (delivery: EmailDeliveryItem) =>
     delivery.status === RETRYABLE_STATUS ? (
       <Button
@@ -96,6 +104,7 @@ export function EmailDeliveriesPage() {
     { key: 'subject', header: t('emailDeliveries.columns.subject'), renderCell: (delivery) => delivery.subject },
     { key: 'status', header: t('emailDeliveries.columns.status'), renderCell: (delivery) => <DeliveryStatusToken status={delivery.status} /> },
     { key: 'attempts', header: t('emailDeliveries.columns.attempts'), renderCell: (delivery) => delivery.attempts },
+    { key: 'lastAttempt', header: t('emailDeliveries.columns.lastAttempt'), renderCell: attemptText },
     { key: 'error', header: t('emailDeliveries.columns.error'), renderCell: (delivery) => delivery.lastError ?? '' },
     { key: 'date', header: t('emailDeliveries.columns.date'), renderCell: (delivery) => formatDateTime(delivery.eventCreatedAt) },
     { key: 'actions', header: t('emailDeliveries.columns.actions'), renderCell: retryButton },
@@ -113,6 +122,7 @@ export function EmailDeliveriesPage() {
       </HStack>
       <VStack gap={0}>
         <Text type="body">{`${eventLabel(delivery.eventType)}${META_SEPARATOR}${delivery.subject}`}</Text>
+        {attemptText(delivery) !== '' && <Text type="supporting">{attemptText(delivery)}</Text>}
         {delivery.lastError && <Text type="supporting">{`${t('emailDeliveries.columns.error')}: ${delivery.lastError}`}</Text>}
         <Text type="supporting">{`${formatDateTime(delivery.eventCreatedAt)}${META_SEPARATOR}${t('emailDeliveries.columns.attempts')}: ${delivery.attempts}`}</Text>
       </VStack>

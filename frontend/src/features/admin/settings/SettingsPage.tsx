@@ -60,8 +60,8 @@ function SettingsForm({ settings }: { settings: SystemSettings }) {
     <form noValidate onSubmit={(event) => void onSubmit(event)}>
       <VStack gap={4}>
         <FormAlert message={update.error ? describeError(update.error) : null} />
-        <FormNumberInput control={control} name="licenceNoticeDays" label={t('settings.licenceNoticeDays')} description={t('settings.licenceNoticeHint')} units={t('settings.unit')} isIntegerOnly isRequired />
-        <FormNumberInput control={control} name="warrantyWindowDays" label={t('settings.warrantyWindowDays')} description={t('settings.warrantyWindowHint')} units={t('settings.unit')} isIntegerOnly isRequired />
+        <FormNumberInput control={control} name="licenceNoticeDays" label={t('settings.licenceNoticeDays')} description={`${t('settings.licenceNoticeHint')} ${t('settings.affects')}: ${t('settings.licenceFlow')}.`} units={t('settings.unit')} isIntegerOnly isRequired />
+        <FormNumberInput control={control} name="warrantyWindowDays" label={t('settings.warrantyWindowDays')} description={`${t('settings.warrantyWindowHint')} ${t('settings.affects')}: ${t('settings.warrantyFlow')}.`} units={t('settings.unit')} isIntegerOnly isRequired />
         <HStack hAlign="end">
           <Button type="submit" label={tc('actions.save')} variant="primary" isLoading={update.isPending} />
         </HStack>

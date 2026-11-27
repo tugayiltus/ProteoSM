@@ -5,6 +5,7 @@
  */
 import { Banner } from '@astryxdesign/core/Banner';
 import { HStack } from '@astryxdesign/core/HStack';
+import { Link } from '@astryxdesign/core/Link';
 import { StackItem } from '@astryxdesign/core/Stack';
 import { Text } from '@astryxdesign/core/Text';
 import { Token } from '@astryxdesign/core/Token';
@@ -17,6 +18,7 @@ import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { SectionCard } from '../../../shared/page/SectionCard';
+import { ROUTES } from '../../../shared/routes';
 
 import { useWorkerHeartbeats, type WorkerHeartbeatItem } from './api';
 
@@ -26,6 +28,33 @@ const STALE_INTERVAL_MULTIPLIER = 3;
 const MS_PER_SECOND = 1000;
 const SKELETON_ROWS = 5;
 const META_SEPARATOR = ' · ';
+/** Job names as the worker reports them. */
+const EMAIL_JOBS: readonly string[] = ['OutboxDispatcher', 'EmailSender'];
+const EXPORT_JOB = 'ExportRunner';
+const FAILED_DELIVERIES_PATH = `${ROUTES.adminEmailDeliveries}?status=failed`;
+
+const hasProblem = (heartbeat: WorkerHeartbeatItem) => heartbeat.stale || heartbeat.lastError !== null;
+
+/** The screen where an admin can look into a job that is late or failing. */
+function ReviewLinks({ jobs }: { jobs: readonly WorkerHeartbeatItem[] }) {
+  const { t } = useTranslation('admin');
+  const failing = jobs.filter(hasProblem);
+  const mailFails = failing.some((job) => EMAIL_JOBS.includes(job.job));
+  const exportsFail = failing.some((job) => job.job === EXPORT_JOB);
+  if (!mailFails && !exportsFail) {
+    return null;
+  }
+  return (
+    <VStack gap={1}>
+      <Text type="label">{t('system.review.title')}</Text>
+      <HStack gap={3} wrap="wrap">
+        {mailFails && <Link href={FAILED_DELIVERIES_PATH}>{t('system.review.deliveries')}</Link>}
+        {mailFails && <Link href={ROUTES.adminEmailSending}>{t('system.review.mailSettings')}</Link>}
+        {exportsFail && <Link href={ROUTES.reportExports}>{t('system.review.exports')}</Link>}
+      </HStack>
+    </VStack>
+  );
+}
 
 /** The job as a whole (server-judged by its newest heartbeat across instances). */
 function FreshnessBadge({ stale }: { stale: boolean }) {
@@ -93,6 +122,7 @@ export function SystemPage() {
                 title={workers.data.status === DEGRADED_STATUS ? t('system.overall.degraded') : t('system.overall.ok')}
               />
             </VStack>
+            <ReviewLinks jobs={workers.data.jobs} />
             {workers.data.jobs.length === 0 ? (
               <EmptyState message={t('system.empty')} />
             ) : (

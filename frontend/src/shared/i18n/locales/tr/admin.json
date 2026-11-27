@@ -563,9 +563,12 @@
       "attempts": "Deneme",
       "error": "Son hata",
       "date": "Tarih",
-      "actions": "İşlemler"
+      "actions": "İşlemler",
+      "lastAttempt": "Son deneme"
     },
-    "firstUse": "Henüz e-posta teslimatı yok."
+    "firstUse": "Henüz e-posta teslimatı yok.",
+    "sentAt": "Gönderildi: {{date}}",
+    "nextAttempt": "Sonraki deneme: {{date}}"
   },
   "emailSending": {
     "intro": "Bildirim e-postalarının hangi sunucudan gönderileceğini seçin. Panel ayarları ancak test maili başarılı olunca kullanıma alınır.",
@@ -676,7 +679,13 @@
     "stale": "Gecikmiş",
     "fresh": "Zamanında",
     "instanceFresh": "Güncel",
-    "instanceSilent": "Rapor vermiyor"
+    "instanceSilent": "Rapor vermiyor",
+    "review": {
+      "title": "İncelemek için",
+      "deliveries": "Başarısız e-posta teslimatları",
+      "mailSettings": "Giden posta ayarlarını kontrol et",
+      "exports": "Dışa aktarma işleri"
+    }
   },
   "slaCalendar": {
     "title": "SLA takvimi",
@@ -830,7 +839,10 @@
     "warrantyWindowDays": "Garanti raporu penceresi",
     "warrantyWindowHint": "Bitiş tarihi seçilmediğinde rapor bu kadar gün ileriye bakar.",
     "unit": "gün",
-    "saved": "Ayarlar kaydedildi."
+    "saved": "Ayarlar kaydedildi.",
+    "affects": "Etkilediği akış",
+    "licenceFlow": "Lisans bitiş uyarısı e-postaları ve Lisanslar ekranı",
+    "warrantyFlow": "Garanti raporu (Raporlar)"
   },
   "announcements": {
     "title": "Duyurular",

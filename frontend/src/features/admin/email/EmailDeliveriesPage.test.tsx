@@ -89,4 +89,23 @@ describe('EmailDeliveriesPage', () => {
 
     expect(await screen.findByText('Henüz e-posta teslimatı yok.')).toBeInTheDocument();
   });
+
+  it('shows when a mail left, when a queued retry runs next, and the stored safe error', async () => {
+    const sent = { ...delivery('d-1', 'sent', 'sent@example.com'), sentAt: '2026-09-27T09:05:00Z' };
+    const queued = { ...delivery('d-3', 'pending', 'queued@example.com'), attempts: 2, nextAttemptAt: '2026-09-27T10:00:00Z' };
+    const failed = delivery('d-2', 'failed', 'failed@example.com');
+    setup({ 'GET /api/v1/admin/email-deliveries': { status: 200, body: pageOf([sent, queued, failed]) } });
+    renderRoute('/admin/email-deliveries');
+
+    expect((await screen.findAllByText(/^Gönderildi: /)).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Sonraki deneme: /).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/SMTP reddetti/).length).toBeGreaterThan(0);
+  });
+
+  it('opens already filtered to failed deliveries when the link carries the status', async () => {
+    const api = setup();
+    renderRoute('/admin/email-deliveries?status=failed');
+
+    await waitFor(() => expect(api.calls.some((r) => new URL(r.url).searchParams.get('status') === 'failed')).toBe(true));
+  });
 });
