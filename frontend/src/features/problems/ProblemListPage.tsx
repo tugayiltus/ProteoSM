@@ -31,7 +31,7 @@ import { Icons } from '../../shared/ui/icons';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
 import { OpenOnlyFilter } from '../services/OpenOnlyFilter';
 import { ServiceFilter } from '../services/ServiceFilter';
-import { SlaSummary } from '../tickets/SlaBadge';
+import { SlaBadge, SlaSummary } from '../tickets/SlaBadge';
 
 import { LEVELS, PROBLEM_QUEUES, PROBLEM_STATUSES, toSlaEntry, URL_QUEUES, useProblems, type ProblemListItem } from './api';
 import { ImpactBadge, ProblemStatusBadge } from './ProblemBadges';
@@ -72,9 +72,18 @@ export function ProblemListPage() {
   const columns: DataColumn<ProblemListItem>[] = [
     { key: 'number', header: t('list.columns.number'), renderCell: (x) => <Text type="label">{x.number}</Text> },
     { key: 'title', header: t('list.columns.title'), renderCell: (x) => x.title },
-    { key: 'status', header: t('list.columns.status'), renderCell: (x) => <ProblemStatusBadge status={x.status} /> },
+    // The SLA state sits under the status, not in its own column: one more column pushed the row actions off a 1280 px screen.
+    {
+      key: 'status',
+      header: t('list.columns.statusSla'),
+      renderCell: (x) => (
+        <VStack gap={1}>
+          <ProblemStatusBadge status={x.status} />
+          {x.sla && <SlaBadge sla={toSlaEntry(x.sla)} showMetric={false} />}
+        </VStack>
+      ),
+    },
     { key: 'impact', header: t('list.columns.impact'), renderCell: (x) => <ImpactBadge impact={x.impact} /> },
-    { key: 'sla', header: t('list.columns.sla'), renderCell: (x) => (x.sla ? <SlaSummary sla={[toSlaEntry(x.sla)]} /> : tc('none')) },
     { key: 'incidents', header: t('list.columns.incidents'), renderCell: (x) => x.incidentCount },
     { key: 'team', header: t('list.columns.team'), renderCell: (x) => x.ownerTeamName },
     { key: 'owner', header: t('list.columns.owner'), renderCell: (x) => x.ownerName ?? tc('none') },

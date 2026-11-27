@@ -26,8 +26,11 @@ const STATE_DOT: Record<SlaState, DotVariant> = {
   cancelled: 'neutral',
 };
 
-/** `data-sla-state` lets E2E tests read the state without parsing the text. */
-export function SlaBadge({ sla }: { sla: SlaEntry }) {
+/**
+ * `data-sla-state` lets E2E tests read the state without parsing the text. `showMetric={false}` drops the metric name
+ * where the column header already names it, so a narrow table cell keeps one line.
+ */
+export function SlaBadge({ sla, showMetric = true }: { sla: SlaEntry; showMetric?: boolean }) {
   const { t } = useTranslation('tickets');
   const formatDuration = useFormatBusinessDuration();
   const state = slaState(sla);
@@ -35,7 +38,7 @@ export function SlaBadge({ sla }: { sla: SlaEntry }) {
   return (
     <HStack gap={1} vAlign="center" wrap="wrap" data-sla-state={state}>
       <StatusDot variant={STATE_DOT[state]} label={stateText} />
-      <Text type="supporting" color="primary">{`${t(`sla.metrics.${sla.metric}`)}:`}</Text>
+      {showMetric && <Text type="supporting" color="primary">{`${t(`sla.metrics.${sla.metric}`)}:`}</Text>}
       <Text type="supporting">{stateText}</Text>
     </HStack>
   );

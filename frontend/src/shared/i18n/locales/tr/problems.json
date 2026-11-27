@@ -41,7 +41,7 @@
       "owner": "Sahip",
       "incidents": "Arıza",
       "updated": "Güncellendi",
-      "sla": "SLA"
+      "statusSla": "Durum ve SLA"
     }
   },
   "detail": {

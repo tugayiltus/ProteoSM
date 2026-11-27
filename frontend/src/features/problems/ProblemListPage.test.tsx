@@ -29,7 +29,8 @@ describe('ProblemListPage', () => {
 
     const table = await screen.findByRole('table', { name: 'Problem listesi' });
     expect(within(table).getAllByText('İhlal · 1 sa 1 dk gecikme')).toHaveLength(1);
-    expect(within(table).getAllByText('Bilinen hataya kadar:')).toHaveLength(1);
+    // The SLA column header names the metric, so the cell shows only the state and stays one line wide.
+    expect(within(table).queryByText('Bilinen hataya kadar:')).toBeNull();
   });
 
   it('lists problems and keeps the queue, status, impact and search filters in the URL', async () => {
