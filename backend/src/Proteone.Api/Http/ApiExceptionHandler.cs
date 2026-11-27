@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Proteone.Application.Common;
+using Proteone.Application.Features.Email.Settings;
 using Proteone.Domain.Common;
 
 namespace Proteone.Api.Http;
@@ -41,6 +42,9 @@ internal sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) :
                 break;
             case ForbiddenException forbidden:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status403Forbidden, forbidden.Code);
+                break;
+            case EmailSettingsTestFailedException testFailed:
+                await ApiProblem.WriteAsync(context, StatusCodes.Status409Conflict, testFailed.Code, testDetail: testFailed.Detail);
                 break;
             case ConcurrencyException:
                 await ApiProblem.WriteAsync(context, StatusCodes.Status409Conflict, ErrorCodes.ConcurrencyConflict);

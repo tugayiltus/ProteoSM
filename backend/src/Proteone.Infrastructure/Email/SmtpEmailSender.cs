@@ -16,14 +16,15 @@ internal sealed class SmtpEmailSender(IOptionsMonitor<EmailOptions> options, Act
     {
         var timeout = options.CurrentValue.Smtp.EffectiveTimeout;
 
-        // Outside the try: an unreadable panel password already has its own safe message.
-        var endpoint = await endpoints.GetAsync(cancellationToken);
-
-        // The environment host is the operator's own choice and connects as it always has; an admin-chosen panel host
-        // connects only to addresses SmtpTargetPolicy allows, checked again at each send.
-        Func<IPAddress, bool>? isAllowedTarget = endpoint.CheckTarget ? SmtpTargetPolicy.IsAllowed : null;
+        // The lookup is inside the try too: a bad Email:From or a database error must reach last_error sanitized.
+        SmtpEndpoint? endpoint = null;
         try
         {
+            endpoint = await endpoints.GetAsync(cancellationToken);
+
+            // The environment host is the operator's own choice and connects as it always has; an admin-chosen panel host
+            // connects only to addresses SmtpTargetPolicy allows, checked again at each send.
+            Func<IPAddress, bool>? isAllowedTarget = endpoint.CheckTarget ? SmtpTargetPolicy.IsAllowed : null;
             await SmtpMailClient.SendAsync(endpoint, message, timeout, cancellationToken, isAllowedTarget);
         }
         catch (SmtpStageException failure) when (failure.Inner is TimeoutException && failure.Inner.Message == SmtpMailClient.DeadlineMessage(timeout))
@@ -45,9 +46,10 @@ internal sealed class SmtpEmailSender(IOptionsMonitor<EmailOptions> options, Act
     }
 
     // Redact at full length, then cut: a cut first could leave part of a secret that no longer matches.
-    private static string LastError(Exception exception, SmtpEndpoint endpoint)
+    // Without an endpoint (the lookup failed) there is no password in play to redact; the sanitizer still runs.
+    private static string LastError(Exception exception, SmtpEndpoint? endpoint)
     {
-        var text = SecretRedactor.Redact(ErrorSanitizer.Sanitize(exception, int.MaxValue), endpoint.UserName, endpoint.Password);
+        var text = SecretRedactor.Redact(ErrorSanitizer.Sanitize(exception, int.MaxValue), endpoint?.UserName, endpoint?.Password);
         return text.Length > EmailDelivery.LastErrorMaxLength ? text[..EmailDelivery.LastErrorMaxLength] : text;
     }
 }

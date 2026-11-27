@@ -96,7 +96,7 @@ public sealed class UpdateEmailSettingsHandler(
             var test = await tester.TestAsync(settings, cancellationToken);
             if (!test.Ok)
             {
-                throw new DomainException(test.ErrorCode ?? ErrorCodes.EmailSettingsSendFailed, "The new values of the active mail settings failed the test send.");
+                throw new EmailSettingsTestFailedException(test.ErrorCode ?? ErrorCodes.EmailSettingsSendFailed, test.Detail);
             }
 
             settings.RecordTest(succeeded: true, errorCode: null, now);

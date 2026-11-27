@@ -50,6 +50,8 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
 
     private static async Task<uint> VersionAsync(ApiClient client) => (await GetAsync(client)).GetProperty("version").GetUInt32();
 
+    private static string Base64(string text) => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text));
+
     private static object Smtp(uint version, string? password = Password, int port = Port, string host = Host, string security = "start_tls", string? userName = MailUser, string senderAddress = SenderAddress) =>
         new { provider = "smtp", senderName = "Proteone Destek", senderAddress, host, port, security, userName, password, version };
 
@@ -295,14 +297,28 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
     [Fact]
     public async Task Saving_active_settings_with_a_failing_test_keeps_the_old_ones()
     {
+        const string wrongPassword = "yanlış-şifre";
         var (admin, _) = await AdminAsync();
         await ActivateWorkingSettingsAsync(admin);
-        factory.EmailTestSender.Result = new EmailTestResult(false, ErrorCodes.EmailSettingsAuthFailed, "535 rejected");
+        // Some relays echo the AUTH line, so the plain password and its AUTH LOGIN / AUTH PLAIN base64 forms all appear.
+        var loginForm = Base64(wrongPassword);
+        var plainForm = Base64($"\0{MailUser}\0{wrongPassword}");
+        factory.EmailTestSender.Result = new EmailTestResult(false, ErrorCodes.EmailSettingsAuthFailed, $"535 {wrongPassword} {loginForm} {plainForm} rejected");
 
-        using var save = await SaveAsync(admin, password: "yanlış-şifre", host: "smtp.baska.local");
+        using var save = await SaveAsync(admin, password: wrongPassword, host: "smtp.baska.local");
+        var body = await save.Content.ReadAsStringAsync(Ct);
 
         Assert.Equal(HttpStatusCode.Conflict, save.StatusCode);
-        Assert.Equal(ErrorCodes.EmailSettingsAuthFailed, await ApiClient.ReadCodeAsync(save));
+        var problem = JsonDocument.Parse(body).RootElement;
+        Assert.Equal(ErrorCodes.EmailSettingsAuthFailed, problem.GetProperty("code").GetString());
+        var detail = problem.GetProperty("testDetail").GetString();
+        Assert.StartsWith("535 [redacted]", detail, StringComparison.Ordinal);
+        Assert.Contains("rejected", detail, StringComparison.Ordinal);
+        foreach (var secret in new[] { wrongPassword, loginForm, plainForm })
+        {
+            Assert.DoesNotContain(secret, body, StringComparison.Ordinal);
+        }
+
         var json = await GetAsync(admin);
         Assert.Equal(Host, json.GetProperty("host").GetString());
         Assert.True(json.GetProperty("isActive").GetBoolean());
@@ -476,7 +492,11 @@ public sealed class EmailSettingsTests(ApiFactory factory) : IAsyncLifetime
 
         using var get = await client.GetAsync(SettingsPath);
         using var test = await client.PostAsync(TestPath);
+        // A non-admin cannot read the version, so any version will do: the policy refuses before the handler runs.
+        using var save = await client.PutAsync(SettingsPath, Smtp(version: 0));
+        using var activate = await client.PostAsync(ActivatePath, new { version = 0 });
+        using var useEnvironment = await client.PostAsync(UseEnvironmentPath, new { version = 0 });
 
-        Assert.Equal((HttpStatusCode.Forbidden, HttpStatusCode.Forbidden), (get.StatusCode, test.StatusCode));
+        Assert.All([get, test, save, activate, useEnvironment], response => Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode));
     }
 }

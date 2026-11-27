@@ -138,4 +138,18 @@ public sealed class SmtpEmailSenderLastErrorTests(ApiFactory factory) : IClassFi
 
         Assert.Contains("go away", lastError, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public async Task A_bad_environment_sender_address_fails_as_a_sanitized_send_error()
+    {
+        var options = Environment(port: 1);
+        options.From = "not a mailbox <<";
+
+        // The endpoint lookup parses Email:From; its failure must come out like any other send failure.
+        var failure = await Assert.ThrowsAsync<InvalidOperationException>(() => SmtpSenders.Sender(factory, options).SendAsync(Message, Ct));
+
+        Assert.Null(failure.InnerException);
+        Assert.False(string.IsNullOrWhiteSpace(failure.Message));
+        Assert.True(failure.Message.Length <= EmailDelivery.LastErrorMaxLength);
+    }
 }

@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { applyServerErrors, describeError, isHandledByFields, translateErrorCode } from '../../../shared/api/errorMessage';
-import { ERROR_CODES } from '../../../shared/api/errors';
+import { ApiError, ERROR_CODES } from '../../../shared/api/errors';
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { FormAlert } from '../../../shared/feedback/FormAlert';
 import { ErrorState, LoadingState } from '../../../shared/feedback/States';
@@ -230,6 +230,8 @@ function SettingsForm({ settings }: { settings: EmailSettings }) {
   });
 
   const saveMessage = save.error && !isHandledByFields(save.error, SERVER_FIELDS) ? describeError(save.error) : null;
+  // A refused save of active settings carries the server's own reason; the page cannot test unsaved values.
+  const saveDetail = save.error instanceof ApiError && save.error.testDetail !== null ? t('emailSending.testDetail', { detail: save.error.testDetail }) : undefined;
   const securityOptions = SECURITIES.map((value) => {
     const isBlocked = value === NO_SECURITY && hasUserName;
     return { value, label: t(`emailSending.securities.${value}`), isDisabled: isBlocked, description: isBlocked ? t('emailSending.noneNeedsNoUser') : undefined };
@@ -240,7 +242,7 @@ function SettingsForm({ settings }: { settings: EmailSettings }) {
       <UnsavedChangesGuard when={isDirty} />
       <form noValidate onChange={clearStaleResults} onSubmit={(event) => void onSubmit(event)}>
         <VStack gap={3}>
-          <FormAlert message={saveMessage} />
+          <FormAlert message={saveMessage} description={saveDetail} />
           <FormRadioList
             control={control}
             name="provider"

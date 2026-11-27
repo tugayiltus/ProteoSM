@@ -47,13 +47,16 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code: string;
   readonly fieldErrors: Readonly<Record<string, string[]>>;
+  /** The redacted mail server message when a save of active mail settings failed its test send. */
+  readonly testDetail: string | null;
 
-  constructor(status: number, code: string, fieldErrors: Record<string, string[]> = {}) {
+  constructor(status: number, code: string, fieldErrors: Record<string, string[]> = {}, testDetail: string | null = null) {
     super(code);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.fieldErrors = fieldErrors;
+    this.testDetail = testDetail;
   }
 }
 
@@ -69,6 +72,7 @@ export class NetworkError extends ApiError {
 interface ProblemBody {
   code?: unknown;
   errors?: unknown;
+  testDetail?: unknown;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
@@ -85,7 +89,8 @@ function readFieldErrors(value: unknown): Record<string, string[]> {
 export function toApiError(status: number, body: unknown): ApiError {
   const problem: ProblemBody = isRecord(body) ? body : {};
   const code = typeof problem.code === 'string' ? problem.code : ERROR_CODES.unexpected;
-  return new ApiError(status, code, readFieldErrors(problem.errors));
+  const testDetail = typeof problem.testDetail === 'string' ? problem.testDetail : null;
+  return new ApiError(status, code, readFieldErrors(problem.errors), testDetail);
 }
 
 /** True when the server refused a write because the row changed after the client read it. */

@@ -144,13 +144,16 @@ describe('EmailSendingPage', () => {
   });
 
   it('keeps the typed values when a save of active settings fails its test send', async () => {
-    const { user, form } = await openPage(ACTIVE, { [`PUT ${PATH}`]: { status: 409, body: { code: 'email_settings.auth_failed' } } });
+    const { user, form } = await openPage(ACTIVE, {
+      [`PUT ${PATH}`]: { status: 409, body: { code: 'email_settings.auth_failed', testDetail: '535 5.7.8 Username and Password not accepted' } },
+    });
     await user.clear(within(form).getByLabelText(/^Sunucu/));
     await user.type(within(form).getByLabelText(/^Sunucu/), 'smtp.yeni.com');
     await user.type(within(form).getByLabelText(/^Şifre/), 'yanlis-sifre');
     await user.click(within(form).getByRole('button', { name: 'Kaydet' }));
     const text = await within(form).findByText('Sunucu kullanıcı adını veya şifreyi kabul etmedi. Google için uygulama şifresi kullanın.');
     expect(text.closest('[role="alert"]')).not.toBeNull();
+    expect(within(form).getByText('Sunucu yanıtı: 535 5.7.8 Username and Password not accepted')).toBeInTheDocument();
     expect(within(form).getByLabelText(/^Sunucu/)).toHaveValue('smtp.yeni.com');
     expect(within(form).getByLabelText(/^Şifre/)).toHaveValue('yanlis-sifre');
   });
