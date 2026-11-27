@@ -41,6 +41,7 @@ public sealed partial class FormerProductNameTests
         "docs/adr/0030-login-method-chosen-in-the-admin-panel.md",
         "docs/adr/0037-proteone-name-and-compatibility.md",
         "docs/adr/0043-no-upgrade-path-from-tgysm.md",
+        "docs/adr/0047-proteosm-name-and-move.md",
         "docs/adr/README.md",
         "docs/superpowers/specs/2026-11-27-proteosm-brand-and-ux-scope.md",
     ];

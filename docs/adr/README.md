@@ -50,3 +50,4 @@ Template: `~/.claude/templates/adr-template.md`. File names: `NNNN-kebab-case-ti
 | [0044](0044-satisfaction-rating.md) | Satisfaction Rating on Completed Tickets | accepted | 2026-11-26 |
 | [0045](0045-outgoing-mail-settings.md) | Outgoing Mail Settings in the Admin Area | accepted | 2026-11-27 |
 | [0046](0046-problem-sla-and-email.md) | Problem SLA and Email | accepted | 2026-11-27 |
+| [0047](0047-proteosm-name-and-move.md) | ProteoSM Name and the Move from Proteone | accepted | 2026-11-28 |

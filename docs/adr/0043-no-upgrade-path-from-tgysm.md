@@ -38,3 +38,7 @@ ADR-0037 kept tools and fallbacks to move an existing TGYSM installation into a 
 ### Risks
 - An environment file with `TGYSM_` keys is ignored without a message. Mitigation: `deploy/.env.example` lists the current keys.
 - A later wish to move TGYSM data needs the removed tools. Mitigation: they are in the Git history at `c4b6ca1`.
+
+## Amendment 2026-11-28 (move from Proteone)
+
+A move path from a Proteone installation to ProteoSM exists (backup and restore, ADR-0047, `docs/operations.md`). There is still no upgrade path from a TGYSM installation.

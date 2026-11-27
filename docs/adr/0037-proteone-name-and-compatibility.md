@@ -56,3 +56,7 @@ The owner asked for the Proteone name in all documents. Accepted ADRs, designs a
 ## Amendment 2026-11-25 (upgrade path)
 
 The upgrade path and the fallbacks for TGYSM installations are removed (ADR-0043). The naming decisions and the stored-data literals stay.
+
+## Amendment 2026-11-28 (ProteoSM)
+
+The naming part of this decision is superseded by ADR-0047: the product is now ProteoSM under the umbrella brand ProteONE. The stored-data literals named here (Data Protection application name and purposes) stay as they are.
