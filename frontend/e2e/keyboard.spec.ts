@@ -49,7 +49,7 @@ test('keyboard only: employee opens an incident after fixing the form errors; IT
   await expect(page).toHaveURL(TICKET_URL);
 
   await it.page.goto(page.url());
-  await tabTo(it.page, it.page.getByRole('button', { name: 'Üstlen' }));
+  await tabTo(it.page, it.page.getByRole('button', { name: 'Üzerime al' }));
   await it.page.keyboard.press('Enter');
   await expect(it.page.getByRole('main').getByText('Can Demir').first()).toBeVisible();
   const box = it.page.getByRole('form', { name: 'Yazışmalar' });

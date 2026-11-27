@@ -4,12 +4,10 @@ import { expectNoHorizontalScroll, openCard } from './helpers';
 import { adminSession, seedWorld, userSession } from './world';
 
 const TICKET_URL = /\/tickets\/(INC|REQ)-\d{4}-\d{6}$/;
-/** The card's link name carries the queue name and its count, e.g. "SLA Riski 3 kayıt". */
-const QUEUE_CARD_NAME = /^SLA Riski \d+ kayıt$/;
 
 // A fresh ticket is never warned and the product has no test-only way to make it so, so the queue count is only
 // checked for shape (the warned/breached membership is covered by the backend SLA monitor tests).
-test('a new ticket shows both SLA timers and the IT workspace has an SLA Riski card that opens its queue', async ({ browser }) => {
+test('a new ticket shows both SLA timers and the IT workspace has an SLA riski view that opens its queue', async ({ browser }) => {
   const admin = await adminSession(browser);
   const world = await seedWorld(admin);
   const employee = await userSession(browser, world.employeeEmail, world.employeePassword);
@@ -29,13 +27,12 @@ test('a new ticket shows both SLA timers and the IT workspace has an SLA Riski c
   await expectNoHorizontalScroll(it.page);
 
   await it.page.goto('/workspace');
-  const card = it.page.getByRole('link', { name: /SLA Riski/ });
-  await expect(card).toBeVisible();
-  await expect(card).toHaveAccessibleName(QUEUE_CARD_NAME);
+  const view = it.page.getByRole('link', { name: /^SLA riski/ });
+  await expect(view).toBeVisible();
   await expectNoHorizontalScroll(it.page);
-  await openCard(it.page, 'SLA Riski');
+  await view.click();
   await expect(it.page).toHaveURL(/\/workspace\/queue\?queue=sla_risk$/);
-  await expect(it.page.getByRole('heading', { name: 'SLA Riski' })).toBeVisible();
+  await expect(it.page.getByRole('heading', { name: 'SLA riski olan arıza ve talepler' })).toBeVisible();
 
   await Promise.all([admin.context.close(), employee.context.close(), it.context.close()]);
 });

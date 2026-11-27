@@ -21,7 +21,7 @@ test('completing a ticket emails the requester the resolution and never the inte
   const number = employee.page.url().split('/').pop() ?? '';
 
   await it.page.goto(employee.page.url());
-  await it.page.getByRole('button', { name: 'Üstlen' }).click();
+  await it.page.getByRole('button', { name: 'Üzerime al' }).click();
   const box = it.page.getByRole('form', { name: 'Yazışmalar' });
   await box.getByRole('tab', { name: 'İç not' }).click();
   await box.getByLabel('Mesajınız').fill(INTERNAL_NOTE);

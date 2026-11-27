@@ -20,7 +20,7 @@ test('incident: IT claims, notes, replies and completes; employee sees the resol
   const ticketUrl = employee.page.url();
 
   await it.page.goto(ticketUrl);
-  await it.page.getByRole('button', { name: 'Üstlen' }).click();
+  await it.page.getByRole('button', { name: 'Üzerime al' }).click();
   // Scoped to the page content: the header also holds the (phone-hidden) account name.
   await expect(it.page.getByRole('main').getByText('Can Demir').first()).toBeVisible();
   const box = it.page.getByRole('form', { name: 'Yazışmalar' });

@@ -26,6 +26,7 @@ test('task: IT hands work from an incident to another team, which claims, starts
   await expect(it.page.getByRole('link', { name: new RegExp(incidentNumber) })).toBeVisible();
 
   await db.page.goto('/workspace');
+  await db.page.getByRole('button', { name: 'Diğer kuyruklar' }).click();
   await openCard(db.page, 'Ekibimin görevleri');
   await expect(db.page).toHaveURL(/\/tasks\?queue=team/);
   await db.page.goto(taskPath);

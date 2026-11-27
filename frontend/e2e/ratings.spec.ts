@@ -44,9 +44,9 @@ test('ratings: employee rates from the email link and desk sees it', async ({ br
   const ticketPath = `/tickets/${number}`;
 
   await desk.page.goto(ticketPath);
-  await desk.page.getByRole('button', { name: 'Üstlen' }).click();
+  await desk.page.getByRole('button', { name: 'Üzerime al' }).click();
   // Wait for the claim to land, so the completion sends the new ticket version.
-  await expect(desk.page.getByRole('button', { name: 'Üstlen' })).toBeHidden();
+  await expect(desk.page.getByRole('button', { name: 'Üzerime al' })).toBeHidden();
   await desk.page.getByRole('button', { name: 'Tamamla' }).click();
   const dialog = desk.page.getByRole('dialog');
   await dialog.getByLabel('Çözüm (kullanıcı görür)').fill('Kablo değiştirildi');

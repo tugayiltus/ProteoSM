@@ -29,9 +29,9 @@ const EMPLOYEE_PREFIX = 'employee';
 /** The desk claims and completes the ticket, so it becomes rateable for its requester. */
 async function completeTicket(desk: Page, number: string): Promise<void> {
   await desk.goto(`/tickets/${number}`);
-  await desk.getByRole('button', { name: 'Üstlen' }).click();
+  await desk.getByRole('button', { name: 'Üzerime al' }).click();
   // Wait for the claim to land, so the completion sends the new ticket version.
-  await expect(desk.getByRole('button', { name: 'Üstlen' })).toBeHidden();
+  await expect(desk.getByRole('button', { name: 'Üzerime al' })).toBeHidden();
   await desk.getByRole('button', { name: 'Tamamla' }).click();
   const dialog = desk.getByRole('dialog');
   await dialog.getByLabel('Çözüm (kullanıcı görür)').fill('Kablo değiştirildi');

@@ -284,6 +284,31 @@ export async function setProblemTarget(admin: Session, impact: 'low' | 'medium' 
   await send(request, 'PUT', '/api/v1/admin/sla/problem-targets', { targets, version: current.version });
 }
 
+const ALL_WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
+const ROUND_THE_CLOCK_START = '00:00:00';
+const ROUND_THE_CLOCK_END = '23:59:00';
+const FAST_TARGET_MINUTES = 2;
+const FAST_WARNING_PERCENT = 50;
+
+/**
+ * Makes new tickets reach the SLA warning within about two minutes at any hour: the calendar runs round the clock and every
+ * ticket target is two minutes with a 50 % warning. The monitor job still decides when the warning is set (about one minute).
+ */
+export async function makeTicketSlaWarnFast(admin: Session): Promise<void> {
+  const request = admin.context.request;
+  const calendar = (await (await request.get('/api/v1/admin/sla/calendar')).json()) as { version: number; timeZone: string };
+  await send(request, 'PUT', '/api/v1/admin/sla/calendar', {
+    version: calendar.version,
+    timeZone: calendar.timeZone,
+    hours: ALL_WEEKDAYS.map((weekday) => ({ weekday, startsAt: ROUND_THE_CLOCK_START, endsAt: ROUND_THE_CLOCK_END })),
+  });
+  const policy = (await (await request.get('/api/v1/admin/sla/policy')).json()) as { targets: Record<string, unknown>[]; pauseRules: unknown[] };
+  await send(request, 'POST', '/api/v1/admin/sla/policy', {
+    targets: policy.targets.map((target) => ({ ...target, targetMinutes: FAST_TARGET_MINUTES, warningPercent: FAST_WARNING_PERCENT })),
+    pauseRules: policy.pauseRules,
+  });
+}
+
 /** Opens a problem as the session's user and returns its number. */
 export async function seedProblem(author: Session, title: string, impact: 'low' | 'medium' | 'high', ownerTeamId: string): Promise<string> {
   const problem = await send(author.context.request, 'POST', '/api/v1/problems', {

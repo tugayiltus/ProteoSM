@@ -115,6 +115,7 @@ test('calendar: İş listem "Bu hafta uygulanacak" opens the filtered list', asy
   await approve(approver, number);
 
   await owner.page.goto('/workspace');
+  await owner.page.getByRole('button', { name: 'Diğer kuyruklar' }).click();
   await openCard(owner.page, 'Bu hafta uygulanacak');
   await expect(owner.page).toHaveURL(/\/changes\?queue=this_week$/);
   await expect(visibleEntry(owner.page, number)).toBeVisible();
