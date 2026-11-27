@@ -61,7 +61,10 @@ const SECURITY_PORTS = { start_tls: 587, ssl_tls: 465, none: 25 } as const satis
 /** The fields that can carry a server validation error. */
 const SERVER_FIELDS = ['senderName', 'senderAddress', 'host', 'port', 'userName', 'password'] as const satisfies readonly Path<FormValues>[];
 
-const isEmail = (value: string) => z.email().safeParse(value).success;
+/** A list lookup, so prototype keys such as `toString` never count as a security choice. */
+const isSecurity = (value: string): value is EmailSecurity => (SECURITIES as readonly string[]).includes(value);
+
+const isEmail =(value: string) => z.email().safeParse(value).success;
 
 const schema = z
   .object({
@@ -187,8 +190,17 @@ function SettingsForm({ settings }: { settings: EmailSettings }) {
     setValue('security', GOOGLE_PRESET.security, { shouldDirty: true });
   };
   const onSecurityChange = (next: string) => {
-    if (next in SECURITY_PORTS) {
-      setValue('port', SECURITY_PORTS[next as EmailSecurity], { shouldDirty: true, shouldValidate: true });
+    if (isSecurity(next)) {
+      setValue('port', SECURITY_PORTS[next], { shouldDirty: true, shouldValidate: true });
+    }
+  };
+  // A result describes the stored values, so an edit makes it stale.
+  const clearStaleResults = () => {
+    if (test.data !== undefined || test.error !== null) {
+      test.reset();
+    }
+    if (activate.error !== null) {
+      activate.reset();
     }
   };
 
@@ -226,7 +238,7 @@ function SettingsForm({ settings }: { settings: EmailSettings }) {
   return (
     <SectionCard title={t('emailSending.settingsTitle')}>
       <UnsavedChangesGuard when={isDirty} />
-      <form noValidate onSubmit={(event) => void onSubmit(event)}>
+      <form noValidate onChange={clearStaleResults} onSubmit={(event) => void onSubmit(event)}>
         <VStack gap={3}>
           <FormAlert message={saveMessage} />
           <FormRadioList

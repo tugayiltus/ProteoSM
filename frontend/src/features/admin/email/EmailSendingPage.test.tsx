@@ -143,6 +143,46 @@ describe('EmailSendingPage', () => {
     expect(within(form).getByLabelText(/^Gönderen adı/)).toHaveValue('Yardım Masası');
   });
 
+  it('keeps the typed values when a save of active settings fails its test send', async () => {
+    const { user, form } = await openPage(ACTIVE, { [`PUT ${PATH}`]: { status: 409, body: { code: 'email_settings.auth_failed' } } });
+    await user.clear(within(form).getByLabelText(/^Sunucu/));
+    await user.type(within(form).getByLabelText(/^Sunucu/), 'smtp.yeni.com');
+    await user.type(within(form).getByLabelText(/^Şifre/), 'yanlis-sifre');
+    await user.click(within(form).getByRole('button', { name: 'Kaydet' }));
+    const text = await within(form).findByText('Sunucu kullanıcı adını veya şifreyi kabul etmedi. Google için uygulama şifresi kullanın.');
+    expect(text.closest('[role="alert"]')).not.toBeNull();
+    expect(within(form).getByLabelText(/^Sunucu/)).toHaveValue('smtp.yeni.com');
+    expect(within(form).getByLabelText(/^Şifre/)).toHaveValue('yanlis-sifre');
+  });
+
+  it('clears the test result when the form changes again', async () => {
+    const { user, form } = await openPage(SETTINGS, {
+      [`POST ${PATH}/test`]: { status: 200, body: { ok: false, errorCode: 'email_settings.timeout', detail: null } },
+    });
+    await user.click(within(form).getByRole('button', { name: 'Test maili gönder' }));
+    const message = 'Sunucu zamanında yanıt vermedi. Daha sonra tekrar deneyin.';
+    expect(await within(form).findByText(message)).toBeInTheDocument();
+    await user.type(within(form).getByLabelText(/^Gönderen adı/), ' 2');
+    expect(within(form).queryByText(message)).not.toBeInTheDocument();
+  });
+
+  it('clears the activate error on an edit and after a later activate', async () => {
+    const tested = { ...SETTINGS, isTested: true, lastTestedAt: TESTED_AT, lastTestSucceeded: true };
+    const { user, api, form } = await openPage(tested, { [`POST ${PATH}/activate`]: { status: 409, body: { code: 'email_settings.not_tested' } } });
+    const message = /^Bu ayarlar henüz test edilmedi/;
+    await user.click(within(form).getByRole('button', { name: 'Kullanıma al' }));
+    expect(await within(form).findByText(message)).toBeInTheDocument();
+    await user.type(within(form).getByLabelText(/^Gönderen adı/), ' 2');
+    expect(within(form).queryByText(message)).not.toBeInTheDocument();
+    await user.type(within(form).getByLabelText(/^Gönderen adı/), '{Backspace}{Backspace}');
+
+    await user.click(within(form).getByRole('button', { name: 'Kullanıma al' }));
+    expect(await within(form).findByText(message)).toBeInTheDocument();
+    api.set(`POST ${PATH}/activate`, { status: 200, body: { ...tested, isActive: true, version: 5 } });
+    await user.click(within(form).getByRole('button', { name: 'Kullanıma al' }));
+    await waitFor(() => expect(within(form).queryByText(message)).not.toBeInTheDocument());
+  });
+
   it('test_button_is_disabled_while_the_form_has_unsaved_changes', async () => {
     const { user, form } = await openPage();
     expect(within(form).getByRole('button', { name: 'Test maili gönder' })).not.toHaveAttribute('aria-disabled', 'true');
