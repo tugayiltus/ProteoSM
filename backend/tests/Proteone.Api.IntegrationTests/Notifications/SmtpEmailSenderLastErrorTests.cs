@@ -116,6 +116,22 @@ public sealed class SmtpEmailSenderLastErrorTests(ApiFactory factory) : IClassFi
     }
 
     [Fact]
+    public async Task Password_across_the_length_cut_is_redacted_before_the_cut()
+    {
+        // Learn where the server's reply starts in the error, then pad it so the password starts before the cut and
+        // ends after it. Cut first, redact second would leave the first half of the password in the error.
+        const string Marker = "marker";
+        var offset = (await LastErrorAsync(Marker)).IndexOf(Marker, StringComparison.Ordinal);
+        Assert.True(offset >= 0);
+        var padding = new string('x', EmailDelivery.LastErrorMaxLength - offset - (Password.Length / 2));
+
+        var lastError = await LastErrorAsync(padding + Password);
+
+        Assert.Equal(EmailDelivery.LastErrorMaxLength, lastError.Length);
+        Assert.DoesNotContain(Password[..(Password.Length / 2)], lastError, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task A_rejected_login_keeps_the_server_reply_in_the_error()
     {
         var lastError = await LastErrorAsync("go away");

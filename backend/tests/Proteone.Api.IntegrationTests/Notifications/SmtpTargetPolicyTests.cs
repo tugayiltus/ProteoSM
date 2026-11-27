@@ -18,6 +18,8 @@ public sealed class SmtpTargetPolicyTests
     [InlineData("100.64.0.1")]
     [InlineData("8.8.8.8")]
     [InlineData("2001:db8::25")]
+    [InlineData("2001:4860:4860::8888")]
+    [InlineData("2a00:1450:4001::6d")]
     [InlineData("fd00::25")]
     [InlineData("::ffff:10.0.0.25")]
     [InlineData("::ffff:127.0.0.1")]
