@@ -10,5 +10,6 @@ export const adminKeys = {
   slaCalendar: ['admin', 'sla', 'calendar'],
   slaHolidays: ['admin', 'sla', 'holidays'],
   slaPolicy: ['admin', 'sla', 'policy'],
+  slaProblemTargets: ['admin', 'sla', 'problem-targets'],
   system: ['admin', 'system'],
 } as const;

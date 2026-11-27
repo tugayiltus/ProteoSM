@@ -27,7 +27,11 @@ import {
   SLA_METRICS,
   SLA_PRIORITIES,
   useCreateSlaPolicyVersion,
+  useProblemTargets,
   useSlaPolicy,
+  useUpdateProblemTargets,
+  type ProblemTargetsDto,
+  type ProblemTargetDto,
   type HoldReason,
   type PauseRuleItem,
   type PolicyDetail,
@@ -43,6 +47,7 @@ const MIN_TARGET_MINUTES = 1;
 const MAX_TARGET_MINUTES = 366 * 24 * 60;
 const INPUT_WIDTH = 120;
 const SKELETON_ROWS = 8;
+const PROBLEM_IMPACTS: readonly ProblemTargetDto['impact'][] = ['high', 'medium', 'low'];
 
 interface CellDraft {
   minutes: number | null;
@@ -200,9 +205,82 @@ function PolicyForm({ policy }: { policy: PolicyDetail }) {
   );
 }
 
+function ProblemTargetsForm({ data }: { data: ProblemTargetsDto }) {
+  const { t } = useTranslation('admin');
+  const { t: tp } = useTranslation('problems');
+  const showToast = useToast();
+  const update = useUpdateProblemTargets();
+  const [cells, setCells] = useState<Record<string, CellDraft>>(() =>
+    Object.fromEntries(data.targets.map((x) => [x.impact, { minutes: x.targetMinutes, percent: x.warningPercent }])),
+  );
+  const [invalid, setInvalid] = useState(false);
+
+  const setCell = (impact: string, change: Partial<CellDraft>) =>
+    setCells((current) => ({ ...current, [impact]: { ...(current[impact] ?? { minutes: null, percent: null }), ...change } }));
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    const targets: ProblemTargetDto[] = [];
+    for (const impact of PROBLEM_IMPACTS) {
+      const targetMinutes = inRange(cells[impact]?.minutes ?? null, MIN_TARGET_MINUTES, MAX_TARGET_MINUTES);
+      const warningPercent = inRange(cells[impact]?.percent ?? null, MIN_WARNING_PERCENT, MAX_WARNING_PERCENT);
+      if (targetMinutes === null || warningPercent === null) {
+        setInvalid(true);
+        return;
+      }
+      targets.push({ impact, targetMinutes, warningPercent });
+    }
+    setInvalid(false);
+    update.mutate({ targets, version: data.version }, { onSuccess: () => showToast({ body: t('slaPolicy.problem.saved') }) });
+  };
+
+  const alert = invalid ? t('slaPolicy.invalid') : update.error ? describeError(update.error) : null;
+  return (
+    <form noValidate onSubmit={onSubmit}>
+      <SectionCard title={t('slaPolicy.problem.title')}>
+        <VStack gap={3}>
+          <FormAlert message={alert} />
+          <Text type="supporting">{t('slaPolicy.problem.hint')}</Text>
+          {PROBLEM_IMPACTS.map((impact) => (
+            <VStack key={impact} gap={1}>
+              <Text type="label">{tp(`levels.${impact}`)}</Text>
+              <HStack gap={2} wrap="wrap">
+                <NumberInput
+                  label={`${tp(`levels.${impact}`)} ${t('slaPolicy.targetMinutes')}`}
+                  isLabelHidden
+                  isIntegerOnly
+                  hasClear
+                  width={INPUT_WIDTH}
+                  units={t('slaPolicy.minutesUnit')}
+                  value={cells[impact]?.minutes ?? null}
+                  onChange={(value: number | null) => setCell(impact, { minutes: value })}
+                />
+                <NumberInput
+                  label={`${tp(`levels.${impact}`)} ${t('slaPolicy.warningPercent')}`}
+                  isLabelHidden
+                  isIntegerOnly
+                  hasClear
+                  width={INPUT_WIDTH}
+                  units={t('slaPolicy.percentUnit')}
+                  value={cells[impact]?.percent ?? null}
+                  onChange={(value: number | null) => setCell(impact, { percent: value })}
+                />
+              </HStack>
+            </VStack>
+          ))}
+          <HStack hAlign="end">
+            <Button type="submit" label={t('slaPolicy.problem.save')} variant="primary" isLoading={update.isPending} />
+          </HStack>
+        </VStack>
+      </SectionCard>
+    </form>
+  );
+}
+
 export function SlaPolicyPage() {
   const { t } = useTranslation('admin');
   const policy = useSlaPolicy();
+  const problemTargets = useProblemTargets();
   return (
     <VStack gap={4}>
       <PageHeader
@@ -213,6 +291,7 @@ export function SlaPolicyPage() {
       {policy.isPending && <LoadingState rows={SKELETON_ROWS} />}
       {policy.isError && <ErrorState error={policy.error} onRetry={() => void policy.refetch()} />}
       {policy.data && <PolicyForm key={policy.data.versionId} policy={policy.data} />}
+      {problemTargets.data && <ProblemTargetsForm key={problemTargets.data.version} data={problemTargets.data} />}
     </VStack>
   );
 }

@@ -78,3 +78,19 @@ export function useCreateSlaPolicyVersion() {
     onSuccess: (policy) => queryClient.setQueryData(adminKeys.slaPolicy, policy),
   });
 }
+
+export type ProblemTargetsDto = Schemas['ProblemTargetsDto'];
+export type ProblemTargetDto = Schemas['ProblemTargetDto'];
+export type ProblemImpact = ProblemTargetDto['impact'];
+
+export function useProblemTargets() {
+  return useQuery({ queryKey: adminKeys.slaProblemTargets, queryFn: () => unwrap(api.GET('/api/v1/admin/sla/problem-targets')) });
+}
+
+export function useUpdateProblemTargets() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { targets: ProblemTargetDto[]; version: number }) => unwrap(api.PUT('/api/v1/admin/sla/problem-targets', { body })),
+    onSuccess: (targets) => queryClient.setQueryData(adminKeys.slaProblemTargets, targets),
+  });
+}

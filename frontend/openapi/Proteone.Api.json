@@ -4061,6 +4061,72 @@
         }
       }
     },
+    "/api/v1/admin/sla/problem-targets": {
+      "get": {
+        "tags": [
+          "Admin: SLA"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemTargetsDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin: SLA"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProblemTargetsCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemTargetsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/auth-settings": {
       "get": {
         "tags": [
@@ -19764,6 +19830,46 @@
           "cancelled"
         ]
       },
+      "ProblemTargetDto": {
+        "required": [
+          "impact",
+          "targetMinutes",
+          "warningPercent"
+        ],
+        "type": "object",
+        "properties": {
+          "impact": {
+            "$ref": "#/components/schemas/Level"
+          },
+          "targetMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "warningPercent": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProblemTargetsDto": {
+        "required": [
+          "targets",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemTargetDto"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      },
       "ProblemTicketItem": {
         "required": [
           "number",
@@ -22856,6 +22962,25 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "UpdateProblemTargetsCommand": {
+        "required": [
+          "targets",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemTargetDto"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "format": "uint32"
           }
         }
       },

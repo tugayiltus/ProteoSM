@@ -176,6 +176,7 @@
     "sla_calendar": "SLA takvimi",
     "holiday": "Tatil günü",
     "sla_policy": "SLA politikası",
+    "problem_sla_targets": "Problem SLA hedefleri",
     "knowledge_article": "Bilgi bankası makalesi",
     "report": "Rapor",
     "export_job": "Rapor dışa aktarımı",
@@ -308,6 +309,9 @@
       "holiday_added": "Tatil günü eklendi",
       "holiday_removed": "Tatil günü kaldırıldı",
       "policy_versioned": "SLA politikasının yeni sürümü oluşturuldu"
+    },
+    "problem_sla": {
+      "targets_updated": "Problem SLA hedefleri güncellendi"
     },
     "knowledge": {
       "created": "Makale oluşturuldu",
@@ -685,7 +689,14 @@
     "saved": "Yeni sürüm oluşturuldu.",
     "invalid": "Hedefler 1 veya daha büyük, uyarı yüzdesi 1 ile 99 arasında olmalıdır.",
     "minutesUnit": "dk",
-    "percentUnit": "%"
+    "percentUnit": "%",
+    "problem": {
+      "title": "Problem hedefleri (iş dakikası)",
+      "hint": "Bir problemin bilinen hataya ulaşması için etkiye göre tanınan süre. Çalışan sayaçlar kendi kopyasını korur.",
+      "impact": "Etki",
+      "save": "Kaydet",
+      "saved": "Problem hedefleri kaydedildi."
+    }
   },
   "overview": {
     "checksTitle": "Kurulum kontrolleri",

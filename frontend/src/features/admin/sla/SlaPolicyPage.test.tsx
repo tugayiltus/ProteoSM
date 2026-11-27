@@ -74,4 +74,35 @@ describe('SlaPolicyPage', () => {
     expect(await screen.findByText(/Hedefler 1 veya daha büyük/)).toBeInTheDocument();
     expect(api.calls.some((c) => c.method === 'POST')).toBe(false);
   });
+
+  it('saves_problem_targets_with_version', async () => {
+    const PROBLEM_TARGETS = {
+      version: 42,
+      targets: [
+        { impact: 'high', targetMinutes: 960, warningPercent: 80 },
+        { impact: 'medium', targetMinutes: 2400, warningPercent: 80 },
+        { impact: 'low', targetMinutes: 4800, warningPercent: 80 },
+      ],
+    };
+    let put: { targets: unknown[]; version: number } | undefined;
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/sla/policy': { status: 200, body: policy(1) },
+      'GET /api/v1/admin/sla/problem-targets': { status: 200, body: PROBLEM_TARGETS },
+      'PUT /api/v1/admin/sla/problem-targets': async (request) => {
+        put = (await request.json()) as { targets: unknown[]; version: number };
+        return { status: 200, body: { ...PROBLEM_TARGETS, version: 43 } };
+      },
+    });
+    const { user } = renderRoute('/admin/sla/policy');
+    const field = await screen.findByLabelText('Yüksek Hedef (dk)');
+    expect(field).toHaveValue('960');
+    await user.clear(field);
+    await user.type(field, '600');
+    await user.click(screen.getByRole('button', { name: 'Kaydet' }));
+    expect((await screen.findAllByText('Problem hedefleri kaydedildi.')).length).toBeGreaterThan(0);
+    expect(put?.version).toBe(42);
+    expect(put?.targets).toContainEqual({ impact: 'high', targetMinutes: 600, warningPercent: 80 });
+    expect(put?.targets).toHaveLength(3);
+  });
 });

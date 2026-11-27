@@ -4207,6 +4207,82 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/sla/problem-targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemTargetsDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProblemTargetsCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemTargetsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/auth-settings": {
         parameters: {
             query?: never;
@@ -15037,6 +15113,18 @@ export interface components {
         };
         /** @enum {unknown} */
         ProblemStatus: "open" | "investigating" | "known_error" | "resolved" | "cancelled";
+        ProblemTargetDto: {
+            impact: components["schemas"]["Level"];
+            /** Format: int32 */
+            targetMinutes: number;
+            /** Format: int32 */
+            warningPercent: number;
+        };
+        ProblemTargetsDto: {
+            targets: components["schemas"]["ProblemTargetDto"][];
+            /** Format: uint32 */
+            version: number;
+        };
         ProblemTicketItem: {
             number: string;
             title: string;
@@ -15837,6 +15925,11 @@ export interface components {
             impact: components["schemas"]["Level"];
             rootCause: null | string;
             workaround: null | string;
+        };
+        UpdateProblemTargetsCommand: {
+            targets: components["schemas"]["ProblemTargetDto"][];
+            /** Format: uint32 */
+            version: number;
         };
         UpdateReleaseRequest: {
             /** Format: uint32 */

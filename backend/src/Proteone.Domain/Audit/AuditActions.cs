@@ -141,6 +141,7 @@ public static class AuditActions
     public const string SlaHolidayAdded = "sla.holiday_added";
     public const string SlaHolidayRemoved = "sla.holiday_removed";
     public const string SlaPolicyVersioned = "sla.policy_versioned";
+    public const string ProblemSlaTargetsUpdated = "problem_sla.targets_updated";
 
     public const string KnowledgeCreated = "knowledge.created";
     public const string KnowledgeUpdated = "knowledge.updated";

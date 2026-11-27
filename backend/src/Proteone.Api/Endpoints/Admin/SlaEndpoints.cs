@@ -11,6 +11,7 @@ internal static class SlaEndpoints
     private const string CalendarRoute = "/calendar";
     private const string HolidaysRoute = "/holidays";
     private const string PolicyRoute = "/policy";
+    private const string ProblemTargetsRoute = "/problem-targets";
 
     public static RouteGroupBuilder MapSlaEndpoints(this RouteGroupBuilder admin)
     {
@@ -46,6 +47,12 @@ internal static class SlaEndpoints
                 var item = await h.HandleAsync(command, ct);
                 return TypedResults.Created($"{ApiRoutes.Admin}{ApiRoutes.Sla}{PolicyRoute}", item);
             })
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        sla.MapGet(ProblemTargetsRoute, async (GetProblemTargetsHandler h, CancellationToken ct) => TypedResults.Ok(await h.HandleAsync(ct)));
+        sla.MapPut(ProblemTargetsRoute, async (UpdateProblemTargetsCommand command, UpdateProblemTargetsHandler h, CancellationToken ct) =>
+                TypedResults.Ok(await h.HandleAsync(command, ct)))
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
