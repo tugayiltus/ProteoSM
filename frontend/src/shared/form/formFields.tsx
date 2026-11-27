@@ -7,6 +7,7 @@ import { CheckboxInput } from '@astryxdesign/core/CheckboxInput';
 import { DateInput } from '@astryxdesign/core/DateInput';
 import { DateTimeInput } from '@astryxdesign/core/DateTimeInput';
 import { NumberInput } from '@astryxdesign/core/NumberInput';
+import { RadioList, RadioListItem } from '@astryxdesign/core/RadioList';
 import { Selector } from '@astryxdesign/core/Selector';
 import { Switch } from '@astryxdesign/core/Switch';
 import { TextArea } from '@astryxdesign/core/TextArea';
@@ -105,6 +106,34 @@ export type FormSwitchProps<T extends FieldValues> = Bound<T> & Omit<ComponentPr
 export function FormSwitch<T extends FieldValues>({ control, name, ...props }: FormSwitchProps<T>) {
   const { ref, value, onChange } = useBoundField({ control, name });
   return <Switch {...props} ref={ref} value={Boolean(value)} onChange={onChange} />;
+}
+
+/** One radio choice. `description` shows below the label, for example why the choice is disabled. */
+export interface RadioOption extends SelectOption {
+  description?: string;
+  isDisabled?: boolean;
+}
+
+export type FormRadioListProps<T extends FieldValues> = Bound<T> &
+  Omit<ComponentProps<typeof RadioList>, Supplied | 'children'> & {
+    options: readonly RadioOption[];
+    /** Runs after the form value changes, e.g. to set a field that depends on this one. */
+    onValueChange?: (value: string) => void;
+  };
+
+export function FormRadioList<T extends FieldValues>({ control, name, options, onValueChange, ...props }: FormRadioListProps<T>) {
+  const { value, onChange: setValue, status } = useBoundField({ control, name });
+  const onChange = (next: string) => {
+    setValue(next);
+    onValueChange?.(next);
+  };
+  return (
+    <RadioList {...props} value={(value as string | undefined) ?? NO_VALUE} onChange={onChange} status={status}>
+      {options.map((option) => (
+        <RadioListItem key={option.value} value={option.value} label={option.label} description={option.description} isDisabled={option.isDisabled} />
+      ))}
+    </RadioList>
+  );
 }
 
 export type FormNumberInputProps<T extends FieldValues> = Bound<T> & Omit<ComponentProps<typeof NumberInput>, Supplied | 'hasClear'>;
