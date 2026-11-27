@@ -241,6 +241,7 @@
     "sender_rejected": "Sunucu gönderen adresini kabul etmedi. Bu hesabın bu adresten gönderme izni olmalı.",
     "recipient_rejected": "Sunucu alıcı adresini kabul etmedi.",
     "timeout": "Sunucu zamanında yanıt vermedi. Daha sonra tekrar deneyin.",
-    "send_failed": "Test maili gönderilemedi. Ayrıntıya bakın."
+    "send_failed": "Test maili gönderilemedi. Ayrıntıya bakın.",
+    "host_not_allowed": "Bu sunucu adresine bağlantıya izin verilmez."
   }
 }

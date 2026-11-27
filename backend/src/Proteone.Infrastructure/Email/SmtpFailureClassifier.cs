@@ -31,6 +31,7 @@ internal static class SmtpFailureClassifier
 
     private static string ClassifyConnect(Exception inner) => inner switch
     {
+        SmtpHostNotAllowedException => ErrorCodes.EmailSettingsHostNotAllowed,
         SocketException or { InnerException: SocketException } => ErrorCodes.EmailSettingsConnectFailed,
 
         // The TLS handshake failed (MailKit wraps it, .NET may throw its own AuthenticationException), or the server

@@ -25,7 +25,8 @@ internal sealed class MailKitEmailTestSender(IOptionsMonitor<EmailOptions> optio
             }
             else
             {
-                await SmtpMailClient.SendAsync(endpoint, message, settings.Smtp.EffectiveTimeout, cancellationToken);
+                // An admin chooses this host, so the test send refuses link-local and unspecified targets.
+                await SmtpMailClient.SendAsync(endpoint, message, settings.Smtp.EffectiveTimeout, cancellationToken, SmtpTargetPolicy.IsAllowed);
             }
 
             return new EmailTestResult(true, null, null);

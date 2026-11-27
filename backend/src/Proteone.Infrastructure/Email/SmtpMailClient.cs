@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using MailKit;
 using MailKit.Net.Smtp;
 using Proteone.Application.Abstractions;
@@ -33,8 +35,16 @@ internal static class SmtpMailClient
     /// Connects, authenticates when <see cref="SmtpEndpoint.UserName"/> is set, sends and disconnects. A cancelled
     /// <paramref name="cancellationToken"/> stops the send with <see cref="OperationCanceledException"/>; every other
     /// failure is a <see cref="SmtpStageException"/> (the own deadline as a <see cref="TimeoutException"/> in it).
+    /// With <paramref name="isAllowedTarget"/>, the host is resolved here and every address must pass it; the connection
+    /// then goes to a checked address, so a host name cannot point somewhere else between the check and the connect. A
+    /// refused address fails the connect step with <see cref="SmtpHostNotAllowedException"/>.
     /// </summary>
-    public static async Task SendAsync(SmtpEndpoint endpoint, EmailMessage message, TimeSpan timeout, CancellationToken cancellationToken)
+    public static async Task SendAsync(
+        SmtpEndpoint endpoint,
+        EmailMessage message,
+        TimeSpan timeout,
+        CancellationToken cancellationToken,
+        Func<IPAddress, bool>? isAllowedTarget = null)
     {
         var mime = EmailMimeMessageFactory.Build(endpoint.From, message);
 
@@ -45,8 +55,17 @@ internal static class SmtpMailClient
         var stage = SmtpStage.Connect;
         try
         {
+            using var socket = isAllowedTarget is null ? null : await ConnectCheckedAsync(endpoint.Host, endpoint.Port, isAllowedTarget, deadline.Token);
             using var client = new SmtpClient { Timeout = (int)timeout.TotalMilliseconds };
-            await client.ConnectAsync(endpoint.Host, endpoint.Port, endpoint.Socket, deadline.Token);
+            if (socket is null)
+            {
+                await client.ConnectAsync(endpoint.Host, endpoint.Port, endpoint.Socket, deadline.Token);
+            }
+            else
+            {
+                // The host name still goes to MailKit for the TLS certificate check.
+                await client.ConnectAsync(socket, endpoint.Host, endpoint.Port, endpoint.Socket, deadline.Token);
+            }
 
             if (!string.IsNullOrEmpty(endpoint.UserName))
             {
@@ -67,5 +86,43 @@ internal static class SmtpMailClient
         {
             throw new SmtpStageException(stage, exception);
         }
+    }
+
+    /// <summary>Resolves the host, refuses it when any address fails the check, and connects to the first address that answers.</summary>
+    private static async Task<Socket> ConnectCheckedAsync(string host, int port, Func<IPAddress, bool> isAllowedTarget, CancellationToken cancellationToken)
+    {
+        var addresses = IPAddress.TryParse(host, out var literal) ? [literal] : await Dns.GetHostAddressesAsync(host, cancellationToken);
+        if (addresses.Length == 0)
+        {
+            throw new SocketException((int)SocketError.HostNotFound);
+        }
+
+        if (Array.Find(addresses, address => !isAllowedTarget(address)) is { } refused)
+        {
+            throw new SmtpHostNotAllowedException(refused);
+        }
+
+        SocketException? lastFailure = null;
+        foreach (var address in addresses)
+        {
+            var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                await socket.ConnectAsync(new IPEndPoint(address, port), cancellationToken);
+                return socket;
+            }
+            catch (SocketException failure)
+            {
+                socket.Dispose();
+                lastFailure = failure;
+            }
+            catch
+            {
+                socket.Dispose();
+                throw;
+            }
+        }
+
+        throw lastFailure!;
     }
 }

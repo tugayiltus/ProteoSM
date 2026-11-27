@@ -72,6 +72,30 @@ public sealed class MailKitEmailTestSenderTests : IDisposable
         Assert.Contains(server.Commands, command => command.StartsWith($"RCPT TO:<{Recipient}>", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("169.254.169.254")]
+    [InlineData("0.0.0.0")]
+    [InlineData("::")]
+    [InlineData("fe80::1")]
+    [InlineData("::ffff:169.254.169.254")]
+    public async Task Link_local_and_unspecified_targets_are_not_allowed(string host)
+    {
+        var result = await SendAsync(Transport(port: 25) with { Host = host });
+
+        Assert.False(result.Ok);
+        Assert.Equal(ErrorCodes.EmailSettingsHostNotAllowed, result.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Loopback_host_name_is_allowed()
+    {
+        await using var server = ScriptedSmtpServer.Start(new SmtpScript());
+
+        var result = await SendAsync(Transport(server.Port) with { Host = "localhost" });
+
+        Assert.True(result.Ok, result.Detail);
+    }
+
     [Fact]
     public async Task Closed_port_is_connect_failed()
     {

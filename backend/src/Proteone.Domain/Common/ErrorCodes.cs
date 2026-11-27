@@ -97,6 +97,7 @@ public static class ErrorCodes
     public const string EmailSettingsRecipientRejected = "email_settings.recipient_rejected";
     public const string EmailSettingsTimeout = "email_settings.timeout";
     public const string EmailSettingsSendFailed = "email_settings.send_failed";
+    public const string EmailSettingsHostNotAllowed = "email_settings.host_not_allowed";
 
     public const string ImportInvalidHeader = "imports.invalid_header";
     public const string ImportEncoding = "imports.encoding";
