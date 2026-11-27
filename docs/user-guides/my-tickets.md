@@ -38,6 +38,16 @@ Kayıt sayfasında şunları görürsünüz:
 - **Yazışmalar**: Sizinle IT ekibi arasındaki mesajlar.
 - **Geçmiş**: Kayıtta olan her şey, tarih sırasıyla.
 
+## Kaydı puanlama
+
+Arızanız çözüldüğünde veya talebiniz karşılandığında kaydı 14 gün içinde puanlayabilirsiniz. Tamamlanma e-postasındaki bağlantı kaydı açar; kayıt ana sayfada **Puan bekleyen kayıtlar** kartında da görünür.
+
+1. Kayıt sayfasında **Bu kayıt nasıl çözüldü?** bölümünde bir puan seçin: **Çok kötü**, **Kötü**, **Orta**, **İyi**, **Çok iyi**.
+2. İsterseniz **Yorum** yazın.
+3. **Gönder**'e basın.
+
+Puanınızı süre dolana kadar **Değiştir** ile değiştirebilirsiniz. Yalnızca çözülen arızalar ve karşılanan talepler puanlanır; iptal edilen veya reddedilen kayıtlar puanlanmaz. Puanınızı ve yorumunuzu IT ekibi görür; yorum e-postayla gönderilmez.
+
 ## IT ekibine yanıt yazma
 
 1. Kayıt sayfasında **Yazışmalar** bölümüne inin.

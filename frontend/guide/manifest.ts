@@ -279,6 +279,7 @@ export const MANIFEST: readonly GuideShot[] = [
   { id: 'admin-sla-policy', role: 'admin', path: '/admin/sla/policy', views: DESKTOP },
   // admin-email-and-system
   { id: 'admin-email-templates', role: 'admin', path: '/admin/email-templates', views: DESKTOP },
+  { id: 'admin-email-sending', role: 'admin', path: '/admin/email-sending', views: DESKTOP },
   { id: 'admin-email-deliveries', role: 'admin', path: '/admin/email-deliveries', views: DESKTOP },
   { id: 'admin-monitoring', role: 'admin', path: '/admin/monitoring', views: DESKTOP },
   { id: 'admin-announcements', role: 'admin', path: '/admin/announcements', views: DESKTOP },

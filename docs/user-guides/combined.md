@@ -63,6 +63,7 @@ Giriş yaptıktan sonra **Ana sayfa** açılır.
 - **Bir şey istiyorum**: Cihaz, yazılım veya erişim talep etmek için.
 - **Son kayıtlarım**: Açtığınız son kayıtlar ve durumları. **Tüm kayıtlarım** bağlantısı listenin tamamını açar.
 - **Diğer işlemler**: **Nasıl Yapılır?** (bilgi bankası) ve **Zimmetlerim**.
+- **Puan bekleyen kayıtlar**: Tamamlanan ve henüz puanlamadığınız kayıtlar (en çok beş). Puanlanacak kayıt yoksa görünmez (bkz. [Kayıtlarım](#kayıtlarım)).
 
 IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümünü görür (bkz. [IT iş listesi](#it-iş-listesi)).
 
@@ -209,6 +210,16 @@ Kayıt sayfasında şunları görürsünüz:
 - **Bağlı cihazlar**, **İlgili kayıtlar**, **İlgili makaleler**.
 - **Yazışmalar**: Sizinle IT ekibi arasındaki mesajlar.
 - **Geçmiş**: Kayıtta olan her şey, tarih sırasıyla.
+
+## Kaydı puanlama
+
+Arızanız çözüldüğünde veya talebiniz karşılandığında kaydı 14 gün içinde puanlayabilirsiniz. Tamamlanma e-postasındaki bağlantı kaydı açar; kayıt ana sayfada **Puan bekleyen kayıtlar** kartında da görünür.
+
+1. Kayıt sayfasında **Bu kayıt nasıl çözüldü?** bölümünde bir puan seçin: **Çok kötü**, **Kötü**, **Orta**, **İyi**, **Çok iyi**.
+2. İsterseniz **Yorum** yazın.
+3. **Gönder**'e basın.
+
+Puanınızı süre dolana kadar **Değiştir** ile değiştirebilirsiniz. Yalnızca çözülen arızalar ve karşılanan talepler puanlanır; iptal edilen veya reddedilen kayıtlar puanlanmaz. Puanınızı ve yorumunuzu IT ekibi görür; yorum e-postayla gönderilmez.
 
 ## IT ekibine yanıt yazma
 
@@ -1060,6 +1071,7 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
 2. Üstteki sekmelerden bir rapor seçin:
    - **Olaylar**: Arızaların sayısı, ilk yanıt ve çözüm süreleri, SLA uyumu.
    - **Talepler**: Taleplerin karşılanma süresi, onay bekleme süresi, ret oranı.
+   - Olaylar ve Talepler sekmelerinde ayrıca **Ortalama memnuniyet puanı** (örneğin "3,7 / 5"), **Puanlanma oranı** ve **Puan dağılımı** vardır. Puanlanan bir kayıt, puanlandığı andaki ekibinin altında sayılır.
    - **Operasyon**: Ekip ve kişi yükü, kategori, lokasyon ve departmana göre dağılım, bekletme nedenleri.
    - **Transferler**: Aktarma sayısı ve oranı, yeniden atamalar, arızadan açılan talepler.
    - **Envanter**: Türe ve duruma göre cihazlar, aktif zimmetler, stok.
@@ -1416,7 +1428,7 @@ Hedefler 1 veya daha büyük, uyarı yüzdesi 1 ile 99 arasında olmalıdır.
 
 # Yönetim: e-posta ve sistem
 
-Bu sayfa yöneticiler içindir: bildirim e-postalarının metinlerini düzenlemek, gönderimleri izlemek ve arka plan işlerinin çalıştığını kontrol etmek.
+Bu sayfa yöneticiler içindir: bildirim e-postalarının hangi sunucudan gideceğini seçmek, metinlerini düzenlemek, gönderimleri izlemek ve arka plan işlerinin çalıştığını kontrol etmek.
 
 ## E-posta şablonları
 
@@ -1430,6 +1442,29 @@ Her bildirim türünün bir şablonu vardır: "Kayıt oluşturuldu", "Kamuya aç
 4. **Kaydet** düğmesine basın.
 
 Değişiklik bundan sonra gönderilen e-postalarda geçerli olur.
+
+## E-posta gönderimi
+
+**E-posta gönderimi** sayfası (menüde **Sistem ve denetim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
+
+![E-posta gönderimi](images/admin-email-sending-desktop.png)
+
+Panel ayarlarını kullanıma almak için:
+
+1. **Sağlayıcı** seçin:
+   - **Google**: Sunucu, port ve güvenlik sabittir. **Kullanıcı** alanına Google hesabını, **Şifre** alanına uygulama şifresini yazın. Google hesabında iki adımlı doğrulama açık olmalıdır.
+   - **Diğer SMTP**: **Sunucu**, **Port**, **Güvenlik**, **Kullanıcı** ve **Şifre** alanlarını kendiniz doldurun. Güvenlik seçince önerilen port gelir (STARTTLS 587, SSL/TLS 465, Yok 25). **Yok** yalnızca kullanıcı adı boşken seçilebilir.
+2. **Gönderen adı** ve **Gönderen adres** alanlarını doldurun ve **Kaydet**'e basın.
+3. **Test maili gönder**'e basın. Test maili kayıtlı ayarlarla sizin e-posta adresinize gider. Kaydedilmemiş değişiklik varsa düğme kapalıdır.
+4. Test başarılıysa **Kullanıma al**'a basın. Bildirimler bundan sonra bu ayarlarla gider.
+
+Notlar:
+
+- Şifre sayfada gösterilmez; alanda "kayıtlı — değiştirmek için yazın" yazar. Boş bırakırsanız kayıtlı şifre korunur. Sunucu, port, güvenlik, sağlayıcı veya kullanıcı değişirse şifreyi yeniden yazmanız gerekir.
+- Test başarısızsa sayfa nedeni yazar (bağlantı, TLS, kullanıcı adı veya şifre, gönderen, alıcı, zaman aşımı) ve altında "Sunucu yanıtı" satırını gösterir.
+- Kullanımdaki ayarları değiştirip kaydettiğinizde sistem önce test maili gönderir. Test başarısızsa kayıt yapılmaz ve eski ayarlar çalışmaya devam eder.
+- **.env ayarlarına dön** gönderimi kurulumda girilen sunucuya geri alır. Panel ayarları silinmez.
+- Bazı kurulumlar e-postaları dosyaya yazar (Pickup). Bu durumda sayfada bir uyarı görünür ve panel ayarları kullanılmaz.
 
 ## E-posta gönderimleri
 

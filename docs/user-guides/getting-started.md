@@ -63,6 +63,7 @@ Giriş yaptıktan sonra **Ana sayfa** açılır.
 - **Bir şey istiyorum**: Cihaz, yazılım veya erişim talep etmek için.
 - **Son kayıtlarım**: Açtığınız son kayıtlar ve durumları. **Tüm kayıtlarım** bağlantısı listenin tamamını açar.
 - **Diğer işlemler**: **Nasıl Yapılır?** (bilgi bankası) ve **Zimmetlerim**.
+- **Puan bekleyen kayıtlar**: Tamamlanan ve henüz puanlamadığınız kayıtlar (en çok beş). Puanlanacak kayıt yoksa görünmez (bkz. [Kayıtlarım](my-tickets.md)).
 
 IT personeli ve yöneticiler ana sayfada ayrıca **İş kuyruklarım** bölümünü görür (bkz. [IT iş listesi](it-workspace.md)).
 

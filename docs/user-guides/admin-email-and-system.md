@@ -1,6 +1,6 @@
 # Yönetim: e-posta ve sistem
 
-Bu sayfa yöneticiler içindir: bildirim e-postalarının metinlerini düzenlemek, gönderimleri izlemek ve arka plan işlerinin çalıştığını kontrol etmek.
+Bu sayfa yöneticiler içindir: bildirim e-postalarının hangi sunucudan gideceğini seçmek, metinlerini düzenlemek, gönderimleri izlemek ve arka plan işlerinin çalıştığını kontrol etmek.
 
 ## E-posta şablonları
 
@@ -14,6 +14,29 @@ Her bildirim türünün bir şablonu vardır: "Kayıt oluşturuldu", "Kamuya aç
 4. **Kaydet** düğmesine basın.
 
 Değişiklik bundan sonra gönderilen e-postalarda geçerli olur.
+
+## E-posta gönderimi
+
+**E-posta gönderimi** sayfası (menüde **Sistem ve denetim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
+
+![E-posta gönderimi](images/admin-email-sending-desktop.png)
+
+Panel ayarlarını kullanıma almak için:
+
+1. **Sağlayıcı** seçin:
+   - **Google**: Sunucu, port ve güvenlik sabittir. **Kullanıcı** alanına Google hesabını, **Şifre** alanına uygulama şifresini yazın. Google hesabında iki adımlı doğrulama açık olmalıdır.
+   - **Diğer SMTP**: **Sunucu**, **Port**, **Güvenlik**, **Kullanıcı** ve **Şifre** alanlarını kendiniz doldurun. Güvenlik seçince önerilen port gelir (STARTTLS 587, SSL/TLS 465, Yok 25). **Yok** yalnızca kullanıcı adı boşken seçilebilir.
+2. **Gönderen adı** ve **Gönderen adres** alanlarını doldurun ve **Kaydet**'e basın.
+3. **Test maili gönder**'e basın. Test maili kayıtlı ayarlarla sizin e-posta adresinize gider. Kaydedilmemiş değişiklik varsa düğme kapalıdır.
+4. Test başarılıysa **Kullanıma al**'a basın. Bildirimler bundan sonra bu ayarlarla gider.
+
+Notlar:
+
+- Şifre sayfada gösterilmez; alanda "kayıtlı — değiştirmek için yazın" yazar. Boş bırakırsanız kayıtlı şifre korunur. Sunucu, port, güvenlik, sağlayıcı veya kullanıcı değişirse şifreyi yeniden yazmanız gerekir.
+- Test başarısızsa sayfa nedeni yazar (bağlantı, TLS, kullanıcı adı veya şifre, gönderen, alıcı, zaman aşımı) ve altında "Sunucu yanıtı" satırını gösterir.
+- Kullanımdaki ayarları değiştirip kaydettiğinizde sistem önce test maili gönderir. Test başarısızsa kayıt yapılmaz ve eski ayarlar çalışmaya devam eder.
+- **.env ayarlarına dön** gönderimi kurulumda girilen sunucuya geri alır. Panel ayarları silinmez.
+- Bazı kurulumlar e-postaları dosyaya yazar (Pickup). Bu durumda sayfada bir uyarı görünür ve panel ayarları kullanılmaz.
 
 ## E-posta gönderimleri
 

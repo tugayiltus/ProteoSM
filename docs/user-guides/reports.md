@@ -8,6 +8,7 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
 2. Üstteki sekmelerden bir rapor seçin:
    - **Olaylar**: Arızaların sayısı, ilk yanıt ve çözüm süreleri, SLA uyumu.
    - **Talepler**: Taleplerin karşılanma süresi, onay bekleme süresi, ret oranı.
+   - Olaylar ve Talepler sekmelerinde ayrıca **Ortalama memnuniyet puanı** (örneğin "3,7 / 5"), **Puanlanma oranı** ve **Puan dağılımı** vardır. Puanlanan bir kayıt, puanlandığı andaki ekibinin altında sayılır.
    - **Operasyon**: Ekip ve kişi yükü, kategori, lokasyon ve departmana göre dağılım, bekletme nedenleri.
    - **Transferler**: Aktarma sayısı ve oranı, yeniden atamalar, arızadan açılan talepler.
    - **Envanter**: Türe ve duruma göre cihazlar, aktif zimmetler, stok.

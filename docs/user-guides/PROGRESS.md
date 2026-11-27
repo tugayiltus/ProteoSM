@@ -6,9 +6,9 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 
 | Page | Status | Screenshots |
 |---|---|---|
-| `getting-started.md` | Done (Arama section added 2026-11-19; menu and Problemler search group 2026-11-22; search shot 2026-11-23; Hizmet text 2026-11-24) | `home-desktop.png`, `home-menu-mobile.png`, `home-mobile.png`, `search-desktop.png` |
+| `getting-started.md` | Done (Arama section added 2026-11-19; menu and Problemler search group 2026-11-22; search shot 2026-11-23; Hizmet text 2026-11-24; Puan bekleyen kayıtlar card 2026-11-27) | `home-desktop.png`, `home-menu-mobile.png`, `home-mobile.png`, `search-desktop.png` |
 | `incidents-and-requests.md` | Done | `tickets-new-incident-desktop.png`, `tickets-new-request-mobile.png` |
-| `my-tickets.md` | Done | `tickets-list-desktop.png`, `ticket-detail-desktop.png` |
+| `my-tickets.md` | Done (Kaydı puanlama section 2026-11-27, text only; no shot of the rating section) | `tickets-list-desktop.png`, `ticket-detail-desktop.png` |
 | `my-assets.md` | Done | `my-assets-mobile.png` |
 | `knowledge-base.md` | Done | `knowledge-base-desktop.png`, `kb-article-mobile.png`, `kb-new-desktop.png` |
 | `approvals.md` | Done (change approvals added 2026-11-18, conflict count 2026-11-19) | `approvals-desktop.png` (shows request approvals only) |
@@ -19,18 +19,18 @@ against the seeded pilot database (`tools/seed-pilot.sh --fresh`); the shot list
 | `releases.md` | Done (new 2026-11-25) | `releases-list-desktop.png`, `release-detail-desktop.png` |
 | `licences.md` | Done (new 2026-11-25) | `licences-list-desktop.png`, `licence-detail-desktop.png` |
 | `inventory.md` | Done (Hizmetler text 2026-11-24) | `assets-list-desktop.png`, `asset-new-desktop.png`, `asset-detail-desktop.png`, `assets-import-desktop.png` |
-| `reports.md` | Done (Değişiklikler and Görevler tabs and Sorun çıkaran değişiklikler added 2026-11-19; Problemler tab 2026-11-22; tab shots 2026-11-23; Sorun çıkaran değişiklikler shot 2026-11-23; Hizmet text 2026-11-24) | `reports-incidents-desktop.png`, `reports-incidents-mobile.png`, `reports-changes-desktop.png`, `reports-changes-caused-desktop.png`, `reports-tasks-desktop.png`, `reports-problems-desktop.png`, `reports-exports-desktop.png` |
+| `reports.md` | Done (Değişiklikler and Görevler tabs and Sorun çıkaran değişiklikler added 2026-11-19; Problemler tab 2026-11-22; tab shots 2026-11-23; Sorun çıkaran değişiklikler shot 2026-11-23; Hizmet text 2026-11-24; rating figures text 2026-11-27) | `reports-incidents-desktop.png`, `reports-incidents-mobile.png`, `reports-changes-desktop.png`, `reports-changes-caused-desktop.png`, `reports-tasks-desktop.png`, `reports-problems-desktop.png`, `reports-exports-desktop.png` |
 | `first-setup.md` | Done | `admin-overview-desktop.png` |
 | `admin-users-and-organization.md` | Done | `admin-overview-desktop.png`, `admin-users-desktop.png`, `admin-user-new-desktop.png`, `admin-departments-desktop.png`, `admin-locations-desktop.png`, `admin-teams-desktop.png`, `admin-audit-desktop.png` |
 | `admin-catalogs.md` | Done (Hizmetler text 2026-11-24) | `admin-brands-desktop.png`, `admin-models-desktop.png`, `admin-categories-desktop.png`, `admin-request-types-desktop.png` |
 | `admin-sla.md` | Done | `admin-sla-calendar-desktop.png`, `admin-sla-policy-desktop.png` |
-| `admin-email-and-system.md` | Done | `admin-email-templates-desktop.png`, `admin-email-deliveries-desktop.png`, `admin-monitoring-desktop.png`, `admin-system-desktop.png` |
+| `admin-email-and-system.md` | Done (E-posta gönderimi section and shot 2026-11-27) | `admin-email-sending-desktop.png`, `admin-email-templates-desktop.png`, `admin-email-deliveries-desktop.png`, `admin-monitoring-desktop.png`, `admin-system-desktop.png` |
 | `feedback.md` | Done | `feedback-incident-mobile.png` |
 | `troubleshooting.md` | Done | Not needed |
 | `combined.md` / `combined.pdf` | Generated | All images above |
 
 ## Screenshot status
 
-Every image in `images/` is referenced by a page. All 70 images were retaken on 2026-11-25 from the pilot seed with an announcement,
+Every image in `images/` is referenced by a page. `admin-email-sending` was added on 2026-11-27 from a fresh pilot seed (Pickup mode, so the page shows the file notice). All 70 other images were retaken on 2026-11-25 from the pilot seed with an announcement,
 services, licences, releases and a monitoring source, in one full run of `tools/guide-screenshots.sh`; `reports-changes-caused` and `reports-service` scroll to their
 cards. Retake all with `GUIDE_PASSWORD=<pilot password> tools/guide-screenshots.sh`, or single shots by id.
