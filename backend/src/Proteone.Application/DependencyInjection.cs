@@ -57,6 +57,8 @@ public static class DependencyInjection
         services.AddScoped<Features.Tasks.TaskWork>();
         services.AddScoped<Features.Problems.ProblemScope>();
         services.AddScoped<Features.Problems.ProblemWork>();
+        services.AddScoped<Features.Problems.ProblemSlaTracker>();
+        services.AddScoped<Features.Problems.ProblemSlaReader>();
         services.AddScoped<Features.Changes.ChangeScope>();
         services.AddScoped<Features.Changes.ChangeConflicts>();
         services.AddScoped<Features.Changes.ChangeWork>();

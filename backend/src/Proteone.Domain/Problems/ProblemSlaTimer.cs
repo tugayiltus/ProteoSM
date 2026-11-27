@@ -113,6 +113,12 @@ public sealed class ProblemSlaTimer : Entity
         ResetWarningWhileBelowThreshold();
     }
 
+    /// <summary>Business seconds left to the target at <paramref name="now"/>: negative once overdue, null once stopped.</summary>
+    public long? RemainingSeconds(DateTimeOffset now, BusinessCalendarRules rules) =>
+        IsStopped
+            ? null
+            : (long)TargetMinutes * SecondsPerMinute - ElapsedSeconds - BusinessTimeCalculator.SecondsBetween(rules, RunningSince, now);
+
     /// <summary>Records the warning threshold being reached; set once.</summary>
     public void RecordWarning(DateTimeOffset now) => WarnedAt ??= now;
 

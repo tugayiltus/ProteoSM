@@ -15083,6 +15083,7 @@ export interface components {
             /** Format: uint32 */
             version: number;
             service: null | components["schemas"]["ServiceRef"];
+            sla?: null | components["schemas"]["ProblemSlaDto"];
         };
         ProblemDetails: {
             type?: null | string;
@@ -15107,9 +15108,21 @@ export interface components {
             incidentCount: number;
             /** Format: date-time */
             updatedAt: string;
+            sla?: null | components["schemas"]["ProblemSlaDto"];
         };
         ProblemNoteRequest: {
             text: string;
+        };
+        ProblemSlaDto: {
+            metric: string;
+            /** Format: date-time */
+            dueAt: string;
+            /** Format: int64 */
+            remainingSeconds: null | number;
+            isPaused: boolean;
+            isWarned: boolean;
+            isBreached: boolean;
+            result: null | components["schemas"]["SlaResult"];
         };
         /** @enum {unknown} */
         ProblemStatus: "open" | "investigating" | "known_error" | "resolved" | "cancelled";

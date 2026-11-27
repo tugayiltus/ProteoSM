@@ -1,8 +1,25 @@
 using Proteone.Application.Features.Services;
 using Proteone.Domain.Problems;
+using Proteone.Domain.Sla;
 using Proteone.Domain.Tickets;
 
 namespace Proteone.Application.Features.Problems;
+
+/// <summary>
+/// The known-error timer of a problem. Same JSON shape as one entry of a ticket <c>sla</c> array, so the ticket SLA
+/// badge renders it. <c>RemainingSeconds</c> is null once stopped, negative when overdue; the timer never pauses.
+/// </summary>
+public sealed record ProblemSlaDto(
+    string Metric,
+    DateTimeOffset DueAt,
+    long? RemainingSeconds,
+    bool IsPaused,
+    bool IsWarned,
+    bool IsBreached,
+    SlaResult? Result)
+{
+    public const string KnownErrorMetric = "known_error";
+}
 
 public sealed record ProblemListItem(
     Guid Id,
@@ -13,7 +30,8 @@ public sealed record ProblemListItem(
     string OwnerTeamName,
     string? OwnerName,
     int IncidentCount,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    ProblemSlaDto? Sla = null);
 
 public sealed record ProblemDetail(
     Guid Id,
@@ -37,4 +55,5 @@ public sealed record ProblemDetail(
     DateTimeOffset? ResolvedAt,
     bool CanWork,
     uint Version,
-    ServiceRef? Service);
+    ServiceRef? Service,
+    ProblemSlaDto? Sla = null);

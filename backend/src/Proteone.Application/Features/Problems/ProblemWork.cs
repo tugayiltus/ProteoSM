@@ -8,7 +8,7 @@ namespace Proteone.Application.Features.Problems;
 /// Common frame of a problem action, as <c>TaskWork</c> for tasks: load for work (403 outside the owner team), check the
 /// expected version, run the change, save once (problem, history, audit together) and return the fresh detail.
 /// </summary>
-public sealed class ProblemWork(IAppDbContext db, ProblemScope scope, TimeProvider clock)
+public sealed class ProblemWork(IAppDbContext db, ProblemScope scope, ProblemSlaReader sla, TimeProvider clock)
 {
     public async Task<ProblemDetail> RunAsync(
         string number, uint version, Func<Problem, ProblemViewer, DateTimeOffset, Task> change, CancellationToken cancellationToken)
@@ -45,5 +45,5 @@ public sealed class ProblemWork(IAppDbContext db, ProblemScope scope, TimeProvid
     }
 
     public Task<ProblemDetail> DetailAsync(Guid problemId, ProblemViewer viewer, CancellationToken cancellationToken) =>
-        ProblemQueries.LoadDetailAsync(db, problemId, viewer, cancellationToken);
+        ProblemQueries.LoadDetailAsync(db, sla, problemId, viewer, cancellationToken);
 }

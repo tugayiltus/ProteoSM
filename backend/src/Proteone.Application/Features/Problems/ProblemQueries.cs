@@ -8,7 +8,7 @@ internal static class ProblemQueries
 {
     private const string NameSeparator = " ";
 
-    public static async Task<ProblemDetail> LoadDetailAsync(IAppDbContext db, Guid problemId, ProblemViewer viewer, CancellationToken cancellationToken)
+    public static async Task<ProblemDetail> LoadDetailAsync(IAppDbContext db, ProblemSlaReader sla, Guid problemId, ProblemViewer viewer, CancellationToken cancellationToken)
     {
         var p = await db.Problems.AsNoTracking().SingleAsync(x => x.Id == problemId, cancellationToken);
         var team = await db.Teams.Where(x => x.Id == p.OwnerTeamId).Select(x => x.Name).SingleAsync(cancellationToken);
@@ -21,6 +21,7 @@ internal static class ProblemQueries
         return new ProblemDetail(
             p.Id, p.Number, p.Title, p.Description, p.Impact, p.Status, p.OwnerTeamId, team, p.OwnerId, owner, p.RootCause, p.Workaround,
             p.Resolution, p.CancelReason, p.ArticleId, articleTitle, p.CreatedAt, p.KnownErrorAt, p.ResolvedAt, viewer.CanWork(p), p.Version,
-            await ServiceAssignment.RefAsync(db, p.ServiceId, cancellationToken));
+            await ServiceAssignment.RefAsync(db, p.ServiceId, cancellationToken),
+            (await sla.LoadAsync([p.Id], cancellationToken)).GetValueOrDefault(p.Id));
     }
 }

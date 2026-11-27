@@ -46,44 +46,45 @@ public sealed class StartProblemHandler(IAppDbContext db, ProblemWork work, IAud
 }
 
 /// <summary>Needs both a root cause and a workaround already saved on the problem.</summary>
-public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, IAuditLog audit)
+public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
 {
     public Task<ProblemDetail> HandleAsync(MarkKnownErrorCommand command, CancellationToken cancellationToken) =>
-        work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
+        work.RunStateChangeAsync(command.Number, command.Version, async (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.MarkKnownError(now);
             ProblemStatusChange.Record(db, audit, problem, before, ProblemEventKind.KnownError, viewer.UserId, now);
-            return Task.CompletedTask;
+            await slaTracker.StopAsync(problem.Id, now, cancellationToken);
         }, cancellationToken);
 }
 
-public sealed class ResolveProblemHandler(IAppDbContext db, IValidator<ResolveProblemCommand> validator, ProblemWork work, IAuditLog audit)
+public sealed class ResolveProblemHandler(IAppDbContext db, IValidator<ResolveProblemCommand> validator, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
 {
     public async Task<ProblemDetail> HandleAsync(ResolveProblemCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        return await work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
+        return await work.RunStateChangeAsync(command.Number, command.Version, async (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.Resolve(command.Resolution, now);
             ProblemStatusChange.Record(db, audit, problem, before, ProblemEventKind.Resolved, viewer.UserId, now, new { resolution = problem.Resolution });
-            return Task.CompletedTask;
+            // A no-op after a known error: that stop already fixed the result.
+            await slaTracker.StopAsync(problem.Id, now, cancellationToken);
         }, cancellationToken);
     }
 }
 
-public sealed class CancelProblemHandler(IAppDbContext db, IValidator<CancelProblemCommand> validator, ProblemWork work, IAuditLog audit)
+public sealed class CancelProblemHandler(IAppDbContext db, IValidator<CancelProblemCommand> validator, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
 {
     public async Task<ProblemDetail> HandleAsync(CancelProblemCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        return await work.RunStateChangeAsync(command.Number, command.Version, (problem, viewer, now) =>
+        return await work.RunStateChangeAsync(command.Number, command.Version, async (problem, viewer, now) =>
         {
             var before = problem.Status;
             problem.Cancel(command.Reason, now);
             ProblemStatusChange.Record(db, audit, problem, before, ProblemEventKind.Cancelled, viewer.UserId, now, new { reason = problem.CancelReason });
-            return Task.CompletedTask;
+            await slaTracker.CancelAsync(problem.Id, now, cancellationToken);
         }, cancellationToken);
     }
 }

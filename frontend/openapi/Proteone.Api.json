@@ -19702,6 +19702,16 @@
                 "$ref": "#/components/schemas/ServiceRef"
               }
             ]
+          },
+          "sla": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProblemSlaDto"
+              }
+            ]
           }
         }
       },
@@ -19807,6 +19817,16 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "sla": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProblemSlaDto"
+              }
+            ]
           }
         }
       },
@@ -19818,6 +19838,53 @@
         "properties": {
           "text": {
             "type": "string"
+          }
+        }
+      },
+      "ProblemSlaDto": {
+        "required": [
+          "metric",
+          "dueAt",
+          "remainingSeconds",
+          "isPaused",
+          "isWarned",
+          "isBreached",
+          "result"
+        ],
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "remainingSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int64"
+          },
+          "isPaused": {
+            "type": "boolean"
+          },
+          "isWarned": {
+            "type": "boolean"
+          },
+          "isBreached": {
+            "type": "boolean"
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SlaResult"
+              }
+            ]
           }
         }
       },

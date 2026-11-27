@@ -22,7 +22,7 @@ public enum ProblemQueue
 public sealed record ListProblemsQuery(ProblemQueue? Queue, ProblemStatus? Status, Level? Impact, string? Search, int Page, int PageSize, Guid? ServiceId, bool OpenOnly = false);
 
 /// <summary>Lists problems for IT staff and admins; queues and filters only narrow the list. Employees get not found.</summary>
-public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
+public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope, ProblemSlaReader sla)
 {
     private const string NameSeparator = " ";
 
@@ -69,7 +69,7 @@ public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
                 : problems.Where(p => EF.Functions.Like(p.SearchText, LikePattern.Containing(key), LikePattern.EscapeText));
         }
 
-        return await problems
+        var page = await problems
             .OrderByDescending(p => p.UpdatedAt).ThenByDescending(p => p.Id)
             .Select(p => new ProblemListItem(
                 p.Id, p.Number, p.Title, p.Status, p.Impact,
@@ -78,5 +78,7 @@ public sealed class ListProblemsHandler(IAppDbContext db, ProblemScope scope)
                 db.ProblemTicketLinks.Count(l => l.ProblemId == p.Id),
                 p.UpdatedAt))
             .ToPagedResultAsync(new PageRequest(query.Page, query.PageSize), cancellationToken);
+        var timers = await sla.LoadAsync([.. page.Items.Select(i => i.Id)], cancellationToken);
+        return page with { Items = [.. page.Items.Select(i => i with { Sla = timers.GetValueOrDefault(i.Id) })] };
     }
 }

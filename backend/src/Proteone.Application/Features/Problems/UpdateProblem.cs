@@ -22,19 +22,23 @@ internal sealed class UpdateProblemValidator : AbstractValidator<UpdateProblemCo
 }
 
 /// <summary>Edits the descriptive fields of an open problem; a known error keeps its root cause and workaround.</summary>
-public sealed class UpdateProblemHandler(IAppDbContext db, IValidator<UpdateProblemCommand> validator, ProblemWork work, IAuditLog audit)
+public sealed class UpdateProblemHandler(IAppDbContext db, IValidator<UpdateProblemCommand> validator, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
 {
     public async Task<ProblemDetail> HandleAsync(UpdateProblemCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        return await work.RunAsync(command.Number, command.Version, (problem, viewer, now) =>
+        return await work.RunAsync(command.Number, command.Version, async (problem, viewer, now) =>
         {
+            var impactBefore = problem.Impact;
             var before = new { problem.Title, problem.Description, problem.Impact, problem.RootCause, problem.Workaround };
             problem.Edit(command.Title, command.Description, command.Impact, command.RootCause, command.Workaround, now);
             var after = new { problem.Title, problem.Description, problem.Impact, problem.RootCause, problem.Workaround };
             ProblemHistory.Record(db, problem, ProblemEventKind.Updated, viewer.UserId, now);
             audit.Record(AuditActions.ProblemUpdated, AuditEntityTypes.Problem, problem.Id, before, after);
-            return Task.CompletedTask;
+            if (problem.Impact != impactBefore)
+            {
+                await slaTracker.RetargetAsync(problem, now, cancellationToken);
+            }
         }, cancellationToken);
     }
 }
