@@ -42,7 +42,7 @@
 
 **Interfaces:**
 - Produces:
-  - `ProblemSlaTarget : Entity` — `Level Impact`, `int TargetMinutes`, `int WarningPercent`; `static ProblemSlaTarget Create(Level impact, int targetMinutes, int warningPercent)`; `void Change(int targetMinutes, int warningPercent)`; validation reuses the ticket target range (`SlaTarget.MinWarningPercent` and the max constant next to it; target minutes > 0) and throws `DomainException(ErrorCodes.SlaTargetInvalid …)` — use the existing code the ticket target uses.
+  - `ProblemSlaTarget : Entity` — `Level Impact`, `int TargetMinutes`, `int WarningPercent`; `static ProblemSlaTarget Create(Level impact, int targetMinutes, int warningPercent)`; `void Change(int targetMinutes, int warningPercent)`; validation reuses the ticket target range (`1..SlaTarget.MaxTargetMinutes` minutes, `SlaTarget.MinWarningPercent..SlaTarget.MaxWarningPercent` percent) and throws `DomainException(ErrorCodes.InvalidValue, …)` like `SlaTarget`.
   - `ProblemSlaTarget.Defaults`: `IReadOnlyList<(Level Impact, int TargetMinutes, int WarningPercent)>` = High 960/80, Medium 2400/80, Low 4800/80.
   - `ProblemSlaTimer : Entity` — `Guid ProblemId`, `int TargetMinutes`, `int WarningPercent`, `DateTimeOffset StartedAt`, `DateTimeOffset DueAt`, `DateTimeOffset WarnAt`, `DateTimeOffset? WarnedAt`, `DateTimeOffset? BreachedAt`, `DateTimeOffset? StoppedAt`, `SlaResult? Result`, `bool IsStopped`.
   - `static ProblemSlaTimer Start(Guid problemId, int targetMinutes, int warningPercent, DateTimeOffset now, BusinessCalendarRules rules)`
