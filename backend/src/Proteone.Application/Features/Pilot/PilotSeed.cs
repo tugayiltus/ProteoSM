@@ -101,7 +101,7 @@ public sealed class PilotSeed(IServiceScopeFactory scopes, PilotSeedActor actor,
     }
 
     /// <summary>
-    /// The handlers queued notifications for every seeded ticket action; none of them must reach a mail relay. One
+    /// The handlers queued notifications for every seeded ticket, change, task and problem action; none of them must reach a mail relay. One
     /// conditional update moves only this run's still-pending rows to <see cref="OutboxStatus.Skipped"/> (the
     /// dispatcher's "nothing to send" end state), so the Worker never picks them up.
     /// </summary>
@@ -113,7 +113,8 @@ public sealed class PilotSeed(IServiceScopeFactory scopes, PilotSeedActor actor,
         await db.OutboxEvents
             .Where(e => e.Status == OutboxStatus.Pending
                 && ((e.TicketId != null && ticketIds.Contains(e.TicketId.Value))
-                    || e.SubjectType == OutboxSubjectTypes.Change || e.SubjectType == OutboxSubjectTypes.Task))
+                    || e.SubjectType == OutboxSubjectTypes.Change || e.SubjectType == OutboxSubjectTypes.Task
+                    || e.SubjectType == OutboxSubjectTypes.Problem))
             .ExecuteUpdateAsync(set => set.SetProperty(e => e.Status, OutboxStatus.Skipped).SetProperty(e => e.DispatchedAt, now), cancellationToken);
     }
 

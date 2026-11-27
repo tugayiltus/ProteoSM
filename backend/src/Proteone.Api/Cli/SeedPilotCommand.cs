@@ -27,7 +27,7 @@ internal static class SeedPilotCommand
         "Local: run tools/seed-pilot.sh --fresh. Compose: restore the pre-seed backup, or recreate the database volume and migrate, then seed again.";
 
     private static readonly string BreachMailWarning =
-        "Warning: seeded notifications were closed, but the Worker's SLA monitor will later raise breach notifications for open seeded tickets, " +
+        "Warning: seeded notifications were closed, but the Worker's SLA monitor will later raise breach notifications for open seeded tickets and problems, " +
         $"addressed to @{PilotSeed.EmailDomain}. While only seed data exists, use a relay that drops that domain or EMAIL_MODE=Pickup.";
 
     private static readonly string[] AllowedEnvironments = [Environments.Development, PilotEnvironment];

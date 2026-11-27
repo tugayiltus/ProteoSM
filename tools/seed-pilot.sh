@@ -13,7 +13,7 @@
 # never promoted to production.
 #
 # Mail: the notifications the seed queues are closed (never sent), but the Worker's SLA monitor later raises breach
-# notifications for open seeded tickets, addressed to @pilot.example.com. While only seed data exists, run the pilot
+# notifications for open seeded tickets and problems, addressed to @pilot.example.com. While only seed data exists, run the pilot
 # host with a relay that drops that domain, or EMAIL_MODE=Pickup.
 #
 # A failed seed keeps what it wrote. Recovery: locally tools/seed-pilot.sh --fresh; on compose restore the pre-seed
