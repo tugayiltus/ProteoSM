@@ -33,6 +33,14 @@
     "it_staff": "IT personeli",
     "admin": "Yönetici"
   },
+  "routeError": {
+    "title": "Sayfa açılamadı",
+    "description": "Bir sorun oluştu. Sayfayı yeniden deneyin; sürüyorsa uygulamaya dönüp tekrar girin.",
+    "staleTitle": "Uygulama güncellenmiş olabilir",
+    "staleDescription": "Sayfanın yeni bir sürümü yayınlanmış olabilir. Sayfayı yeniden yükleyin.",
+    "retry": "Yeniden dene",
+    "back": "Uygulamaya dön"
+  },
   "notFound": {
     "title": "Sayfa bulunamadı",
     "back": "Ana sayfaya dön"
