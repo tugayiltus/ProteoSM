@@ -5,7 +5,6 @@
  */
 import { Button } from '@astryxdesign/core/Button';
 import { HStack } from '@astryxdesign/core/HStack';
-import { useIsFetching, useIsMutating } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,8 +12,9 @@ import { describeError } from '../../shared/api/errorMessage';
 import { FormAlert } from '../../shared/feedback/FormAlert';
 import { SectionCard } from '../../shared/page/SectionCard';
 
-import { ticketKeys, useTicketAction, type TicketDetail } from './api';
+import { useTicketAction, type TicketDetail } from './api';
 import { TicketActionDialog, type DialogActionKind } from './TicketActionDialog';
+import { useTicketBusy } from './ticketBusy';
 
 type DirectKind = 'claim' | 'start' | 'resume';
 
@@ -47,15 +47,14 @@ function availableActions(t: TicketDetail): { direct: DirectKind[]; dialogs: Dia
   return { direct, dialogs };
 }
 
-export function TicketActions({ ticket }: { ticket: TicketDetail }) {
+/** `hideClaim`: the page header already shows "Üzerime al" as the main action. */
+export function TicketActions({ ticket, hideClaim = false }: { ticket: TicketDetail; hideClaim?: boolean }) {
   const { t } = useTranslation('tickets');
   const direct = useTicketAction(ticket);
   const [dialog, setDialog] = useState<DialogActionKind | null>(null);
-  const actions = availableActions(ticket);
-  // Every action sends the version shown here. A reply being sent changes it, and a refetch then brings the new one:
-  // wait for both, or the action (and a dialog, which keeps the version it opened with) would fail as a conflict.
-  const replying = useIsMutating({ mutationKey: ticketKeys.addComment }) > 0;
-  const refreshing = useIsFetching({ queryKey: ticketKeys.detail(ticket.number) }) > 0 || replying;
+  const available = availableActions(ticket);
+  const actions = hideClaim ? { ...available, direct: available.direct.filter((kind) => kind !== 'claim') } : available;
+  const refreshing = useTicketBusy(ticket);
 
   if (actions.direct.length === 0 && actions.dialogs.length === 0) {
     return null;

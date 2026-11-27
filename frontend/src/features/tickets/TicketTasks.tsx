@@ -6,7 +6,6 @@
 import { Button } from '@astryxdesign/core/Button';
 import { Icon } from '@astryxdesign/core/Icon';
 import { List, ListItem } from '@astryxdesign/core/List';
-import { Text } from '@astryxdesign/core/Text';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
@@ -37,11 +36,10 @@ export function TicketTasks({ ticket }: { ticket: TicketDetail }) {
   return (
     <SectionCard
       title={t('ticketSection.title')}
+      emptyMessage={ticket.tasks.length === 0 ? t('ticketSection.empty') : undefined}
       actions={canAdd && <Button label={t('ticketSection.add')} variant="secondary" size="sm" icon={<Icon icon={Icons.plus} />} onClick={() => setCreating(true)} />}
     >
-      {ticket.tasks.length === 0 ? (
-        <Text type="supporting">{t('ticketSection.empty')}</Text>
-      ) : (
+      {ticket.tasks.length > 0 && (
         <List hasDividers density="compact" aria-label={t('ticketSection.title')}>
           {ticket.tasks.map((task) => (
             <ListItem

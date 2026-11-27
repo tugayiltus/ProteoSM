@@ -4,14 +4,11 @@
  * @position `/tickets/:number`, inside the app shell.
  */
 import { Banner } from '@astryxdesign/core/Banner';
-import { Button } from '@astryxdesign/core/Button';
 import { Grid, GridSpan } from '@astryxdesign/core/Grid';
-import { HStack } from '@astryxdesign/core/HStack';
-import { Icon } from '@astryxdesign/core/Icon';
 import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useParams, useSearchParams } from 'react-router';
 
@@ -20,22 +17,20 @@ import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDateTime } from '../../shared/lib/format';
 import { useIsPhone } from '../../shared/list/useIsPhone';
 import { useBreadcrumbLabel } from '../../shared/navigation/breadcrumbLabels';
-import { PageHeader } from '../../shared/navigation/PageHeader';
 import { useReturnTo } from '../../shared/navigation/returnTo';
-import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { SectionCard } from '../../shared/page/SectionCard';
 import { RATE_PARAM, RATE_PARAM_ON, ROUTES } from '../../shared/routes';
-import { Icons } from '../../shared/ui/icons';
 import { isItStaffOrAdmin, useSession } from '../auth/session';
 import { ServiceField } from '../services/ServiceField';
 
 import { useComments, useSetTicketService, useTicket, useTicketAssets, useTimeline, type TicketDetail } from './api';
-import { CommentBox, CommentList } from './Comments';
+import { CommentBox, CommentList, type CommentBoxHandle } from './Comments';
 import { SlaSummary } from './SlaBadge';
+import type { SlaLoad } from './SlaDue';
 import { TicketActions } from './TicketActions';
 import { TicketArticles } from './TicketArticles';
-import { PriorityBadge, TicketStatusBadge } from './TicketBadges';
 import { TicketChangeLinks } from './TicketChangeLinks';
+import { TicketHeader } from './TicketHeader';
 import { TicketLinks } from './TicketLinks';
 import { TicketProblemCard } from './TicketProblemCard';
 import { TicketRating } from './TicketRating';
@@ -114,6 +109,7 @@ function TicketDetail({ number }: { number: string }) {
   const timeline = useTimeline(number);
   const backTo = useReturnTo(ROUTES.tickets);
   const isPhone = useIsPhone();
+  const replyBox = useRef<CommentBoxHandle>(null);
   // Only from loaded data: a 404 must not show the number typed into the URL as a title.
   useBreadcrumbLabel('ticketDetail', ticket.data?.number);
 
@@ -124,10 +120,11 @@ function TicketDetail({ number }: { number: string }) {
     return <ErrorState error={ticket.error} onRetry={() => void ticket.refetch()} />;
   }
   const item = ticket.data;
+  const sla: SlaLoad = ticket.isRefetchError ? { status: 'error' } : { status: 'ready', sla: item.sla };
 
   const side = (
     <VStack gap={4}>
-      <TicketActions ticket={item} />
+      <TicketActions ticket={item} hideClaim />
       <ApprovalBox ticket={item} />
       <SectionCard title={t('sla.title')}>
         <SlaSummary sla={item.sla} showDue />
@@ -163,7 +160,7 @@ function TicketDetail({ number }: { number: string }) {
       <SectionCard title={t('detail.comments')}>
         {comments.isError && <ErrorState error={comments.error} onRetry={() => void comments.refetch()} />}
         {comments.data && <CommentList ticket={item} comments={comments.data} />}
-        <CommentBox ticket={item} />
+        <CommentBox ticket={item} handle={replyBox} />
       </SectionCard>
       <TicketProblemCard ticket={item} isStaff={isItStaffOrAdmin(me.role)} />
       <TicketLinks ticket={item} isRequester={item.requesterId === me.id} />
@@ -179,17 +176,7 @@ function TicketDetail({ number }: { number: string }) {
 
   return (
     <VStack gap={4}>
-      <PageHeader
-        icon={ROUTE_META.myTickets.icon}
-        titleOverride={item.subject}
-        actions={<Button label={t('detail.back')} variant="secondary" href={backTo} icon={<Icon icon={Icons.arrowLeft} />} />}
-      />
-      <HStack gap={2} vAlign="center" wrap="wrap">
-        <Text type="supporting">{`${item.number}${META_SEPARATOR}${t(`kinds.${item.kind}`)}`}</Text>
-        <TicketStatusBadge status={item.status} />
-        <PriorityBadge priority={item.priority} />
-        {item.holdReason && <Text type="supporting">{t(`holdReasons.${item.holdReason}`)}</Text>}
-      </HStack>
+      <TicketHeader ticket={item} backTo={backTo} sla={sla} onReply={() => replyBox.current?.focusReply()} />
       {/* Phones show the actions before the long content; wide screens put them in a side column. */}
       {isPhone ? (
         <VStack gap={4}>

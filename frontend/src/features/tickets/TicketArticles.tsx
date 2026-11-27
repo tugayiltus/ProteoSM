@@ -4,11 +4,9 @@
  * @position Ticket detail page.
  */
 import { Button } from '@astryxdesign/core/Button';
-import { HStack } from '@astryxdesign/core/HStack';
 import { Link } from '@astryxdesign/core/Link';
 import { List, ListItem } from '@astryxdesign/core/List';
 import { Selector } from '@astryxdesign/core/Selector';
-import { Text } from '@astryxdesign/core/Text';
 import { TextInput } from '@astryxdesign/core/TextInput';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,15 +56,19 @@ export function TicketArticles({ ticket }: { ticket: TicketDetail }) {
   const [linking, setLinking] = useState(false);
   const open = ticket.status !== 'completed' && ticket.status !== 'cancelled';
   const items = articles.data ?? [];
+  const isEmpty = articles.isSuccess && items.length === 0;
+  const canLink = ticket.canWork && open;
 
   return (
-    <SectionCard title={t('ticket.title')}>
+    <SectionCard
+      title={t('ticket.title')}
+      emptyMessage={isEmpty ? t('ticket.empty') : undefined}
+      actions={canLink && <Button label={t('ticket.link')} variant="secondary" onClick={() => setLinking(true)} />}
+    >
       <FormAlert message={unlink.error ? describeError(unlink.error) : null} />
       {articles.isError && <ErrorState error={articles.error} onRetry={() => void articles.refetch()} />}
       {articles.isPending && <LoadingState />}
-      {articles.isSuccess && items.length === 0 ? (
-        <Text type="supporting">{t('ticket.empty')}</Text>
-      ) : (
+      {items.length > 0 && (
         <List hasDividers density="compact" aria-label={t('ticket.title')}>
           {items.map((article) => (
             <ListItem
@@ -80,11 +82,6 @@ export function TicketArticles({ ticket }: { ticket: TicketDetail }) {
             />
           ))}
         </List>
-      )}
-      {ticket.canWork && open && (
-        <HStack>
-          <Button label={t('ticket.link')} variant="secondary" onClick={() => setLinking(true)} />
-        </HStack>
       )}
       {linking && (
         <LinkArticleDialog

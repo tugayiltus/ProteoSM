@@ -74,39 +74,38 @@ function LinkedProblem({ problem }: { problem: TicketProblemItem }) {
   );
 }
 
-function NoProblem({ ticket }: { ticket: TicketDetail }) {
-  const { t } = useTranslation('tickets');
-  const [dialog, setDialog] = useState<'link' | 'create' | null>(null);
-  const close = () => setDialog(null);
-  return (
-    <>
-      <Text type="supporting">{t('problem.none')}</Text>
-      <HStack gap={2} wrap="wrap">
-        <Button label={t('problem.link')} variant="secondary" size="sm" onClick={() => setDialog('link')} />
-        <Button label={t('problem.create')} variant="secondary" size="sm" icon={<Icon icon={Icons.plus} />} onClick={() => setDialog('create')} />
-      </HStack>
-      {dialog === 'link' && <LinkDialog ticketNumber={ticket.number} onClose={close} />}
-      {dialog === 'create' && (
-        <ProblemFormDialog incident={{ number: ticket.number, subject: ticket.subject, description: ticket.description }} onSaved={close} onClose={close} />
-      )}
-    </>
-  );
-}
-
 /** The incident's problem card (IT staff and admins only); a request never has a problem. */
 export function TicketProblemCard({ ticket, isStaff }: { ticket: TicketDetail; isStaff: boolean }) {
   const { t } = useTranslation('tickets');
   const shown = isStaff && ticket.kind === INCIDENT_KIND;
   const problem = useTicketProblem(ticket.number, shown);
+  const [dialog, setDialog] = useState<'link' | 'create' | null>(null);
+  const close = () => setDialog(null);
   if (!shown) {
     return null;
   }
 
+  // No problem yet: the title, the message and the two ways to add one share a row.
+  const isUnlinked = problem.data === null;
   return (
-    <SectionCard title={t('problem.title')}>
+    <SectionCard
+      title={t('problem.title')}
+      emptyMessage={isUnlinked ? t('problem.none') : undefined}
+      actions={
+        isUnlinked && (
+          <HStack gap={2} wrap="wrap">
+            <Button label={t('problem.link')} variant="secondary" size="sm" onClick={() => setDialog('link')} />
+            <Button label={t('problem.create')} variant="secondary" size="sm" icon={<Icon icon={Icons.plus} />} onClick={() => setDialog('create')} />
+          </HStack>
+        )
+      }
+    >
       {problem.isError && <ErrorState error={problem.error} onRetry={() => void problem.refetch()} />}
-      {problem.data === null && <NoProblem ticket={ticket} />}
       {problem.data != null && <LinkedProblem problem={problem.data} />}
+      {dialog === 'link' && <LinkDialog ticketNumber={ticket.number} onClose={close} />}
+      {dialog === 'create' && (
+        <ProblemFormDialog incident={{ number: ticket.number, subject: ticket.subject, description: ticket.description }} onSaved={close} onClose={close} />
+      )}
     </SectionCard>
   );
 }

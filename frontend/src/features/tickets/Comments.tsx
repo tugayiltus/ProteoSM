@@ -11,7 +11,8 @@ import { Text } from '@astryxdesign/core/Text';
 import { TextArea } from '@astryxdesign/core/TextArea';
 import { Token } from '@astryxdesign/core/Token';
 import { VStack } from '@astryxdesign/core/VStack';
-import { useId, useState } from 'react';
+import { useId, useImperativeHandle, useRef, useState, type Ref } from 'react';
+import { flushSync } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { FormAlert } from '../../shared/feedback/FormAlert';
@@ -25,6 +26,12 @@ import { ReplyArticlePicker } from './ReplyArticlePicker';
 const ATTACHMENTS_PATH = 'attachments';
 const LINE_BREAK = /\r?\n/;
 const VISIBILITIES: readonly Visibility[] = ['public', 'internal'];
+
+/** What the page may ask of the reply box. */
+export interface CommentBoxHandle {
+  /** Shows the public reply tab and puts the cursor in the message field. A typed draft stays. */
+  focusReply: () => void;
+}
 
 const attachmentUrl = (number: string, id: string) => `/api/v1/tickets/${number}/${ATTACHMENTS_PATH}/${id}`;
 const isVisibility = (value: string): value is Visibility => (VISIBILITIES as readonly string[]).includes(value);
@@ -73,7 +80,7 @@ export function CommentList({ ticket, comments }: { ticket: TicketDetail; commen
  * People working on the ticket also get an internal-note tab.
  * A message in flight keeps the visibility it was sent with, so the tab stays usable while it sends.
  */
-export function CommentBox({ ticket }: { ticket: TicketDetail }) {
+export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: Ref<CommentBoxHandle> }) {
   const { t } = useTranslation('tickets');
   const add = useAddComment();
   const [visibility, setVisibility] = useState<Visibility>('public');
@@ -81,6 +88,15 @@ export function CommentBox({ ticket }: { ticket: TicketDetail }) {
   const [body, setBody] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [formKey, setFormKey] = useState(0);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  // The tab change must reach the DOM before the focus call, or the focus lands on a field that is about to re-render.
+  useImperativeHandle(handle, () => ({
+    focusReply: () => {
+      flushSync(() => setVisibility('public'));
+      bodyRef.current?.focus();
+    },
+  }));
 
   const submit = () =>
     add.mutate(
@@ -114,7 +130,7 @@ export function CommentBox({ ticket }: { ticket: TicketDetail }) {
         <VStack gap={3} id={ticket.canWork ? panelId : undefined} role={ticket.canWork ? 'tabpanel' : undefined} aria-label={ticket.canWork ? t(`comment.${visibility}`) : undefined}>
         <FormAlert message={add.error ? describeCommentError(add.error) : null} />
         {/* Locked while sending: the success handler clears the box, which would drop anything typed meanwhile. */}
-        <TextArea label={t('comment.body')} value={body} isDisabled={add.isPending} onChange={setBody} />
+        <TextArea ref={bodyRef} label={t('comment.body')} value={body} isDisabled={add.isPending} onChange={setBody} />
         <ReplyArticlePicker onInsert={(text) => setBody((current) => (current.trim() === '' ? text : `${current}\n${text}`))} />
         <AttachmentInput key={formKey} label={t('comment.files')} hint={t('new.filesHint')} files={files} onChange={setFiles} />
         <HStack>

@@ -30,7 +30,7 @@ describe('TicketDetailPage for employees', () => {
     expect(await screen.findByText('Kayıt oluşturuldu')).toBeInTheDocument();
     expect(await screen.findByText('Ekran görüntüsü ekte')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'ekran.png' })).toHaveAttribute('href', `/api/v1/tickets/${INCIDENT.number}/attachments/f-1`);
-    expect(screen.queryByRole('button', { name: 'Üstlen' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Üzerime al' })).not.toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'İç not' })).not.toBeInTheDocument();
     const box = screen.getByRole('form', { name: 'Yazışmalar' });
     expect(within(box).getByRole('button', { name: 'Gönder' })).toBeInTheDocument();

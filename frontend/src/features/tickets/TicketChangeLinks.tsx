@@ -4,7 +4,6 @@
  * @position Ticket detail page, main column (IT staff and admins only; employees make no request).
  */
 import { List, ListItem } from '@astryxdesign/core/List';
-import { Text } from '@astryxdesign/core/Text';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
@@ -54,11 +53,9 @@ export function TicketChangeLinks({ ticket, isStaff }: { ticket: TicketDetail; i
 
   const items = changes.data ?? [];
   return (
-    <SectionCard title={t('changeLinks.title')}>
+    <SectionCard title={t('changeLinks.title')} emptyMessage={changes.data && items.length === 0 ? t('changeLinks.empty') : undefined}>
       {changes.isError && <ErrorState error={changes.error} onRetry={() => void changes.refetch()} />}
-      {items.length === 0 ? (
-        changes.data && <Text type="supporting">{t('changeLinks.empty')}</Text>
-      ) : (
+      {items.length > 0 && (
         <List hasDividers density="compact" aria-label={t('changeLinks.title')}>
           {items.map((item) => (
             <Row key={item.number} item={item} />

@@ -30,11 +30,11 @@ describe('TicketActions', () => {
     );
     const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
 
-    for (const name of ['Üstlen', 'Başla', 'Beklet', 'Tamamla', 'Öncelik değiştir', 'Aktar', 'İptal et']) {
+    for (const name of ['Üzerime al', 'Başla', 'Beklet', 'Tamamla', 'Öncelik değiştir', 'Aktar', 'İptal et']) {
       expect(await screen.findByRole('button', { name })).toBeInTheDocument();
     }
     expect(screen.queryByRole('button', { name: 'Devam et' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Üstlen' }));
+    await user.click(screen.getByRole('button', { name: 'Üzerime al' }));
 
     await waitFor(() => expect(posted).toEqual({ version: 11 }));
   });

@@ -5,11 +5,9 @@
  */
 import { Button } from '@astryxdesign/core/Button';
 import { Grid } from '@astryxdesign/core/Grid';
-import { HStack } from '@astryxdesign/core/HStack';
 import { Link } from '@astryxdesign/core/Link';
 import { List, ListItem } from '@astryxdesign/core/List';
 import { Selector } from '@astryxdesign/core/Selector';
-import { Text } from '@astryxdesign/core/Text';
 import { TextInput } from '@astryxdesign/core/TextInput';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -105,13 +103,19 @@ export function TicketLinks({ ticket, isRequester }: { ticket: TicketDetail; isR
   const open = ticket.status !== 'completed' && ticket.status !== 'cancelled';
 
   const linkedAssets = assets.data ?? [];
+  const canLinkAsset = open && (ticket.canWork || isRequester);
+  const canRelate = ticket.canWork && open && ticket.kind === 'incident';
+  const noAssets = linkedAssets.length === 0;
+  const noRelated = ticket.relatedTickets.length === 0;
   return (
     <Grid columns={CARD_COLUMNS} gap={4} align="start">
-      <SectionCard title={t('detail.assets')}>
+      <SectionCard
+        title={t('detail.assets')}
+        emptyMessage={noAssets ? t('detail.noAssets') : undefined}
+        actions={canLinkAsset && <Button label={t('actions.linkAsset')} variant="secondary" onClick={() => setDialog('asset')} />}
+      >
         <FormAlert message={unlink.error ? describeError(unlink.error) : null} />
-        {linkedAssets.length === 0 ? (
-          <Text type="supporting">{t('detail.noAssets')}</Text>
-        ) : (
+        {!noAssets && (
           <List hasDividers density="compact" aria-label={t('detail.assets')}>
             {linkedAssets.map((asset) => (
               <ListItem
@@ -125,14 +129,13 @@ export function TicketLinks({ ticket, isRequester }: { ticket: TicketDetail; isR
             ))}
           </List>
         )}
-        {open && (ticket.canWork || isRequester) && (
-          <HStack>
-            <Button label={t('actions.linkAsset')} variant="secondary" onClick={() => setDialog('asset')} />
-          </HStack>
-        )}
       </SectionCard>
-      <SectionCard title={t('detail.related')}>
-        {ticket.relatedTickets.length > 0 && (
+      <SectionCard
+        title={t('detail.related')}
+        emptyMessage={noRelated ? t('detail.noRelated') : undefined}
+        actions={canRelate && <Button label={t('actions.relatedRequest')} variant="secondary" onClick={() => setDialog('related')} />}
+      >
+        {!noRelated && (
           <List hasDividers density="compact" aria-label={t('detail.related')}>
             {ticket.relatedTickets.map((related) => (
               <ListItem
@@ -142,11 +145,6 @@ export function TicketLinks({ ticket, isRequester }: { ticket: TicketDetail; isR
               />
             ))}
           </List>
-        )}
-        {ticket.canWork && open && ticket.kind === 'incident' && (
-          <HStack>
-            <Button label={t('actions.relatedRequest')} variant="secondary" onClick={() => setDialog('related')} />
-          </HStack>
         )}
       </SectionCard>
       {dialog === 'asset' && <LinkAssetDialog ticket={ticket} onClose={() => setDialog(null)} />}
