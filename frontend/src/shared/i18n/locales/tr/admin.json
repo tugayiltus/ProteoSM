@@ -693,7 +693,6 @@
     "problem": {
       "title": "Problem hedefleri (iş dakikası)",
       "hint": "Bir problemin bilinen hataya ulaşması için etkiye göre tanınan süre. Çalışan sayaçlar kendi kopyasını korur.",
-      "impact": "Etki",
       "save": "Kaydet",
       "saved": "Problem hedefleri kaydedildi."
     }

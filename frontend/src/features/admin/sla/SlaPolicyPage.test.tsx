@@ -105,4 +105,14 @@ describe('SlaPolicyPage', () => {
     expect(put?.targets).toContainEqual({ impact: 'high', targetMinutes: 600, warningPercent: 80 });
     expect(put?.targets).toHaveLength(3);
   });
+
+  it('shows an error state when problem targets fail to load', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/sla/policy': { status: 200, body: policy(1) },
+      'GET /api/v1/admin/sla/problem-targets': { status: 500, body: { code: 'server.error' } },
+    });
+    renderRoute('/admin/sla/policy');
+    expect(await screen.findByRole('button', { name: /Tekrar dene/ })).toBeInTheDocument();
+  });
 });

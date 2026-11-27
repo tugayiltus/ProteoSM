@@ -146,4 +146,31 @@ public sealed class ProblemTargetsTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Forbidden, read.StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, write.StatusCode);
     }
+
+    [Fact]
+    public async Task Null_target_is_400()
+    {
+        var admin = await AdminAsync();
+        var version = (await GetAsync(admin)).GetProperty("version").GetUInt32();
+
+        using var response = await admin.PutAsync(Path, Body(version, Item("high"), Item("medium"), Item("low"), null!));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal([ErrorCodes.InvalidValue], (await ApiClient.ReadFieldCodesAsync(response))["targets"]);
+    }
+
+    [Fact]
+    public async Task Unchanged_values_write_no_audit_event()
+    {
+        var admin = await AdminAsync();
+        var current = await GetAsync(admin);
+        var version = current.GetProperty("version").GetUInt32();
+
+        using var response = await admin.PutAsync(Path, Body(version, Item("high", 960, 80), Item("medium", 2400, 80), Item("low", 4800, 80)));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(version, (await admin.ReadJsonAsync<JsonElement>(response)).GetProperty("version").GetUInt32());
+        await using var db = factory.Database.CreateDbContext();
+        Assert.False(await db.AuditEvents.AnyAsync(a => a.Action == AuditActions.ProblemSlaTargetsUpdated, Ct));
+    }
 }

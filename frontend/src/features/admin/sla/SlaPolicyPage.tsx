@@ -47,6 +47,7 @@ const MIN_TARGET_MINUTES = 1;
 const MAX_TARGET_MINUTES = 366 * 24 * 60;
 const INPUT_WIDTH = 120;
 const SKELETON_ROWS = 8;
+const PROBLEM_SKELETON_ROWS = 3;
 const PROBLEM_IMPACTS: readonly ProblemTargetDto['impact'][] = ['high', 'medium', 'low'];
 
 interface CellDraft {
@@ -291,6 +292,8 @@ export function SlaPolicyPage() {
       {policy.isPending && <LoadingState rows={SKELETON_ROWS} />}
       {policy.isError && <ErrorState error={policy.error} onRetry={() => void policy.refetch()} />}
       {policy.data && <PolicyForm key={policy.data.versionId} policy={policy.data} />}
+      {problemTargets.isPending && <LoadingState rows={PROBLEM_SKELETON_ROWS} />}
+      {problemTargets.isError && <ErrorState error={problemTargets.error} onRetry={() => void problemTargets.refetch()} />}
       {problemTargets.data && <ProblemTargetsForm key={problemTargets.data.version} data={problemTargets.data} />}
     </VStack>
   );

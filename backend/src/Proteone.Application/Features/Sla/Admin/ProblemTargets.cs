@@ -58,6 +58,12 @@ internal sealed class UpdateProblemTargetsValidator : AbstractValidator<UpdatePr
 
     private static void Validate(IReadOnlyList<ProblemTargetDto> targets, ValidationContext<UpdateProblemTargetsCommand> context)
     {
+        if (targets.Any(t => t is null))
+        {
+            context.AddFailure(new ValidationFailure(nameof(UpdateProblemTargetsCommand.Targets), ErrorCodes.InvalidValue) { ErrorCode = ErrorCodes.InvalidValue });
+            return;
+        }
+
         var impacts = targets.Select(t => t.Impact).Order().ToList();
         var complete = impacts.SequenceEqual(Enum.GetValues<Level>().Order());
         var inRange = targets.All(t => t.TargetMinutes is > 0 and <= SlaTarget.MaxTargetMinutes
@@ -90,6 +96,11 @@ public sealed class UpdateProblemTargetsHandler(IAppDbContext db, IValidator<Upd
             }
 
             var after = ProblemTargetQueries.ToDto(rows).Targets;
+            if (before.SequenceEqual(after))
+            {
+                return;
+            }
+
             audit.Record(AuditActions.ProblemSlaTargetsUpdated, AuditEntityTypes.ProblemSlaTargets, null, new { targets = before }, new { targets = after });
             await db.SaveChangesAsync(ct);
         }, cancellationToken);

@@ -81,7 +81,6 @@ export function useCreateSlaPolicyVersion() {
 
 export type ProblemTargetsDto = Schemas['ProblemTargetsDto'];
 export type ProblemTargetDto = Schemas['ProblemTargetDto'];
-export type ProblemImpact = ProblemTargetDto['impact'];
 
 export function useProblemTargets() {
   return useQuery({ queryKey: adminKeys.slaProblemTargets, queryFn: () => unwrap(api.GET('/api/v1/admin/sla/problem-targets')) });
