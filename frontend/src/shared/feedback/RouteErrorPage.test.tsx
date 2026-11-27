@@ -1,3 +1,5 @@
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, Outlet, RouterProvider, type RouteObject } from 'react-router';
@@ -17,10 +19,10 @@ const CHUNK_ERROR = 'Failed to fetch dynamically imported module: /assets/Page-a
 
 function Shell() {
   return (
-    <div>
-      <nav aria-label={SHELL_NAV} />
+    <VStack>
+      <Text>{SHELL_NAV}</Text>
       <Outlet />
-    </div>
+    </VStack>
   );
 }
 
@@ -61,7 +63,7 @@ describe('route error screen', () => {
   it('keeps the shell when a page throws while rendering, and logs the error', async () => {
     renderRoutes(routesWith({ path: 'page', Component: Throwing }));
     expect(await screen.findByRole('heading', { level: 1, name: TITLE })).toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: SHELL_NAV })).toBeInTheDocument();
+    expect(screen.getByText(SHELL_NAV)).toBeInTheDocument();
     expect(screen.queryByText('render failed')).not.toBeInTheDocument();
     expect(console.error).toHaveBeenCalledWith('Route error', expect.objectContaining({ message: 'render failed' }));
   });
@@ -72,7 +74,7 @@ describe('route error screen', () => {
     ];
     renderRoutes(routes);
     expect(await screen.findByRole('heading', { level: 1, name: STALE_TITLE })).toBeInTheDocument();
-    expect(screen.queryByRole('navigation', { name: SHELL_NAV })).not.toBeInTheDocument();
+    expect(screen.queryByText(SHELL_NAV)).not.toBeInTheDocument();
   });
 
   it('reloads the page on "Yeniden dene"', async () => {
