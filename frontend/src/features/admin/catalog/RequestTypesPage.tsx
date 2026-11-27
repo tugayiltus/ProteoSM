@@ -21,7 +21,7 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { FormSwitch, FormTextInput } from '../../../shared/form/formFields';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -170,9 +170,7 @@ export function RequestTypesPage() {
         }
       />
       <Card padding={0}>
-        {types.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {types.isError && <ErrorState error={types.error} onRetry={() => void types.refetch()} />}
-        {rows?.length === 0 && <EmptyState />}
+        <ListStatus isPending={types.isPending} isError={types.isError} error={types.error} count={rows?.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void types.refetch()} firstUseMessage={t('requestTypes.firstUse')} rows={SKELETON_ROWS} />
         {rows !== undefined && rows.length > 0 && <DataList items={rows} columns={columns} getKey={(r) => r.id} renderCard={renderCard} caption={t('requestTypes.listCaption')} />}
       </Card>
       {form !== null && <RequestTypeFormDialog key={form.type?.id ?? 'new'} type={form.type} onClose={() => setForm(null)} />}

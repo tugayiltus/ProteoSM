@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router';
 import { applyServerErrors, describeError, isHandledByFields } from '../../../shared/api/errorMessage';
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { FormTextInput } from '../../../shared/form/formFields';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -149,9 +149,7 @@ export function BrandsPage() {
         filters={<StatusFilterSelector value={status} onChange={(value) => list.setFilter(STATUS_FILTER_KEY, value)} />}
       />
       <Card padding={0}>
-        {brands.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {brands.isError && <ErrorState error={brands.error} onRetry={() => void brands.refetch()} />}
-        {rows?.length === 0 && <EmptyState />}
+        <ListStatus isPending={brands.isPending} isError={brands.isError} error={brands.error} count={rows?.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void brands.refetch()} firstUseMessage={t('deviceCatalog.brands.firstUse')} rows={SKELETON_ROWS} />
         {rows !== undefined && rows.length > 0 && (
           <DataList items={rows} columns={columns} getKey={(b) => b.id} renderCard={renderCard} caption={t('deviceCatalog.brands.listCaption')} />
         )}

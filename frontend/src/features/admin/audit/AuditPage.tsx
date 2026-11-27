@@ -12,7 +12,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { useTranslation } from 'react-i18next';
 
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { translateOr } from '../../../shared/i18n/dynamic';
 import adminTexts from '../../../shared/i18n/locales/tr/admin.json';
 import { formatDateTime } from '../../../shared/lib/format';
@@ -108,9 +108,7 @@ export function AuditPage() {
         }
       />
       <Card padding={0}>
-        {events.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {events.isError && <ErrorState error={events.error} onRetry={() => void events.refetch()} />}
-        {events.data && events.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={events.isPending} isError={events.isError} error={events.error} count={events.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void events.refetch()} firstUseMessage={t('audit.firstUse')} rows={SKELETON_ROWS} />
         {events.data && events.data.items.length > 0 && (
           <DataList items={events.data.items} columns={columns} getKey={(event) => event.id} renderCard={renderCard} caption={t('audit.listCaption')} />
         )}

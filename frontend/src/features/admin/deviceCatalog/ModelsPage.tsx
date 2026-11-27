@@ -22,7 +22,7 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { FormSelector, FormTextInput } from '../../../shared/form/formFields';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -214,9 +214,7 @@ export function ModelsPage() {
         }
       />
       <Card padding={0}>
-        {models.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {models.isError && <ErrorState error={models.error} onRetry={() => void models.refetch()} />}
-        {rows?.length === 0 && <EmptyState />}
+        <ListStatus isPending={models.isPending} isError={models.isError} error={models.error} count={rows?.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void models.refetch()} firstUseMessage={t('deviceCatalog.models.firstUse')} rows={SKELETON_ROWS} />
         {rows !== undefined && rows.length > 0 && (
           <DataList items={rows} columns={columns} getKey={(m) => m.id} renderCard={renderCard} caption={t('deviceCatalog.models.listCaption')} />
         )}

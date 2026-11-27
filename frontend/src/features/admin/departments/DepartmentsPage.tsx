@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -89,9 +89,7 @@ export function DepartmentsPage() {
       />
       <ListToolbar title={t('departments.title')} search={list.search} searchLabel={t('departments.searchLabel')} onSearchChange={list.setSearch} activeCount={list.activeCount} onClear={list.clear} />
       <Card padding={0}>
-        {departments.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {departments.isError && <ErrorState error={departments.error} onRetry={() => void departments.refetch()} />}
-        {departments.data && departments.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={departments.isPending} isError={departments.isError} error={departments.error} count={departments.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void departments.refetch()} firstUseMessage={t('departments.firstUse')} rows={SKELETON_ROWS} />
         {departments.data && departments.data.items.length > 0 && (
           <DataList items={departments.data.items} columns={columns} getKey={(d) => d.id} renderCard={renderCard} caption={t('departments.listCaption')} />
         )}

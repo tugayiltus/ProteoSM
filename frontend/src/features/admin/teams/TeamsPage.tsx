@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -113,9 +113,7 @@ export function TeamsPage() {
       />
       <ListToolbar title={t('teams.title')} search={list.search} searchLabel={t('teams.searchLabel')} onSearchChange={list.setSearch} activeCount={list.activeCount} onClear={list.clear} />
       <Card padding={0}>
-        {teams.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {teams.isError && <ErrorState error={teams.error} onRetry={() => void teams.refetch()} />}
-        {teams.data && teams.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={teams.isPending} isError={teams.isError} error={teams.error} count={teams.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void teams.refetch()} firstUseMessage={t('teams.firstUse')} rows={SKELETON_ROWS} />
         {teams.data && teams.data.items.length > 0 && (
           <DataList items={teams.data.items} columns={columns} getKey={(team) => team.id} renderCard={renderCard} caption={t('teams.listCaption')} />
         )}

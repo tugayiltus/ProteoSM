@@ -11,7 +11,7 @@ import { VStack } from '@astryxdesign/core/VStack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { formatDateTime } from '../../../shared/lib/format';
 import { toSearchKey } from '../../../shared/lib/turkish';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
@@ -86,9 +86,7 @@ export function EmailTemplatesPage() {
         onClear={list.clear}
       />
       <Card padding={0}>
-        {templates.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {templates.isError && <ErrorState error={templates.error} onRetry={() => void templates.refetch()} />}
-        {rows?.length === 0 && <EmptyState />}
+        <ListStatus isPending={templates.isPending} isError={templates.isError} error={templates.error} count={rows?.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void templates.refetch()} firstUseMessage={t('emailTemplates.firstUse')} rows={SKELETON_ROWS} />
         {rows !== undefined && rows.length > 0 && (
           <DataList items={rows} columns={columns} getKey={(template) => template.id} renderCard={renderCard} caption={t('emailTemplates.listCaption')} />
         )}

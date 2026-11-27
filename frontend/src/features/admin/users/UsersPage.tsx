@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -201,9 +201,7 @@ export function UsersPage() {
         }
       />
       <Card padding={0}>
-        {users.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {users.isError && <ErrorState error={users.error} onRetry={() => void users.refetch()} />}
-        {users.data && users.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={users.isPending} isError={users.isError} error={users.error} count={users.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void users.refetch()} firstUseMessage={t('users.firstUse')} rows={SKELETON_ROWS} />
         {users.data && users.data.items.length > 0 && (
           <DataList items={users.data.items} columns={columns} getKey={(user) => user.id} renderCard={renderCard} caption={t('users.listCaption')} />
         )}

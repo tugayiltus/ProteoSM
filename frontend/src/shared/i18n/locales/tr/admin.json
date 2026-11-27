@@ -45,7 +45,8 @@
     "resetDialog": {
       "title": "Şifre sıfırla",
       "message": "{{name}} için şifre sıfırlansın mı? Kullanıcının açık oturumu kapanır."
-    }
+    },
+    "firstUse": "Henüz kullanıcı yok. İlk kullanıcıyı ekleyin."
   },
   "departments": {
     "title": "Departmanlar",
@@ -64,7 +65,8 @@
       "actions": "İşlemler"
     },
     "confirmDeactivate": "{{name}} pasifleştirilsin mi?",
-    "confirmReactivate": "{{name}} aktifleştirilsin mi?"
+    "confirmReactivate": "{{name}} aktifleştirilsin mi?",
+    "firstUse": "Henüz departman yok. İlk departmanı ekleyin."
   },
   "locations": {
     "title": "Lokasyonlar",
@@ -106,7 +108,8 @@
     "confirmDeactivate": "{{name}} pasifleştirilsin mi?",
     "confirmReactivate": "{{name}} aktifleştirilsin mi?",
     "intakeHint": "Yalnızca bir ekip seçilebilir; seçtiğinizde önceki ekipten kaldırılır.",
-    "intakeBadge": "Kayıt alan ekip"
+    "intakeBadge": "Kayıt alan ekip",
+    "firstUse": "Henüz ekip yok. İlk ekibi ekleyin."
   },
   "services": {
     "title": "Hizmetler",
@@ -139,7 +142,8 @@
     "unlink": "Bağı kaldır",
     "noAssets": "Bu hizmete bağlı varlık yok.",
     "assetsShown": "{{total}} varlıktan ilk {{count}} tanesi gösteriliyor.",
-    "assetsAll": "Tümünü göster"
+    "assetsAll": "Tümünü göster",
+    "firstUse": "Henüz hizmet yok. İlk hizmeti ekleyin."
   },
   "audit": {
     "title": "Denetim kayıtları",
@@ -156,7 +160,8 @@
       "actor": "Kişi",
       "action": "İşlem",
       "entity": "Kayıt"
-    }
+    },
+    "firstUse": "Henüz denetim kaydı yok."
   },
   "entityTypes": {
     "user": "Kullanıcı",
@@ -469,7 +474,8 @@
       "actions": "İşlemler"
     },
     "confirmDeactivate": "{{name}} pasifleştirilsin mi?",
-    "confirmReactivate": "{{name}} aktifleştirilsin mi?"
+    "confirmReactivate": "{{name}} aktifleştirilsin mi?",
+    "firstUse": "Henüz kategori yok. İlk kategoriyi ekleyin."
   },
   "requestTypes": {
     "title": "Talep tipleri",
@@ -491,7 +497,8 @@
       "actions": "İşlemler"
     },
     "confirmDeactivate": "{{name}} pasifleştirilsin mi?",
-    "confirmReactivate": "{{name}} aktifleştirilsin mi?"
+    "confirmReactivate": "{{name}} aktifleştirilsin mi?",
+    "firstUse": "Henüz talep tipi yok. İlk talep tipini ekleyin."
   },
   "emailTemplates": {
     "title": "E-posta şablonları",
@@ -511,7 +518,8 @@
     "variables": {
       "title": "Kullanılabilir değişkenler",
       "hint": "Değişkenleri çift süslü parantez içinde yazın; listede olmayanlar kaydedilmez."
-    }
+    },
+    "firstUse": "Henüz e-posta şablonu yok."
   },
   "emailDeliveries": {
     "title": "E-posta teslimatları",
@@ -539,7 +547,8 @@
       "error": "Son hata",
       "date": "Tarih",
       "actions": "İşlemler"
-    }
+    },
+    "firstUse": "Henüz e-posta teslimatı yok."
   },
   "emailSending": {
     "intro": "Bildirim e-postalarının hangi sunucudan gönderileceğini seçin. Panel ayarları ancak test maili başarılı olunca kullanıma alınır.",
@@ -731,7 +740,8 @@
       "listCaption": "Markalar listesi",
       "searchLabel": "Marka ara",
       "confirmDeactivate": "{{name}} markası yeni cihazlarda seçilemeyecek. Mevcut cihazlar etkilenmez.",
-      "confirmReactivate": "{{name}} markası yeniden seçilebilecek."
+      "confirmReactivate": "{{name}} markası yeniden seçilebilecek.",
+      "firstUse": "Henüz marka yok. İlk markayı ekleyin."
     },
     "models": {
       "title": "Modeller",
@@ -744,7 +754,8 @@
       "typeFilter": "Tür filtresi",
       "allTypes": "Tüm türler",
       "confirmDeactivate": "{{name}} modeli yeni cihazlarda seçilemeyecek. Mevcut cihazlar etkilenmez.",
-      "confirmReactivate": "{{name}} modeli yeniden seçilebilecek."
+      "confirmReactivate": "{{name}} modeli yeniden seçilebilecek.",
+      "firstUse": "Henüz model yok. İlk modeli ekleyin."
     },
     "fields": {
       "name": "Ad",

@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -134,9 +134,7 @@ export function ServicesAdminPage() {
         onClear={list.clear}
       />
       <Card padding={0}>
-        {services.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {services.isError && <ErrorState error={services.error} onRetry={() => void services.refetch()} />}
-        {services.data && services.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={services.isPending} isError={services.isError} error={services.error} count={services.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void services.refetch()} firstUseMessage={t('services.firstUse')} rows={SKELETON_ROWS} />
         {services.data && services.data.items.length > 0 && (
           <DataList items={services.data.items} columns={columns} getKey={(service) => service.id} renderCard={renderCard} caption={t('services.listCaption')} />
         )}

@@ -87,6 +87,6 @@ describe('EmailDeliveriesPage', () => {
     setup({ 'GET /api/v1/admin/email-deliveries': { status: 200, body: pageOf([]) } });
     renderRoute('/admin/email-deliveries');
 
-    expect(await screen.findByText('Kayıt bulunamadı.')).toBeInTheDocument();
+    expect(await screen.findByText('Henüz e-posta teslimatı yok.')).toBeInTheDocument();
   });
 });

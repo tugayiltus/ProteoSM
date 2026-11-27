@@ -21,7 +21,7 @@ import { applyServerErrors, describeError, isHandledByFields } from '../../../sh
 import { ERROR_CODES } from '../../../shared/api/errors';
 import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { FormDialog } from '../../../shared/feedback/FormDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { FormSelector, FormTextInput } from '../../../shared/form/formFields';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { ListToolbar } from '../../../shared/list/ListToolbar';
@@ -200,9 +200,7 @@ export function CategoriesPage() {
         }
       />
       <Card padding={0}>
-        {categories.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {categories.isError && <ErrorState error={categories.error} onRetry={() => void categories.refetch()} />}
-        {rows?.length === 0 && <EmptyState />}
+        <ListStatus isPending={categories.isPending} isError={categories.isError} error={categories.error} count={rows?.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void categories.refetch()} firstUseMessage={t('categories.firstUse')} rows={SKELETON_ROWS} />
         {rows !== undefined && rows.length > 0 && <DataList items={rows} columns={columns} getKey={(r) => r.item.id} renderCard={renderCard} caption={t('categories.listCaption')} />}
       </Card>
       {form !== null && <CategoryFormDialog key={form.category?.id ?? 'new'} category={form.category} all={categories.data ?? []} onClose={() => setForm(null)} />}

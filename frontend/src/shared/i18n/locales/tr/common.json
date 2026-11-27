@@ -21,7 +21,8 @@
   "states": {
     "loading": "Yükleniyor…",
     "empty": "Kayıt bulunamadı.",
-    "error": "Bir hata oluştu."
+    "error": "Bir hata oluştu.",
+    "noResults": "Bu filtrelerle kayıt bulunamadı."
   },
   "status": {
     "all": "Tümü",
@@ -64,7 +65,8 @@
     "apply": "Uygula",
     "clear": "Temizle",
     "search": "Ara",
-    "status": "Durum"
+    "status": "Durum",
+    "clearAll": "Filtreleri temizle"
   },
   "discard": {
     "title": "Değişiklikler kaydedilmedi",

@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import { describeError } from '../../../shared/api/errorMessage';
 import { FormAlert } from '../../../shared/feedback/FormAlert';
-import { EmptyState, ErrorState, LoadingState } from '../../../shared/feedback/States';
+import { ListStatus } from '../../../shared/feedback/ListStatus';
 import { formatDateTime } from '../../../shared/lib/format';
 import { useDebouncedValue } from '../../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../../shared/list/DataList';
@@ -151,9 +151,7 @@ export function EmailDeliveriesPage() {
       />
       <FormAlert message={retry.error ? describeError(retry.error) : null} />
       <Card padding={0}>
-        {deliveries.isPending && <LoadingState rows={SKELETON_ROWS} />}
-        {deliveries.isError && <ErrorState error={deliveries.error} onRetry={() => void deliveries.refetch()} />}
-        {deliveries.data && deliveries.data.items.length === 0 && <EmptyState />}
+        <ListStatus isPending={deliveries.isPending} isError={deliveries.isError} error={deliveries.error} count={deliveries.data?.items.length} activeCount={list.activeCount} onClear={list.clear} onRetry={() => void deliveries.refetch()} firstUseMessage={t('emailDeliveries.firstUse')} rows={SKELETON_ROWS} />
         {deliveries.data && deliveries.data.items.length > 0 && (
           <DataList items={deliveries.data.items} columns={columns} getKey={(delivery) => delivery.id} renderCard={renderCard} caption={t('emailDeliveries.listCaption')} />
         )}
