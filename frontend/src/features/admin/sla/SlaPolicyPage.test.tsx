@@ -115,4 +115,33 @@ describe('SlaPolicyPage', () => {
     renderRoute('/admin/sla/policy');
     expect(await screen.findByRole('button', { name: /Tekrar dene/ })).toBeInTheDocument();
   });
+
+  it('shows hours and minutes beside a business-minute target', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, 'GET /api/v1/admin/sla/policy': { status: 200, body: policy(1) } });
+    const { user } = renderRoute('/admin/sla/policy');
+
+    const field = await screen.findByLabelText('Arıza P1 · Kritik İlk yanıt Hedef (dk)');
+    await user.clear(field);
+    await user.type(field, '150');
+
+    await user.tab();
+
+    expect(await screen.findByText('2 sa 30 dk iş süresi')).toBeInTheDocument();
+  });
+
+  it('lists changed targets old to new and says only later tickets get the new version', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, 'GET /api/v1/admin/sla/policy': { status: 200, body: policy(1) } });
+    const { user } = renderRoute('/admin/sla/policy');
+
+    expect(await screen.findByText('Hedeflerde ve duraklatma kurallarında değişiklik yok.')).toBeInTheDocument();
+    expect(screen.getByText('Yeni sürüm yalnızca bundan sonra açılan kayıtlara uygulanır.')).toBeInTheDocument();
+    const field = screen.getByLabelText('Arıza P1 · Kritik İlk yanıt Hedef (dk)');
+    await user.clear(field);
+    await user.type(field, '90');
+    await user.click(screen.getByRole('checkbox', { name: 'Kullanıcıdan yanıt bekleniyor: İlk yanıt durur' }));
+
+    expect(await screen.findByText('Hedef: 30 dk (30 dk) → 90 dk (1 sa 30 dk)')).toBeInTheDocument();
+    expect(screen.getByText('Duraklatma kuralı değişiyor.')).toBeInTheDocument();
+    expect(screen.queryByText('Hedeflerde ve duraklatma kurallarında değişiklik yok.')).not.toBeInTheDocument();
+  });
 });

@@ -701,8 +701,10 @@
       "remove": "Kaldır",
       "actions": "İşlemler",
       "empty": "Tatil günü tanımlı değil.",
-      "caption": "Tatil günleri listesi"
-    }
+      "caption": "Tatil günleri listesi",
+      "replanNote": "Tatil ekleme ve kaldırma, çalışma saatlerinden ayrı kaydedilir. Çalışan sayaçlar aynı şekilde yeniden planlanır."
+    },
+    "replanNote": "Çalışma saatleri tatil günlerinden ayrı kaydedilir. Kaydedince çalışan sayaçlar yeniden planlanır: o ana kadar geçen iş süresi korunur, kalanı yeni saatlerle sürer."
   },
   "slaPolicy": {
     "title": "SLA politikası",
@@ -724,7 +726,16 @@
       "hint": "Bir problemin bilinen hataya ulaşması için etkiye göre tanınan süre. Çalışan sayaçlar kendi kopyasını korur.",
       "save": "Kaydet",
       "saved": "Problem hedefleri kaydedildi."
-    }
+    },
+    "readable": "{{duration}} iş süresi",
+    "minutesWithDuration": "{{minutes}} dk ({{duration}})",
+    "changesTitle": "Yeni sürümde değişecekler",
+    "appliesTo": "Yeni sürüm yalnızca bundan sonra açılan kayıtlara uygulanır.",
+    "appliesToDetail": "Açık kayıtların sayaçları, başladıkları sürümün hedefleriyle sürer. Geçmiş sürümler değişmez.",
+    "noChanges": "Hedeflerde ve duraklatma kurallarında değişiklik yok.",
+    "targetChange": "Hedef: {{from}} → {{to}}",
+    "warningChange": "Uyarı: %{{from}} → %{{to}}",
+    "pauseChange": "Duraklatma kuralı değişiyor."
   },
   "overview": {
     "checksTitle": "Kurulum kontrolleri",

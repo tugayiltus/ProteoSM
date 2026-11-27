@@ -148,4 +148,14 @@ describe('SlaCalendarPage', () => {
     await user.click(screen.getAllByRole('button', { name: /^Kaldır/ })[0]!);
     await waitFor(() => expect(api.calls.some((c) => c.method === 'DELETE')).toBe(true));
   });
+
+  it('keeps working hours and holidays as separate sections and says running timers are re-planned', async () => {
+    setup();
+    renderRoute('/admin/sla/calendar');
+
+    expect(await screen.findByRole('heading', { name: 'Çalışma saatleri' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Tatil günleri' })).toBeInTheDocument();
+    expect(screen.getByText(/Çalışma saatleri tatil günlerinden ayrı kaydedilir/)).toBeInTheDocument();
+    expect(screen.getByText(/Tatil ekleme ve kaldırma, çalışma saatlerinden ayrı kaydedilir/)).toBeInTheDocument();
+  });
 });

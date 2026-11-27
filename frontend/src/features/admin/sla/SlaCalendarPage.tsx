@@ -117,6 +117,7 @@ function CalendarForm({ calendar, onReload }: { calendar: CalendarDetail; onRelo
       <SectionCard title={t('slaCalendar.hoursTitle')}>
         <VStack gap={4}>
           <FormAlert message={alert} />
+          <Text type="supporting">{t('slaCalendar.replanNote')}</Text>
           {problem === null && isConcurrencyConflict(update.error) && (
             <HStack>
               <Button label={t('slaCalendar.reload')} variant="secondary" onClick={() => void reload()} />
@@ -219,6 +220,7 @@ function HolidaysSection() {
 
   return (
     <SectionCard title={t('slaCalendar.holidays.title')}>
+      <Text type="supporting">{t('slaCalendar.holidays.replanNote')}</Text>
       <form noValidate onSubmit={onAdd}>
         <HStack gap={3} vAlign="end" wrap="wrap">
           <DateInput label={t('slaCalendar.holidays.date')} value={asIsoDay(date)} onChange={(value) => setDate(value ?? '')} />

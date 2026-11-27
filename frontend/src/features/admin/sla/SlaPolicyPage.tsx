@@ -20,6 +20,7 @@ import { DataList, type DataColumn } from '../../../shared/list/DataList';
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { SectionCard } from '../../../shared/page/SectionCard';
+import { useFormatBusinessDuration } from '../../tickets/slaState';
 
 import {
   SLA_HOLD_REASONS,
@@ -40,22 +41,18 @@ import {
   type SlaMetric,
   type TicketKind,
 } from './api';
+import { cellKey, diffPauses, diffTargets, type CellDraft, type PauseDraft } from './policyChanges';
+import { PolicyChangeSummary } from './PolicyChangeSummary';
 
 const MIN_WARNING_PERCENT = 1;
 const MAX_WARNING_PERCENT = 99;
 const MIN_TARGET_MINUTES = 1;
 const MAX_TARGET_MINUTES = 366 * 24 * 60;
 const INPUT_WIDTH = 120;
+const SECONDS_PER_MINUTE = 60;
 const SKELETON_ROWS = 8;
 const PROBLEM_SKELETON_ROWS = 3;
 const PROBLEM_IMPACTS: readonly ProblemTargetDto['impact'][] = ['high', 'medium', 'low'];
-
-interface CellDraft {
-  minutes: number | null;
-  percent: number | null;
-}
-
-type PauseDraft = Record<HoldReason, { firstResponse: boolean; resolution: boolean }>;
 
 interface TargetRow {
   kind: TicketKind;
@@ -64,11 +61,20 @@ interface TargetRow {
 
 const TARGET_ROWS: readonly TargetRow[] = SLA_KINDS.flatMap((kind) => SLA_PRIORITIES.map((priority) => ({ kind, priority })));
 
-const cellKey = (kind: string, priority: string, metric: string) => `${kind}:${priority}:${metric}`;
 const isBaseTarget = (target: PolicyTargetItem) => target.requestTypeId === null;
 
 function inRange(value: number | null, min: number, max: number): number | null {
   return value !== null && Number.isInteger(value) && value >= min && value <= max ? value : null;
+}
+
+/** A business-minute value as hours and minutes next to the raw number, so a long target stays readable. */
+function DurationHint({ minutes }: { minutes: number | null }) {
+  const { t } = useTranslation('admin');
+  const formatDuration = useFormatBusinessDuration();
+  if (inRange(minutes, MIN_TARGET_MINUTES, MAX_TARGET_MINUTES) === null || minutes === null) {
+    return null;
+  }
+  return <Text type="supporting">{t('slaPolicy.readable', { duration: formatDuration(minutes * SECONDS_PER_MINUTE) })}</Text>;
 }
 
 function PolicyForm({ policy }: { policy: PolicyDetail }) {
@@ -130,7 +136,8 @@ function PolicyForm({ policy }: { policy: PolicyDetail }) {
     const key = cellKey(row.kind, row.priority, metric);
     const label = `${tt(`kinds.${row.kind}`)} ${tt(`priorities.${row.priority}`)} ${tt(`sla.metrics.${metric}`)}`;
     return (
-      <HStack gap={2} wrap="wrap">
+      <VStack gap={1}>
+        <HStack gap={2} wrap="wrap">
         <NumberInput
           label={`${label} ${t('slaPolicy.targetMinutes')}`}
           isLabelHidden
@@ -151,7 +158,9 @@ function PolicyForm({ policy }: { policy: PolicyDetail }) {
           value={cells[key]?.percent ?? null}
           onChange={(value: number | null) => setCell(key, { percent: value })}
         />
-      </HStack>
+        </HStack>
+        <DurationHint minutes={cells[key]?.minutes ?? null} />
+      </VStack>
     );
   };
 
@@ -198,6 +207,7 @@ function PolicyForm({ policy }: { policy: PolicyDetail }) {
             ))}
           </VStack>
         </SectionCard>
+        <PolicyChangeSummary changes={diffTargets(policy.targets, cells)} pauseChanges={diffPauses(policy.pauseRules, pauses)} />
         <HStack hAlign="end">
           <Button type="submit" label={t('slaPolicy.save')} variant="primary" isLoading={create.isPending} />
         </HStack>
@@ -267,6 +277,7 @@ function ProblemTargetsForm({ data }: { data: ProblemTargetsDto }) {
                   onChange={(value: number | null) => setCell(impact, { percent: value })}
                 />
               </HStack>
+              <DurationHint minutes={cells[impact]?.minutes ?? null} />
             </VStack>
           ))}
           <HStack hAlign="end">
