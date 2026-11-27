@@ -434,6 +434,8 @@
     "sla_breached": "SLA ihlali",
     "account_activation": "Hesap etkinleştirme",
     "password_reset": "Şifre sıfırlama",
+    "problem_sla_warning": "Problem SLA uyarısı",
+    "problem_sla_breached": "Problem SLA ihlali",
     "licence_expiring": "Lisans süresi bitiyor"
   },
   "categories": {

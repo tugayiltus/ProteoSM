@@ -46,7 +46,11 @@ public sealed class TemplateVariablesTests
         {
             var allowed = TemplateVariables.AllowedFor(eventType);
             Assert.DoesNotContain(TemplateVariables.SlaMetric, allowed);
-            Assert.DoesNotContain(TemplateVariables.DueAt, allowed);
+            // A problem timer has one target, so its events carry the due time but no metric.
+            if (eventType is not (NotificationEventTypes.ProblemSlaWarning or NotificationEventTypes.ProblemSlaBreached))
+            {
+                Assert.DoesNotContain(TemplateVariables.DueAt, allowed);
+            }
         }
     }
 

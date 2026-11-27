@@ -33,6 +33,9 @@ public static class TemplateVariables
     public const string LicenceUrl = "licenceUrl";
     public const string SoftwareName = "softwareName";
     public const string ExpiresOn = "expiresOn";
+    public const string ProblemNumber = "problemNumber";
+    public const string ProblemUrl = "problemUrl";
+    public const string Impact = "impact";
 
     /// <summary>
     /// Variables whose line is left out of the rendered text when every variable on it is line-optional and empty
@@ -64,6 +67,11 @@ public static class TemplateVariables
         LicenceName, SoftwareName, ExpiresOn, TeamName, LicenceUrl, RecipientName,
     };
 
+    private static readonly IReadOnlySet<string> ProblemSet = new HashSet<string>(StringComparer.Ordinal)
+    {
+        ProblemNumber, Subject, Status, Impact, TeamName, ProblemUrl, RecipientName, DueAt,
+    };
+
     private static readonly IReadOnlySet<string> AccountSet = new HashSet<string>(StringComparer.Ordinal)
     {
         RecipientName, ActionUrl, ExpiresAt,
@@ -83,6 +91,8 @@ public static class TemplateVariables
         [NotificationEventTypes.TicketCompleted] = TicketCompletedSet,
         [NotificationEventTypes.SlaWarning] = SlaSet,
         [NotificationEventTypes.SlaBreached] = SlaSet,
+        [NotificationEventTypes.ProblemSlaWarning] = ProblemSet,
+        [NotificationEventTypes.ProblemSlaBreached] = ProblemSet,
         [NotificationEventTypes.LicenceExpiring] = LicenceSet,
         [NotificationEventTypes.AccountActivation] = AccountSet,
         [NotificationEventTypes.PasswordReset] = AccountSet,
@@ -95,6 +105,7 @@ public static class TemplateVariables
         TaskNumber, TaskUrl, TeamName, DueDate,
         ChangeNumber, ChangeUrl, WindowStart, WindowEnd, Risk, Reason,
         LicenceName, LicenceUrl, SoftwareName, ExpiresOn,
+        ProblemNumber, ProblemUrl, Impact,
     };
 
     /// <summary>The variable names an admin may use for <paramref name="eventType"/> (one of <see cref="NotificationEventTypes"/>).</summary>

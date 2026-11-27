@@ -24,6 +24,7 @@ public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock cl
     private const string TaskUrlPathFormat = "/tasks/{0}";
     private const string ChangeUrlPathFormat = "/changes/{0}";
     private const string LicenceUrlPathFormat = "/licences/{0}";
+    private const string ProblemUrlPathFormat = "/problems/{0}";
     private const string DateFormat = "dd.MM.yyyy";
 
     public async Task<IReadOnlyDictionary<string, string>> LoadAsync(OutboxEvent outboxEvent, Recipient recipient, CancellationToken cancellationToken)
@@ -105,7 +106,23 @@ public sealed class NotificationContextLoader(IAppDbContext db, ICompanyClock cl
             Set(TemplateVariables.LicenceUrl, PublicUrl(LicenceUrlPathFormat, licenceId.ToString()));
         }
 
-        // sla_warning/sla_breached: metric and due time come from the event's own payload (ids and reason codes
+        if (outboxEvent.SubjectType == OutboxSubjectTypes.Problem && outboxEvent.SubjectId is { } problemId)
+        {
+            var problem = await (
+                from p in db.Problems.AsNoTracking()
+                where p.Id == problemId
+                join team in db.Teams on p.OwnerTeamId equals team.Id
+                select new { p.Number, p.Title, p.Status, p.Impact, Team = team.Name })
+                .SingleAsync(cancellationToken);
+            Set(TemplateVariables.ProblemNumber, problem.Number);
+            Set(TemplateVariables.Subject, problem.Title);
+            Set(TemplateVariables.Status, ProblemLabels.Of(problem.Status));
+            Set(TemplateVariables.Impact, ProblemLabels.Of(problem.Impact));
+            Set(TemplateVariables.TeamName, problem.Team);
+            Set(TemplateVariables.ProblemUrl, PublicUrl(ProblemUrlPathFormat, problem.Number));
+        }
+
+        // sla_warning/sla_breached and the problem variants: metric and due time come from the event's own payload (ids and reason codes
         // only, per OutboxEvent.Payload) once the SLA monitor (a later task) starts writing them.
         Set(TemplateVariables.SlaMetric, PayloadString(outboxEvent, OutboxEvent.SlaMetricKey) is { } metricKey ? SlaMetricLabels.LabelOfKey(metricKey) : null);
         var dueAt = PayloadDate(outboxEvent, OutboxEvent.SlaDueAtKey);

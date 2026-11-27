@@ -79,6 +79,10 @@ public sealed class RecipientResolver(IAppDbContext db)
             case NotificationEventTypes.SlaBreached:
                 return await AssigneeOrTeamIdsAsync(ticket!, cancellationToken);
 
+            case NotificationEventTypes.ProblemSlaWarning:
+            case NotificationEventTypes.ProblemSlaBreached:
+                return await ProblemOwnerOrTeamIdsAsync(outboxEvent, cancellationToken);
+
             case NotificationEventTypes.TaskAssigned:
                 return outboxEvent.UserId is { } taskAssignee ? [taskAssignee] : await TaskTeamIdsAsync(outboxEvent, cancellationToken);
 
@@ -157,6 +161,21 @@ public sealed class RecipientResolver(IAppDbContext db)
 
     private async Task<IReadOnlyList<Guid>> AssigneeOrTeamIdsAsync(Ticket ticket, CancellationToken cancellationToken) =>
         ticket.AssigneeId is { } assignee ? [assignee] : await TeamMemberIdsAsync(ticket.TeamId, cancellationToken);
+
+    /// <summary>The problem's owner when set and active; otherwise (no owner, or the owner was deactivated) the active members of the owner team.</summary>
+    private async Task<IReadOnlyList<Guid>> ProblemOwnerOrTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
+    {
+        var problem = await db.Problems.AsNoTracking()
+            .Where(p => p.Id == outboxEvent.SubjectId)
+            .Select(p => new { p.OwnerId, p.OwnerTeamId })
+            .SingleAsync(cancellationToken);
+        if (problem.OwnerId is { } owner && await db.Users.AnyAsync(u => u.Id == owner && u.IsActive, cancellationToken))
+        {
+            return [owner];
+        }
+
+        return await TeamMemberIdsAsync(problem.OwnerTeamId, cancellationToken);
+    }
 
     /// <summary>A task event without an assignee goes to the active members of the task's current team.</summary>
     private async Task<IReadOnlyList<Guid>> TaskTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)

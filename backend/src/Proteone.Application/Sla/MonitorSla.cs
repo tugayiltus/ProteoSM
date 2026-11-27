@@ -51,8 +51,65 @@ public sealed class MonitorSlaHandler(IAppDbContext db, INotificationOutbox outb
             }, cancellationToken);
         }
 
+        // Problem timers share the batch size and the sweep; their counts are not part of the ticket result.
+        await HandleProblemsAsync(batch, now, cancellationToken);
         return (warned, breached);
     }
+
+    /// <summary>Same claim-then-record pass over running problem timers: one conditional update per mark, outbox row in the same per-timer transaction.</summary>
+    private async Task HandleProblemsAsync(int batch, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var due = await db.ProblemSlaTimers.AsNoTracking()
+            .Where(t => t.StoppedAt == null
+                && ((t.WarnedAt == null && t.WarnAt <= now) || (t.BreachedAt == null && t.DueAt <= now)))
+            .OrderBy(t => t.Id)
+            .Take(batch)
+            .Select(t => new { t.Id, t.ProblemId })
+            .ToListAsync(cancellationToken);
+
+        foreach (var candidate in due)
+        {
+            await db.RunInTransactionAsync(async ct =>
+            {
+                if (await TryWarnProblemAsync(candidate.Id, now, ct) is { } warnedDueAt)
+                {
+                    RecordProblem(candidate.ProblemId, NotificationEventTypes.ProblemSlaWarning, warnedDueAt);
+                }
+
+                if (await TryBreachProblemAsync(candidate.Id, now, ct) is { } breachedDueAt)
+                {
+                    RecordProblem(candidate.ProblemId, NotificationEventTypes.ProblemSlaBreached, breachedDueAt);
+                }
+
+                await db.SaveChangesAsync(ct);
+            }, cancellationToken);
+        }
+    }
+
+    private async Task<DateTimeOffset?> TryWarnProblemAsync(Guid id, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var won = await db.ProblemSlaTimers
+            .Where(t => t.Id == id && t.WarnedAt == null && t.WarnAt <= now && t.StoppedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.WarnedAt, now), cancellationToken);
+        return won == 1 ? await ProblemDueAtAsync(id, cancellationToken) : null;
+    }
+
+    private async Task<DateTimeOffset?> TryBreachProblemAsync(Guid id, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var won = await db.ProblemSlaTimers
+            .Where(t => t.Id == id && t.BreachedAt == null && t.DueAt <= now && t.StoppedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.BreachedAt, now), cancellationToken);
+        return won == 1 ? await ProblemDueAtAsync(id, cancellationToken) : null;
+    }
+
+    private async Task<DateTimeOffset> ProblemDueAtAsync(Guid id, CancellationToken cancellationToken) =>
+        await db.ProblemSlaTimers.AsNoTracking().Where(t => t.Id == id).Select(t => t.DueAt).SingleAsync(cancellationToken);
+
+    private void RecordProblem(Guid problemId, string eventType, DateTimeOffset dueAt) =>
+        outbox.AddForSubject(eventType, OutboxSubjectTypes.Problem, problemId, userId: null, new Dictionary<string, string>
+        {
+            [OutboxEvent.SlaDueAtKey] = dueAt.ToString("O", CultureInfo.InvariantCulture),
+        });
 
     // The conditional update is the claim; the returned due time is read in the same transaction, after the row is locked by it.
     private async Task<DateTimeOffset?> TryWarnAsync(Guid id, DateTimeOffset now, CancellationToken cancellationToken)
