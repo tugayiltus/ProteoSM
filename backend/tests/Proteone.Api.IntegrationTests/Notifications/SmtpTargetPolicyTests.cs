@@ -21,7 +21,6 @@ public sealed class SmtpTargetPolicyTests
     [InlineData("fd00::25")]
     [InlineData("::ffff:10.0.0.25")]
     [InlineData("::ffff:127.0.0.1")]
-    [InlineData("64:ff9b::808:808")]
     [InlineData("::10.0.0.25")]
     public void Ordinary_private_loopback_and_public_addresses_are_allowed(string address) =>
         Assert.True(SmtpTargetPolicy.IsAllowed(IPAddress.Parse(address)));
@@ -49,15 +48,26 @@ public sealed class SmtpTargetPolicyTests
         Assert.False(SmtpTargetPolicy.IsAllowed(IPAddress.Parse(address)));
 
     [Theory]
+    [InlineData("64:ff9b::808:808")]
     [InlineData("64:ff9b::169.254.169.254")]
-    [InlineData("64:ff9b::a9fe:a9fe")]
-    [InlineData("64:ff9b::0.0.0.0")]
-    [InlineData("64:ff9b::100.100.100.200")]
-    public void Nat64_addresses_are_checked_as_ipv4(string address) =>
+    [InlineData("64:ff9b:1::a00:19")]
+    [InlineData("2002:808:808::1")]
+    [InlineData("2002:a9fe:a9fe::1")]
+    [InlineData("2001:0:4136:e378:8000:63bf:3fff:fdd2")]
+    public void Translation_prefixes_are_refused(string address) =>
+        Assert.False(SmtpTargetPolicy.IsAllowed(IPAddress.Parse(address)));
+
+    [Theory]
+    [InlineData("fd00::25%3")]
+    [InlineData("2001:db8::25%1")]
+    [InlineData("fe80::1%2")]
+    public void Scoped_ipv6_addresses_are_refused(string address) =>
         Assert.False(SmtpTargetPolicy.IsAllowed(IPAddress.Parse(address)));
 
     [Theory]
     [InlineData("fd00:ec2::254")]
+    [InlineData("fd00:ec2::1")]
+    [InlineData("fd00:ec2:ffff::1")]
     [InlineData("100.100.100.200")]
     [InlineData("168.63.129.16")]
     public void Known_cloud_metadata_addresses_are_refused(string address) =>

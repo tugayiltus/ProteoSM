@@ -4,74 +4,70 @@ using System.Net.Sockets;
 namespace Proteone.Infrastructure.Email;
 
 /// <summary>
-/// Which addresses an admin-chosen SMTP host may connect to. Link-local addresses (169.254.0.0/16, fe80::/10, where cloud
-/// metadata services live), unspecified addresses (0.0.0.0/8, ::) and the known cloud metadata addresses are refused.
-/// IPv6 forms that carry an IPv4 address (IPv4-mapped, IPv4-compatible, NAT64) are checked as that IPv4 address, so they
-/// cannot go around the IPv4 rules. Private and loopback addresses stay allowed, because an internal mail relay is a
-/// normal target.
+/// Which addresses an admin-chosen SMTP host may connect to. Private and loopback addresses stay allowed, because an
+/// internal mail relay is a normal target; the rules refuse only what can reach a cloud metadata service or go around
+/// the checks.
 /// </summary>
 internal static class SmtpTargetPolicy
 {
-    private const byte LinkLocalFirstOctet = 169;
-    private const byte LinkLocalSecondOctet = 254;
-    private const byte ThisNetworkFirstOctet = 0;
-    private const int Ipv6PrefixLength = 12;
-    private const int Ipv4Length = 4;
-
-    // The NAT64 well-known prefix 64:ff9b::/96 (RFC 6052).
-    private static readonly byte[] Nat64Prefix = [0x00, 0x64, 0xff, 0x9b, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    // Cloud metadata services outside the link-local ranges: AWS over IPv6 (fd00:ec2::254), Alibaba Cloud
-    // (100.100.100.200) and the Azure wire server (168.63.129.16). They give out credentials, so a mail host must never
-    // point at them.
-    private static readonly IPAddress[] MetadataAddresses =
+    // Refused IPv4 ranges: "this network" (0.0.0.0/8, includes unspecified), link-local (169.254.0.0/16, AWS, GCP and
+    // Azure metadata), Alibaba Cloud metadata (100.100.100.200) and the Azure wire server (168.63.129.16).
+    private static readonly IPNetwork[] RefusedIpv4 =
     [
-        IPAddress.Parse("fd00:ec2::254"),
-        IPAddress.Parse("100.100.100.200"),
-        IPAddress.Parse("168.63.129.16"),
+        IPNetwork.Parse("0.0.0.0/8"),
+        IPNetwork.Parse("169.254.0.0/16"),
+        IPNetwork.Parse("100.100.100.200/32"),
+        IPNetwork.Parse("168.63.129.16/32"),
     ];
+
+    // Refused IPv6 ranges: unspecified (::), link-local (fe80::/10), AWS metadata over IPv6 (fd00:ec2::/32), and the
+    // translation prefixes NAT64 (64:ff9b::/96), NAT64 local use (64:ff9b:1::/48), 6to4 (2002::/16) and Teredo
+    // (2001::/32). A translation prefix carries an IPv4 address that a gateway reaches for us, so it is refused outright
+    // instead of decoded: an internal relay is never only reachable that way.
+    private static readonly IPNetwork[] RefusedIpv6 =
+    [
+        IPNetwork.Parse("::/128"),
+        IPNetwork.Parse("fe80::/10"),
+        IPNetwork.Parse("fd00:ec2::/32"),
+        IPNetwork.Parse("64:ff9b::/96"),
+        IPNetwork.Parse("64:ff9b:1::/48"),
+        IPNetwork.Parse("2002::/16"),
+        IPNetwork.Parse("2001::/32"),
+    ];
+
+    // IPv4-compatible addresses (::/96) other than :: and ::1 carry an IPv4 address in their last 32 bits.
+    private static readonly IPNetwork Ipv4Compatible = IPNetwork.Parse("::/96");
+    private const int Ipv4Offset = 12;
+    private const int Ipv4Length = 4;
 
     public static bool IsAllowed(IPAddress address)
     {
-        address = EmbeddedIpv4(address) ?? address;
-        if (Array.Exists(MetadataAddresses, address.Equals))
+        if (address.AddressFamily == AddressFamily.InterNetworkV6)
         {
-            return false;
+            // A zone index only makes sense on a link-local address (refused anyway), so any scoped address is refused.
+            // Every later check compares the bare bytes.
+            if (address.ScopeId != 0)
+            {
+                return false;
+            }
+
+            address = new IPAddress(address.GetAddressBytes());
+            if (address.IsIPv4MappedToIPv6)
+            {
+                address = address.MapToIPv4();
+            }
+            else if (IsIpv4Compatible(address))
+            {
+                address = new IPAddress(address.GetAddressBytes().AsSpan(Ipv4Offset, Ipv4Length));
+            }
         }
 
-        if (address.AddressFamily == AddressFamily.InterNetwork)
-        {
-            var bytes = address.GetAddressBytes();
-            return bytes[0] != ThisNetworkFirstOctet && !(bytes[0] == LinkLocalFirstOctet && bytes[1] == LinkLocalSecondOctet);
-        }
-
-        return !address.Equals(IPAddress.IPv6Any) && !address.IsIPv6LinkLocal;
+        var refused = address.AddressFamily == AddressFamily.InterNetwork ? RefusedIpv4 : RefusedIpv6;
+        return !Array.Exists(refused, range => range.Contains(address));
     }
 
-    /// <summary>The IPv4 address an IPv6 address carries in its last 32 bits, or null when it carries none.</summary>
-    private static IPAddress? EmbeddedIpv4(IPAddress address)
-    {
-        if (address.AddressFamily != AddressFamily.InterNetworkV6)
-        {
-            return null;
-        }
-
-        if (address.IsIPv4MappedToIPv6)
-        {
-            return address.MapToIPv4();
-        }
-
-        // :: and ::1 are in ::/96 too, but they are the IPv6 unspecified and loopback addresses, not IPv4-compatible ones.
-        if (address.Equals(IPAddress.IPv6Any) || address.Equals(IPAddress.IPv6Loopback))
-        {
-            return null;
-        }
-
-        var bytes = address.GetAddressBytes();
-        var prefix = bytes.AsSpan(0, Ipv6PrefixLength);
-        var isCompatible = !prefix.ContainsAnyExcept((byte)0);
-        return isCompatible || prefix.SequenceEqual(Nat64Prefix) ? new IPAddress(bytes.AsSpan(Ipv6PrefixLength, Ipv4Length)) : null;
-    }
+    private static bool IsIpv4Compatible(IPAddress address) =>
+        Ipv4Compatible.Contains(address) && !address.Equals(IPAddress.IPv6Any) && !address.Equals(IPAddress.IPv6Loopback);
 }
 
 /// <summary>The host name or address of the SMTP server points to an address that <see cref="SmtpTargetPolicy"/> refuses.</summary>
