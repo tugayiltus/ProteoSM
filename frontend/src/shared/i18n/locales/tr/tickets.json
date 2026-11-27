@@ -307,7 +307,8 @@
     "dueLine": "Son tarih {{date}}",
     "headerMetrics": {
       "first_response": "İlk yanıt SLA'sı",
-      "resolution": "Çözüm SLA'sı"
+      "resolution": "Çözüm SLA'sı",
+      "known_error": "Bilinen hata SLA'sı"
     },
     "headerStates": {
       "running": "sürüyor",

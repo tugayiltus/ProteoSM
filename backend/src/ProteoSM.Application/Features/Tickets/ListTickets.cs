@@ -89,13 +89,13 @@ public sealed class ListTicketsHandler(IAppDbContext db, TicketScope scope, Tick
                 : tickets.Where(t => EF.Functions.Like(t.SearchText, LikePattern.Containing(key), LikePattern.EscapeText));
         }
 
-        // SLA risk: the nearest due time of an at-risk timer first; a paused timer has none and sorts last.
+        // SLA risk: the nearest due time of the ticket's running timers first (the same date the work list shows); no due time sorts last.
         var ordered = query.Queue switch
         {
             TicketQueue.ToRate => tickets.OrderByDescending(t => t.CompletedAt).ThenByDescending(t => t.Id),
             TicketQueue.SlaRisk => tickets
-                .OrderBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null && (i.WarnedAt != null || i.BreachedAt != null)).Min(i => i.DueAt) == null)
-                .ThenBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null && (i.WarnedAt != null || i.BreachedAt != null)).Min(i => i.DueAt))
+                .OrderBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null).Min(i => i.DueAt) == null)
+                .ThenBy(t => db.SlaInstances.Where(i => i.TicketId == t.Id && i.StoppedAt == null).Min(i => i.DueAt))
                 .ThenByDescending(t => t.Id),
             _ => tickets.OrderByDescending(t => t.UpdatedAt).ThenByDescending(t => t.Id),
         };

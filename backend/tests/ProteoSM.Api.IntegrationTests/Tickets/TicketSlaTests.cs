@@ -121,6 +121,36 @@ public sealed class TicketSlaTests(FakeClockApiFactory factory) : IClassFixture<
     }
 
     [Fact]
+    public async Task Risk_queue_orders_by_the_nearest_running_timer_not_only_the_warned_one()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var first = await TicketWorld.CreateIncidentAsync(world.Employee, "Birinci");
+        factory.Clock.Advance(TimeSpan.FromMinutes(OneHourMinutes));
+        var second = await TicketWorld.CreateIncidentAsync(world.Employee, "İkinci");
+        var now = factory.Clock.GetUtcNow();
+        await using (var db = factory.Database.CreateDbContext())
+        {
+            // First: only the late resolution timer is warned, its first-response timer is due earlier. Second: only first response is warned.
+            Task Warn(JsonElement t, ProteoSM.Domain.Sla.SlaMetric metric)
+            {
+                var number = TicketWorld.NumberOf(t);
+                return db.SlaInstances.Where(i => i.Metric == metric && db.Tickets.Any(x => x.Id == i.TicketId && x.Number == number))
+                    .ExecuteUpdateAsync(s => s.SetProperty(i => i.WarnedAt, now), Ct);
+            }
+
+            await Warn(first, ProteoSM.Domain.Sla.SlaMetric.Resolution);
+            await Warn(second, ProteoSM.Domain.Sla.SlaMetric.FirstResponse);
+        }
+
+        var page = await TicketWorld.ReadAsync(world.Desk, $"{TicketWorld.TicketsPath}{SlaRiskQuery}");
+        var items = page.GetProperty("items").EnumerateArray().ToList();
+
+        Assert.Equal([TicketWorld.NumberOf(first), TicketWorld.NumberOf(second)], items.Select(t => t.GetProperty("number").GetString()!));
+        var nearest = items.Select(t => t.GetProperty("sla").EnumerateArray().Select(s => s.GetProperty("dueAt").GetDateTimeOffset()).Min()).ToList();
+        Assert.Equal(nearest.Order(), nearest);
+    }
+
+    [Fact]
     public async Task Risk_queue_keeps_paused_and_breached_only_instances_but_not_stopped_ones()
     {
         var world = await TicketWorld.CreateAsync(factory);

@@ -111,7 +111,7 @@ describe('WorkspacePage', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe(`/tickets/${INCIDENT.number}`));
 
     const trail = within(await screen.findByRole('navigation', { name: 'Sayfa yolu' }));
-    expect(await trail.findByRole('link', { name: 'Kuyruk' })).toHaveAttribute('href', '/workspace/queue?queue=sla_risk&status=in_progress&q=vpn&page=2');
+    expect(await trail.findByRole('link', { name: 'Kuyruk görünümü' })).toHaveAttribute('href', '/workspace/queue?queue=sla_risk&status=in_progress&q=vpn&page=2');
   });
 
   it('shows the this-week change card with its total and links to the queue', async () => {

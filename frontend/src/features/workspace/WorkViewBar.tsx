@@ -28,7 +28,6 @@ export type WorkView = 'assigned' | 'unassigned' | 'sla_risk' | 'other';
 const COUNT_PAGE_SIZE = 1;
 const FIRST_PAGE = 1;
 const PENDING_COUNT = '…';
-const FAILED_COUNT = '–';
 const OTHERS_PANEL_ID = 'work-other-queues';
 /** Task queues shown as cards beside the ticket queues (ADR-0031). */
 const TASK_CARD_QUEUES: readonly TaskQueue[] = ['mine', 'team', 'overdue'];
@@ -40,7 +39,7 @@ interface CountState {
   isError: boolean;
 }
 
-const countText = ({ data, isError }: CountState) => (data ? String(data.totalCount) : isError ? FAILED_COUNT : PENDING_COUNT);
+
 
 interface ViewLinkProps {
   to: string;
@@ -50,7 +49,9 @@ interface ViewLinkProps {
 }
 
 function ViewLink({ to, label, count, isCurrent }: ViewLinkProps) {
-  return <Button href={to} label={label} variant={isCurrent ? 'primary' : 'secondary'} aria-current={isCurrent ? 'page' : undefined} endContent={<Badge label={countText(count)} />} />;
+  const { t } = useTranslation('tickets');
+  const text = count.data ? String(count.data.totalCount) : count.isError ? t('workspace.countUnknown') : PENDING_COUNT;
+  return <Button href={to} label={label} variant={isCurrent ? 'primary' : 'secondary'} aria-current={isCurrent ? 'page' : undefined} endContent={<Badge label={text} />} />;
 }
 
 export function WorkViewBar({ view }: { view: WorkView }) {

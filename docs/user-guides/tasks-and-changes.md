@@ -37,7 +37,7 @@ Görevi açınca **İşlemler** kartında yalnızca o anki durumda yapılabilece
 
 | İşlem | Ne yapar |
 |---|---|
-| **Üstlen** | Atanmamış görevi size atar. Aynı anda iki kişi üstlenirse yalnızca biri alır. |
+| **Üzerime al** | Atanmamış görevi size atar. Aynı anda iki kişi üstlenirse yalnızca biri alır. |
 | **Başla** | Görevi **İşlemde** durumuna alır. |
 | **Beklet** / **Devam et** | Görevi bir nedenle bekletir veya yeniden başlatır. |
 | **Tamamla** | **Sonuç notu** ister; görev **Tamamlandı** olur. |

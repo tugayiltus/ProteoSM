@@ -50,7 +50,7 @@ describe('TaskDetailPage', () => {
     expect(screen.queryByRole('textbox', { name: 'Not' })).not.toBeInTheDocument();
   });
 
-  it('shows an unassigned open task with Üstlen as the primary action and claims it', async () => {
+  it('shows an unassigned open task with Üzerime al as the primary action and claims it', async () => {
     let posted: unknown;
     mockApi(
       taskRoutes(TASK, {
@@ -65,10 +65,10 @@ describe('TaskDetailPage', () => {
     expect(await screen.findByRole('heading', { name: TASK.title })).toBeInTheDocument();
     expect(screen.getByText('Saha Destek')).toBeInTheDocument();
     expect(screen.getByText('Bağlı kayıt yok')).toBeInTheDocument();
-    for (const name of ['Üstlen', 'Başla', 'Beklet', 'Tamamla', 'Ata', 'Aktar', 'İptal et']) {
+    for (const name of ['Üzerime al', 'Başla', 'Beklet', 'Tamamla', 'Ata', 'Aktar', 'İptal et']) {
       expect(screen.getByRole('button', { name })).toBeInTheDocument();
     }
-    await user.click(screen.getByRole('button', { name: 'Üstlen' }));
+    await user.click(screen.getByRole('button', { name: 'Üzerime al' }));
     await waitFor(() => expect(posted).toEqual({ version: 7 }));
   });
 
@@ -82,18 +82,18 @@ describe('TaskDetailPage', () => {
       }) as never,
     );
     const { user } = renderRoute(`/tasks/${TASK.number}`);
-    await user.click(await screen.findByRole('button', { name: 'Üstlen' }));
+    await user.click(await screen.findByRole('button', { name: 'Üzerime al' }));
 
     // The next action then sends version 8; an old version would come back as 409.
     expect(await screen.findByText('Deniz Yıldız')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Üstlen' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Üzerime al' })).not.toBeInTheDocument();
   });
 
   it('locks the other actions while one is running', async () => {
     let answer: (value: unknown) => void = () => undefined;
     mockApi(taskRoutes(TASK, { [`POST ${BASE}/claim`]: () => new Promise((resolve) => (answer = resolve)) }) as never);
     const { user } = renderRoute(`/tasks/${TASK.number}`);
-    await user.click(await screen.findByRole('button', { name: 'Üstlen' }));
+    await user.click(await screen.findByRole('button', { name: 'Üzerime al' }));
 
     // A second action now would send the version the first one is about to change.
     await waitFor(() => expect(screen.getByRole('button', { name: 'Başla' })).toHaveAttribute('aria-disabled', 'true'));
@@ -180,7 +180,7 @@ describe('TaskDetailPage', () => {
     mockApi(taskRoutes({ ...TASK, canWork: false }) as never);
     renderRoute(`/tasks/${TASK.number}`);
     expect(await screen.findByRole('heading', { name: TASK.title })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Üstlen' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Üzerime al' })).not.toBeInTheDocument();
   });
 
   it('shows the change and phase on a change task and blocks Başla while the phase is not active', async () => {

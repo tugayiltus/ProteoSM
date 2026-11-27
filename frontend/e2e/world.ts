@@ -293,20 +293,26 @@ const FAST_WARNING_PERCENT = 50;
 /**
  * Makes new tickets reach the SLA warning within about two minutes at any hour: the calendar runs round the clock and every
  * ticket target is two minutes with a 50 % warning. The monitor job still decides when the warning is set (about one minute).
+ * The policy and the calendar are global, so the caller must run the returned function to put them back.
  */
-export async function makeTicketSlaWarnFast(admin: Session): Promise<void> {
+export async function makeTicketSlaWarnFast(admin: Session): Promise<() => Promise<void>> {
   const request = admin.context.request;
-  const calendar = (await (await request.get('/api/v1/admin/sla/calendar')).json()) as { version: number; timeZone: string };
+  const calendar = (await (await request.get('/api/v1/admin/sla/calendar')).json()) as { version: number; timeZone: string; hours: unknown[] };
+  const policy = (await (await request.get('/api/v1/admin/sla/policy')).json()) as { targets: Record<string, unknown>[]; pauseRules: unknown[] };
   await send(request, 'PUT', '/api/v1/admin/sla/calendar', {
     version: calendar.version,
     timeZone: calendar.timeZone,
     hours: ALL_WEEKDAYS.map((weekday) => ({ weekday, startsAt: ROUND_THE_CLOCK_START, endsAt: ROUND_THE_CLOCK_END })),
   });
-  const policy = (await (await request.get('/api/v1/admin/sla/policy')).json()) as { targets: Record<string, unknown>[]; pauseRules: unknown[] };
   await send(request, 'POST', '/api/v1/admin/sla/policy', {
     targets: policy.targets.map((target) => ({ ...target, targetMinutes: FAST_TARGET_MINUTES, warningPercent: FAST_WARNING_PERCENT })),
     pauseRules: policy.pauseRules,
   });
+  return async () => {
+    const current = (await (await request.get('/api/v1/admin/sla/calendar')).json()) as { version: number };
+    await send(request, 'PUT', '/api/v1/admin/sla/calendar', { version: current.version, timeZone: calendar.timeZone, hours: calendar.hours });
+    await send(request, 'POST', '/api/v1/admin/sla/policy', { targets: policy.targets, pauseRules: policy.pauseRules });
+  };
 }
 
 /** Opens a problem as the session's user and returns its number. */

@@ -1,6 +1,7 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { dayRelation } from '../../shared/lib/format';
 import { EMPLOYEE_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
 import { detailRoutes, INCIDENT } from '../../test/ticketData';
@@ -25,19 +26,55 @@ describe('ticket header', () => {
     expect(screen.queryByRole('button', { name: 'Yanıtla' })).not.toBeInTheDocument();
   });
 
-  it('offers "Yanıtla" once the ticket has an assignee and moves the focus to the reply field without losing the draft', async () => {
+  it('offers "Yanıtla" once the ticket has an assignee and moves the focus to the public reply field', async () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME }, ...detailRoutes({ ...WORKABLE, assigneeId: IT_ME.id, assigneeName: 'Can Demir' }) } as never);
     const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
 
-    const field = await screen.findByRole('textbox', { name: 'Mesajınız' });
-    await user.click(screen.getByRole('tab', { name: 'İç not' }));
-    await user.type(field, 'Taslak metin');
+    await user.type(await screen.findByRole('textbox', { name: 'Mesajınız' }), 'Genel taslak');
     await user.click(screen.getByRole('button', { name: 'Yanıtla' }));
 
     expect(screen.getByRole('tab', { name: 'Yanıt' })).toHaveAttribute('aria-selected', 'true');
     const focused = screen.getByRole('textbox', { name: 'Mesajınız' });
     expect(focused).toHaveFocus();
-    expect(focused).toHaveValue('Taslak metin');
+    expect(focused).toHaveValue('Genel taslak');
+  });
+
+  it('never turns an internal note draft into a public reply draft', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME }, ...detailRoutes({ ...WORKABLE, assigneeId: IT_ME.id, assigneeName: 'Can Demir' }) } as never);
+    const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
+
+    await screen.findByRole('textbox', { name: 'Mesajınız' });
+    await user.click(screen.getByRole('tab', { name: 'İç not' }));
+    await user.type(screen.getByRole('textbox', { name: 'Mesajınız' }), 'Gizli not');
+    await user.click(screen.getByRole('button', { name: 'Yanıtla' }));
+
+    expect(screen.getByRole('tab', { name: 'Yanıt' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('textbox', { name: 'Mesajınız' })).toHaveValue('');
+    expect(screen.getByRole('textbox', { name: 'Mesajınız' })).toHaveFocus();
+    await user.click(screen.getByRole('tab', { name: 'İç not' }));
+    expect(screen.getByRole('textbox', { name: 'Mesajınız' })).toHaveValue('Gizli not');
+  });
+
+  it('moves the keyboard focus to "Yanıtla" after a claim', async () => {
+    const base = `/api/v1/tickets/${INCIDENT.number}`;
+    const claimed = { ...WORKABLE, assigneeId: IT_ME.id, assigneeName: 'Can Demir', version: WORKABLE.version + 1 };
+    let isClaimed = false;
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: IT_ME },
+      ...detailRoutes(WORKABLE),
+      [`GET ${base}`]: () => ({ status: 200, body: isClaimed ? claimed : WORKABLE }),
+      [`POST ${base}/claim`]: () => {
+        isClaimed = true;
+        return { status: 200, body: claimed };
+      },
+    } as never);
+    const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
+
+    const claim = await screen.findByRole('button', { name: 'Üzerime al' });
+    claim.focus();
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Yanıtla' })).toHaveFocus());
   });
 
   it('gives the requester "Yanıtla" and no work action, and none on a closed ticket', async () => {
@@ -60,7 +97,7 @@ describe('ticket header', () => {
     renderRoute(`/tickets/${INCIDENT.number}`);
 
     const assets = await screen.findByRole('region', { name: 'Bağlı cihazlar' });
-    expect(within(assets).getByText('Bağlı cihaz yok.')).toBeInTheDocument();
+    expect(await within(assets).findByText('Bağlı cihaz yok.')).toBeInTheDocument();
     expect(within(assets).getByRole('button', { name: 'Cihaz bağla' })).toBeInTheDocument();
   });
 });
@@ -90,5 +127,14 @@ describe('currentSla', () => {
     expect(currentSla([stopped, { ...late, dueAt: null }])?.dueAt).toBeNull();
     expect(currentSla([stopped])).toBe(stopped);
     expect(currentSla([])).toBeNull();
+  });
+});
+
+describe('dayRelation', () => {
+  it('tells today and tomorrow in the display time zone, also across a month end', () => {
+    const now = new Date('2026-12-31T10:00:00Z');
+    expect(dayRelation('2026-12-31T20:00:00Z', now)).toBe('today');
+    expect(dayRelation('2027-01-01T08:00:00Z', now)).toBe('tomorrow');
+    expect(dayRelation('2027-01-02T08:00:00Z', now)).toBe('other');
   });
 });

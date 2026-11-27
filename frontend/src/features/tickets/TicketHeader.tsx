@@ -8,6 +8,7 @@ import { HStack } from '@astryxdesign/core/HStack';
 import { Icon } from '@astryxdesign/core/Icon';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { describeError } from '../../shared/api/errorMessage';
@@ -23,18 +24,6 @@ import { mainActionOf, useTicketBusy } from './ticketBusy';
 
 const META_SEPARATOR = ' · ';
 
-function ClaimButton({ ticket }: { ticket: TicketDetail }) {
-  const { t } = useTranslation('tickets');
-  const claim = useTicketAction(ticket);
-  const busy = useTicketBusy(ticket);
-  return (
-    <>
-      <Button label={t('actions.claim')} variant="primary" isDisabled={busy} isLoading={claim.isPending} onClick={() => claim.mutate({ kind: 'claim' })} />
-      {claim.error && <FormAlert message={describeError(claim.error)} />}
-    </>
-  );
-}
-
 export interface TicketHeaderProps {
   ticket: TicketDetail;
   backTo: string;
@@ -45,6 +34,18 @@ export interface TicketHeaderProps {
 export function TicketHeader({ ticket, backTo, sla, onReply }: TicketHeaderProps) {
   const { t } = useTranslation('tickets');
   const main = mainActionOf(ticket);
+  const claim = useTicketAction(ticket);
+  const busy = useTicketBusy(ticket);
+  const replyButton = useRef<HTMLButtonElement>(null);
+  const focusReplyButton = useRef(false);
+
+  // After a claim the claim button is gone; keyboard focus moves to its successor instead of falling to the page start.
+  useEffect(() => {
+    if (focusReplyButton.current && main === 'reply') {
+      replyButton.current?.focus();
+      focusReplyButton.current = false;
+    }
+  });
   return (
     <VStack gap={2}>
       <PageHeader
@@ -52,8 +53,18 @@ export function TicketHeader({ ticket, backTo, sla, onReply }: TicketHeaderProps
         titleOverride={ticket.subject}
         actions={
           <>
-            {main === 'claim' && <ClaimButton ticket={ticket} />}
-            {main === 'reply' && <Button label={t('actions.reply')} variant="primary" onClick={onReply} />}
+            {main === 'claim' && (
+              <Button
+                label={t('actions.claim')}
+                variant="primary"
+                isDisabled={busy}
+                isLoading={claim.isPending}
+                onClick={() => claim.mutate({ kind: 'claim' }, { onSuccess: () => {
+                    focusReplyButton.current = true;
+                  } })}
+              />
+            )}
+            {main === 'reply' && <Button ref={replyButton} label={t('actions.reply')} variant="primary" onClick={onReply} />}
             <Button label={t('detail.back')} variant="secondary" href={backTo} icon={<Icon icon={Icons.arrowLeft} />} />
           </>
         }
@@ -64,6 +75,7 @@ export function TicketHeader({ ticket, backTo, sla, onReply }: TicketHeaderProps
         <PriorityBadge priority={ticket.priority} />
         {ticket.holdReason && <Text type="supporting">{t(`holdReasons.${ticket.holdReason}`)}</Text>}
       </HStack>
+      <FormAlert message={claim.error ? describeError(claim.error) : null} />
       <TicketSlaLine load={sla} />
     </VStack>
   );

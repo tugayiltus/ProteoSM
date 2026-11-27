@@ -105,7 +105,8 @@ export function TicketLinks({ ticket, isRequester }: { ticket: TicketDetail; isR
   const linkedAssets = assets.data ?? [];
   const canLinkAsset = open && (ticket.canWork || isRequester);
   const canRelate = ticket.canWork && open && ticket.kind === 'incident';
-  const noAssets = linkedAssets.length === 0;
+  const hasAssets = linkedAssets.length > 0;
+  const noAssets = assets.isSuccess && !hasAssets;
   const noRelated = ticket.relatedTickets.length === 0;
   return (
     <Grid columns={CARD_COLUMNS} gap={4} align="start">
@@ -115,7 +116,7 @@ export function TicketLinks({ ticket, isRequester }: { ticket: TicketDetail; isR
         actions={canLinkAsset && <Button label={t('actions.linkAsset')} variant="secondary" onClick={() => setDialog('asset')} />}
       >
         <FormAlert message={unlink.error ? describeError(unlink.error) : null} />
-        {!noAssets && (
+        {hasAssets && (
           <List hasDividers density="compact" aria-label={t('detail.assets')}>
             {linkedAssets.map((asset) => (
               <ListItem

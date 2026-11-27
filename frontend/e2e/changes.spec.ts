@@ -42,7 +42,7 @@ async function workTask(session: Session, taskPath: string, note: string): Promi
   const { page } = session;
   await page.goto(taskPath);
   await expect(page).toHaveURL(TASK_URL);
-  await page.getByRole('button', { name: 'Üstlen' }).click();
+  await page.getByRole('button', { name: 'Üzerime al' }).click();
   await page.getByRole('button', { name: 'Başla' }).click();
   await expect(page.getByText('İşlemde').first()).toBeVisible();
   await page.getByRole('button', { name: 'Tamamla' }).click();

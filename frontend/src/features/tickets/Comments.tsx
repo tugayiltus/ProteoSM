@@ -85,7 +85,11 @@ export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: 
   const add = useAddComment();
   const [visibility, setVisibility] = useState<Visibility>('public');
   const panelId = useId();
-  const [body, setBody] = useState('');
+  // One draft per tab: a note typed as internal never turns into a public reply when the tab changes.
+  const [drafts, setDrafts] = useState<Record<Visibility, string>>({ public: '', internal: '' });
+  const body = drafts[visibility];
+  const setBody = (update: string | ((current: string) => string)) =>
+    setDrafts((current) => ({ ...current, [visibility]: typeof update === 'function' ? update(current[visibility]) : update }));
   const [files, setFiles] = useState<File[]>([]);
   const [formKey, setFormKey] = useState(0);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -103,7 +107,7 @@ export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: 
       { number: ticket.number, body, visibility, files },
       {
         onSuccess: () => {
-          setBody('');
+          setDrafts((current) => ({ ...current, [visibility]: '' }));
           setFiles([]);
           setFormKey((key) => key + 1);
         },

@@ -61,7 +61,7 @@ export function TicketSlaLine({ load }: { load: SlaLoad }) {
     return <Text type="supporting">{t('sla.none')}</Text>;
   }
   const state = slaState(current);
-  const metric = t(`sla.headerMetrics.${current.metric as 'resolution'}`);
+  const metric = t(`sla.headerMetrics.${current.metric}`);
   const parts = [`${metric} ${t(`sla.headerStates.${state}`)}`];
   if (current.dueAt !== null && current.result === null) {
     parts.push(t('sla.dueLine', { date: formatDue(current.dueAt) }));

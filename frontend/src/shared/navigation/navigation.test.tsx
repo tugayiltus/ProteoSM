@@ -85,7 +85,7 @@ describe('buildCrumbs', () => {
   it('goes back to the filtered queue a ticket was opened from', () => {
     const from = parseReturn({ from: '/workspace/queue?view=team&priority=p1' });
     const crumbs = buildCrumbs({ routeId: 'ticketDetail', params: { number: 'INC-1' }, labels: { ticketDetail: 'INC-1' }, from, t });
-    expect(labels(crumbs)).toEqual(['Ana sayfa', 'İş listem', 'Kuyruk', 'INC-1']);
+    expect(labels(crumbs)).toEqual(['Ana sayfa', 'İş listem', 'Kuyruk görünümü', 'INC-1']);
     expect(crumbs[2]?.href).toBe('/workspace/queue?view=team&priority=p1');
   });
 

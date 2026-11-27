@@ -40,7 +40,7 @@ Kaydı açınca sağda **İşlemler** kartı görünür. Kartta yalnızca kaydı
 
 | İşlem | Ne yapar |
 |---|---|
-| **Üstlen** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür. |
+| **Üzerime al** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür. |
 | **Başla** | **Açık** kaydı **İşlemde** yapar. |
 | **Beklet** | Kaydı **Beklemede** yapar. **Bekleme nedeni** seçin; **Diğer** seçerseniz **Not** yazmak zorunludur. |
 | **Devam et** | Bekleyen kaydı tekrar çalışmaya alır. Yönetici onayı bekleyen taleplerde görünmez; onları onay açar. |

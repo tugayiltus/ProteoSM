@@ -57,7 +57,7 @@ describe('ticket detail layout', () => {
     const { user, router } = renderRoute('/workspace/queue?queue=team&priority=p1');
     await user.click((await screen.findAllByRole('link', { name: new RegExp(`Aç.*${LIST_ITEM.number}`) }))[0] as HTMLElement);
     await waitFor(() => expect(router.state.location.pathname).toBe(`/tickets/${INCIDENT.number}`));
-    const queueCrumb = await trail().findByRole('link', { name: 'Kuyruk' });
+    const queueCrumb = await trail().findByRole('link', { name: 'Kuyruk görünümü' });
     expect(queueCrumb).toHaveAttribute('href', '/workspace/queue?queue=team&priority=p1');
     expect(trail().getByRole('link', { name: 'İş listem' })).toHaveAttribute('href', '/workspace');
   });

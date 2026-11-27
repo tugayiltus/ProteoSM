@@ -31,7 +31,7 @@ test('task: IT hands work from an incident to another team, which claims, starts
   await expect(db.page).toHaveURL(/\/tasks\?queue=team/);
   await db.page.goto(taskPath);
   await expect(db.page.getByText('Bağlı kayıt: erişiminiz yok')).toBeVisible();
-  await db.page.getByRole('button', { name: 'Üstlen' }).click();
+  await db.page.getByRole('button', { name: 'Üzerime al' }).click();
   await db.page.getByRole('button', { name: 'Başla' }).click();
   await expect(db.page.getByText('İşlemde').first()).toBeVisible();
   await db.page.getByRole('button', { name: 'Tamamla' }).click();
@@ -52,7 +52,7 @@ test('task: IT hands work from an incident to another team, which claims, starts
   const tasks = it.page.getByRole('region', { name: 'Görevler' });
   await expect(tasks.getByText('Tamamlandı')).toBeVisible();
   // The incident is untouched: still open and unassigned, so it can still be claimed.
-  await expect(it.page.getByRole('button', { name: 'Üstlen' })).toBeVisible();
+  await expect(it.page.getByRole('button', { name: 'Üzerime al' })).toBeVisible();
   await expectNoHorizontalScroll(it.page);
 
   await Promise.all([admin.context.close(), employee.context.close(), it.context.close(), db.context.close()]);

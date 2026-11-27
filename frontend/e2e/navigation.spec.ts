@@ -61,7 +61,7 @@ test('breadcrumbs lead back from an article edit and from a ticket to its filter
   await it.page.goto('/workspace/queue?queue=team&status=open');
   await it.page.getByRole('link', { name: new RegExp(`Aç.*${number ?? ''}`) }).first().click();
   await expect(it.page).toHaveURL(new RegExp(`/tickets/${number ?? ''}$`));
-  await trail(it.page).getByRole('link', { name: 'Kuyruk' }).click();
+  await trail(it.page).getByRole('link', { name: 'Kuyruk görünümü' }).click();
   await expect(it.page).toHaveURL(/\/workspace\/queue\?queue=team&status=open$/);
 });
 
