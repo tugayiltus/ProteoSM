@@ -75,7 +75,7 @@ public sealed class ProblemSlaPersistenceTests(PostgresDatabase database) : IAsy
         await using var read = database.CreateDbContext();
         var loaded = await read.ProblemSlaTimers.SingleAsync(t => t.ProblemId == _problem.Id, Ct);
         Assert.Equal((timer.DueAt, timer.WarnAt, timer.RunningSince, timer.ElapsedSeconds), (loaded.DueAt, loaded.WarnAt, loaded.RunningSince, loaded.ElapsedSeconds));
-        Assert.NotEqual(0u, loaded.Version);
+        Assert.Equal(timer.ProblemId, loaded.ProblemId);
     }
 
     [Fact]

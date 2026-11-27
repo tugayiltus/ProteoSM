@@ -15,11 +15,11 @@ Approach B: a separate, simple problem timer. The ticket SLA is not changed.
 - Table `problem_sla_targets`: one row per impact (`High`, `Medium`, `Low`) with business minutes and a warning percent. Admins edit them in the "Problem hedefleri" section of `/admin/sla/policy` through `GET|PUT /api/v1/admin/sla/problem-targets` (one save with `version`, audited). A change applies only to problems created afterwards and to later impact changes.
 - Table `problem_sla_timers`: one timer per problem. `CreateProblemHandler` creates it in the same save and copies the current target, so a running timer keeps its own target. It stops at known error or at resolve from open or investigating (`met` or `breached`), and on cancel (`cancelled`, not counted in compliance). An impact change re-targets a running timer; a calendar or holiday change re-plans it like a ticket instance.
 - The Worker `SlaMonitor` runs a second pass over open problem timers. A conditional `ExecuteUpdate` on "not yet warned/breached" claims each timer, so two Workers never send twice.
-- Six email events: `problem_created`, `problem_assigned`, `problem_sla_warning`, `problem_sla_breached`, `problem_known_error`, `problem_resolved`; and two requester events, `ticket_cause_found` and `ticket_cause_resolved`. They go through the outbox, with recipients resolved at dispatch and the actor excluded. The requester email never carries the problem number, title, root cause, workaround or link.
+- Six email events: `problem_created`, `problem_assigned`, `problem_sla_warning`, `problem_sla_breached`, `problem_known_error`, `problem_resolved`; and two requester events, `ticket_cause_found` and `ticket_cause_resolved`. They go through the outbox, with recipients resolved at dispatch. The two SLA events have no actor. The `ticket_cause_*` events deliberately do not exclude the actor. The other problem events exclude the actor. The requester email never carries the problem number, title, root cause, workaround or link.
 - The SLA badge shows on the problem detail and list. The problem report has the metric `known_error_sla_compliance`.
 - No timer is created for problems that exist before the deploy (no backfill).
 
-Commits on `feature/problem-sla`: `66b239b`, `4ea9bc6`, `629d93e`, `654bd41`, `7c2aaf5`, `63c2474`, `eec54a3`, `2c77dcd`, `1b10d81`.
+Commits on `feature/problem-sla`: `66b239b`, `4ea9bc6`, `629d93e`, `654bd41`, `7c2aaf5`, `63c2474`, `eec54a3`, `2c77dcd`, `1b10d81`, `b687672`.
 
 Related: ADR-0014, ADR-0015, ADR-0016, ADR-0018, ADR-0034.
 

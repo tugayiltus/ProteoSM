@@ -133,6 +133,26 @@ public sealed class ProblemSlaMonitorTests(FakeClockApiFactory factory) : IClass
     }
 
     [Fact]
+    public async Task Monitor_mark_between_load_and_user_stop_does_not_fail_the_stop()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        var problem = await ProblemWorld.CreateForTeamAsync(world.Desk, world.ServiceDesk.Id);
+        var timer = await TimerAsync(problem);
+
+        // The user's action loads the timer first; the monitor then marks the warning; the stop saves last.
+        await using var userScope = factory.Database.CreateDbContext();
+        var tracked = await userScope.ProblemSlaTimers.SingleAsync(t => t.ProblemId == IdOf(problem), Ct);
+        factory.Clock.SetUtcNow(timer.WarnAt + PastMoment);
+        await MonitorAsync();
+        Assert.NotNull((await TimerAsync(problem)).WarnedAt);
+
+        tracked.Stop(factory.Clock.GetUtcNow());
+        await userScope.SaveChangesAsync(Ct);
+
+        Assert.NotNull((await TimerAsync(problem)).StoppedAt);
+    }
+
+    [Fact]
     public async Task Warn_then_breach_write_two_events()
     {
         var world = await TicketWorld.CreateAsync(factory);

@@ -11,7 +11,7 @@ namespace Proteone.Application.Sla;
 /// passed and records the matching event and notification. Each mark is a conditional <c>ExecuteUpdateAsync</c>
 /// (still unmarked, running, not stopped), so of several concurrent runs exactly one wins a row and only the winner
 /// writes the <see cref="SlaEvent"/> and outbox rows, in the same (per-instance) transaction as the update. It writes only the
-/// warning/breach columns, never the rest of the instance, so it cannot fail a user's ticket action.
+/// warning/breach columns, never the rest of the instance, so it cannot fail a user's ticket or problem action (problem timers follow the same rule).
 /// A breach on an instance never warned also warns first (the warning moment is never later than the due moment).
 /// </summary>
 public sealed class MonitorSlaHandler(IAppDbContext db, INotificationOutbox outbox, TimeProvider clock)

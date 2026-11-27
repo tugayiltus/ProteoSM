@@ -13,6 +13,10 @@ internal sealed class ProblemSlaTimerConfiguration : IEntityTypeConfiguration<Pr
         builder.ToTable("problem_sla_timers", table =>
             table.HasCheckConstraint("ck_problem_sla_timers_result", SnakeCaseEnumConversion<SlaResult>.CheckSql("result")));
         builder.ConfigureEntityBase();
+
+        // No concurrency token, like ticket timers: the monitor writes only the warning/breach columns through a
+        // conditional update, so it and a user's stop or re-target must not fail each other with a 409.
+        builder.Ignore(t => t.Version);
         builder.Ignore(t => t.IsStopped);
         builder.Property(t => t.Result).HasEnumName();
         builder.Property(t => t.TargetMinutes).IsRequired();
