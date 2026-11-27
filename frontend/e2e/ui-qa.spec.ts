@@ -105,7 +105,7 @@ test('every screen in light and dark mode', async ({ browser }, info) => {
     '/assets', assetUrl, '/assets/mine', '/assets/import', '/kb', `/kb/${article.id}`, `/kb/${article.id}/edit`, '/kb/new',
     '/changes', `/changes/${changeNumber}`, `/tasks/${changeTask}`, '/changes/calendar', '/releases', '/licences', '/software', '/software/mine', '/admin/monitoring', '/reports/licences', '/reports', '/reports/incidents', '/reports/changes', '/reports/tasks', '/reports/exports', '/profile', '/change-password',
     '/admin', '/admin/users', '/admin/departments', '/admin/teams', '/admin/locations', '/admin/categories', '/admin/request-types',
-    '/admin/brands', '/admin/models', '/admin/sla/policy', '/admin/sla/calendar', '/admin/email-templates', '/admin/email-deliveries',
+    '/admin/brands', '/admin/models', '/admin/sla/policy', '/admin/sla/calendar', '/admin/email-templates', '/admin/email-deliveries', '/admin/email-sending',
     '/admin/audit', '/admin/system', '/admin/settings', '/admin/announcements', '/admin/login-method', '/admin/services', '/tasks', '/problems', '/services', '/nope-404',
   ];
   const dir = path.join(OUT, info.project.name);

@@ -284,6 +284,7 @@ const HEADER_BODY_SEPARATOR = /\r?\n\r?\n/;
 const HEADER_FOLD = /\r?\n[ \t]+/g;
 
 export interface PickedUpEmail {
+  from: string;
   to: string;
   subject: string;
   body: string;
@@ -321,8 +322,8 @@ function parseEml(raw: string): PickedUpEmail {
     encoding === 'base64' ? Buffer.from(rawBody.replace(/\s+/g, ''), 'base64').toString('utf8')
     : encoding === 'quoted-printable' ? decodeQuotedPrintable(rawBody)
     : rawBody;
-  const address = /<([^>]+)>/.exec(header('To'))?.[1] ?? header('To').trim();
-  return { to: address.toLowerCase(), subject: decodeEncodedWords(header('Subject')), body };
+  const address = (name: string) => (/<([^>]+)>/.exec(header(name))?.[1] ?? header(name).trim()).toLowerCase();
+  return { from: address('From'), to: address('To'), subject: decodeEncodedWords(header('Subject')), body };
 }
 
 /** Polls the Pickup folder (set by tools/e2e.sh) until a message to `to` whose body contains `bodyText` arrives. */
