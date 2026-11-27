@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261126154704_AddEmailSettings";
+    public override string LastMigrationId => "20261127143618_ProblemSla";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -2539,6 +2539,131 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.ToTable("problem_events", t =>
                     {
                         t.HasCheckConstraint("ck_problem_events_kind", "kind IN ('created', 'updated', 'started', 'known_error', 'resolved', 'cancelled', 'commented', 'transferred', 'owner_changed', 'ticket_linked', 'ticket_unlinked', 'change_linked', 'change_unlinked', 'article_created', 'service_set', 'service_cleared')");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Problems.ProblemSlaTarget", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Impact")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("impact");
+
+                b.Property<int>("TargetMinutes")
+                    .HasColumnType("integer")
+                    .HasColumnName("target_minutes");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.Property<int>("WarningPercent")
+                    .HasColumnType("integer")
+                    .HasColumnName("warning_percent");
+
+                b.HasKey("Id")
+                    .HasName("pk_problem_sla_targets");
+
+                b.HasIndex("Impact")
+                    .IsUnique()
+                    .HasDatabaseName("ux_problem_sla_targets_impact");
+
+                b.ToTable("problem_sla_targets", t =>
+                    {
+                        t.HasCheckConstraint("ck_problem_sla_targets_impact", "impact IN ('high', 'medium', 'low')");
+
+                        t.HasCheckConstraint("ck_problem_sla_targets_target_minutes", "target_minutes BETWEEN 1 AND 527040");
+
+                        t.HasCheckConstraint("ck_problem_sla_targets_warning_percent", "warning_percent BETWEEN 1 AND 99");
+                    });
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Problems.ProblemSlaTimer", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<DateTimeOffset?>("BreachedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("breached_at");
+
+                b.Property<DateTimeOffset>("DueAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("due_at");
+
+                b.Property<long>("ElapsedSeconds")
+                    .HasColumnType("bigint")
+                    .HasColumnName("elapsed_seconds");
+
+                b.Property<Guid>("ProblemId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("problem_id");
+
+                b.Property<string>("Result")
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("result");
+
+                b.Property<DateTimeOffset>("RunningSince")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("running_since");
+
+                b.Property<DateTimeOffset>("StartedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("started_at");
+
+                b.Property<DateTimeOffset?>("StoppedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("stopped_at");
+
+                b.Property<int>("TargetMinutes")
+                    .HasColumnType("integer")
+                    .HasColumnName("target_minutes");
+
+                b.Property<uint>("Version")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("xid")
+                    .HasColumnName("xmin");
+
+                b.Property<DateTimeOffset>("WarnAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("warn_at");
+
+                b.Property<DateTimeOffset?>("WarnedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("warned_at");
+
+                b.Property<int>("WarningPercent")
+                    .HasColumnType("integer")
+                    .HasColumnName("warning_percent");
+
+                b.HasKey("Id")
+                    .HasName("pk_problem_sla_timers");
+
+                b.HasIndex("DueAt")
+                    .HasDatabaseName("ix_problem_sla_timers_due_open")
+                    .HasFilter("stopped_at IS NULL");
+
+                b.HasIndex("ProblemId")
+                    .IsUnique()
+                    .HasDatabaseName("ux_problem_sla_timers_problem_id");
+
+                b.HasIndex("WarnAt")
+                    .HasDatabaseName("ix_problem_sla_timers_warn_open")
+                    .HasFilter("stopped_at IS NULL");
+
+                b.ToTable("problem_sla_timers", t =>
+                    {
+                        t.HasCheckConstraint("ck_problem_sla_timers_result", "result IN ('met', 'breached', 'cancelled')");
                     });
             });
 
@@ -5135,6 +5260,16 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired()
                     .HasConstraintName("fk_problem_events_problems_problem_id");
+            });
+
+        modelBuilder.Entity("Proteone.Domain.Problems.ProblemSlaTimer", b =>
+            {
+                b.HasOne("Proteone.Domain.Problems.Problem", null)
+                    .WithMany()
+                    .HasForeignKey("ProblemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_problem_sla_timers_problems_problem_id");
             });
 
         modelBuilder.Entity("Proteone.Domain.Problems.ProblemTicketLink", b =>

@@ -62,6 +62,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ProblemEvent> ProblemEvents => Set<ProblemEvent>();
     public DbSet<ProblemTicketLink> ProblemTicketLinks => Set<ProblemTicketLink>();
     public DbSet<ProblemChangeLink> ProblemChangeLinks => Set<ProblemChangeLink>();
+    public DbSet<ProblemSlaTarget> ProblemSlaTargets => Set<ProblemSlaTarget>();
+    public DbSet<ProblemSlaTimer> ProblemSlaTimers => Set<ProblemSlaTimer>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceAsset> ServiceAssets => Set<ServiceAsset>();
     public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();

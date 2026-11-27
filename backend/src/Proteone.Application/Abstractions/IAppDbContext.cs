@@ -61,6 +61,8 @@ public interface IAppDbContext
     DbSet<ProblemEvent> ProblemEvents { get; }
     DbSet<ProblemTicketLink> ProblemTicketLinks { get; }
     DbSet<ProblemChangeLink> ProblemChangeLinks { get; }
+    DbSet<ProblemSlaTarget> ProblemSlaTargets { get; }
+    DbSet<ProblemSlaTimer> ProblemSlaTimers { get; }
     DbSet<Service> Services { get; }
     DbSet<ServiceAsset> ServiceAssets { get; }
     DbSet<SystemSettings> SystemSettings { get; }
