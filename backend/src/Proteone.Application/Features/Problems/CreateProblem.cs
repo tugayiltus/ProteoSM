@@ -34,7 +34,7 @@ internal sealed class CreateProblemValidator : AbstractValidator<CreateProblemCo
 /// </summary>
 public sealed class CreateProblemHandler(
     IAppDbContext db, IValidator<CreateProblemCommand> validator, ITicketNumberGenerator numbers, ProblemScope scope, ProblemWork work,
-    TicketScope tickets, ProblemSlaTracker slaTracker, IAuditLog audit, ICompanyClock companyClock, TimeProvider clock)
+    TicketScope tickets, ProblemSlaTracker slaTracker, INotificationOutbox outbox, IAuditLog audit, ICompanyClock companyClock, TimeProvider clock)
 {
     public async Task<ProblemDetail> HandleAsync(CreateProblemCommand command, CancellationToken cancellationToken)
     {
@@ -66,6 +66,7 @@ public sealed class CreateProblemHandler(
             audit.Record(
                 AuditActions.ProblemCreated, AuditEntityTypes.Problem, problem.Id,
                 newValues: new { problem.Number, problem.OwnerTeamId, problem.OwnerId, problem.Impact });
+            ProblemNotifications.Created(outbox, problem);
             if (incident is null)
             {
                 await db.SaveChangesAsync(ct);

@@ -24,7 +24,7 @@ internal sealed class TransferProblemValidator : AbstractValidator<TransferProbl
 /// Moves the problem to another active team with a reason; the new team picks its own owner, so the owner is cleared.
 /// Moving it to the team that already owns it is refused, so the owner is not cleared by accident.
 /// </summary>
-public sealed class TransferProblemHandler(IAppDbContext db, IValidator<TransferProblemCommand> validator, ProblemWork work, IAuditLog audit)
+public sealed class TransferProblemHandler(IAppDbContext db, IValidator<TransferProblemCommand> validator, ProblemWork work, INotificationOutbox outbox, IAuditLog audit)
 {
     public async Task<ProblemDetail> HandleAsync(TransferProblemCommand command, CancellationToken cancellationToken)
     {
@@ -41,12 +41,13 @@ public sealed class TransferProblemHandler(IAppDbContext db, IValidator<Transfer
             problem.Transfer(command.TeamId, now);
             ProblemHistory.Record(db, problem, ProblemEventKind.Transferred, viewer.UserId, now, new { command.TeamId, reason = command.Reason.Trim() });
             audit.Record(AuditActions.ProblemTransferred, AuditEntityTypes.Problem, problem.Id, before, new { command.TeamId, Reason = command.Reason.Trim() });
+            ProblemNotifications.Assigned(outbox, problem, ownerId: null);
         }, cancellationToken);
     }
 }
 
 /// <summary>Sets or clears the owner inside the owner team.</summary>
-public sealed class SetProblemOwnerHandler(IAppDbContext db, ProblemWork work, IAuditLog audit)
+public sealed class SetProblemOwnerHandler(IAppDbContext db, ProblemWork work, INotificationOutbox outbox, IAuditLog audit)
 {
     public Task<ProblemDetail> HandleAsync(SetProblemOwnerCommand command, CancellationToken cancellationToken) =>
         work.RunAsync(command.Number, command.Version, async (problem, viewer, now) =>
@@ -60,5 +61,10 @@ public sealed class SetProblemOwnerHandler(IAppDbContext db, ProblemWork work, I
             problem.SetOwner(command.OwnerId, now);
             ProblemHistory.Record(db, problem, ProblemEventKind.OwnerChanged, viewer.UserId, now, new { command.OwnerId });
             audit.Record(AuditActions.ProblemOwnerChanged, AuditEntityTypes.Problem, problem.Id, new { OwnerId = before }, new { command.OwnerId });
+            // Only a new, different owner is told; clearing the owner or setting the same one is silent.
+            if (command.OwnerId is { } newOwner && newOwner != before)
+            {
+                ProblemNotifications.Assigned(outbox, problem, newOwner);
+            }
         }, cancellationToken);
 }

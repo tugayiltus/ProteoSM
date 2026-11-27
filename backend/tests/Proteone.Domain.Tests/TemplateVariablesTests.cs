@@ -47,10 +47,52 @@ public sealed class TemplateVariablesTests
             var allowed = TemplateVariables.AllowedFor(eventType);
             Assert.DoesNotContain(TemplateVariables.SlaMetric, allowed);
             // A problem timer has one target, so its events carry the due time but no metric.
-            if (eventType is not (NotificationEventTypes.ProblemSlaWarning or NotificationEventTypes.ProblemSlaBreached))
+            if (!ProblemSlaEvents.Contains(eventType))
             {
                 Assert.DoesNotContain(TemplateVariables.DueAt, allowed);
             }
+        }
+    }
+
+    private static readonly HashSet<string> ProblemSlaEvents = new(StringComparer.Ordinal)
+    {
+        NotificationEventTypes.ProblemSlaWarning, NotificationEventTypes.ProblemSlaBreached,
+    };
+
+    private static readonly string[] ProblemEvents =
+    [
+        NotificationEventTypes.ProblemCreated, NotificationEventTypes.ProblemAssigned,
+        NotificationEventTypes.ProblemKnownError, NotificationEventTypes.ProblemResolved,
+    ];
+
+    private static readonly string[] TicketCauseEvents = [NotificationEventTypes.TicketCauseFound, NotificationEventTypes.TicketCauseResolved];
+
+    [Fact]
+    public void Problem_events_allow_the_problem_set_and_due_at_only_for_the_sla_events()
+    {
+        foreach (var eventType in ProblemEvents)
+        {
+            var allowed = TemplateVariables.AllowedFor(eventType);
+            Assert.Contains(TemplateVariables.ProblemNumber, allowed);
+            Assert.Contains(TemplateVariables.ProblemUrl, allowed);
+            Assert.Contains(TemplateVariables.Impact, allowed);
+            Assert.DoesNotContain(TemplateVariables.DueAt, allowed);
+        }
+
+        Assert.Contains(TemplateVariables.DueAt, TemplateVariables.AllowedFor(NotificationEventTypes.ProblemSlaWarning));
+    }
+
+    [Fact]
+    public void Ticket_cause_events_allow_nothing_from_the_problem()
+    {
+        foreach (var eventType in TicketCauseEvents)
+        {
+            var allowed = TemplateVariables.AllowedFor(eventType);
+            Assert.Contains(TemplateVariables.TicketNumber, allowed);
+            Assert.DoesNotContain(TemplateVariables.ProblemNumber, allowed);
+            Assert.DoesNotContain(TemplateVariables.ProblemUrl, allowed);
+            Assert.DoesNotContain(TemplateVariables.Impact, allowed);
+            Assert.DoesNotContain(TemplateVariables.TeamName, allowed);
         }
     }
 

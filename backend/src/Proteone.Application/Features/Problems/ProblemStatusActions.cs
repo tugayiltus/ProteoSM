@@ -1,6 +1,7 @@
 using FluentValidation;
 using Proteone.Application.Abstractions;
 using Proteone.Domain.Audit;
+using Proteone.Domain.Notifications;
 using Proteone.Domain.Problems;
 
 namespace Proteone.Application.Features.Problems;
@@ -46,7 +47,7 @@ public sealed class StartProblemHandler(IAppDbContext db, ProblemWork work, IAud
 }
 
 /// <summary>Needs both a root cause and a workaround already saved on the problem.</summary>
-public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
+public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, ProblemSlaTracker slaTracker, INotificationOutbox outbox, IAuditLog audit)
 {
     public Task<ProblemDetail> HandleAsync(MarkKnownErrorCommand command, CancellationToken cancellationToken) =>
         work.RunStateChangeAsync(command.Number, command.Version, async (problem, viewer, now) =>
@@ -55,10 +56,13 @@ public sealed class MarkKnownErrorHandler(IAppDbContext db, ProblemWork work, Pr
             problem.MarkKnownError(now);
             ProblemStatusChange.Record(db, audit, problem, before, ProblemEventKind.KnownError, viewer.UserId, now);
             await slaTracker.StopAsync(problem.Id, now, cancellationToken);
+            await ProblemNotifications.StatusChangedAsync(
+                db, outbox, problem, NotificationEventTypes.ProblemKnownError, NotificationEventTypes.TicketCauseFound, cancellationToken);
         }, cancellationToken);
 }
 
-public sealed class ResolveProblemHandler(IAppDbContext db, IValidator<ResolveProblemCommand> validator, ProblemWork work, ProblemSlaTracker slaTracker, IAuditLog audit)
+public sealed class ResolveProblemHandler(
+    IAppDbContext db, IValidator<ResolveProblemCommand> validator, ProblemWork work, ProblemSlaTracker slaTracker, INotificationOutbox outbox, IAuditLog audit)
 {
     public async Task<ProblemDetail> HandleAsync(ResolveProblemCommand command, CancellationToken cancellationToken)
     {
@@ -70,6 +74,8 @@ public sealed class ResolveProblemHandler(IAppDbContext db, IValidator<ResolvePr
             ProblemStatusChange.Record(db, audit, problem, before, ProblemEventKind.Resolved, viewer.UserId, now, new { resolution = problem.Resolution });
             // A no-op after a known error: that stop already fixed the result.
             await slaTracker.StopAsync(problem.Id, now, cancellationToken);
+            await ProblemNotifications.StatusChangedAsync(
+                db, outbox, problem, NotificationEventTypes.ProblemResolved, NotificationEventTypes.TicketCauseResolved, cancellationToken);
         }, cancellationToken);
     }
 }

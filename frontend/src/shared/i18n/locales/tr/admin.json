@@ -436,6 +436,12 @@
     "password_reset": "Şifre sıfırlama",
     "problem_sla_warning": "Problem SLA uyarısı",
     "problem_sla_breached": "Problem SLA ihlali",
+    "problem_created": "Problem açıldı",
+    "problem_assigned": "Problem atandı",
+    "problem_known_error": "Problem bilinen hata oldu",
+    "problem_resolved": "Problem çözüldü",
+    "ticket_cause_found": "Kaydın nedeni bulundu",
+    "ticket_cause_resolved": "Kaydın sorunu giderildi",
     "licence_expiring": "Lisans süresi bitiyor"
   },
   "categories": {

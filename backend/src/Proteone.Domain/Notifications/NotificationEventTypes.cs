@@ -20,6 +20,12 @@ public static class NotificationEventTypes
     public const string SlaBreached = "sla_breached";
     public const string ProblemSlaWarning = "problem_sla_warning";
     public const string ProblemSlaBreached = "problem_sla_breached";
+    public const string ProblemCreated = "problem_created";
+    public const string ProblemAssigned = "problem_assigned";
+    public const string ProblemKnownError = "problem_known_error";
+    public const string ProblemResolved = "problem_resolved";
+    public const string TicketCauseFound = "ticket_cause_found";
+    public const string TicketCauseResolved = "ticket_cause_resolved";
     public const string LicenceExpiring = "licence_expiring";
     public const string AccountActivation = "account_activation";
     public const string PasswordReset = "password_reset";

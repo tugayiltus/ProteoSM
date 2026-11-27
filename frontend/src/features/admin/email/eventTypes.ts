@@ -10,6 +10,12 @@ export const EMAIL_EVENT_TYPES = [
   'sla_breached',
   'problem_sla_warning',
   'problem_sla_breached',
+  'problem_created',
+  'problem_assigned',
+  'problem_known_error',
+  'problem_resolved',
+  'ticket_cause_found',
+  'ticket_cause_resolved',
   'account_activation',
   'password_reset',
 ] as const;

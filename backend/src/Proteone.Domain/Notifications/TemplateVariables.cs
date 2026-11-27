@@ -69,8 +69,11 @@ public static class TemplateVariables
 
     private static readonly IReadOnlySet<string> ProblemSet = new HashSet<string>(StringComparer.Ordinal)
     {
-        ProblemNumber, Subject, Status, Impact, TeamName, ProblemUrl, RecipientName, DueAt,
+        ProblemNumber, Subject, Status, Impact, TeamName, ProblemUrl, RecipientName,
     };
+
+    /// <summary>A problem timer has one target, so its SLA events carry the due time but no metric.</summary>
+    private static readonly IReadOnlySet<string> ProblemSlaSet = Union(ProblemSet, DueAt);
 
     private static readonly IReadOnlySet<string> AccountSet = new HashSet<string>(StringComparer.Ordinal)
     {
@@ -91,8 +94,15 @@ public static class TemplateVariables
         [NotificationEventTypes.TicketCompleted] = TicketCompletedSet,
         [NotificationEventTypes.SlaWarning] = SlaSet,
         [NotificationEventTypes.SlaBreached] = SlaSet,
-        [NotificationEventTypes.ProblemSlaWarning] = ProblemSet,
-        [NotificationEventTypes.ProblemSlaBreached] = ProblemSet,
+        [NotificationEventTypes.ProblemSlaWarning] = ProblemSlaSet,
+        [NotificationEventTypes.ProblemSlaBreached] = ProblemSlaSet,
+        [NotificationEventTypes.ProblemCreated] = ProblemSet,
+        [NotificationEventTypes.ProblemAssigned] = ProblemSet,
+        [NotificationEventTypes.ProblemKnownError] = ProblemSet,
+        [NotificationEventTypes.ProblemResolved] = ProblemSet,
+        // The requester of a linked incident must learn nothing about the problem itself (ADR-0034), so only ticket data.
+        [NotificationEventTypes.TicketCauseFound] = TicketCommon,
+        [NotificationEventTypes.TicketCauseResolved] = TicketCommon,
         [NotificationEventTypes.LicenceExpiring] = LicenceSet,
         [NotificationEventTypes.AccountActivation] = AccountSet,
         [NotificationEventTypes.PasswordReset] = AccountSet,

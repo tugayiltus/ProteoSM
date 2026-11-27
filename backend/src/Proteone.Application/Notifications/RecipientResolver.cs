@@ -24,6 +24,8 @@ public sealed class RecipientResolver(IAppDbContext db)
     {
         NotificationEventTypes.TicketAssigned, NotificationEventTypes.PublicReply, NotificationEventTypes.TaskAssigned,
         NotificationEventTypes.ChangeBackoutStarted, NotificationEventTypes.ChangeApprovalDecided,
+        NotificationEventTypes.ProblemCreated, NotificationEventTypes.ProblemAssigned,
+        NotificationEventTypes.ProblemKnownError, NotificationEventTypes.ProblemResolved,
     };
 
     public async Task<IReadOnlyList<Recipient>> ResolveAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
@@ -82,6 +84,22 @@ public sealed class RecipientResolver(IAppDbContext db)
             case NotificationEventTypes.ProblemSlaWarning:
             case NotificationEventTypes.ProblemSlaBreached:
                 return await ProblemOwnerOrTeamIdsAsync(outboxEvent, cancellationToken);
+
+            case NotificationEventTypes.ProblemCreated:
+                // The owner given at creation (the event's user) is told by problem_assigned instead.
+                return (await ProblemTeamIdsAsync(outboxEvent, cancellationToken)).Where(id => id != outboxEvent.UserId).ToList();
+
+            case NotificationEventTypes.ProblemAssigned:
+                return outboxEvent.UserId is { } newOwner ? [newOwner] : await ProblemTeamIdsAsync(outboxEvent, cancellationToken);
+
+            case NotificationEventTypes.ProblemKnownError:
+            case NotificationEventTypes.ProblemResolved:
+                return await LinkedIncidentWorkerIdsAsync(outboxEvent, cancellationToken);
+
+            case NotificationEventTypes.TicketCauseFound:
+            case NotificationEventTypes.TicketCauseResolved:
+                // A closed incident needs no news about its cause.
+                return IsOpen(ticket!.Status) ? [ticket.RequesterId] : [];
 
             case NotificationEventTypes.TaskAssigned:
                 return outboxEvent.UserId is { } taskAssignee ? [taskAssignee] : await TaskTeamIdsAsync(outboxEvent, cancellationToken);
@@ -176,6 +194,36 @@ public sealed class RecipientResolver(IAppDbContext db)
 
         return await TeamMemberIdsAsync(problem.OwnerTeamId, cancellationToken);
     }
+
+    private async Task<IReadOnlyList<Guid>> ProblemTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
+    {
+        var teamId = await db.Problems.AsNoTracking().Where(p => p.Id == outboxEvent.SubjectId).Select(p => p.OwnerTeamId).SingleAsync(cancellationToken);
+        return await TeamMemberIdsAsync(teamId, cancellationToken);
+    }
+
+    /// <summary>
+    /// For each incident linked to the problem that is still open now (links and status are read at dispatch, not when the event
+    /// was written): its assignee, else its team's members. Distinct, so one person gets one mail however many incidents they hold.
+    /// </summary>
+    private async Task<IReadOnlyList<Guid>> LinkedIncidentWorkerIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)
+    {
+        var incidents = await (
+            from link in db.ProblemTicketLinks
+            where link.ProblemId == outboxEvent.SubjectId
+            join t in db.Tickets on link.TicketId equals t.Id
+            where t.Status != TicketStatus.Completed && t.Status != TicketStatus.Cancelled
+            select new { t.AssigneeId, t.TeamId })
+            .ToListAsync(cancellationToken);
+        var ids = incidents.Where(i => i.AssigneeId is not null).Select(i => i.AssigneeId!.Value).ToHashSet();
+        foreach (var teamId in incidents.Where(i => i.AssigneeId is null).Select(i => i.TeamId).Distinct())
+        {
+            ids.UnionWith(await TeamMemberIdsAsync(teamId, cancellationToken));
+        }
+
+        return [.. ids];
+    }
+
+    private static bool IsOpen(TicketStatus status) => status is not (TicketStatus.Completed or TicketStatus.Cancelled);
 
     /// <summary>A task event without an assignee goes to the active members of the task's current team.</summary>
     private async Task<IReadOnlyList<Guid>> TaskTeamIdsAsync(OutboxEvent outboxEvent, CancellationToken cancellationToken)

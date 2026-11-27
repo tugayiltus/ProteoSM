@@ -50,7 +50,7 @@ public sealed class EmailTemplateAdminTests(ApiFactory factory) : IAsyncLifetime
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var items = (await admin.ReadJsonAsync<JsonElement>(response)).EnumerateArray().ToList();
-        Assert.Equal(17, items.Count);
+        Assert.Equal(23, items.Count);
         var eventTypes = items.Select(t => t.GetProperty("eventType").GetString()!).ToHashSet(StringComparer.Ordinal);
         var expectedEventTypes = new HashSet<string>(StringComparer.Ordinal)
         {
@@ -60,6 +60,8 @@ public sealed class EmailTemplateAdminTests(ApiFactory factory) : IAsyncLifetime
             NotificationEventTypes.PasswordReset, NotificationEventTypes.TaskAssigned,
             NotificationEventTypes.ChangeApprovalRequested, NotificationEventTypes.ChangeApprovalDecided, NotificationEventTypes.ChangeBackoutStarted,
             NotificationEventTypes.ProblemSlaWarning, NotificationEventTypes.ProblemSlaBreached,
+            NotificationEventTypes.ProblemCreated, NotificationEventTypes.ProblemAssigned, NotificationEventTypes.ProblemKnownError,
+            NotificationEventTypes.ProblemResolved, NotificationEventTypes.TicketCauseFound, NotificationEventTypes.TicketCauseResolved,
         };
         Assert.Equal(expectedEventTypes, eventTypes);
         Assert.All(items, t => Assert.False(string.IsNullOrWhiteSpace(t.GetProperty("subject").GetString())));
