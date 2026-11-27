@@ -14,6 +14,8 @@ const ADMIN_PATHS = Object.values(ROUTES).filter((path) => path === ROUTES.admin
 const DEEP_PATH = ROUTES.adminSlaPolicy;
 /** Class of one menu entry; the menu title (a link to `/admin`) is not an entry. */
 const MENU_ITEM = 'a.astryx-side-nav-item';
+/** On a phone each entry costs a drawer open, a click and a page load (about 1 s each, 28 s in all on a phone), so the walk over every entry needs more than the default 30 s. */
+const MENU_WALK_TIMEOUT_MS = 180_000;
 
 async function expectPageOpened(page: Page, path: string) {
   await expect(page, `${path} stays on its URL`).toHaveURL(new RegExp(`${path}$`));
@@ -29,8 +31,12 @@ async function openMenu(page: Page) {
   const menu = page.getByRole('navigation', { name: ADMIN_MENU });
   await expect(button.or(menu).first()).toBeVisible();
   if (await button.isVisible()) {
-    await button.click();
-    return page.getByRole('dialog', { name: MENU_PANEL }).getByRole('navigation', { name: ADMIN_MENU });
+    // The drawer may still be open from the previous call: its overlay covers the button.
+    if (!(await page.getByRole('dialog', { name: MENU_PANEL }).isVisible())) await button.click();
+    // Astryx names the navigation inside the phone drawer after the drawer itself ("Menü"), not after the area.
+    const phoneMenu = page.getByRole('dialog', { name: MENU_PANEL }).getByRole('navigation', { name: MENU_PANEL });
+    await expect(phoneMenu).toBeVisible();
+    return phoneMenu;
   }
   return menu;
 }
@@ -45,18 +51,25 @@ test('every_admin_route_opens_by_its_url', async ({ browser }) => {
 });
 
 test('every_admin_menu_item_opens_its_page_and_a_deep_route_survives_a_reload', async ({ browser }) => {
+  test.setTimeout(MENU_WALK_TIMEOUT_MS);
   const { page } = await adminSession(browser);
   await page.goto(ROUTES.admin);
   await expectPageOpened(page, ROUTES.admin);
 
-  const hrefs = await (await openMenu(page)).locator(MENU_ITEM).evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  // The phone drawer renders its entries after it opens: read the links only once they are there.
+  const items = (await openMenu(page)).locator(MENU_ITEM);
+  await expect(items.first()).toBeVisible();
+  await expect.poll(() => items.count(), 'the menu lists several admin pages').toBeGreaterThan(1);
+  const hrefs = await items.evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
   const menuPaths = hrefs.filter((href) => href.startsWith(ROUTES.admin));
   expect(menuPaths.length).toBeGreaterThan(1);
 
+  const phoneDrawer = page.getByRole('dialog', { name: MENU_PANEL });
   for (const path of menuPaths) {
     const menu = await openMenu(page);
     await menu.locator(`${MENU_ITEM}[href="${path}"]`).click();
     await expectPageOpened(page, path);
+    await expect(phoneDrawer, `${path}: the phone menu closes after a page is chosen`).toBeHidden();
   }
 
   await page.goto(DEEP_PATH);
