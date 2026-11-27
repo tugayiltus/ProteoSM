@@ -10,7 +10,7 @@ import path from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 
 import { chooseOption, requiredEnv } from './helpers';
-import { adminSession, seedChange, seedChangeTask, seedIncidents, seedPublishedArticle, seedWorld, submitChange, userSession } from './world';
+import { adminSession, seedChange, seedChangeTask, seedIncidents, seedProblem, seedPublishedArticle, seedWorld, setProblemTarget, submitChange, userSession } from './world';
 
 const OUT = requiredEnv('UI_QA_OUT');
 const MODES = ['light', 'dark'] as const;
@@ -21,6 +21,7 @@ const OVERFLOW_TOLERANCE_PX = 1;
 const MESSAGE_LENGTH = 200;
 const FILE_NAME_LENGTH = 80;
 const SEARCH_BUTTON = 'Ara';
+const PROBLEM_TARGET_MINUTES = 480;
 const RATING_SECTION = 'Memnuniyet';
 /** File name prefix of the employee's screens, so they do not overwrite the admin's view of the same path. */
 const EMPLOYEE_PREFIX = 'employee';
@@ -95,6 +96,9 @@ test('every screen in light and dark mode', async ({ browser }, info) => {
   await completeTicket(owner.page, toRate ?? '');
   await completeTicket(owner.page, rated ?? '');
   await rateTicket(employee.page, rated ?? '', 'İyi');
+  // A problem with a running known-error timer: the SLA card on its detail page and the badge in the list.
+  await setProblemTarget(admin, 'high', PROBLEM_TARGET_MINUTES);
+  const problemNumber = await seedProblem(owner, 'VPN bağlantısı sık sık kopuyor', 'high', world.teamId);
   await owner.context.close();
   const page = admin.page;
   const found = (await (await admin.context.request.get(`/api/v1/assets?search=${encodeURIComponent(world.assetTag)}`)).json()) as { items: { id: string }[] };
@@ -106,7 +110,7 @@ test('every screen in light and dark mode', async ({ browser }, info) => {
     '/changes', `/changes/${changeNumber}`, `/tasks/${changeTask}`, '/changes/calendar', '/releases', '/licences', '/software', '/software/mine', '/admin/monitoring', '/reports/licences', '/reports', '/reports/incidents', '/reports/changes', '/reports/tasks', '/reports/exports', '/profile', '/change-password',
     '/admin', '/admin/users', '/admin/departments', '/admin/teams', '/admin/locations', '/admin/categories', '/admin/request-types',
     '/admin/brands', '/admin/models', '/admin/sla/policy', '/admin/sla/calendar', '/admin/email-templates', '/admin/email-deliveries', '/admin/email-sending',
-    '/admin/audit', '/admin/system', '/admin/settings', '/admin/announcements', '/admin/login-method', '/admin/services', '/tasks', '/problems', '/services', '/nope-404',
+    '/admin/audit', '/admin/system', '/admin/settings', '/admin/announcements', '/admin/login-method', '/admin/services', '/tasks', '/problems', `/problems/${problemNumber}`, '/services', '/nope-404',
   ];
   const dir = path.join(OUT, info.project.name);
   mkdirSync(dir, { recursive: true });

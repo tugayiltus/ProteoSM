@@ -11,6 +11,7 @@ const CSRF_PATH = '/api/v1/auth/csrf';
 const CSRF_HEADER = 'X-CSRF-TOKEN';
 /** Seeded users get a temporary password so the tests can sign in without reading email. */
 const TEMPORARY_PASSWORD_DELIVERY = 'temporary_password';
+const PROBLEM_WARNING_PERCENT = 50;
 const HOME_HEADING = /^Merhaba/;
 
 export interface Session {
@@ -269,6 +270,26 @@ export async function transferTicket(staff: Session, ticketNumber: string, teamI
   await send(staff.context.request, 'POST', `/api/v1/tickets/${ticketNumber}/transfer`, {
     version, teamId, assigneeId: null, reason: 'other_team_responsibility', note: null,
   });
+}
+
+/** Sets the known-error target (and a 50 % warning) of one impact level through the admin API, keeping the other levels. */
+export async function setProblemTarget(admin: Session, impact: 'low' | 'medium' | 'high', targetMinutes: number): Promise<void> {
+  const request = admin.context.request;
+  const current = (await (await request.get('/api/v1/admin/sla/problem-targets')).json()) as {
+    version: number;
+    targets: { impact: string; targetMinutes: number; warningPercent: number }[];
+  };
+  const targets = current.targets.filter((x) => x.impact !== impact);
+  targets.push({ impact, targetMinutes, warningPercent: PROBLEM_WARNING_PERCENT });
+  await send(request, 'PUT', '/api/v1/admin/sla/problem-targets', { targets, version: current.version });
+}
+
+/** Opens a problem as the session's user and returns its number. */
+export async function seedProblem(author: Session, title: string, impact: 'low' | 'medium' | 'high', ownerTeamId: string): Promise<string> {
+  const problem = await send(author.context.request, 'POST', '/api/v1/problems', {
+    title, description: title, impact, ownerTeamId, ownerId: null, incidentNumber: null,
+  });
+  return String(problem.number);
 }
 
 /** Queues a background export of a report figure's rows as the session's user; the query matches the drill-down URL. */
