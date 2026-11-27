@@ -24,6 +24,12 @@ internal sealed class SmtpEndpoint
     public string? Password { get; init; }
 
     /// <summary>
+    /// True for an admin-chosen host: the connection goes only to addresses <see cref="SmtpTargetPolicy"/> allows, checked
+    /// at each send, because the host name can point somewhere else after the test send.
+    /// </summary>
+    public bool CheckTarget { get; init; }
+
+    /// <summary>
     /// <c>Email:From</c> + <c>Email:Smtp:*</c>, as the Worker has always used them: <c>UseStartTls = false</c> is
     /// <see cref="SecureSocketOptions.Auto"/>, not "no TLS".
     /// </summary>
@@ -52,5 +58,6 @@ internal sealed class SmtpEndpoint
         },
         UserName = transport.UserName,
         Password = transport.Password,
+        CheckTarget = true,
     };
 }

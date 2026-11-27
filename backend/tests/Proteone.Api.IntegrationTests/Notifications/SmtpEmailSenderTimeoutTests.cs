@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using Microsoft.Extensions.Options;
+using Proteone.Api.IntegrationTests.Infrastructure;
 using Proteone.Application.Abstractions;
 using Proteone.Infrastructure.Email;
 
@@ -11,19 +11,10 @@ namespace Proteone.Api.IntegrationTests.Notifications;
 /// A black-holed SMTP server (accepts the connection, never answers) must fail the send within
 /// <c>Email:Smtp:TimeoutSeconds</c>, as an ordinary send failure, so the email sender's row lease outlives the send.
 /// </summary>
-public sealed class SmtpEmailSenderTimeoutTests
+public sealed class SmtpEmailSenderTimeoutTests(ApiFactory factory) : IClassFixture<ApiFactory>
 {
     private const int TimeoutSeconds = 1;
     private static readonly TimeSpan UpperBound = TimeSpan.FromSeconds(10);
-
-    private sealed class FixedOptionsMonitor(EmailOptions value) : IOptionsMonitor<EmailOptions>
-    {
-        public EmailOptions CurrentValue => value;
-
-        public EmailOptions Get(string? name) => value;
-
-        public IDisposable? OnChange(Action<EmailOptions, string?> listener) => null;
-    }
 
     [Fact]
     public async Task A_server_that_never_answers_fails_the_send_within_the_configured_timeout()
@@ -37,7 +28,7 @@ public sealed class SmtpEmailSenderTimeoutTests
             From = "Proteone <no-reply@proteone.local>",
             Smtp = new SmtpOptions { Host = IPAddress.Loopback.ToString(), Port = port, UseStartTls = false, TimeoutSeconds = TimeoutSeconds },
         };
-        var sender = new SmtpEmailSender(new FixedOptionsMonitor(options));
+        var sender = SmtpSenders.Sender(factory, options);
         var message = new EmailMessage("user@example.com", "Ayşe Yılmaz", "Konu", "Gövde");
 
         var stopwatch = Stopwatch.StartNew();

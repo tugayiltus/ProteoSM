@@ -59,17 +59,22 @@ public static class DependencyInjection
         services.AddOptions<EmailOptions>().BindConfiguration(EmailOptions.SectionName);
         services.AddSingleton<IEmailEnvironment, EmailEnvironment>();
         services.AddScoped<IEmailTestSender, MailKitEmailTestSender>();
-        services.AddScoped<IEmailSender>(provider =>
-        {
-            var mode = provider.GetRequiredService<IOptionsMonitor<EmailOptions>>().CurrentValue.Mode;
-            return mode switch
-            {
-                EmailModes.Smtp => ActivatorUtilities.CreateInstance<SmtpEmailSender>(provider),
-                EmailModes.Pickup => ActivatorUtilities.CreateInstance<PickupFolderEmailSender>(provider),
-                _ => throw new InvalidOperationException(
-                    $"Email:Mode '{mode}' is not supported; expected '{EmailModes.Smtp}' or '{EmailModes.Pickup}'."),
-            };
-        });
+        // One cache of the active panel settings for the whole process; only Email:Mode=Smtp ever resolves it.
+        services.AddSingleton<ActiveSmtpEndpointProvider>();
+        services.AddScoped(CreateEmailSender);
         return services;
+    }
+
+    /// <summary>The <see cref="IEmailSender"/> for <c>Email:Mode</c>; Pickup ignores the panel settings and every SMTP value.</summary>
+    internal static IEmailSender CreateEmailSender(IServiceProvider provider)
+    {
+        var mode = provider.GetRequiredService<IOptionsMonitor<EmailOptions>>().CurrentValue.Mode;
+        return mode switch
+        {
+            EmailModes.Smtp => ActivatorUtilities.CreateInstance<SmtpEmailSender>(provider),
+            EmailModes.Pickup => ActivatorUtilities.CreateInstance<PickupFolderEmailSender>(provider),
+            _ => throw new InvalidOperationException(
+                $"Email:Mode '{mode}' is not supported; expected '{EmailModes.Smtp}' or '{EmailModes.Pickup}'."),
+        };
     }
 }
