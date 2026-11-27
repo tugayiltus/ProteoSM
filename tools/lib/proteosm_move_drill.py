@@ -83,7 +83,7 @@ def extra(base, state_path):
     mail = admin.json("GET", "/admin/email-settings")
     admin.json("PUT", "/admin/email-settings", {
         "provider": "smtp", "senderName": "Drill", "senderAddress": f"drill@{DRILL_DOMAIN}", "host": LOCAL_UNREACHABLE_HOST,
-        "port": CLOSED_PORT, "security": "none", "userName": "drill", "password": SMTP_SECRET, "version": mail["version"]})
+        "port": CLOSED_PORT, "security": "start_tls", "userName": "drill", "password": SMTP_SECRET, "version": mail["version"]})
     smtp_test = test_result(admin, "/admin/email-settings/test")
 
     auth = admin.json("GET", "/admin/auth-settings")

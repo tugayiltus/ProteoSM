@@ -26,7 +26,9 @@ Run through `tools/` scripts.
 - `tools/gen-api-types.sh` — regenerate OpenAPI JSON and `schema.d.ts` after API contract changes.
 - `tools/build.sh` — lint + tests, then Release build + frontend build with chunk sizes.
 - `tools/docker-build.sh` — build `proteosm-api`/`proteosm-worker` images (tags: Git short hash, `latest`).
-- `tools/deploy.sh [--skip-gates]` — gates, images, compose up, wait for health through nginx.
+- `tools/deploy.sh [--skip-gates] [--fresh-install]` — gates, images, compose up, wait for health through nginx; refuses an empty start beside a Proteone stack's `proteone_pgdata` unless `--fresh-install`.
+- `tools/proteosm-move-drill.sh [git ref]` — Proteone to ProteoSM move drill on throw-away stacks (Docker); writes `docs/release/proteosm-migration-drill.md`.
+- Env names: `PROTEOSM_*`; `tools/lib/product-env.sh` still reads a `PROTEONE_*` variable while the new one is unset.
 - `tools/compose.sh <args>` — `docker compose` with `deploy/compose.yaml` + `deploy/.env`.
 - `tools/gen-self-signed-cert.sh [host]` — test certificate in `deploy/certs/`.
 - `tools/backup.sh`, `tools/restore.sh <archive> [--force]`, `tools/restore-drill.sh` — backup now, restore, drill on throw-away stacks (writes `docs/release/restore-drill.md`).

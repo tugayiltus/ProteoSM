@@ -43,8 +43,9 @@ readonly NEW_VERSION="${PROTEOSM_VERSION:-latest}"
 # Exact row count of every table in one query.
 readonly TABLE_COUNTS_SQL="SELECT table_name || '=' || (xpath('/row/c/text()', query_to_xml(format('SELECT count(*) AS c FROM %I.%I', table_schema, table_name), false, true, '')))[1]::text FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name"
 # Row samples: a digest over whole rows, so any changed value shows.
-readonly SAMPLE_TABLES=(users tickets ticket_relations ticket_attachments export_jobs email_templates audit_events monitoring_sources auth_settings email_settings)
-readonly SUMMARY_TABLES=(users tickets ticket_relations ticket_attachments export_jobs email_templates audit_events monitoring_sources email_deliveries)
+readonly SAMPLE_TABLES=(users tickets ticket_assets change_ticket_links problem_tickets ticket_attachments export_jobs email_templates audit_events monitoring_sources auth_settings email_settings)
+# Must be equal after the move; other tables may grow once the new Worker runs (heartbeats, SLA monitor, outbox).
+readonly SUMMARY_TABLES=(users tickets ticket_assets change_ticket_links problem_tickets ticket_comments ticket_attachments export_jobs email_templates audit_events monitoring_sources)
 
 for file in deploy/certs/proteosm.crt deploy/certs/proteosm.key; do
   if [[ ! -f "$file" ]]; then echo "Missing $file (tools/gen-self-signed-cert.sh for a test host)" >&2; exit 1; fi
@@ -130,8 +131,9 @@ write_env "$worktree/deploy/.env.example" "$work/old.env" "$OLD_PORT" "$OLD_HTTP
 old up -d >/dev/null 2>&1
 wait_healthy old
 old_temporary="$(setup_admin old)"
-(cd "$worktree" && env -u PROTEOSM_ENV_FILE COMPOSE_PROJECT_NAME="$OLD_PROJECT" PROTEONE_ENV_FILE="$work/old.env" PROTEONE_VERSION="$old_tag" \
-  tools/seed-pilot.sh --compose --scale "$PILOT_SCALE") >"$work/pilot.log" 2>&1 || { tail -20 "$work/pilot.log" >&2; exit 1; }
+# The seed command directly: the compose environment also sets DOTNET_ENVIRONMENT=Production, so both names are set.
+old run --rm -T -e ASPNETCORE_ENVIRONMENT=Pilot -e DOTNET_ENVIRONMENT=Pilot api seed-pilot --scale "$PILOT_SCALE" >"$work/pilot.log" 2>&1 \
+  || { tail -20 "$work/pilot.log" >&2; exit 1; }
 python3 tools/lib/proteosm_drill.py seed "https://localhost:$OLD_PORT" "$work/state.json" "$ADMIN_EMAIL" "$old_temporary"
 python3 tools/lib/proteosm_move_drill.py extra "https://localhost:$OLD_PORT" "$work/state.json"
 # Writes stop: only the database and the backup service stay up, as in the operator procedure.
@@ -157,12 +159,14 @@ for table in "${SAMPLE_TABLES[@]}"; do echo "$table=$(digest new proteosm "$tabl
 new up -d >/dev/null 2>&1
 wait_healthy new
 
-differing="$(diff "$work/old-counts.txt" "$work/new-counts.txt" | grep -c '^[<>]' || true)"
-record "row count of every table equal ($(wc -l < "$work/old-counts.txt" | tr -d ' ') tables)" "0" "$differing"
+# The full-table equality right after pg_restore is tools/restore.sh's manifest check (above). Here the new stack has
+# run, so tables its Worker writes may have grown; they are listed, not failed.
+grown="$(diff "$work/old-counts.txt" "$work/new-counts.txt" | sed -n 's/^> \([a-z_]*\)=.*/\1/p' | tr '\n' ' ' | sed 's/ $//' || true)"
 for table in "${SUMMARY_TABLES[@]}"; do
   before="$(sed -n "s/^$table=//p" "$work/old-counts.txt")"
   after="$(sed -n "s/^$table=//p" "$work/new-counts.txt")"
-  counts_rows+=("| \`$table\` | $before | $after | $([[ "$before" == "$after" ]] && echo pass || echo FAIL) |")
+  if [[ "$before" == "$after" ]]; then result=pass; else result=FAIL; failures=$((failures + 1)); fi
+  counts_rows+=("| \`$table\` | $before | $after | $result |")
 done
 for table in "${SAMPLE_TABLES[@]}"; do
   record "rows of $table identical (digest)" "$(sed -n "s/^$table=//p" "$work/old-samples.txt")" "$(sed -n "s/^$table=//p" "$work/new-samples.txt")"
@@ -181,13 +185,15 @@ mkdir -p "$(dirname "$REPORT")"
   echo
   echo "Run by \`tools/proteosm-move-drill.sh\` on $(date -u +%Y-%m-%dT%H:%M:%SZ) at commit \`$(git rev-parse --short HEAD)\`: Proteone stack from \`$OLD_REF\` (images \`proteone-*:$old_tag\`), ProteoSM images \`proteosm-*:$NEW_VERSION\`. Procedure: \`docs/operations.md\`, \"Proteone to ProteoSM move\". Throw-away Compose projects \`$FRESH_PROJECT\`, \`$OLD_PROJECT\`, \`$NEW_PROJECT\`; all removed at the end."
   echo
-  echo "Steps: (1) fresh ProteoSM stack + \`setup-admin\`; (2) Proteone stack, \`tools/seed-pilot.sh --compose --scale $PILOT_SCALE\`, \`tools/lib/proteosm_drill.py seed\`, \`tools/lib/proteosm_move_drill.py extra\`, writes stopped, \`tools/backup.sh\` of that checkout; (3) \`tools/restore.sh $(basename "$archive")\` into the ProteoSM stack, counts and digests compared with writes stopped, \`tools/lib/proteosm_move_drill.py verify\`; (4) the old stack starts again (rollback)."
+  echo "Steps: (1) fresh ProteoSM stack + \`setup-admin\`; (2) Proteone stack, \`seed-pilot --scale $PILOT_SCALE\` (Pilot environment), \`tools/lib/proteosm_drill.py seed\`, \`tools/lib/proteosm_move_drill.py extra\`, writes stopped, \`tools/backup.sh\` of that checkout; (3) \`tools/restore.sh $(basename "$archive")\` into the ProteoSM stack, counts and digests compared with writes stopped, \`tools/lib/proteosm_move_drill.py verify\`; (4) the old stack starts again (rollback)."
   echo
   echo "## Row counts"
   echo
   echo "| Table | Proteone | ProteoSM | Result |"
   echo "|---|---|---|---|"
   printf '%s\n' "${counts_rows[@]}"
+  echo
+  echo "Tables that grew after the new stack started (Worker jobs on restored data, not part of the archive comparison): ${grown:-none}."
   echo
   echo "## Checks"
   echo

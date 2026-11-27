@@ -126,6 +126,37 @@ Images of earlier builds stay on the host under their Git short hash until remov
 
 The next `tools/deploy.sh` overwrites `deploy/.version` with its own hash, so `tools/compose.sh` and `tools/restore.sh` always use the images that run. Do not set `PROTEOSM_VERSION` in `deploy/.env`: `deploy/.version` overrides it.
 
+## Proteone to ProteoSM move
+
+The product was named Proteone until November 2026. A Proteone host runs the Compose project `proteone` (volumes `proteone_pgdata`, `proteone_files`, `proteone_keys`, `proteone_backups`, images `proteone-api`/`proteone-worker`, database and user `proteone`). ProteoSM runs the project `proteosm` with new volumes, images `proteosm-api`/`proteosm-worker` and the database and user `proteosm`. Docker volumes follow the project name, so an updated checkout would start empty: the installation moves by backup and restore, and the old volumes stay untouched for a rollback. `tools/deploy.sh` refuses to start beside `proteone_pgdata` while no `proteosm_pgdata` exists; `--fresh-install` starts empty on purpose. Rehearsal on throw-away stacks: `tools/proteosm-move-drill.sh` (result in `docs/release/proteosm-migration-drill.md`).
+
+Announce a short window: writes stop at step 2, and nothing written in Proteone after the backup reaches ProteoSM.
+
+1. On the Proteone checkout, note the running tag: `cat deploy/.version`.
+2. Stop writes, keep the database and the backup service: `tools/compose.sh stop api worker nginx`.
+3. Back up with the Proteone tools: `tools/backup.sh` prints `Backup written: /backups/proteone-YYYYMMDD-HHMMSS.tar.gz`. Copy it out of the volume (`tools/compose.sh cp backup:/backups/<archive> <folder>/`, or take it from `BACKUP_HOST_DIR`) and keep one copy off the host.
+4. Stop the old stack without removing volumes: `tools/compose.sh down`. Never add `-v`. This also frees the ports and the subnet.
+5. Update the checkout to the ProteoSM release (`git pull`, or check out the release commit).
+6. Settings:
+   - `deploy/.env` stays. Rename `PROTEONE_SUBNET` to `PROTEOSM_SUBNET` and `PROTEONE_DEPLOYMENT` to `PROTEOSM_DEPLOYMENT`; the `PROTEONE_` names are still read while the new ones are missing. Shell variables (`PROTEONE_VERSION`, `PROTEONE_ENV_FILE`, `PROTEONE_DB_*`) are read the same way by `tools/lib/product-env.sh`. `POSTGRES_PASSWORD` becomes the password of the new `proteosm` user.
+   - Copy the certificate: `deploy/certs/proteone.crt` to `deploy/certs/proteosm.crt` and `deploy/certs/proteone.key` to `deploy/certs/proteosm.key` (`chmod 600` on the key). `tools/deploy.sh` names the old files when the new ones are missing.
+7. `tools/docker-build.sh`, then `tools/restore.sh <folder>/<archive>`. It creates the `proteosm` volumes, restores the database (every object owned by `proteosm`), the file store and the Data Protection key ring, checks the row counts against the archive's manifest, runs `migrate` and starts the stack. Archives named `proteone-` restore like `proteosm-` ones.
+8. `tools/deploy.sh --skip-gates`. After the restore the guard lets it through and it records the new tag in `deploy/.version`.
+9. Smoke: `curl -fsSk https://localhost/api/v1/health`, sign in, open a ticket with an attachment, download a report export, `/admin/system` (workers report in), the test buttons of the mail settings and the login method in `/admin` (stored secrets decrypt), and one signed event from each monitoring tool.
+
+What users notice: everyone signs in once more, because the session and antiforgery cookies are now `__Host-proteosm` and `__Host-proteosm-af`. Passwords, waiting account links, stored SMTP/LDAP/Entra secrets and monitoring keys keep working: the Data Protection application name and purposes did not change, and the key ring moves with the archive. Email templates, custom or default, stay as they were. Monitoring tools keep the same URL and the `X-Proteone-*` headers.
+
+Rollback, while the old volumes exist:
+
+```bash
+tools/compose.sh down                       # on the ProteoSM checkout; volumes stay
+git checkout <Proteone release commit>
+echo <tag from step 1> > deploy/.version
+tools/compose.sh up -d                      # project "proteone" with its untouched volumes
+```
+
+The Proteone stack comes back with the data of the step 3 backup: everything written in ProteoSM after the move is lost in a rollback. To carry it back, back up the ProteoSM stack and restore that archive into the Proteone stack with `tools/restore.sh --force`; this works only while ProteoSM has no newer migration than the Proteone build (otherwise exit 3). Keep the `proteone_*` volumes, the `proteone-` archives and the `proteone-*` images until no rollback is needed; removing them (`docker volume rm proteone_pgdata …`) is a separate owner decision.
+
 ## Backups
 
 - **What:** one archive `proteosm-YYYYMMDD-HHMMSS.tar.gz` (UTC time) per run with `db.dump` (`pg_dump -Fc`), `files/` (file store), `keys/` (Data Protection key ring) and `manifest.json` (app version, newest migration, creation time, SHA-256 of `db.dump`, number of files in the archive, row count of every table). Dump, counts and migration id come from one database snapshot. A file that changes while the file store is archived is tolerated (GNU tar exit 1); `fileCount` is what the archive holds.
@@ -222,7 +253,7 @@ Replace `deploy/certs/proteosm.crt` and `deploy/certs/proteosm.key`, then `tools
 
 | Task | Command |
 |---|---|
-| Deploy or update | `tools/deploy.sh [--skip-gates]` |
+| Deploy or update | `tools/deploy.sh [--skip-gates] [--fresh-install]` (`--fresh-install`: empty start beside Proteone data, on purpose) |
 | Build images only | `tools/docker-build.sh [--allow-dirty]` (refuses uncommitted changes; `--allow-dirty` tags only `<hash>-dirty`, never `latest`) |
 | Any compose command | `tools/compose.sh <args>` |
 | First admin | `tools/compose.sh run --rm api setup-admin --email … --first-name … --last-name …` |
@@ -231,6 +262,7 @@ Replace `deploy/certs/proteosm.crt` and `deploy/certs/proteosm.key`, then `tools
 | Backup now | `tools/backup.sh` |
 | Restore | `tools/restore.sh <archive.tar.gz> [--force] [--no-safety-backup]` |
 | Restore drill | `tools/restore-drill.sh` |
+| Proteone to ProteoSM move drill | `tools/proteosm-move-drill.sh [git ref]` |
 | Test certificate | `tools/gen-self-signed-cert.sh [host-name]` |
 | Pilot seed | `tools/seed-pilot.sh --compose [--scale <factor>]` (needs `PROTEOSM_DEPLOYMENT=pilot`) |
 | Performance run against a host | `PERF_BASE_URL=https://<host> PERF_PASSWORD=… tools/perf-measure.sh` (writes 5,000 assets into that database on every run; pilot hosts only) |
