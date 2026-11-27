@@ -9,7 +9,7 @@ import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -20,6 +20,7 @@ import { FormTextArea, FormTextInput } from '../../../shared/form/formFields';
 
 import { useUpdateEmailTemplate, type EmailTemplateItem } from './api';
 import { isEmailEventType } from './eventTypes';
+import { TemplatePreview } from './TemplatePreview';
 
 /** Mirror backend `EmailTemplate.SubjectMaxLength` / `BodyMaxLength`. */
 export const TEMPLATE_SUBJECT_MAX_LENGTH = 200;
@@ -57,6 +58,7 @@ export function EmailTemplateEditor({ template, onClose }: EmailTemplateEditorPr
     defaultValues: { subject: template.subject, body: template.body },
   });
 
+  const draft = useWatch({ control });
   const onSubmit = handleSubmit((values) =>
     update.mutate(
       { eventType: template.eventType, version: template.version, ...values },
@@ -97,6 +99,7 @@ export function EmailTemplateEditor({ template, onClose }: EmailTemplateEditorPr
           ))}
         </List>
       </VStack>
+      <TemplatePreview subject={draft.subject ?? ''} body={draft.body ?? ''} allowedVariables={template.allowedVariables} />
     </FormDialog>
   );
 }

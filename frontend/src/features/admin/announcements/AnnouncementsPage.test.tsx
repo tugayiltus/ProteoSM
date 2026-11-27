@@ -51,4 +51,21 @@ describe('AnnouncementsPage', () => {
     const body: unknown = await api.calls.find((c) => c.method === 'PUT')?.clone().json();
     expect(body).toMatchObject({ version: 4 });
   });
+
+  it('previews the banner and the period while typing, and writes nothing', async () => {
+    const api = mockApi(routes());
+    const { user } = renderRoute('/admin/announcements');
+    await user.click(await screen.findByRole('button', { name: 'Yeni duyuru' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Yeni duyuru' });
+
+    await user.type(within(dialog).getByRole('textbox', { name: /^Başlık/ }), 'Ağ bakımı');
+    await user.type(within(dialog).getByRole('textbox', { name: /^Mesaj/ }), 'Cumartesi 02:00');
+
+    const preview = within(dialog).getByRole('group', { name: 'Önizleme' });
+    expect(within(preview).getByText('Ağ bakımı')).toBeInTheDocument();
+    expect(within(preview).getByText('Cumartesi 02:00')).toBeInTheDocument();
+    expect(within(preview).getByText(/Yayın aralığı: .* tarihinden başlar, bitiş tarihi yok\./)).toBeInTheDocument();
+    expect(within(preview).getByText(/hiçbir şey yayınlanmaz/)).toBeInTheDocument();
+    expect(api.calls.filter((call) => call.method !== 'GET')).toEqual([]);
+  });
 });

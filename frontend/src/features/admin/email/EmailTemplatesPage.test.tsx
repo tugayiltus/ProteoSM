@@ -106,4 +106,20 @@ describe('EmailTemplatesPage', () => {
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent('başka biri tarafından değiştirildi');
   });
+
+  it('previews subject and body with sample values and warns about a refused variable, without sending anything', async () => {
+    const api = setup();
+    const { user } = renderRoute('/admin/email-templates');
+
+    await user.click((await screen.findAllByRole('button', { name: /^Düzenle/ }))[0]!);
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByTestId('template-preview-subject')).toHaveTextContent('Kayıt INC-2026-000123 oluşturuldu');
+    expect(within(dialog).getByTestId('template-preview-body')).toHaveTextContent('Merhaba Ayşe Kaya');
+
+    const body = within(dialog).getByRole('textbox', { name: /^İçerik/ });
+    await user.type(body, ' {{{{ratingUrl}}');
+
+    expect(await within(dialog).findByText(/kayıt reddedilir: ratingUrl/)).toBeInTheDocument();
+    expect(api.calls.filter((call) => call.method !== 'GET')).toEqual([]);
+  });
 });

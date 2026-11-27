@@ -531,7 +531,12 @@
       "title": "Kullanılabilir değişkenler",
       "hint": "Değişkenleri çift süslü parantez içinde yazın; listede olmayanlar kaydedilmez."
     },
-    "firstUse": "Henüz e-posta şablonu yok."
+    "firstUse": "Henüz e-posta şablonu yok.",
+    "preview": {
+      "title": "Önizleme",
+      "hint": "Değişkenler örnek değerlerle doldurulur. Önizleme e-posta göndermez ve şablonu kaydetmez.",
+      "refused": "Bu değişkenler bu olayda kullanılamaz ve kayıt reddedilir: {{names}}"
+    }
   },
   "emailDeliveries": {
     "title": "E-posta teslimatları",
@@ -851,7 +856,15 @@
       "active": "Yayında",
       "ended": "Bitti"
     },
-    "cardMeta": "{{start}} – {{end}}"
+    "cardMeta": "{{start}} – {{end}}",
+    "preview": {
+      "title": "Önizleme",
+      "emptyTitle": "Başlık yazılmadı",
+      "noStart": "Başlangıç zamanı seçilmedi.",
+      "open": "Yayın aralığı: {{from}} tarihinden başlar, bitiş tarihi yok.",
+      "range": "Yayın aralığı: {{from}} – {{to}}",
+      "note": "Önizleme yalnızca bu pencerededir. Oluştur veya Kaydet seçilene kadar hiçbir şey yayınlanmaz."
+    }
   },
   "impact": {
     "title": "Şu an bu kayda bağlı olanlar",

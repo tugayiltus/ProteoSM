@@ -5,7 +5,7 @@
  */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -16,6 +16,7 @@ import { FormDateTimeInput, FormSelector, FormTextArea, FormTextInput } from '..
 import { fromLocalInput, toLocalInput } from '../../changes/dateTime';
 import { useCloseOnConflict } from '../../changes/useCloseOnConflict';
 
+import { AnnouncementPreview } from './AnnouncementPreview';
 import { useCreateAnnouncement, useUpdateAnnouncement, type Announcement } from './api';
 
 /** Mirror backend Announcement.TitleMaxLength / BodyMaxLength. */
@@ -59,6 +60,7 @@ export function AnnouncementFormDialog({ announcement, onClose }: { announcement
       endsAt: toLocalInput(announcement?.endsAt ?? null),
     },
   });
+  const draft = useWatch({ control });
   const onSubmit = handleSubmit(({ startsAt, endsAt, ...rest }) => {
     const body = { ...rest, startsAt: fromLocalInput(startsAt) ?? now, endsAt: fromLocalInput(endsAt) };
     const onError = (error: unknown) => {
@@ -87,6 +89,7 @@ export function AnnouncementFormDialog({ announcement, onClose }: { announcement
       <FormSelector control={control} name="level" label={t('announcements.fields.level')} options={LEVELS.map((value) => ({ value, label: t(`announcements.levels.${value}`) }))} isRequired />
       <FormDateTimeInput control={control} name="startsAt" label={t('announcements.fields.startsAt')} isRequired />
       <FormDateTimeInput control={control} name="endsAt" label={t('announcements.fields.endsAt')} />
+      <AnnouncementPreview draft={{ title: draft.title ?? '', body: draft.body ?? '', level: draft.level ?? 'info', startsAt: draft.startsAt ?? '', endsAt: draft.endsAt ?? '' }} />
     </FormDialog>
   );
 }
