@@ -71,8 +71,11 @@ test('related records: link, desk view, report drill-down and central search', a
   await owner.page.goto('/workspace');
   await openSearch(owner.page);
   await owner.page.keyboard.type(changeTitle);
-  await expect(owner.page.getByText(`${change} ${changeTitle}`)).toBeVisible();
-  await expect(owner.page.getByRole('dialog', { name: SEARCH_BUTTON }).getByText('Değişiklikler', { exact: true })).toBeVisible();
+  const searchDialog = owner.page.getByRole('dialog', { name: SEARCH_BUTTON });
+  // A hit shows its number and its title as two texts.
+  await expect(searchDialog.getByText(change, { exact: true })).toBeVisible();
+  await expect(searchDialog.getByText(changeTitle, { exact: true })).toBeVisible();
+  await expect(searchDialog.getByText('Değişiklikler', { exact: true })).toBeVisible();
   await expectNoHorizontalScroll(owner.page);
   await owner.page.keyboard.press('Escape');
 

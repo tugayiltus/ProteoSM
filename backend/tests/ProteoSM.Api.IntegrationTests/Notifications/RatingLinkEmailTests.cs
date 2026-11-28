@@ -17,6 +17,8 @@ public sealed class RatingLinkEmailTests(ApiFactory factory) : IAsyncLifetime
     private static readonly TimeSpan Lease = TimeSpan.FromMinutes(5);
     private const string ServiceRequestRequired = "service_request_required";
     private const string RatingLinkLabel = "Kaydı puanlamak için: ";
+    // Footer of every shipped default text (migration ProteoSMEmailDefaults).
+    private const string DefaultFooter = "ProteoSM by ProteONE";
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -79,8 +81,8 @@ public sealed class RatingLinkEmailTests(ApiFactory factory) : IAsyncLifetime
 
         Assert.DoesNotContain("rate=1", body, StringComparison.Ordinal);
         Assert.DoesNotContain(RatingLinkLabel.TrimEnd(' ', ':'), body, StringComparison.Ordinal);
-        // The body ends exactly with the ticket link of the seeded template: no blank line is left behind.
-        Assert.Matches($@"görüntüleyebilirsiniz: {System.Text.RegularExpressions.Regex.Escape(ApiFactory.PublicBaseUrl)}/tickets/[^\s]+\z", body);
+        // The ticket link is followed by one blank line and the footer: no blank line is left where the rating line was.
+        Assert.Matches($@"görüntüleyebilirsiniz: {System.Text.RegularExpressions.Regex.Escape(ApiFactory.PublicBaseUrl)}/tickets/[^\s]+\n\n{DefaultFooter}\z", body);
     }
 
     [Fact]
