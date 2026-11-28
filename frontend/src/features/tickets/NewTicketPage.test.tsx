@@ -202,8 +202,8 @@ describe('scan route', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/tickets/new/request'));
     expect(await screen.findByLabelText(/^Konu/)).toHaveValue('Ekran kırık');
     expect(screen.getByLabelText(/^Açıklama/)).toHaveValue('Siyah ekran.');
-    expect(screen.getByRole('button', { name: 'Talep oluştur' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Talep oluştur' }));
+    // Under load the request form can finish its render after the carried fields show.
+    await user.click(await screen.findByRole('button', { name: 'Talep oluştur' }));
     // The request type is not carried over, so the request cannot be sent without choosing one.
     expect(router.state.location.pathname).toBe('/tickets/new/request');
   });
