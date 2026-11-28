@@ -668,7 +668,7 @@
     },
     "localAdmin": {
       "title": "Yerel yönetici girişi",
-      "note": "Yöntem ne olursa olsun yöneticiler yerel Proteone şifreleriyle girebilir. Dizin veya Microsoft hesabı çalışmazsa bu yol açık kalır.",
+      "note": "Yöntem ne olursa olsun yöneticiler yerel ProteoSM şifreleriyle girebilir. Dizin veya Microsoft hesabı çalışmazsa bu yol açık kalır.",
       "missing": "Hesabınızın yerel şifresi yok. Yöntem bozulursa yerel şifresi olan başka bir yöneticiyle girmeniz gerekir."
     }
   },
