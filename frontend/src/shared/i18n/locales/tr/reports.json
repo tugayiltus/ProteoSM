@@ -4,6 +4,7 @@
     "tabs": "Rapor türleri",
     "reportType": "Rapor türü",
     "myExports": "Dışa aktarımlarım",
+    "filtersNote": "Bu sekmede geçerli filtreler: {{names}}. Başka sekmeye geçince yalnız o sekmenin tanıdığı filtreler kalır.",
     "unknown": "Böyle bir rapor yok.",
     "empty": "Bu rapor için gösterilecek sonuç yok.",
     "reversedRange": "Başlangıç tarihi bitişten sonra olduğu için tarih aralığı yok sayıldı."

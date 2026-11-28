@@ -311,6 +311,51 @@ public sealed class ReportConsistencyTests(ApiFactory factory) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Forbidden, forbidden.StatusCode);
     }
 
+    [Fact]
+    public async Task Figure_drilldown_and_excel_export_share_one_scope_in_every_report_family()
+    {
+        await SeedAsync();
+        var (admin, _) = await ApiClient.LoginAsNewUserAsync(factory, UserRole.Admin, "boss@example.com");
+        const string range = "from=2026-03-01&to=2026-03-31";
+        var families = 0;
+
+        foreach (var report in Enum.GetValues<ReportName>())
+        {
+            var route = ReportNames.ToRoute(report);
+            var metric = ReportCatalog.Get(report).FirstOrDefault(m => m.Shape is MetricShape.Count or MetricShape.Distribution);
+            if (metric is null)
+            {
+                continue;
+            }
+
+            using var figures = await admin.GetAsync($"{DrilldownPath}/{route}?{range}");
+            Assert.Equal(HttpStatusCode.OK, figures.StatusCode);
+            var body = await admin.ReadJsonAsync<System.Text.Json.JsonElement>(figures);
+            var figure = body.GetProperty("figures").EnumerateArray().Single(f => f.GetProperty("metric").GetString() == metric.Key);
+            var value = (long)figure.GetProperty("value").GetDouble();
+            if (value == 0)
+            {
+                continue;
+            }
+
+            using var drill = await admin.GetAsync($"{DrilldownPath}/{route}/drilldown?metric={metric.Key}&{range}&pageSize=100");
+            Assert.Equal(HttpStatusCode.OK, drill.StatusCode);
+            var rows = await admin.ReadJsonAsync<System.Text.Json.JsonElement>(drill);
+            var total = rows.GetProperty(rows.GetProperty("kind").GetString()!).GetProperty("totalCount").GetInt64();
+
+            using var export = await admin.GetAsync($"{DrilldownPath}/{route}/export?metric={metric.Key}&{range}");
+            Assert.Equal(HttpStatusCode.OK, export.StatusCode);
+            using var workbook = new ClosedXML.Excel.XLWorkbook(new MemoryStream(await export.Content.ReadAsByteArrayAsync(Ct)));
+            var exported = workbook.Worksheet("Kayıtlar").LastRowUsed()!.RowNumber() - 1;
+
+            Assert.Equal(value, total);
+            Assert.Equal(value, exported);
+            families++;
+        }
+
+        Assert.True(families >= 6, $"only {families} report families had a non-empty count figure");
+    }
+
     private static async Task AssertInvalidAsync(GetDrilldownHandler handler, GetDrilldownQuery query, string field, string code)
     {
         var failure = await Assert.ThrowsAsync<FluentValidation.ValidationException>(() => handler.HandleAsync(query, Ct));

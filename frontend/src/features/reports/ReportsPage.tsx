@@ -29,7 +29,7 @@ import { DEFAULT_REPORT, isReportName, REPORT_NAMES, useReport, type ReportName 
 import { FigureCard } from './FigureCard';
 import { PeriodPicker } from './PeriodPicker';
 import { ReportFilterBar } from './ReportFilterBar';
-import { activeFilterKeys, filterQuery, readReportFilter, useReportFilter } from './useReportFilter';
+import { activeFilterKeys, filterQuery, readReportFilter, REPORT_FILTER_FIELDS, useReportFilter } from './useReportFilter';
 
 /** Server ScopeLabel of IT staff (their teams only); admins get `all`. */
 const TEAMS_SCOPE = 'teams';
@@ -87,6 +87,7 @@ function ReportView({ report }: { report: ReportName }) {
           // Wide screens: the filters take the card's width; the toolbar row would squeeze them into one column.
           filterBar
         )}
+        <Text type="supporting">{t('page.filtersNote', { names: REPORT_FILTER_FIELDS[report].map((key) => t(`filters.${key}`)).join(', ') })}</Text>
         <HStack gap={2} wrap="wrap" vAlign="center">
           <ActiveFilterChips filter={filter} onRemove={(key) => setFilter(key, '')} />
           {!isPhone && activeCount > 0 && <Button label={tc('filters.clear')} variant="ghost" onClick={clear} />}

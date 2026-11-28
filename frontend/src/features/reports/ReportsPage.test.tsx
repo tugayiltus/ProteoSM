@@ -253,4 +253,27 @@ describe('ReportsPage', () => {
     expect(within(figure).getByText('Hizmet yok')).toBeInTheDocument();
     expect(within(figure).queryByRole('link')).not.toBeInTheDocument();
   });
+  it('lists the filters that apply to the open tab and keeps only shared ones when the tab changes', async () => {
+    mockApi(routes());
+    const { user, router } = renderRoute(`/reports/incidents?${RANGE}&priority=p1&teamId=${TEAM_ID}`);
+    expect(await screen.findByText(/Bu sekmede geçerli filtreler: .*Öncelik.*Ekip/)).toBeInTheDocument();
+    expect(screen.getByText(/Başlangıç tarihi/, { selector: 'p, span' })).toBeInTheDocument();
+
+    await user.click(within(screen.getByRole('navigation', { name: 'Rapor türleri' })).getByRole('link', { name: 'Görevler' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/reports/tasks'));
+    expect(await screen.findByText(/Bu sekmede geçerli filtreler: Başlangıç tarihi, Bitiş tarihi, Ekip\./)).toBeInTheDocument();
+    expect(router.state.location.search).not.toContain('priority');
+    expect(router.state.location.search).toContain('from=2026-09-01');
+    expect(router.state.location.search).toContain(`teamId=${TEAM_ID}`);
+  });
+  it('keeps the filter panel visible on every tab, also while a report fails to load', async () => {
+    mockApi(routes());
+    const { router } = renderRoute('/reports/incidents');
+    const tabs = ['incidents', 'requests', 'operations', 'transfers', 'assets', 'warranty', 'changes', 'tasks', 'problems', 'licences'];
+    for (const tab of tabs) {
+      await router.navigate(`/reports/${tab}`);
+      await waitFor(() => expect(router.state.location.pathname).toBe(`/reports/${tab}`));
+      await waitFor(() => expect(screen.getByText(/Bu sekmede geçerli filtreler:/)).toBeInTheDocument());
+    }
+  });
 });
