@@ -1,8 +1,8 @@
 # ProteoSM move drill
 
-Run by `tools/proteosm-move-drill.sh` on 2026-11-27T22:44:43Z at commit `e236d98a`: Proteone stack from `0355db4` (images `proteone-*:0355db4b`), ProteoSM images `proteosm-*:latest`. Procedure: `docs/operations.md`, "Proteone to ProteoSM move". Throw-away Compose projects `proteosm-move-drill-fresh`, `proteone-move-drill-old`, `proteosm-move-drill-new`; all removed at the end.
+Run by `tools/proteosm-move-drill.sh` on 2026-11-28T08:34:52Z at commit `55961eb3`: Proteone stack from `0355db4` (images `proteone-*:0355db4b`), ProteoSM images `proteosm-*:latest`. Procedure: `docs/operations.md`, "Proteone to ProteoSM move". Throw-away Compose projects `proteosm-move-drill-fresh`, `proteone-move-drill-old`, `proteosm-move-drill-new`; all removed at the end.
 
-Steps: (1) fresh ProteoSM stack + `setup-admin`; (2) Proteone stack, `seed-pilot --scale 0.2` (Pilot environment), `tools/lib/proteosm_drill.py seed`, `tools/lib/proteosm_move_drill.py extra`, writes stopped, `tools/backup.sh` of that checkout; (3) `tools/restore.sh proteone-20261127-224331.tar.gz` into the ProteoSM stack, counts and digests compared with writes stopped, `tools/lib/proteosm_move_drill.py verify`; (4) the old stack starts again (rollback).
+Steps: (1) fresh ProteoSM stack + `setup-admin`; (2) Proteone stack, `seed-pilot --scale 0.2` (Pilot environment), `tools/lib/proteosm_drill.py seed`, `tools/lib/proteosm_move_drill.py extra`, writes stopped, `tools/backup.sh` of that checkout; (3) `tools/restore.sh proteone-20261128-083340.tar.gz` into the ProteoSM stack, counts and digests compared with writes stopped, `tools/lib/proteosm_move_drill.py verify`; (4) the old stack starts again (rollback).
 
 ## Row counts
 
@@ -33,28 +33,28 @@ Tables that grew after the new stack started (Worker jobs on restored data, not 
 | fresh: default email templates exist | True | True | pass |
 | the Proteone stack writes a proteone- archive | proteone- | proteone- | pass |
 | tools/restore.sh restores the proteone- archive (row counts match its manifest, migrate ran) | 0 | 0 | pass |
-| rows of users identical (digest) | f6be57d3f398a7028e48ff92d25d19dc | f6be57d3f398a7028e48ff92d25d19dc | pass |
-| rows of tickets identical (digest) | c6d941a325af9303574f4265de556239 | c6d941a325af9303574f4265de556239 | pass |
-| rows of ticket_assets identical (digest) | 637fb68d59b59c82a9c96a81e92bf4fd | 637fb68d59b59c82a9c96a81e92bf4fd | pass |
-| rows of change_ticket_links identical (digest) | ee448aae07ed38ff047289603b84e25e | ee448aae07ed38ff047289603b84e25e | pass |
-| rows of problem_tickets identical (digest) | ef733369f12b557b45a907b708c388b0 | ef733369f12b557b45a907b708c388b0 | pass |
-| rows of ticket_attachments identical (digest) | 5d0ed82777d0b0f29db38955ba007570 | 5d0ed82777d0b0f29db38955ba007570 | pass |
-| rows of export_jobs identical (digest) | 9500b631ada0aa9e469395bb94d86cc3 | 9500b631ada0aa9e469395bb94d86cc3 | pass |
-| rows of email_templates identical (digest) | 9b9319402cc2a1284727bea3a42093f4 | 9b9319402cc2a1284727bea3a42093f4 | pass |
-| rows of audit_events identical (digest) | 250eeb585386cff0310d59df0cae078c | 250eeb585386cff0310d59df0cae078c | pass |
-| rows of monitoring_sources identical (digest) | 01af89feb3ae928f7801bc92bb539180 | 01af89feb3ae928f7801bc92bb539180 | pass |
-| rows of auth_settings identical (digest) | 9e27a0158151b973f1bc705f99d919cc | 9e27a0158151b973f1bc705f99d919cc | pass |
-| rows of email_settings identical (digest) | 1e47e3147762cf299f0e764297b7cdb0 | 1e47e3147762cf299f0e764297b7cdb0 | pass |
+| rows of users identical (digest) | df9e37c465584cab036d43f47fcc2006 | df9e37c465584cab036d43f47fcc2006 | pass |
+| rows of tickets identical (digest) | b59ad7268ba0da641acd76e82af77e5c | b59ad7268ba0da641acd76e82af77e5c | pass |
+| rows of ticket_assets identical (digest) | 475d5027aeff3106e8becd0112066650 | 475d5027aeff3106e8becd0112066650 | pass |
+| rows of change_ticket_links identical (digest) | c6530ee816755da3fbbe0a001df14d53 | c6530ee816755da3fbbe0a001df14d53 | pass |
+| rows of problem_tickets identical (digest) | 92e9f749de511954b052e8db29dce618 | 92e9f749de511954b052e8db29dce618 | pass |
+| rows of ticket_attachments identical (digest) | 53cca108ab2c833d59f2f22875df192c | 53cca108ab2c833d59f2f22875df192c | pass |
+| rows of export_jobs identical (digest) | b18713c8338f9af9d9b684169051e783 | b18713c8338f9af9d9b684169051e783 | pass |
+| rows of audit_events identical (digest) | c1fb5af5428cd79236ca606bd096f31b | c1fb5af5428cd79236ca606bd096f31b | pass |
+| rows of monitoring_sources identical (digest) | 7ae62cec37133ac1b92ce8a59f14cfe8 | 7ae62cec37133ac1b92ce8a59f14cfe8 | pass |
+| rows of auth_settings identical (digest) | ebbb26888da0405f5b29b3d8b69c1dbe | ebbb26888da0405f5b29b3d8b69c1dbe | pass |
+| rows of email_settings identical (digest) | d1efca87ad60504c26e2cfa6475c3011 | d1efca87ad60504c26e2cfa6475c3011 | pass |
 | the new stack's database and role are proteosm | proteosm | proteosm | pass |
 | health | 200 | 200 | pass |
 | a session from the Proteone stack ends (cookie renamed): users sign in once more | 401 | 401 | pass |
 | the admin signs in with the same password | 200 | 200 | pass |
 | the employee signs in with the same password | 200 | 200 | pass |
 | attachment downloads with the same size | 2176 | 2176 | pass |
-| report export file downloads with the same size | 12470 | 12470 | pass |
+| report export file downloads with the same size | 12469 | 12469 | pass |
 | deactivated user cannot sign in | HTTP 401 auth.invalid_credentials | HTTP 401 auth.invalid_credentials | pass |
-| custom email template kept | Drill custom account_activation | Drill custom account_activation | pass |
-| default email templates kept as defaults | 0 | 0 | pass |
+| custom email template byte-identical (subject and body) | True | True | pass |
+| every unchanged default gets the ProteoSM wording and footer (same subject) | 22 | 22 | pass |
+| no unchanged default still names Proteone | 0 | 0 | pass |
 | SMTP password decrypts (same test result as before the move) | ok=True code=None | ok=True code=None | pass |
 | LDAP bind password decrypts (same test result) | ok=False code=auth.directory_unavailable | ok=False code=auth.directory_unavailable | pass |
 | Entra client secret decrypts (same test result) | ok=False code=auth.entra_tenant_not_found | ok=False code=auth.entra_tenant_not_found | pass |
