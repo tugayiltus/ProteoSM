@@ -85,12 +85,14 @@ export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: 
   const add = useAddComment();
   const [visibility, setVisibility] = useState<Visibility>('public');
   const panelId = useId();
-  // One draft per tab: a note typed as internal never turns into a public reply when the tab changes.
+  // One draft and one file list per tab: nothing chosen for an internal note goes out with a public reply.
   const [drafts, setDrafts] = useState<Record<Visibility, string>>({ public: '', internal: '' });
   const body = drafts[visibility];
   const setBody = (update: string | ((current: string) => string)) =>
     setDrafts((current) => ({ ...current, [visibility]: typeof update === 'function' ? update(current[visibility]) : update }));
-  const [files, setFiles] = useState<File[]>([]);
+  const [fileDrafts, setFileDrafts] = useState<Record<Visibility, File[]>>({ public: [], internal: [] });
+  const files = fileDrafts[visibility];
+  const setFiles = (next: File[]) => setFileDrafts((current) => ({ ...current, [visibility]: next }));
   const [formKey, setFormKey] = useState(0);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
@@ -108,7 +110,7 @@ export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: 
       {
         onSuccess: () => {
           setDrafts((current) => ({ ...current, [visibility]: '' }));
-          setFiles([]);
+          setFileDrafts((current) => ({ ...current, [visibility]: [] }));
           setFormKey((key) => key + 1);
         },
       },
@@ -136,7 +138,7 @@ export function CommentBox({ ticket, handle }: { ticket: TicketDetail; handle?: 
         {/* Locked while sending: the success handler clears the box, which would drop anything typed meanwhile. */}
         <TextArea ref={bodyRef} label={t('comment.body')} value={body} isDisabled={add.isPending} onChange={setBody} />
         <ReplyArticlePicker onInsert={(text) => setBody((current) => (current.trim() === '' ? text : `${current}\n${text}`))} />
-        <AttachmentInput key={formKey} label={t('comment.files')} hint={t('new.filesHint')} files={files} onChange={setFiles} />
+        <AttachmentInput key={`${visibility}-${formKey}`} label={t('comment.files')} hint={t('new.filesHint')} files={files} onChange={setFiles} />
         <HStack>
           <Button type="submit" label={t('comment.send')} variant="primary" isDisabled={body.trim() === '' && files.length === 0} isLoading={add.isPending} />
         </HStack>

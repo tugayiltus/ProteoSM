@@ -55,6 +55,36 @@ describe('ticket header', () => {
     expect(screen.getByRole('textbox', { name: 'Mesajınız' })).toHaveValue('Gizli not');
   });
 
+  it('never sends a file chosen for an internal note with a public reply', async () => {
+    let sent = '';
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: IT_ME },
+      ...detailRoutes({ ...WORKABLE, assigneeId: IT_ME.id, assigneeName: 'Can Demir' }),
+      [`POST /api/v1/tickets/${INCIDENT.number}/comments`]: async (request: Request) => {
+        sent = await request.text();
+        return { status: 201, body: {} };
+      },
+    } as never);
+    const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
+    const fileInput = () => screen.getByLabelText(/Dosya ekle/, { selector: 'input[type="file"]' });
+
+    await screen.findByRole('textbox', { name: 'Mesajınız' });
+    await user.click(screen.getByRole('tab', { name: 'İç not' }));
+    await user.upload(fileInput(), new File(['x'], 'gizli.pdf', { type: 'application/pdf' }));
+    expect(screen.getByText('gizli.pdf')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Yanıtla' }));
+
+    expect(screen.queryByText('gizli.pdf')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Gönder' })).toHaveAttribute('aria-disabled', 'true');
+    await user.type(screen.getByRole('textbox', { name: 'Mesajınız' }), 'Genel yanıt');
+    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+
+    await waitFor(() => expect(sent).toContain('Genel yanıt'));
+    expect(sent).not.toContain('gizli.pdf');
+    await user.click(screen.getByRole('tab', { name: 'İç not' }));
+    expect(screen.getByText('gizli.pdf')).toBeInTheDocument();
+  });
+
   it('moves the keyboard focus to "Yanıtla" after a claim', async () => {
     const base = `/api/v1/tickets/${INCIDENT.number}`;
     const claimed = { ...WORKABLE, assigneeId: IT_ME.id, assigneeName: 'Can Demir', version: WORKABLE.version + 1 };
