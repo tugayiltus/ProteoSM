@@ -10,6 +10,7 @@ import path from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 
 import { chooseOption, requiredEnv } from './helpers';
+import { layoutProblems } from './layoutProbe';
 import { adminSession, seedChange, seedChangeTask, seedIncidents, seedProblem, seedPublishedArticle, seedWorld, setProblemTarget, submitChange, userSession } from './world';
 
 const OUT = requiredEnv('UI_QA_OUT');
@@ -17,7 +18,6 @@ const MODES = ['light', 'dark'] as const;
 const COLOR_MODE_STORAGE_KEY = 'proteone-theme';
 const SWEEP_TIMEOUT_MS = 600_000;
 const SETTLE_MS = 800;
-const OVERFLOW_TOLERANCE_PX = 1;
 const MESSAGE_LENGTH = 200;
 const FILE_NAME_LENGTH = 80;
 const SEARCH_BUTTON = 'Ara';
@@ -57,9 +57,8 @@ async function sweep(page: Page, dir: string, prefix: string, paths: readonly st
       await page.goto(target);
       await page.waitForLoadState('load');
       await page.waitForTimeout(SETTLE_MS);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      if (overflow > OVERFLOW_TOLERANCE_PX) {
-        problems.push(`overflow ${overflow}px ${mode}${prefix} ${target}`);
+      for (const problem of await layoutProblems(page, target)) {
+        problems.push(`layout ${mode}${prefix} ${target}: ${problem}`);
       }
       const name = `${mode}${prefix}${target.replaceAll('/', '_') || '_home'}`.slice(0, FILE_NAME_LENGTH);
       await page.screenshot({ path: path.join(dir, `${name}.png`), fullPage: true });
@@ -132,4 +131,6 @@ test('every screen in light and dark mode', async ({ browser }, info) => {
     await page.keyboard.press('Escape');
   }
   writeFileSync(path.join(dir, 'problems.txt'), problems.join('\n'));
+  // The sweep fails on any layout problem, so a clipped column or a page wider than the viewport cannot ship unseen.
+  expect(problems.filter((problem) => problem.startsWith('layout '))).toEqual([]);
 });
