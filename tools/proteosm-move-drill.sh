@@ -8,7 +8,8 @@
 #      key; its own tools/backup.sh writes a proteone- archive.
 #   3. tools/restore.sh of this checkout restores that archive into a new ProteoSM stack; row counts of every table and
 #      row samples are compared with the Proteone database, then tools/lib/proteosm_move_drill.py checks sign-in,
-#      files, templates and that every stored secret still decrypts.
+#      files, templates (the custom one byte-identical, unchanged defaults with the ProteoSM wording and footer) and
+#      that every stored secret still decrypts.
 # Writes docs/release/proteosm-migration-drill.md. Needs Docker, the ProteoSM images (tools/docker-build.sh) and a
 # certificate pair in deploy/certs/ (tools/gen-self-signed-cert.sh).
 #
@@ -42,8 +43,9 @@ readonly REPORT="docs/release/proteosm-migration-drill.md"
 readonly NEW_VERSION="${PROTEOSM_VERSION:-latest}"
 # Exact row count of every table in one query.
 readonly TABLE_COUNTS_SQL="SELECT table_name || '=' || (xpath('/row/c/text()', query_to_xml(format('SELECT count(*) AS c FROM %I.%I', table_schema, table_name), false, true, '')))[1]::text FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name"
-# Row samples: a digest over whole rows, so any changed value shows.
-readonly SAMPLE_TABLES=(users tickets ticket_assets change_ticket_links problem_tickets ticket_attachments export_jobs email_templates audit_events monitoring_sources auth_settings email_settings)
+# Row samples: a digest over whole rows, so any changed value shows. Not email_templates: migrate (ProteoSMEmailDefaults)
+# rewrites unchanged defaults on purpose; tools/lib/proteosm_move_drill.py verify compares them template by template.
+readonly SAMPLE_TABLES=(users tickets ticket_assets change_ticket_links problem_tickets ticket_attachments export_jobs audit_events monitoring_sources auth_settings email_settings)
 # Must be equal after the move; other tables may grow once the new Worker runs (heartbeats, SLA monitor, outbox).
 readonly SUMMARY_TABLES=(users tickets ticket_assets change_ticket_links problem_tickets ticket_comments ticket_attachments export_jobs email_templates audit_events monitoring_sources)
 

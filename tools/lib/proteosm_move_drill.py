@@ -27,6 +27,10 @@ SMTP_SECRET = "drill-smtp-secret"
 LDAP_SECRET = "drill-ldap-secret"
 ENTRA_SECRET = "drill-entra-secret"
 CUSTOM_SUBJECT_PREFIX = "Drill custom "
+# Migration ProteoSMEmailDefaults: a template still equal to the shipped default gets the new name and this footer.
+FORMER_PRODUCT_NAME = "Proteone"
+PRODUCT_NAME = "ProteoSM"
+DEFAULT_TEMPLATE_FOOTER = "\n\nProteoSM by ProteONE"
 DRILL_DOMAIN = "example.com"
 SIGNED_PARTS_SEPARATOR = "."
 HTTP_OK = 200
@@ -59,6 +63,11 @@ class Anonymous(drill.Client):
             return error.code, error.read()
 
 
+def default_body_after_move(body):
+    """The body the ProteoSMEmailDefaults migration writes for a template still equal to its shipped default."""
+    return body.replace(FORMER_PRODUCT_NAME, PRODUCT_NAME) + DEFAULT_TEMPLATE_FOOTER
+
+
 def test_result(client, path, body=None):
     status, payload = client.request("POST", path, body)
     if status != HTTP_OK:
@@ -79,6 +88,10 @@ def extra(base, state_path):
     custom_subject = CUSTOM_SUBJECT_PREFIX + template["eventType"]
     admin.json("PUT", f"/admin/email-templates/{template['eventType']}",
                {"version": template["version"], "subject": custom_subject, "body": template["body"]})
+
+    # Every template as the old stack holds it, to compare after the move.
+    snapshot = {t["eventType"]: {"subject": t["subject"], "body": t["body"]}
+                for t in admin.json("GET", "/admin/email-templates")}
 
     mail = admin.json("GET", "/admin/email-settings")
     admin.json("PUT", "/admin/email-settings", {
@@ -108,6 +121,7 @@ def extra(base, state_path):
         raise SystemExit(f"monitoring event on the old stack -> {before}")
 
     state.update({"customTemplate": {"eventType": template["eventType"], "subject": custom_subject},
+                  "templates": snapshot,
                   "smtpTest": smtp_test, "ldapTest": ldap_test, "entraTest": entra_test,
                   "monitoringSourceId": source_id, "monitoringSecret": secret})
     with open(state_path, "w", encoding="utf-8") as handle:
@@ -149,11 +163,20 @@ def verify(base, state_path):
     record("deactivated user cannot sign in", f"HTTP {drill.HTTP_UNAUTHORIZED} {drill.INVALID_CREDENTIALS}",
            f"HTTP {status} {drill.problem_code(body)}")
 
-    templates = admin.json("GET", "/admin/email-templates")
-    custom = next((t for t in templates if t["eventType"] == state["customTemplate"]["eventType"]), None)
-    record("custom email template kept", state["customTemplate"]["subject"], custom and custom["subject"])
-    record("default email templates kept as defaults", 0,
-           sum(1 for t in templates if t["subject"].startswith(CUSTOM_SUBJECT_PREFIX) and t["eventType"] != state["customTemplate"]["eventType"]))
+    templates = {t["eventType"]: t for t in admin.json("GET", "/admin/email-templates")}
+    before = state["templates"]
+    custom_type = state["customTemplate"]["eventType"]
+    custom = templates.get(custom_type)
+    record("custom email template byte-identical (subject and body)", True,
+           custom is not None and custom["subject"] == state["customTemplate"]["subject"]
+           and before[custom_type]["subject"] == custom["subject"] and before[custom_type]["body"] == custom["body"])
+    defaults = [event for event in before if event != custom_type]
+    record("every unchanged default gets the ProteoSM wording and footer (same subject)", len(defaults),
+           sum(1 for event in defaults if event in templates
+               and templates[event]["subject"] == before[event]["subject"]
+               and templates[event]["body"] == default_body_after_move(before[event]["body"])))
+    record("no unchanged default still names Proteone", 0,
+           sum(1 for event in defaults if event in templates and FORMER_PRODUCT_NAME in templates[event]["body"]))
 
     record("SMTP password decrypts (same test result as before the move)", state["smtpTest"], test_result(admin, "/admin/email-settings/test"))
     record("LDAP bind password decrypts (same test result)", state["ldapTest"], test_result(admin, "/admin/auth-settings/test", {"method": "ldap"}))
