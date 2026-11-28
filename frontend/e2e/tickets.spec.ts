@@ -15,7 +15,7 @@ test('incident: IT claims, notes, replies and completes; employee sees the resol
   await employee.page.getByLabel(/^Konu/).fill('Yazıcı çalışmıyor');
   await employee.page.getByLabel('Açıklama').fill('Kağıt sıkışıyor');
   await expectNoHorizontalScroll(employee.page);
-  await employee.page.getByRole('button', { name: 'Gönder' }).click();
+  await employee.page.getByRole('button', { name: 'Arıza bildir' }).click();
   await expect(employee.page).toHaveURL(TICKET_URL);
   const ticketUrl = employee.page.url();
 
@@ -61,7 +61,7 @@ test('request: admin approves, IT hands over a device, employee sees it under Zi
   await expect(employee.page.getByText('Bu talep yöneticinizin onayından sonra işleme alınır.')).toBeVisible();
   await employee.page.getByLabel(/^Konu/).fill('Yeni dizüstü');
   await employee.page.getByLabel('Açıklama').fill('Göreve başlıyorum');
-  await employee.page.getByRole('button', { name: 'Gönder' }).click();
+  await employee.page.getByRole('button', { name: 'Talep oluştur' }).click();
   await expect(employee.page).toHaveURL(TICKET_URL);
   await expect(employee.page.getByText('Onay: Onay bekliyor')).toBeVisible();
   const number = employee.page.url().split('/').pop() ?? '';
@@ -103,7 +103,7 @@ test('a scanned device label opens a prefilled incident for employees and the de
   await expect(employee.page.getByRole('combobox', { name: 'İlgili cihaz' })).toContainText(world.assetTag);
   await employee.page.getByLabel(/^Konu/).fill('Ekran titriyor');
   await employee.page.getByLabel(/^Açıklama/).fill('Okutulan cihazda ekran titriyor.');
-  await employee.page.getByRole('button', { name: 'Gönder' }).click();
+  await employee.page.getByRole('button', { name: 'Arıza bildir' }).click();
   await expect(employee.page).toHaveURL(TICKET_URL);
   await expect(employee.page.getByText(world.assetTag).first()).toBeVisible();
 

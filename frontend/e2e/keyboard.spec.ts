@@ -37,14 +37,14 @@ test('keyboard only: employee opens an incident after fixing the form errors; IT
   await tabTo(page, page.getByRole('link', { name: /Bir şey çalışmıyor/ }));
   await page.keyboard.press('Enter');
   const subject = page.getByLabel(/^Konu/);
-  await tabTo(page, page.getByRole('button', { name: 'Gönder' }));
+  await tabTo(page, page.getByRole('button', { name: 'Arıza bildir' }));
   await page.keyboard.press('Enter');
   await expect(page.getByText(REQUIRED_ERROR)).toHaveCount(2);
   await expect(subject).toBeFocused();
   await page.keyboard.type(SUBJECT);
   await tabTo(page, page.getByLabel('Açıklama'));
   await page.keyboard.type(DESCRIPTION);
-  await tabTo(page, page.getByRole('button', { name: 'Gönder' }));
+  await tabTo(page, page.getByRole('button', { name: 'Arıza bildir' }));
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(TICKET_URL);
 

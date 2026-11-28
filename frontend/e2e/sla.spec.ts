@@ -16,7 +16,7 @@ test('a new ticket shows both SLA timers and the IT workspace has an SLA riski v
   await openCard(employee.page, 'Bir şey çalışmıyor');
   await employee.page.getByLabel(/^Konu/).fill('Ağ bağlantısı yok');
   await employee.page.getByLabel('Açıklama').fill('Kablo takılı ama bağlanmıyor');
-  await employee.page.getByRole('button', { name: 'Gönder' }).click();
+  await employee.page.getByRole('button', { name: 'Arıza bildir' }).click();
   await expect(employee.page).toHaveURL(TICKET_URL);
   await expect(employee.page.getByText('İlk yanıt:').first()).toBeVisible();
   await expect(employee.page.getByText('Çözüm:').first()).toBeVisible();

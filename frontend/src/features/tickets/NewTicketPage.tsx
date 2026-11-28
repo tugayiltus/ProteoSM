@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
 
 import { applyServerErrors, describeError, isHandledByFields } from '../../shared/api/errorMessage';
@@ -25,7 +25,7 @@ import { UnsavedChangesGuard } from '../../shared/feedback/UnsavedChangesGuard';
 import { FormSelector, FormTextArea, FormTextInput } from '../../shared/form/formFields';
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
-import { SCANNED_ASSET_PARAM, ticketPath } from '../../shared/routes';
+import { ROUTES, SCANNED_ASSET_PARAM, ticketPath } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
 import { useMyAssets, useReferenceLocations, useScannedAsset } from '../assets/api';
 
@@ -43,6 +43,17 @@ const FORM_MAX_WIDTH = 880;
 /** Paired fields sit side by side from this width. */
 const FIELD_COLUMNS = { minWidth: 280 } as const;
 const DESCRIPTION_ROWS = 6;
+
+/** What moves to the other ticket kind: subject, description and location. Category, request type and device are kind specific; files are not kept. */
+interface KindSwitchState {
+  switched: true;
+  subject: string;
+  description: string;
+  locationId: string;
+  filesDropped: boolean;
+}
+
+const isKindSwitchState = (value: unknown): value is KindSwitchState => typeof value === 'object' && value !== null && (value as { switched?: unknown }).switched === true;
 
 const ticketSchema = z.object({
   subject: z.string().trim().min(1, ERROR_CODES.required).max(SUBJECT_MAX_LENGTH, ERROR_CODES.tooLong),
@@ -76,6 +87,8 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
   const scanned = useScannedAsset(scannedId);
   // A scanned device is chosen only when it can be reported; otherwise the form starts without a device.
   const scannedChoice = scanned.data?.canReport === true ? scanned.data : undefined;
+  const location = useLocation();
+  const carried = isKindSwitchState(location.state) ? location.state : null;
   const create = useCreateTicket();
   const upload = useAddComment();
   const [files, setFiles] = useState<File[]>([]);
@@ -86,12 +99,13 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
     handleSubmit,
     setError,
     setValue,
+    getValues,
     formState: { isDirty },
   } = useForm<TicketFormValues>({
     resolver: zodResolver(isRequest ? requestSchema : ticketSchema),
-    defaultValues: { subject: '', description: '', categoryId: NO_SELECTION, locationId: NO_SELECTION, requestTypeId: NO_SELECTION, assetId: NO_SELECTION },
+    defaultValues: { subject: carried?.subject ?? '', description: carried?.description ?? '', categoryId: NO_SELECTION, locationId: carried?.locationId ?? NO_SELECTION, requestTypeId: NO_SELECTION, assetId: NO_SELECTION },
   });
-  const hasChanges = isDirty || files.length > 0;
+  const hasChanges = isDirty || files.length > 0 || carried !== null;
   const requestTypeId = useWatch({ control, name: 'requestTypeId' });
   const needsApproval = requestTypes.data?.some((r) => r.id === requestTypeId && r.requiresApproval) ?? false;
 
@@ -116,6 +130,12 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
     }
   }, [scannedChoiceId, setValue]);
   const typeOptions = useMemo(() => (requestTypes.data ?? []).map((r) => ({ value: r.id, label: r.name })), [requestTypes.data]);
+
+  const switchKind = () => {
+    const { subject, description, locationId } = getValues();
+    const state: KindSwitchState = { switched: true, subject, description, locationId, filesDropped: files.length > 0 };
+    void navigate(isRequest ? ROUTES.newIncident : ROUTES.newRequest, { state });
+  };
 
   const onSubmit = handleSubmit((values) => {
     create.mutate(
@@ -151,12 +171,13 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
   return (
     <VStack gap={4}>
       <PageHeader icon={ROUTE_META.myTickets.icon} titleOverride={isRequest ? t('new.requestTitle') : t('new.incidentTitle')} />
-      <UnsavedChangesGuard when={({ nextLocation }) => hasChanges && (nextLocation.state as TicketDetailState | null)?.created !== true} />
+      <UnsavedChangesGuard when={({ nextLocation }) => hasChanges && (nextLocation.state as TicketDetailState | null)?.created !== true && !isKindSwitchState(nextLocation.state)} />
       <Card padding={6} maxWidth={FORM_MAX_WIDTH}>
         <form noValidate onSubmit={(event) => void onSubmit(event)}>
           <VStack gap={5}>
             <Text type="supporting">{isRequest ? t('new.requestIntro') : t('new.incidentIntro')}</Text>
             <FormAlert message={alert} />
+            {carried?.filesDropped === true && <Banner status="info" title={t('new.filesDropped')} />}
             {scanProblem !== null && <Banner status="warning" title={scanProblem} />}
             {isRequest && (
               <VStack gap={3}>
@@ -165,7 +186,7 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
               </VStack>
             )}
             <FormTextInput control={control} name="subject" label={t('new.subject')} autoComplete="off" isRequired />
-            <FormTextArea control={control} name="description" label={t('new.description')} rows={DESCRIPTION_ROWS} isRequired />
+            <FormTextArea control={control} name="description" label={t('new.description')} rows={DESCRIPTION_ROWS} description={isRequest ? undefined : t('new.incidentDescriptionHint')} isRequired />
             <Grid columns={FIELD_COLUMNS} gap={4}>
               <FormSelector control={control} name="categoryId" label={t('new.category')} options={categoryOptions} placeholder={t('fields.select')} isClearable />
               {!isRequest && (
@@ -174,8 +195,9 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
               <FormSelector control={control} name="locationId" label={t('new.location')} options={locationOptions} placeholder={t('fields.select')} isClearable />
             </Grid>
             <AttachmentInput label={t('new.files')} hint={t('new.filesHint')} files={files} onChange={setFiles} />
-            <HStack hAlign="end">
-              <Button type="submit" label={t('new.submit')} variant="primary" icon={<Icon icon={isRequest ? Icons.plus : Icons.warning} />} isLoading={create.isPending || upload.isPending} />
+            <HStack hAlign="between" vAlign="center" wrap="wrap" gap={2}>
+              <Button type="button" variant="ghost" label={isRequest ? t('new.switchToIncident') : t('new.switchToRequest')} onClick={switchKind} />
+              <Button type="submit" label={isRequest ? t('new.submitRequest') : t('new.submitIncident')} variant="primary" icon={<Icon icon={isRequest ? Icons.plus : Icons.warning} />} isLoading={create.isPending || upload.isPending} />
             </HStack>
           </VStack>
         </form>

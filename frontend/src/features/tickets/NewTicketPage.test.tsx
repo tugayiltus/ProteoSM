@@ -38,7 +38,7 @@ describe('incident device', () => {
     await chooseOption(user, 'İlgili cihaz', 'ASSET-2026-0001 · Lenovo T14');
     await user.type(screen.getByLabelText(/^Konu/), 'Ekran kırık');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Açılmıyor, siyah ekran.');
-    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+    await user.click(screen.getByRole('button', { name: 'Arıza bildir' }));
     await waitFor(() => expect(posted.assetId).toBe('a-1'));
   });
 
@@ -68,13 +68,13 @@ describe('NewTicketPage', () => {
     });
     const { user, router } = renderRoute('/tickets/new/incident');
 
-    await user.click(await screen.findByRole('button', { name: 'Gönder' }));
+    await user.click(await screen.findByRole('button', { name: 'Arıza bildir' }));
     expect(await findFieldMessages('Bu alan zorunludur.')).toHaveLength(2);
     await user.type(screen.getByLabelText(/^Konu/), 'Yazıcı çalışmıyor');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Kağıt sıkışıyor');
     await chooseOption(user, 'Kategori', 'Donanım');
     await user.upload(screen.getByLabelText(/Dosya ekle/, { selector: 'input[type="file"]' }), new File([new Uint8Array([0x89, 0x50])], 'ekran.png', { type: 'image/png' }));
-    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+    await user.click(screen.getByRole('button', { name: 'Arıza bildir' }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe(`/tickets/${INCIDENT.number}`));
     expect(posted).toEqual({ subject: 'Yazıcı çalışmıyor', description: 'Kağıt sıkışıyor', categoryId: 'c-1', locationId: null, assetId: null });
@@ -97,7 +97,7 @@ describe('NewTicketPage', () => {
     expect(screen.getByText('Bu talep yöneticinizin onayından sonra işleme alınır.')).toBeInTheDocument();
     await user.type(screen.getByLabelText(/^Konu/), 'Yeni cihaz');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Göreve başlıyorum');
-    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+    await user.click(screen.getByRole('button', { name: 'Talep oluştur' }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/tickets/REQ-2026-000001'));
     expect(posted).toEqual({ subject: 'Yeni cihaz', description: 'Göreve başlıyorum', categoryId: null, locationId: null, requestTypeId: 'rt-1' });
@@ -128,7 +128,7 @@ describe('incident from a scanned device label', () => {
     await waitFor(() => expect(device).toHaveTextContent('ASSET-2026-0009 · HP ProDesk 400'));
     await user.type(screen.getByLabelText(/^Konu/), 'Yazıcı');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Kağıt sıkışıyor.');
-    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+    await user.click(screen.getByRole('button', { name: 'Arıza bildir' }));
     await waitFor(() => expect(posted.assetId).toBe(SCANNED.id));
   });
 
@@ -146,7 +146,7 @@ describe('incident from a scanned device label', () => {
     expect(await screen.findByText('Bu cihaz için arıza kaydı açılamaz.')).toBeInTheDocument();
     await user.type(screen.getByLabelText(/^Konu/), 'Yazıcı');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Kağıt sıkışıyor.');
-    await user.click(screen.getByRole('button', { name: 'Gönder' }));
+    await user.click(screen.getByRole('button', { name: 'Arıza bildir' }));
     await waitFor(() => expect(posted.assetId).toBeNull());
   });
 
@@ -184,5 +184,27 @@ describe('scan route', () => {
     const { router } = renderRoute('/scan/asset/a-9');
     await waitFor(() => expect(router.state.location.pathname).toBe('/tickets/new/incident'));
     expect(router.state.location.search).toBe('?asset=a-9');
+  });
+  it('names the primary action after the kind and hints what to write', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
+    renderRoute('/tickets/new/incident');
+    expect(await screen.findByRole('button', { name: 'Arıza bildir' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Gönder' })).not.toBeInTheDocument();
+    expect(screen.getByText('Neyi yaparken sorun oldu? Varsa hata mesajını yazın.')).toBeInTheDocument();
+  });
+
+  it('carries subject and description to the other kind and drops kind specific choices', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
+    const { user, router } = renderRoute('/tickets/new/incident');
+    await user.type(await screen.findByLabelText(/^Konu/), 'Ekran kırık');
+    await user.type(screen.getByLabelText(/^Açıklama/), 'Siyah ekran.');
+    await user.click(screen.getByRole('button', { name: 'Bunun yerine talep oluştur' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/tickets/new/request'));
+    expect(await screen.findByLabelText(/^Konu/)).toHaveValue('Ekran kırık');
+    expect(screen.getByLabelText(/^Açıklama/)).toHaveValue('Siyah ekran.');
+    expect(screen.getByRole('button', { name: 'Talep oluştur' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Talep oluştur' }));
+    // The request type is not carried over, so the request cannot be sent without choosing one.
+    expect(router.state.location.pathname).toBe('/tickets/new/request');
   });
 });

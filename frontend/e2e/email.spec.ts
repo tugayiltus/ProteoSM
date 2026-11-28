@@ -16,7 +16,7 @@ test('completing a ticket emails the requester the resolution and never the inte
   await openCard(employee.page, 'Bir şey çalışmıyor');
   await employee.page.getByLabel(/^Konu/).fill('Yazıcı çalışmıyor');
   await employee.page.getByLabel('Açıklama').fill('Kağıt sıkışıyor');
-  await employee.page.getByRole('button', { name: 'Gönder' }).click();
+  await employee.page.getByRole('button', { name: 'Arıza bildir' }).click();
   await expect(employee.page).toHaveURL(TICKET_URL);
   const number = employee.page.url().split('/').pop() ?? '';
 
