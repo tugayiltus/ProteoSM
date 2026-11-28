@@ -71,6 +71,29 @@ describe('TicketActions', () => {
     await waitFor(() => expect(posted).toEqual({ version: 11, resolution: 'Toner değişti', outcome: 'resolved', rootCause: null }));
   });
 
+  it('moves focus to the page title when completing removes the action list', async () => {
+    let done = false;
+    mockApi(
+      routes({
+        [`GET ${BASE}`]: async () => ({ status: 200, body: done ? { ...WORKABLE, status: 'completed' } : WORKABLE }),
+        [`POST ${BASE}/complete`]: async () => {
+          done = true;
+          return { status: 200, body: { ...WORKABLE, status: 'completed' } };
+        },
+      }) as never,
+    );
+    const { user } = renderRoute(`/tickets/${INCIDENT.number}`);
+
+    await user.click(await screen.findByRole('button', { name: 'Tamamla' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('Çözüm (kullanıcı görür)'), 'Toner değişti');
+    await chooseOption(user, 'Sonuç', 'Çözüldü', dialog);
+    await user.click(within(dialog).getByRole('button', { name: 'Onayla' }));
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Tamamla' })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toHaveFocus());
+  });
+
   it('holds the work actions while the ticket refreshes, so a dialog never starts from an outdated version', async () => {
     let release = () => undefined as void;
     const refreshed = new Promise<void>((resolve) => {

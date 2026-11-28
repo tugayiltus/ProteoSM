@@ -29,6 +29,14 @@ export interface PageHeaderProps {
   description?: ReactNode;
 }
 
+/** Moves focus to the page title when focus has fallen to the page body, for example after the control that held it left the page. */
+export function focusMainHeadingIfLost(): void {
+  const active = document.activeElement;
+  if (active === null || active === document.body) {
+    document.querySelector<HTMLElement>('h1')?.focus();
+  }
+}
+
 export function PageHeader({ actions, titleOverride, icon, description }: PageHeaderProps) {
   const crumbs = useCrumbs();
   const { pathname } = useLocation();

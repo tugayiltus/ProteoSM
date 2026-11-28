@@ -5,11 +5,12 @@
  */
 import { Button } from '@astryxdesign/core/Button';
 import { HStack } from '@astryxdesign/core/HStack';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { describeError } from '../../shared/api/errorMessage';
 import { FormAlert } from '../../shared/feedback/FormAlert';
+import { focusMainHeadingIfLost } from '../../shared/navigation/PageHeader';
 import { SectionCard } from '../../shared/page/SectionCard';
 
 import { useTicketAction, type TicketDetail } from './api';
@@ -56,7 +57,22 @@ export function TicketActions({ ticket, hideClaim = false }: { ticket: TicketDet
   const actions = hideClaim ? { ...available, direct: available.direct.filter((kind) => kind !== 'claim') } : available;
   const refreshing = useTicketBusy(ticket);
 
-  if (actions.direct.length === 0 && actions.dialogs.length === 0) {
+  const hasActions = actions.direct.length > 0 || actions.dialogs.length > 0;
+  const wasOpen = useRef(false);
+  const hadActions = useRef(hasActions);
+
+  // Synchronizes keyboard focus with the DOM: a closed dialog or a vanished action list must not leave focus on the page body.
+  useEffect(() => {
+    const dialogClosed = wasOpen.current && dialog === null;
+    const actionsGone = hadActions.current && !hasActions;
+    wasOpen.current = dialog !== null;
+    hadActions.current = hasActions;
+    if (dialogClosed || actionsGone) {
+      requestAnimationFrame(focusMainHeadingIfLost);
+    }
+  }, [dialog, hasActions]);
+
+  if (!hasActions) {
     return null;
   }
 
