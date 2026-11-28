@@ -36,6 +36,9 @@ interface ResultItem extends SearchableItem<{ group: string }> {
   /** Route that opens when the row is chosen. */
   path: string;
   isInactive?: boolean;
+  /** Record number; absent for types that show the title only. */
+  number?: string;
+  title: string;
 }
 
 function isShortcutBlocked(target: EventTarget | null): boolean {
@@ -121,12 +124,15 @@ export function GlobalSearch() {
               id: `${group.type}:${hit.key}`,
               label: TITLE_ONLY_TYPES.has(group.type) ? hit.title : `${hit.key} ${hit.title}`,
               path,
+              number: TITLE_ONLY_TYPES.has(group.type) ? undefined : hit.key,
+              title: hit.title,
+             
               isInactive: group.type === SERVICE_TYPE && hit.status === INACTIVE_SERVICE_STATUS,
               auxiliaryData: { group: title },
             });
           }
           if (group.hasMore) {
-            items.push({ id: `all:${group.type}`, label: t('seeAll'), path: listPathForType(group.type, query, role), auxiliaryData: { group: title } });
+            items.push({ id: `all:${group.type}`, label: t('seeAll'), title: t('seeAll'), path: listPathForType(group.type, query, role), auxiliaryData: { group: title } });
           }
         }
         paths.current = new Map(items.map((item) => [item.id, item.path]));
@@ -158,16 +164,13 @@ export function GlobalSearch() {
         }}
         emptySearchText={isTooShort ? t('hint') : t('empty')}
         emptyBootstrapText={<Text>{t('hint')}</Text>}
-        renderItem={(item) =>
-          item.isInactive === true ? (
-            <HStack gap={2} vAlign="center">
-              <Text>{item.label}</Text>
-              <ActiveToken isActive={false} />
-            </HStack>
-          ) : (
-            <Text>{item.label}</Text>
-          )
-        }
+        renderItem={(item) => (
+          <HStack gap={2} vAlign="center" wrap="wrap">
+            {item.number !== undefined && <Text type="supporting">{item.number}</Text>}
+            <Text>{item.title}</Text>
+            {item.isInactive === true && <ActiveToken isActive={false} />}
+          </HStack>
+        )}
       />
     </>
   );

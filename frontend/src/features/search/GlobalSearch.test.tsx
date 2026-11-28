@@ -1,5 +1,5 @@
 import { TextInput } from '@astryxdesign/core/TextInput';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -260,5 +260,36 @@ describe('GlobalSearch', () => {
     const button = screen.getByRole('button', { name: 'Ara' });
     expect(button).toHaveTextContent('');
     expect(await openBox(user)).toBeInTheDocument();
+  });
+  it('returns focus to the search button after Escape, and after choosing a hit with the keyboard', async () => {
+    mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
+    renderSearch();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const input = await openBox(user);
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Ara' })).toHaveFocus());
+
+    await openBox(user);
+    await user.type(screen.getByRole('combobox'), 'dell');
+    await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
+    await screen.findByText(/Yazıcı bozuk/);
+    await user.keyboard('{ArrowDown}{Enter}');
+    await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Ara' })).toHaveFocus());
+    expect(input).toBeDefined();
+  });
+
+  it('shows the number apart from the title, under the type group', async () => {
+    mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
+    renderSearch();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const input = await openBox(user);
+    await user.type(input, 'dell');
+    await act(() => vi.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS * 2));
+    const option = (await screen.findByText('Yazıcı bozuk')).closest('[role="option"]');
+    expect(option).not.toBeNull();
+    expect(within(option as HTMLElement).getByText('INC-2026-0001')).toBeInTheDocument();
+    expect(screen.getAllByText('Kayıtlar')).toHaveLength(1);
   });
 });

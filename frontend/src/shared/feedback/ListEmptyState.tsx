@@ -15,14 +15,16 @@ export interface ListEmptyStateProps {
   onClear: () => void;
   /** Shown when no filter is active: the list holds no record yet. */
   message: string;
+  /** Overrides the generic "no result" text when filters are active. */
+  filteredMessage?: string;
   /** Shown only when no filter is active, e.g. a create button the user may use. */
   action?: ReactNode;
 }
 
-export function ListEmptyState({ activeCount, onClear, message, action }: ListEmptyStateProps) {
+export function ListEmptyState({ activeCount, onClear, message, filteredMessage, action }: ListEmptyStateProps) {
   const { t } = useTranslation();
   if (activeCount > 0) {
-    return <EmptyState message={t('states.noResults')} action={<Button label={t('states.clearFilters')} variant="secondary" onClick={onClear} />} />;
+    return <EmptyState message={filteredMessage ?? t('states.noResults')} action={<Button label={t('states.clearFilters')} variant="secondary" onClick={onClear} />} />;
   }
   return <EmptyState message={message} action={action} />;
 }

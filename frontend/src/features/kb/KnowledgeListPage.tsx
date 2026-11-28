@@ -16,7 +16,8 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { ListToolbar } from '../../shared/list/ListToolbar';
 import { useListParams } from '../../shared/list/useListParams';
@@ -86,7 +87,6 @@ export function KnowledgeListPage() {
   const articles = useArticles({ search: debouncedSearch, categoryId, status, visibility, page: list.page, pageSize: ARTICLE_PAGE_SIZE });
 
   // First use (nothing written yet) and a filter that matches nothing are different situations (UX-11).
-  const filtered = list.search !== '' || categoryId !== '' || status !== '' || visibility !== '';
 
   return (
     <VStack gap={4}>
@@ -135,7 +135,7 @@ export function KnowledgeListPage() {
       <Card padding={0}>
         {articles.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {articles.isError && <ErrorState error={articles.error} onRetry={() => void articles.refetch()} />}
-        {articles.data && articles.data.items.length === 0 && <EmptyState message={filtered ? t('list.empty') : t('list.emptyFirst')} />}
+        {articles.data && articles.data.items.length === 0 && <ListEmptyState activeCount={list.activeCount} onClear={list.clear} message={t('list.emptyFirst')} filteredMessage={t('list.empty')} />}
         {articles.data && articles.data.items.length > 0 && (
           // keepPreviousData shows the last result while the next one loads: mark it busy for screen readers.
           <List hasDividers aria-label={t('list.caption')} aria-busy={articles.isPlaceholderData}>
