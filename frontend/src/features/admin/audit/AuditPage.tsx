@@ -22,9 +22,10 @@ import { ListToolbar } from '../../../shared/list/ListToolbar';
 import { useListParams } from '../../../shared/list/useListParams';
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
-import { useActiveUsers } from '../../../shared/reference/referenceOptions';
+import { REFERENCE_PAGE_SIZE, withCurrentOption } from '../../../shared/reference/referenceOptions';
 import { fromLocalInput } from '../../changes/dateTime';
 import { DayField } from '../../reports/DayField';
+import { useUsers } from '../users/api';
 
 import { useAuditEvents, type AuditEventItem } from './api';
 
@@ -91,8 +92,8 @@ export function AuditPage() {
   const list = useListParams(FILTER_KEYS);
   const entityType = list.filters.entity;
   const { action, actor, from, to } = list.filters;
-  const users = useActiveUsers(undefined);
-  const actorOptions = useMemo(() => (users.data?.items ?? []).map((user) => ({ value: user.id, label: `${user.firstName} ${user.lastName}` })), [users.data]);
+  // Events of deactivated users stay filterable, so the options cover every user, not only active ones.
+  const users = useUsers({ search: '', isActive: undefined, role: undefined, page: 1, pageSize: REFERENCE_PAGE_SIZE });
   const events = useAuditEvents({
     entityType: entityType === '' ? undefined : entityType,
     action: action === '' ? undefined : action,
@@ -102,6 +103,13 @@ export function AuditPage() {
     page: list.page,
     pageSize: PAGE_SIZE,
   });
+
+  // A user beyond the loaded page stays visible while the URL filters on it: named by one of its events, else generically.
+  const actorOptions = useMemo(() => {
+    const options = (users.data?.items ?? []).map((user) => ({ value: user.id, label: `${user.firstName} ${user.lastName}` }));
+    const knownName = events.data?.items.find((event) => event.actorUserId === actor)?.actorName ?? t('audit.selectedActor');
+    return withCurrentOption(options, actor, knownName);
+  }, [users.data, events.data, actor, t]);
 
   const actorName = (event: AuditEventItem) => event.actorName ?? t('audit.system');
 

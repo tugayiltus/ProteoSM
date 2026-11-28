@@ -176,6 +176,7 @@
     "firstUse": "Henüz denetim kaydı yok.",
     "actorFilter": "Kullanıcı",
     "allActors": "Tüm kullanıcılar",
+    "selectedActor": "Seçili kullanıcı",
     "actionFilter": "Eylem",
     "allActions": "Tüm eylemler",
     "fromFilter": "Başlangıç günü",

@@ -63,6 +63,34 @@ describe('AuditPage', () => {
     );
   });
 
+  it('offers inactive users in the actor filter and keeps an actor from the link selectable', async () => {
+    const users = [
+      { id: 'a-1', firstName: 'Tugay', lastName: 'İltuş', email: 't@example.com', role: 'admin', isActive: true },
+      { id: 'i-1', firstName: 'Eski', lastName: 'Çalışan', email: 'e@example.com', role: 'employee', isActive: false },
+    ];
+    const mock = mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/users': { status: 200, body: { items: users, page: 1, pageSize: 100, totalCount: 2 } },
+      'GET /api/v1/admin/audit-events': { status: 200, body: { items: [], page: 1, pageSize: 20, totalCount: 0 } },
+    });
+    renderRoute('/admin/audit?actor=i-1');
+
+    expect((await screen.findAllByText('Eski Çalışan')).length).toBeGreaterThan(0);
+    expect(mock.calls.filter((r) => new URL(r.url).pathname === '/api/v1/admin/users').every((r) => !new URL(r.url).searchParams.has('isActive'))).toBe(true);
+    await waitFor(() => expect(mock.calls.some((r) => new URL(r.url).searchParams.get('actorUserId') === 'i-1')).toBe(true));
+  });
+
+  it('keeps an actor that is not among the loaded users visible as an option', async () => {
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/admin/users': { status: 200, body: { items: [], page: 1, pageSize: 100, totalCount: 0 } },
+      'GET /api/v1/admin/audit-events': { status: 200, body: { items: [], page: 1, pageSize: 20, totalCount: 0 } },
+    });
+    renderRoute('/admin/audit?actor=gone-1');
+
+    expect((await screen.findAllByText('Seçili kullanıcı')).length).toBeGreaterThan(0);
+  });
+
   it('is closed to employees', async () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME } });
     const { router } = renderRoute('/admin/audit');
