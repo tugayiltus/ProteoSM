@@ -1,8 +1,9 @@
-import { screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ADMIN_ME, EMPLOYEE_ME, mockApi } from '../../../test/mockApi';
 import { renderRoute } from '../../../test/renderRoute';
+import { stubPhoneViewport } from '../../../test/viewport';
 
 const SETTINGS = {
   method: 'local',
@@ -19,6 +20,25 @@ const routes = (extra: Record<string, unknown> = {}) => ({
 });
 
 describe('LoginMethodPage', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('puts the copy button under the redirect field on phones, beside it on wide screens', async () => {
+    const rowOf = async () => {
+      const entra = await screen.findByRole('region', { name: 'Microsoft (Entra ID)' });
+      return within(entra).getByRole('button', { name: 'Kopyala' }).parentElement;
+    };
+    mockApi(routes() as never);
+    renderRoute('/admin/login-method');
+    const wideRow = await rowOf();
+    cleanup();
+    stubPhoneViewport();
+    renderRoute('/admin/login-method');
+    const phoneRow = await rowOf();
+    expect(phoneRow?.className).not.toBe(wideRow?.className);
+  });
+
   it('never shows a stored secret and saves without one when nothing is typed', async () => {
     let saved: Record<string, unknown> = {};
     mockApi(routes({

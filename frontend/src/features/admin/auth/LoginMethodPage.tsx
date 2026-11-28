@@ -22,6 +22,7 @@ import { ConfirmDialog } from '../../../shared/feedback/ConfirmDialog';
 import { ErrorState, LoadingState } from '../../../shared/feedback/States';
 import { UnsavedChangesGuard } from '../../../shared/feedback/UnsavedChangesGuard';
 import { FormNumberInput, FormSelector, FormTextInput } from '../../../shared/form/formFields';
+import { useIsPhone } from '../../../shared/list/useIsPhone';
 import { PageHeader } from '../../../shared/navigation/PageHeader';
 import { ROUTE_META } from '../../../shared/navigation/routeMeta';
 import { SectionCard } from '../../../shared/page/SectionCard';
@@ -129,10 +130,7 @@ function EntraCard({ settings }: { settings: AuthSettings }) {
           <FormTextInput control={control} name="clientSecret" label={t('loginMethod.fields.clientSecret')} type="password" autoComplete="new-password" />
           <SecretHint stored={settings.entra.hasClientSecret} />
           <FormTextInput control={control} name="allowedDomains" label={t('loginMethod.fields.allowedDomains')} description={t('loginMethod.fields.allowedDomainsHint')} autoComplete="off" />
-          <HStack gap={2} vAlign="end">
-            <TextInput label={t('loginMethod.fields.redirectUri')} value={settings.redirectUri} isReadOnly />
-            <Button label={t('loginMethod.copy')} variant="ghost" onClick={() => void navigator.clipboard.writeText(settings.redirectUri)} />
-          </HStack>
+          <RedirectUriField uri={settings.redirectUri} />
           <HStack>
             <Button type="submit" label={t('loginMethod.save')} variant="secondary" isLoading={save.isPending} />
           </HStack>
@@ -258,6 +256,19 @@ function CandidateMethods({ settings }: { settings: AuthSettings }) {
         ))}
       </VStack>
     </SectionCard>
+  );
+}
+
+/** The copy button sits under the field on phones: beside it the field text and the button label are cut off. */
+function RedirectUriField({ uri }: { uri: string }) {
+  const { t } = useTranslation('admin');
+  const isPhone = useIsPhone();
+  const Row = isPhone ? VStack : HStack;
+  return (
+    <Row gap={2} {...(isPhone ? {} : { vAlign: 'end' as const })}>
+      <TextInput label={t('loginMethod.fields.redirectUri')} value={uri} isReadOnly />
+      <Button label={t('loginMethod.copy')} variant="ghost" onClick={() => void navigator.clipboard.writeText(uri)} />
+    </Row>
   );
 }
 
