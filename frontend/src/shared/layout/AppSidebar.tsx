@@ -51,6 +51,7 @@ export function AppSidebar({ area, label, title, isCollapsed, onCollapsedChange,
               href={item.to}
               icon={item.icon === undefined ? undefined : Icons[item.icon]}
               isSelected={item.id === active}
+              size="sm"
               onClick={onNavigate}
             />
           ))}
