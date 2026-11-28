@@ -18,7 +18,7 @@
     "software": "Yazılım",
     "name": "Lisans",
     "kind": "Tür",
-    "seats": "Kullanım",
+    "seats": "Kullanım hakkı",
     "team": "Sahip ekip",
     "end": "Bitiş tarihi"
   },
@@ -26,7 +26,7 @@
     "title": "Lisanslar",
     "search": "Lisans ara",
     "caption": "Lisans listesi",
-    "empty": "Bu filtreyle lisans yok.",
+    "empty": "Henüz lisans yok.",
     "all": "Tümü",
     "open": "Aç",
     "stateFilter": "Durum",
@@ -48,7 +48,7 @@
     "status": "Durum",
     "actions": "İşlemler",
     "search": "Yazılım ara",
-    "empty": "Bu filtreyle yazılım yok.",
+    "empty": "Katalogda henüz yazılım yok.",
     "caption": "Yazılım listesi",
     "licences": "{{count}} lisans"
   },
@@ -84,12 +84,12 @@
     "caption": "Yazılımlarım"
   },
   "asset": {
-    "title": "Lisanslar",
-    "none": "Bu cihaza atanmış lisans yok.",
+    "title": "Lisans kullanım hakları",
+    "none": "Bu varlığa atanmış lisans yok.",
     "meta": "{{name}} · Bitiş: {{end}}"
   },
   "home": {
     "mineCard": "Yazılımlarım",
-    "mineCardDescription": "Size verilen yazılımları görün."
+    "mineCardDescription": "Size atanan yazılımları görün."
   }
 }

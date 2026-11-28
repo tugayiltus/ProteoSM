@@ -3,6 +3,7 @@
  * @output The service list with filters and paging; each row opens the service impact page.
  * @position `/services`, inside the app shell (IT staff and admins).
  */
+import { Button } from '@astryxdesign/core/Button';
 import { Card } from '@astryxdesign/core/Card';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Pagination } from '@astryxdesign/core/Pagination';
@@ -14,7 +15,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
 import { ListToolbar } from '../../shared/list/ListToolbar';
@@ -24,8 +26,9 @@ import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { ActiveToken } from '../../shared/page/ActiveToken';
-import { servicePath } from '../../shared/routes';
+import { ROUTES, servicePath } from '../../shared/routes';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
+import { ADMIN_ONLY, useSession } from '../auth/session';
 import { useReferenceTeams } from '../tickets/api';
 
 import { useServices, type ServiceListItem } from './api';
@@ -52,6 +55,7 @@ function OpenLink({ service }: { service: ServiceListItem }) {
 export function ServicesPage() {
   const { t } = useTranslation('services');
   const { t: tc } = useTranslation();
+  const isAdmin = ADMIN_ONLY.includes(useSession().role);
   const list = useListParams(FILTER_KEYS);
   const teams = useReferenceTeams(true);
   const teamOptions = useMemo(() => (teams.data ?? []).map((team) => ({ value: team.id, label: team.name })), [teams.data]);
@@ -121,7 +125,12 @@ export function ServicesPage() {
       <Card padding={0}>
         {services.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {services.isError && <ErrorState error={services.error} onRetry={() => void services.refetch()} />}
-        {services.data && services.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {services.data && services.data.items.length === 0 && <ListEmptyState
+            activeCount={list.activeCount}
+            onClear={list.clear}
+            message={t('list.empty')}
+            action={isAdmin ? <Button label={t('list.setup')} variant="secondary" href={ROUTES.adminServices} /> : undefined}
+          />}
         {services.data && services.data.items.length > 0 && (
           <DataList items={services.data.items} columns={columns} getKey={(x) => x.id} renderCard={renderCard} caption={t('list.caption')} />
         )}

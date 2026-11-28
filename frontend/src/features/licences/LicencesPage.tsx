@@ -15,7 +15,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDate } from '../../shared/lib/format';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
@@ -120,7 +121,12 @@ export function LicencesPage() {
       <Card padding={0}>
         {licences.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {licences.isError && <ErrorState error={licences.error} onRetry={() => void licences.refetch()} />}
-        {licences.data && licences.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {licences.data && licences.data.items.length === 0 && <ListEmptyState
+            activeCount={list.activeCount}
+            onClear={list.clear}
+            message={t('list.empty')}
+            action={<Button label={t('form.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setIsCreating(true)} />}
+          />}
         {licences.data && licences.data.items.length > 0 && (
           <DataList items={licences.data.items} columns={columns} getKey={(x) => x.id} renderCard={renderCard} caption={t('list.caption')} />
         )}

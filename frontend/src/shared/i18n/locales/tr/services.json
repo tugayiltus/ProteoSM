@@ -3,7 +3,8 @@
     "title": "Hizmetler",
     "search": "Hizmet ara",
     "caption": "Hizmet listesi",
-    "empty": "Bu filtreyle hizmet yok.",
+    "empty": "Henüz hizmet yok.",
+    "setup": "Hizmetleri tanımla",
     "all": "Tümü",
     "open": "Aç",
     "teamFilter": "Sahip ekip",
@@ -26,10 +27,10 @@
     },
     "noDescription": "Açıklama yok",
     "sections": {
-      "assets": "Varlıklar",
-      "tickets": "Açık kayıtlar",
-      "changes": "Değişiklikler",
-      "problems": "Açık problemler"
+      "assets": "Bağlı varlıklar",
+      "tickets": "Bağlı açık kayıtlar",
+      "changes": "Bağlı değişiklikler",
+      "problems": "Bağlı açık problemler"
     },
     "total": "Toplam {{count}}",
     "showAll": "Tümünü göster",

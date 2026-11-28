@@ -27,6 +27,8 @@
   "list": {
     "title": "Envanter",
     "new": "Yeni cihaz",
+    "empty": "Henüz varlık yok.",
+    "setupCatalog": "Cihaz kataloğunu kur",
     "import": "İçe aktar",
     "searchLabel": "Demirbaş no, seri no veya model ara",
     "typeFilter": "Tür",
@@ -146,8 +148,8 @@
     "inventoryCardDescription": "Cihazları ekleyin, teslim edin, takip edin."
   },
   "services": {
-    "title": "Hizmetler",
-    "none": "Hizmet yok",
+    "title": "Bağlı hizmetler",
+    "none": "Bağlı hizmet yok.",
     "toLink": "Bağlanacak hizmet",
     "link": "Hizmete bağla",
     "unlink": "Bağı kaldır"

@@ -156,7 +156,7 @@ describe('AssetDetailPage services card', () => {
     mockApi({ ...detailRoutes(), ...servicesRoutes });
     renderRoute('/assets/a-1');
 
-    const card = await screen.findByRole('list', { name: 'Hizmetler' });
+    const card = await screen.findByRole('list', { name: 'Bağlı hizmetler' });
     expect(within(card).getByRole('link', { name: 'SAP Finans' })).toHaveAttribute('href', '/services/s-1');
     expect(screen.queryByRole('button', { name: /^Bağı kaldır/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Hizmete bağla' })).not.toBeInTheDocument();

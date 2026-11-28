@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { IT_ME, mockApi } from '../test/mockApi';
+import { ADMIN_ME, IT_ME, mockApi } from '../test/mockApi';
 import { renderRoute } from '../test/renderRoute';
 
 const EMPTY_PAGE = { items: [], page: 1, pageSize: 20, totalCount: 0 };
@@ -21,15 +21,19 @@ const CASES: readonly ListCase[] = [
   { name: 'problems', path: '/problems', api: 'GET /api/v1/problems', filteredPath: '/problems?status=open', firstUse: 'Henüz problem yok.', createLabel: 'Yeni problem' },
   { name: 'changes', path: '/changes', api: 'GET /api/v1/changes', filteredPath: '/changes?status=draft', firstUse: 'Henüz değişiklik yok.', createLabel: 'Yeni değişiklik' },
   { name: 'releases', path: '/releases', api: 'GET /api/v1/releases', filteredPath: '/releases?status=planned', firstUse: 'Henüz sürüm yok.', createLabel: 'Yeni sürüm' },
+  { name: 'assets', path: '/assets', api: 'GET /api/v1/assets', filteredPath: '/assets?status=in_use', firstUse: 'Henüz varlık yok.', createLabel: 'Yeni cihaz' },
+  { name: 'services', path: '/services', api: 'GET /api/v1/services', filteredPath: '/services?active=true', firstUse: 'Henüz hizmet yok.', createLabel: 'Hizmetleri tanımla' },
+  { name: 'software', path: '/software', api: 'GET /api/v1/software', filteredPath: '/software?active=true', firstUse: 'Katalogda henüz yazılım yok.', createLabel: 'Yeni yazılım' },
+  { name: 'licences', path: '/licences', api: 'GET /api/v1/licences', filteredPath: '/licences?kind=per_user', firstUse: 'Henüz lisans yok.', createLabel: 'Yeni lisans' },
 ];
 
 describe.each(CASES)('$name list states', ({ path, api, filteredPath, firstUse, createLabel }) => {
   it('shows the first-use message and a create action when nothing exists and no filter is set', async () => {
-    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME }, [api]: { status: 200, body: EMPTY_PAGE } });
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, [api]: { status: 200, body: EMPTY_PAGE } });
     renderRoute(path);
     expect(await screen.findByText(firstUse)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Filtreleri temizle' })).not.toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: createLabel }).length).toBeGreaterThan(1);
+    expect(screen.queryAllByRole('button', { name: createLabel }).length + screen.queryAllByRole('link', { name: createLabel }).length).toBeGreaterThan(0);
   });
 
   it('shows a no-result message with "Filtreleri temizle" when a filter hides everything, and clearing drops the filter', async () => {
@@ -56,5 +60,25 @@ describe.each(CASES)('$name list states', ({ path, api, filteredPath, firstUse, 
     expect(screen.queryByText(firstUse)).not.toBeInTheDocument();
     await user.click(retry);
     expect(await screen.findByText(firstUse)).toBeInTheDocument();
+  });
+});
+
+describe('catalog setup links in empty lists', () => {
+  it('offers the admin pages to admins only', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME }, 'GET /api/v1/assets': { status: 200, body: EMPTY_PAGE }, 'GET /api/v1/services': { status: 200, body: EMPTY_PAGE } });
+    const { router } = renderRoute('/assets');
+    expect(await screen.findByRole('link', { name: 'Cihaz kataloğunu kur' })).toHaveAttribute('href', '/admin/models');
+    await router.navigate('/services');
+    expect(await screen.findByRole('link', { name: 'Hizmetleri tanımla' })).toHaveAttribute('href', '/admin/services');
+  });
+
+  it('hides them from IT staff', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME }, 'GET /api/v1/assets': { status: 200, body: EMPTY_PAGE }, 'GET /api/v1/services': { status: 200, body: EMPTY_PAGE } });
+    const { router } = renderRoute('/assets');
+    expect(await screen.findByText('Henüz varlık yok.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Cihaz kataloğunu kur' })).not.toBeInTheDocument();
+    await router.navigate('/services');
+    expect(await screen.findByText('Henüz hizmet yok.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Hizmetleri tanımla' })).not.toBeInTheDocument();
   });
 });

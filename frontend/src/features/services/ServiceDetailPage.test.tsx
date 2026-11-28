@@ -20,40 +20,40 @@ describe('ServiceDetailPage', () => {
     expect(screen.getByText(SERVICE.description ?? '')).toBeInTheDocument();
     expect(screen.getByText('Aktif')).toBeInTheDocument();
 
-    expect(await screen.findByRole('heading', { name: 'Varlıklar' })).toBeInTheDocument();
-    expect(section('Varlıklar').getByText('Toplam 30')).toBeInTheDocument();
-    expect(section('Açık kayıtlar').getByText('Toplam 25')).toBeInTheDocument();
-    expect(section('Değişiklikler').getByText('Toplam 1')).toBeInTheDocument();
-    expect(section('Açık problemler').getByText('Toplam 21')).toBeInTheDocument();
-    expect(section('Varlıklar').getByRole('link', { name: /ASSET-2026-0001/ })).toHaveAttribute('href', '/assets/asset-1');
-    expect(section('Değişiklikler').getByRole('link', { name: /CHG-2026-000001/ })).toHaveAttribute('href', '/changes/CHG-2026-000001');
+    expect(await screen.findByRole('heading', { name: 'Bağlı varlıklar' })).toBeInTheDocument();
+    expect(section('Bağlı varlıklar').getByText('Toplam 30')).toBeInTheDocument();
+    expect(section('Bağlı açık kayıtlar').getByText('Toplam 25')).toBeInTheDocument();
+    expect(section('Bağlı değişiklikler').getByText('Toplam 1')).toBeInTheDocument();
+    expect(section('Bağlı açık problemler').getByText('Toplam 21')).toBeInTheDocument();
+    expect(section('Bağlı varlıklar').getByRole('link', { name: /ASSET-2026-0001/ })).toHaveAttribute('href', '/assets/asset-1');
+    expect(section('Bağlı değişiklikler').getByRole('link', { name: /CHG-2026-000001/ })).toHaveAttribute('href', '/changes/CHG-2026-000001');
   });
 
   it('links "Tümünü göster" to the filtered list only when a section holds more than it lists', async () => {
     mockApi(serviceRoutes() as never);
     renderRoute(DETAIL_PATH);
 
-    await screen.findByRole('heading', { name: 'Açık kayıtlar' });
-    expect(section('Açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/workspace/queue?queue=all&serviceId=${SERVICE.id}&open=true`);
-    expect(section('Açık problemler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/problems?serviceId=${SERVICE.id}&open=true`);
-    expect(section('Değişiklikler').queryByRole('link', { name: 'Tümünü göster' })).not.toBeInTheDocument();
-    expect(section('Varlıklar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/assets?serviceId=${SERVICE.id}`);
+    await screen.findByRole('heading', { name: 'Bağlı açık kayıtlar' });
+    expect(section('Bağlı açık kayıtlar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/workspace/queue?queue=all&serviceId=${SERVICE.id}&open=true`);
+    expect(section('Bağlı açık problemler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/problems?serviceId=${SERVICE.id}&open=true`);
+    expect(section('Bağlı değişiklikler').queryByRole('link', { name: 'Tümünü göster' })).not.toBeInTheDocument();
+    expect(section('Bağlı varlıklar').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/assets?serviceId=${SERVICE.id}`);
   });
 
   it('links the change list when changes hold more than they list', async () => {
     mockApi(serviceRoutes({ [`GET /api/v1/services/${SERVICE.id}/impact`]: { status: 200, body: { ...IMPACT, changes: { ...IMPACT.changes, total: 40 } } } }) as never);
     renderRoute(DETAIL_PATH);
 
-    await screen.findByRole('heading', { name: 'Değişiklikler' });
-    expect(section('Değişiklikler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/changes?serviceId=${SERVICE.id}&open=true`);
+    await screen.findByRole('heading', { name: 'Bağlı değişiklikler' });
+    expect(section('Bağlı değişiklikler').getByRole('link', { name: 'Tümünü göster' })).toHaveAttribute('href', `/changes?serviceId=${SERVICE.id}&open=true`);
   });
 
   it('shows a row the viewer cannot open without a link', async () => {
     mockApi(serviceRoutes() as never);
     renderRoute(DETAIL_PATH);
 
-    await screen.findByRole('heading', { name: 'Açık kayıtlar' });
-    const tickets = section('Açık kayıtlar');
+    await screen.findByRole('heading', { name: 'Bağlı açık kayıtlar' });
+    const tickets = section('Bağlı açık kayıtlar');
     expect(tickets.getByRole('link', { name: /INC-2026-000001/ })).toHaveAttribute('href', '/tickets/INC-2026-000001');
     expect(tickets.getByText(/INC-2026-000002/)).toBeInTheDocument();
     expect(tickets.queryByRole('link', { name: /INC-2026-000002/ })).not.toBeInTheDocument();
@@ -65,8 +65,8 @@ describe('ServiceDetailPage', () => {
     mockApi(serviceRoutes({ [`GET /api/v1/services/${SERVICE.id}/impact`]: { status: 200, body: { assets: empty, tickets: empty, changes: empty, problems: empty } } }) as never);
     renderRoute(DETAIL_PATH);
 
-    await screen.findByRole('heading', { name: 'Açık problemler' });
-    expect(section('Açık problemler').getByText('Kayıt yok.')).toBeInTheDocument();
+    await screen.findByRole('heading', { name: 'Bağlı açık problemler' });
+    expect(section('Bağlı açık problemler').getByText('Kayıt yok.')).toBeInTheDocument();
   });
 
   it('returns to the service from the breadcrumb of a record opened here', async () => {

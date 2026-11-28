@@ -16,7 +16,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
 import { ListToolbar } from '../../shared/list/ListToolbar';
@@ -27,6 +28,7 @@ import { ROUTE_META } from '../../shared/navigation/routeMeta';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { assetPath, ROUTES, SERVICE_FILTER_PARAM } from '../../shared/routes';
 import { Icons } from '../../shared/ui/icons';
+import { ADMIN_ONLY, useSession } from '../auth/session';
 import { recordActionLabel } from '../../shared/ui/recordActionLabel';
 import { ServiceFilter } from '../services/ServiceFilter';
 
@@ -56,6 +58,7 @@ function OpenLink({ asset }: { asset: AssetItem }) {
 export function AssetsPage() {
   const { t } = useTranslation('assets');
   const { t: tc } = useTranslation();
+  const isAdmin = ADMIN_ONLY.includes(useSession().role);
   const list = useListParams(FILTER_KEYS);
   const type = pick(ASSET_TYPES, list.filters.type);
   const status = pick(ASSET_STATUSES, list.filters.status);
@@ -149,7 +152,17 @@ export function AssetsPage() {
       <Card padding={0}>
         {assets.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {assets.isError && <ErrorState error={assets.error} onRetry={() => void assets.refetch()} />}
-        {assets.data && assets.data.items.length === 0 && <EmptyState />}
+        {assets.data && assets.data.items.length === 0 && <ListEmptyState
+            activeCount={list.activeCount}
+            onClear={list.clear}
+            message={t('list.empty')}
+            action={
+              <HStack gap={2} wrap="wrap" hAlign="center">
+                <Button label={t('list.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setCreating(true)} />
+                {isAdmin && <Button label={t('list.setupCatalog')} variant="ghost" href={ROUTES.adminModels} />}
+              </HStack>
+            }
+          />}
         {assets.data && assets.data.items.length > 0 && (
           <DataList
             items={assets.data.items}

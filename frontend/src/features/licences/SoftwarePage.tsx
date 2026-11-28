@@ -21,7 +21,8 @@ import { z } from 'zod';
 import { applyServerErrors, describeError, isHandledByFields } from '../../shared/api/errorMessage';
 import { ERROR_CODES } from '../../shared/api/errors';
 import { FormDialog } from '../../shared/feedback/FormDialog';
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { FormSwitch, FormTextInput } from '../../shared/form/formFields';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
@@ -166,7 +167,12 @@ export function SoftwarePage() {
       <Card padding={0}>
         {software.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {software.isError && <ErrorState error={software.error} onRetry={() => void software.refetch()} />}
-        {software.data && software.data.items.length === 0 && <EmptyState message={t('software.empty')} />}
+        {software.data && software.data.items.length === 0 && <ListEmptyState
+            activeCount={list.activeCount}
+            onClear={list.clear}
+            message={t('software.empty')}
+            action={<Button label={t('software.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setForm({ software: null })} />}
+          />}
         {software.data && software.data.items.length > 0 && (
           <DataList items={software.data.items} columns={columns} getKey={(x) => x.id} renderCard={renderCard} caption={t('software.caption')} />
         )}
