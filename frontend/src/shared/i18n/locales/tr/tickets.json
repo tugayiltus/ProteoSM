@@ -96,6 +96,7 @@
     "switchToIncident": "Bunun yerine arıza bildir",
     "switchToRequest": "Bunun yerine talep oluştur",
     "incidentDescriptionHint": "Neyi yaparken sorun oldu? Varsa hata mesajını yazın.",
+    "categoryDropped": "Seçtiğiniz kategori bu türde yok. Yeniden seçin.",
     "filesDropped": "Dosyalar taşınmadı. Gerekirse yeniden ekleyin.",
     "filesFailed": "Kayıt oluşturuldu ancak dosyalar yüklenemedi: {{message}}",
     "asset": "İlgili cihaz",

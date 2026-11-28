@@ -44,12 +44,13 @@ const FORM_MAX_WIDTH = 880;
 const FIELD_COLUMNS = { minWidth: 280 } as const;
 const DESCRIPTION_ROWS = 6;
 
-/** What moves to the other ticket kind: subject, description and location. Category, request type and device are kind specific; files are not kept. */
+/** What moves to the other ticket kind: subject, description, location and category (when valid there). Request type and device are kind specific; files are not kept. */
 interface KindSwitchState {
   switched: true;
   subject: string;
   description: string;
   locationId: string;
+  categoryId: string;
   filesDropped: boolean;
 }
 
@@ -103,7 +104,7 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
     formState: { isDirty },
   } = useForm<TicketFormValues>({
     resolver: zodResolver(isRequest ? requestSchema : ticketSchema),
-    defaultValues: { subject: carried?.subject ?? '', description: carried?.description ?? '', categoryId: NO_SELECTION, locationId: carried?.locationId ?? NO_SELECTION, requestTypeId: NO_SELECTION, assetId: NO_SELECTION },
+    defaultValues: { subject: carried?.subject ?? '', description: carried?.description ?? '', categoryId: carried?.categoryId ?? NO_SELECTION, locationId: carried?.locationId ?? NO_SELECTION, requestTypeId: NO_SELECTION, assetId: NO_SELECTION },
   });
   const hasChanges = isDirty || files.length > 0 || carried !== null;
   const requestTypeId = useWatch({ control, name: 'requestTypeId' });
@@ -129,11 +130,19 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
       setValue('assetId', scannedChoiceId);
     }
   }, [scannedChoiceId, setValue]);
+  const categoryData = categories.data;
+  const categoryDropped = carried !== null && carried.categoryId !== NO_SELECTION && categoryData !== undefined && !categoryData.some((c) => c.id === carried.categoryId);
+  // Synchronizes the carried category with the reference list of this kind: a category the new kind does not offer is cleared.
+  useEffect(() => {
+    if (categoryDropped) {
+      setValue('categoryId', NO_SELECTION);
+    }
+  }, [categoryDropped, setValue]);
   const typeOptions = useMemo(() => (requestTypes.data ?? []).map((r) => ({ value: r.id, label: r.name })), [requestTypes.data]);
 
   const switchKind = () => {
-    const { subject, description, locationId } = getValues();
-    const state: KindSwitchState = { switched: true, subject, description, locationId, filesDropped: files.length > 0 };
+    const { subject, description, locationId, categoryId } = getValues();
+    const state: KindSwitchState = { switched: true, subject, description, locationId, categoryId, filesDropped: files.length > 0 };
     void navigate(isRequest ? ROUTES.newIncident : ROUTES.newRequest, { state });
   };
 
@@ -178,6 +187,7 @@ export function NewTicketPage({ kind }: { kind: TicketKind }) {
             <Text type="supporting">{isRequest ? t('new.requestIntro') : t('new.incidentIntro')}</Text>
             <FormAlert message={alert} />
             {carried?.filesDropped === true && <Banner status="info" title={t('new.filesDropped')} />}
+            {categoryDropped && <Banner status="info" title={t('new.categoryDropped')} />}
             {scanProblem !== null && <Banner status="warning" title={scanProblem} />}
             {isRequest && (
               <VStack gap={3}>

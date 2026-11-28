@@ -113,7 +113,7 @@ describe('SlaPolicyPage', () => {
       'GET /api/v1/admin/sla/problem-targets': { status: 500, body: { code: 'server.error' } },
     });
     renderRoute('/admin/sla/policy');
-    expect(await screen.findByRole('button', { name: /Tekrar dene/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Yeniden dene/ })).toBeInTheDocument();
   });
 
   it('shows hours and minutes beside a business-minute target', async () => {

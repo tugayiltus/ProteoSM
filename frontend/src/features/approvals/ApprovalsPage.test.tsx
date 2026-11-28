@@ -82,7 +82,7 @@ describe('ApprovalsPage', () => {
     });
     renderRoute('/approvals');
 
-    expect(await screen.findByRole('button', { name: 'Tekrar dene' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Yeniden dene' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: ITEM.subject })).toBeInTheDocument();
   });
 

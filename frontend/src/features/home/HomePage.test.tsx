@@ -85,4 +85,22 @@ describe('HomePage', () => {
     expect(links[0]).toHaveTextContent('Yanıt bekleyen');
     expect(within(list).getAllByText('Yanıtınız bekleniyor')).toHaveLength(1);
   });
+  it('shows a waiting ticket even when it is older than the five newest', async () => {
+    const newest = Array.from({ length: ROW_COUNT }, (_, i) => ({ ...LIST_ITEM, number: `INC-2026-00001${i}`, subject: `Yeni ${i}` }));
+    const old = { ...LIST_ITEM, number: 'INC-2025-000001', subject: 'Eski bekleyen', status: 'on_hold' as const, holdReason: 'user' as const };
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME },
+      'GET /api/v1/tickets': (request: Request) => {
+        const params = new URL(request.url).searchParams;
+        if (params.get('queue') !== 'mine') {
+          return { status: 200, body: pageOf([]) };
+        }
+        return { status: 200, body: pageOf(params.get('status') === 'on_hold' ? [old] : newest) };
+      },
+    });
+    renderRoute('/');
+    const list = await screen.findByRole('list', { name: 'Son kayıtlarım' });
+    await waitFor(() => expect(within(list).getAllByRole('link')[0]).toHaveTextContent('Eski bekleyen'));
+    expect(within(list).getAllByRole('link')).toHaveLength(ROW_COUNT);
+  });
 });

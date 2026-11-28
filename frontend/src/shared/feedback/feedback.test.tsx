@@ -43,7 +43,7 @@ describe('states', () => {
     const onRetry = vi.fn();
     withAstryx(<ErrorState error={new Error('boom')} onRetry={onRetry} />);
     expect(screen.getByText(UNEXPECTED)).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Tekrar dene' }));
+    await user.click(screen.getByRole('button', { name: 'Yeniden dene' }));
     expect(onRetry).toHaveBeenCalledOnce();
   });
 });

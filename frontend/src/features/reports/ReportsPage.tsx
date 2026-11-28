@@ -29,7 +29,7 @@ import { DEFAULT_REPORT, isReportName, REPORT_NAMES, useReport, type ReportName 
 import { FigureCard } from './FigureCard';
 import { PeriodPicker } from './PeriodPicker';
 import { ReportFilterBar } from './ReportFilterBar';
-import { activeFilterKeys, filterQuery, readReportFilter, REPORT_FILTER_FIELDS, useReportFilter } from './useReportFilter';
+import { activeFilterKeys, filterQuery, readReportFilter, REPORT_FILTER_FIELDS, useReportFilter, type ReportFilterKey } from './useReportFilter';
 
 /** Server ScopeLabel of IT staff (their teams only); admins get `all`. */
 const TEAMS_SCOPE = 'teams';
@@ -74,6 +74,12 @@ function ReportView({ report }: { report: ReportName }) {
   const { t: tc } = useTranslation();
   const isPhone = useIsPhone();
   const activeCount = activeFilterKeys(filter).length;
+  const setKeys = (Object.keys(filter) as ReportFilterKey[]).filter((key) => filter[key] !== undefined);
+  const staysKeys = setKeys.filter((key) => REPORT_NAMES.some((other) => other !== report && REPORT_FILTER_FIELDS[other].includes(key)));
+  const onlyHereKeys = setKeys.filter((key) => !staysKeys.includes(key));
+  const names = (keys: ReportFilterKey[]) => keys.map((key) => t(`filters.${key}`)).join(', ');
+  const carryNote =
+    setKeys.length === 0 ? null : t('page.carryNote', { stays: staysKeys.length > 0 ? names(staysKeys) : t('page.none'), onlyHere: onlyHereKeys.length > 0 ? names(onlyHereKeys) : t('page.none') });
   const filterBar = <ReportFilterBar report={report} filter={filter} onChange={setFilter} />;
 
   return (
@@ -87,6 +93,7 @@ function ReportView({ report }: { report: ReportName }) {
           // Wide screens: the filters take the card's width; the toolbar row would squeeze them into one column.
           filterBar
         )}
+        {carryNote !== null && <Text type="supporting">{carryNote}</Text>}
         <Text type="supporting">{t('page.filtersNote', { names: REPORT_FILTER_FIELDS[report].map((key) => t(`filters.${key}`)).join(', ') })}</Text>
         <HStack gap={2} wrap="wrap" vAlign="center">
           <ActiveFilterChips filter={filter} onRemove={(key) => setFilter(key, '')} />

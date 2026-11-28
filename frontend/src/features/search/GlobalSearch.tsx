@@ -126,7 +126,6 @@ export function GlobalSearch() {
               path,
               number: TITLE_ONLY_TYPES.has(group.type) ? undefined : hit.key,
               title: hit.title,
-             
               isInactive: group.type === SERVICE_TYPE && hit.status === INACTIVE_SERVICE_STATUS,
               auxiliaryData: { group: title },
             });

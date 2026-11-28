@@ -257,7 +257,6 @@ describe('ReportsPage', () => {
     mockApi(routes());
     const { user, router } = renderRoute(`/reports/incidents?${RANGE}&priority=p1&teamId=${TEAM_ID}`);
     expect(await screen.findByText(/Bu sekmede geçerli filtreler: .*Öncelik.*Ekip/)).toBeInTheDocument();
-    expect(screen.getByText(/Başlangıç tarihi/, { selector: 'p, span' })).toBeInTheDocument();
 
     await user.click(within(screen.getByRole('navigation', { name: 'Rapor türleri' })).getByRole('link', { name: 'Görevler' }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/reports/tasks'));
@@ -266,8 +265,16 @@ describe('ReportsPage', () => {
     expect(router.state.location.search).toContain('from=2026-09-01');
     expect(router.state.location.search).toContain(`teamId=${TEAM_ID}`);
   });
-  it('keeps the filter panel visible on every tab, also while a report fails to load', async () => {
+  it('names which set filters stay on a tab change and which stay only here', async () => {
     mockApi(routes());
+    renderRoute(`/reports/incidents?${RANGE}&priority=p1&teamId=${TEAM_ID}`);
+    expect(await screen.findByText(/Başka sekmeye geçince kalanlar: .*Başlangıç tarihi.*Ekip/)).toBeInTheDocument();
+    expect(screen.getByText(/Başka sekmeye geçince kalanlar: .*Öncelik/)).toBeInTheDocument();
+    expect(screen.getByText(/geçişte düşer: yok\./)).toBeInTheDocument();
+  });
+
+  it('keeps the filter panel visible on every tab, also while a report fails to load', async () => {
+    mockApi({ ...routes(), 'GET /api/v1/reports/transfers': { status: 500, body: { code: 'server_error' } } });
     const { router } = renderRoute('/reports/incidents');
     const tabs = ['incidents', 'requests', 'operations', 'transfers', 'assets', 'warranty', 'changes', 'tasks', 'problems', 'licences'];
     for (const tab of tabs) {
@@ -275,5 +282,8 @@ describe('ReportsPage', () => {
       await waitFor(() => expect(router.state.location.pathname).toBe(`/reports/${tab}`));
       await waitFor(() => expect(screen.getByText(/Bu sekmede geçerli filtreler:/)).toBeInTheDocument());
     }
+    await router.navigate('/reports/transfers');
+    expect(await screen.findByRole('button', { name: 'Yeniden dene' })).toBeInTheDocument();
+    expect(screen.getByText(/Bu sekmede geçerli filtreler:/)).toBeInTheDocument();
   });
 });

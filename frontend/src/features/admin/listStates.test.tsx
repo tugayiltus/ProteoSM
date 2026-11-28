@@ -7,7 +7,7 @@ import { renderRoute } from '../../test/renderRoute';
 const PAGED_EMPTY = { items: [], page: 1, pageSize: 20, totalCount: 0 };
 const NO_FILTER_MESSAGE = 'Bu filtrelerle kayıt bulunamadı.';
 const CLEAR_LABEL = 'Filtreleri temizle';
-const RETRY_LABEL = 'Tekrar dene';
+const RETRY_LABEL = 'Yeniden dene';
 
 interface ListCase {
   name: string;

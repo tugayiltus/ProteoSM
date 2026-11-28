@@ -5,7 +5,7 @@ import { LOCATIONS } from '../../test/assetData';
 import { findFieldMessages } from '../../test/fieldMessages';
 import { EMPLOYEE_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
-import { chooseOption } from '../../test/select';
+import { chooseOption, findSelect } from '../../test/select';
 import { INCIDENT } from '../../test/ticketData';
 
 const referenceRoutes = {
@@ -206,5 +206,35 @@ describe('scan route', () => {
     await user.click(screen.getByRole('button', { name: 'Talep oluştur' }));
     // The request type is not carried over, so the request cannot be sent without choosing one.
     expect(router.state.location.pathname).toBe('/tickets/new/request');
+  });
+  const categoryRoutes = () => ({
+    ...referenceRoutes,
+    'GET /api/v1/me/assets': { status: 200, body: [] },
+    'GET /api/v1/reference/categories': (request: Request) => ({
+      status: 200,
+      body:
+        new URL(request.url).searchParams.get('kind') === 'incident'
+          ? [{ id: 'c-1', path: 'Donanım', parentId: null }, { id: 'c-2', path: 'Arıza', parentId: null }]
+          : [{ id: 'c-1', path: 'Donanım', parentId: null }],
+    }),
+  });
+
+  it('keeps the category on a kind switch when the other kind offers it', async () => {
+    mockApi(categoryRoutes());
+    const { user, router } = renderRoute('/tickets/new/incident');
+    await chooseOption(user, 'Kategori', 'Donanım');
+    await user.click(screen.getByRole('button', { name: 'Bunun yerine talep oluştur' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/tickets/new/request'));
+    await waitFor(async () => expect(await findSelect('Kategori')).toHaveTextContent('Donanım'));
+    expect(screen.queryByText('Seçtiğiniz kategori bu türde yok. Yeniden seçin.')).not.toBeInTheDocument();
+  });
+
+  it('clears a category the other kind does not offer and says so', async () => {
+    mockApi(categoryRoutes());
+    const { user } = renderRoute('/tickets/new/incident');
+    await chooseOption(user, 'Kategori', 'Arıza');
+    await user.click(screen.getByRole('button', { name: 'Bunun yerine talep oluştur' }));
+    expect(await screen.findByText('Seçtiğiniz kategori bu türde yok. Yeniden seçin.')).toBeInTheDocument();
+    expect(await findSelect('Kategori')).not.toHaveTextContent('Arıza');
   });
 });

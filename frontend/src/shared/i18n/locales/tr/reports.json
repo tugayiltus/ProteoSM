@@ -4,6 +4,8 @@
     "tabs": "Rapor türleri",
     "reportType": "Rapor türü",
     "myExports": "Dışa aktarımlarım",
+    "carryNote": "Başka sekmeye geçince kalanlar: {{stays}}. Yalnız bu sekmede geçerli, geçişte düşer: {{onlyHere}}.",
+    "none": "yok",
     "filtersNote": "Bu sekmede geçerli filtreler: {{names}}. Başka sekmeye geçince yalnız o sekmenin tanıdığı filtreler kalır.",
     "unknown": "Böyle bir rapor yok.",
     "empty": "Bu rapor için gösterilecek sonuç yok.",

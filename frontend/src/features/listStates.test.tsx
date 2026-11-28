@@ -56,7 +56,7 @@ describe.each(CASES)('$name list states', ({ path, api, filteredPath, firstUse, 
       },
     });
     const { user } = renderRoute(path);
-    const retry = await screen.findByRole('button', { name: 'Tekrar dene' });
+    const retry = await screen.findByRole('button', { name: 'Yeniden dene' });
     expect(screen.queryByText(firstUse)).not.toBeInTheDocument();
     await user.click(retry);
     expect(await screen.findByText(firstUse)).toBeInTheDocument();

@@ -39,7 +39,7 @@ describe('TicketArticles', () => {
     mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...detailRoutes(INCIDENT), [`GET ${ARTICLES_ROUTE}`]: { status: 403, body: { code: 'common.forbidden' } } } as never);
     renderRoute(`/tickets/${INCIDENT.number}`);
 
-    expect(await screen.findByRole('button', { name: 'Tekrar dene' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Yeniden dene' })).toBeInTheDocument();
     expect(screen.queryByText('Bu kayda bağlı makale yok.')).not.toBeInTheDocument();
   });
 

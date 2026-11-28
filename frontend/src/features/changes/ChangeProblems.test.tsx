@@ -38,6 +38,6 @@ describe('Change İlgili problemler panel', () => {
     renderRoute(PATH);
 
     const region = await panel();
-    expect(await within(region).findByRole('button', { name: 'Tekrar dene' })).toBeInTheDocument();
+    expect(await within(region).findByRole('button', { name: 'Yeniden dene' })).toBeInTheDocument();
   });
 });

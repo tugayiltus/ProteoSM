@@ -265,7 +265,8 @@ describe('GlobalSearch', () => {
     mockApi({ [SEARCH_ROUTE]: { status: 200, body: HITS } });
     renderSearch();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    const input = await openBox(user);
+    await openBox(user);
+    expect(screen.getByRole('button', { name: 'Ara' })).not.toHaveFocus();
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Ara' })).toHaveFocus());
@@ -277,7 +278,6 @@ describe('GlobalSearch', () => {
     await user.keyboard('{ArrowDown}{Enter}');
     await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Ara' })).toHaveFocus());
-    expect(input).toBeDefined();
   });
 
   it('shows the number apart from the title, under the type group', async () => {

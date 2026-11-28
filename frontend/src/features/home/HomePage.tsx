@@ -31,6 +31,8 @@ import { Announcements } from './Announcements';
 
 const RECENT_COUNT = 5;
 const RATE_COUNT = 5;
+/** On-hold tickets fetched to find those that wait for the requester; older ones must not be missed. */
+const ON_HOLD_SCAN_COUNT = 20;
 const FIRST_PAGE = 1;
 const HOME_QUEUES: readonly WorkQueue[] = ['assigned_to_me', 'team', 'sla_risk'];
 
@@ -82,10 +84,13 @@ function RecentTickets() {
   const { t } = useTranslation('tickets');
   const location = useLocation();
   const tickets = useTickets({ queue: 'mine', status: undefined, kind: undefined, priority: undefined, search: '', page: FIRST_PAGE, pageSize: RECENT_COUNT });
+  const onHold = useTickets({ queue: 'mine', status: 'on_hold', kind: undefined, priority: undefined, search: '', page: FIRST_PAGE, pageSize: ON_HOLD_SCAN_COUNT });
   const items = useMemo(() => {
-    const all = tickets.data?.items ?? [];
-    return [...all.filter(isWaitingForRequester), ...all.filter((ticket) => !isWaitingForRequester(ticket))];
-  }, [tickets.data]);
+    const newest = tickets.data?.items ?? [];
+    const waiting = (onHold.data?.items ?? []).filter(isWaitingForRequester);
+    const merged = [...waiting, ...newest.filter((ticket) => !waiting.some((w) => w.number === ticket.number))];
+    return [...merged.filter(isWaitingForRequester), ...merged.filter((ticket) => !isWaitingForRequester(ticket))].slice(0, RECENT_COUNT);
+  }, [tickets.data, onHold.data]);
   return (
     <Card padding={0}>
       <VStack gap={0}>

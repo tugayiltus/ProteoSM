@@ -47,7 +47,7 @@ describe('Ticket İlgili değişiklikler panel', () => {
     renderRoute(`/tickets/${INCIDENT.number}`);
 
     const region = await screen.findByRole('region', { name: 'İlgili değişiklikler' });
-    expect(await within(region).findByRole('button', { name: 'Tekrar dene' })).toBeInTheDocument();
+    expect(await within(region).findByRole('button', { name: 'Yeniden dene' })).toBeInTheDocument();
   });
 
   it('shows no panel to an employee and makes no request', async () => {
