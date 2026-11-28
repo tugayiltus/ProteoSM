@@ -78,7 +78,7 @@ describe('ProblemListPage', () => {
     mockApi(problemRoutes(PROBLEM, { 'GET /api/v1/problems': { status: 200, body: { items: [], page: 1, pageSize: 20, totalCount: 0 } } }) as never);
     renderRoute('/problems?queue=known_errors');
 
-    expect(await screen.findByText('Bu filtreyle problem yok.')).toBeInTheDocument();
+    expect(await screen.findByText('Bu filtrelerle kayıt bulunamadı.')).toBeInTheDocument();
   });
 
   it('reads the service filter from the URL and sends it', async () => {

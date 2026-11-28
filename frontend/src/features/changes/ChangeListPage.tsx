@@ -16,7 +16,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDateTime } from '../../shared/lib/format';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
@@ -160,7 +161,7 @@ export function ChangeListPage() {
       <Card padding={0}>
         {changes.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {changes.isError && <ErrorState error={changes.error} onRetry={() => void changes.refetch()} />}
-        {changes.data && changes.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {changes.data && changes.data.items.length === 0 && <ListEmptyState activeCount={list.activeCount} onClear={list.clear} message={t('list.empty')} action={<Button label={t('list.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setCreating(true)} />} />}
         {changes.data && changes.data.items.length > 0 && (
           <DataList items={changes.data.items} columns={columns} getKey={(x) => x.number} renderCard={renderCard} caption={t('list.caption')} />
         )}

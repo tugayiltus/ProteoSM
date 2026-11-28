@@ -16,7 +16,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDate, formatDateTime } from '../../shared/lib/format';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
@@ -156,7 +157,7 @@ export function TaskListPage() {
       <Card padding={0}>
         {tasks.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {tasks.isError && <ErrorState error={tasks.error} onRetry={() => void tasks.refetch()} />}
-        {tasks.data && tasks.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {tasks.data && tasks.data.items.length === 0 && <ListEmptyState activeCount={list.activeCount} onClear={list.clear} message={t('list.empty')} action={<Button label={t('list.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setCreating(true)} />} />}
         {tasks.data && tasks.data.items.length > 0 && (
           <DataList items={tasks.data.items} columns={columns} getKey={(x) => x.number} renderCard={renderCard} caption={t('list.caption')} />
         )}

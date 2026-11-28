@@ -17,7 +17,7 @@
     "title": "Sürümler",
     "search": "Sürüm ara",
     "caption": "Sürüm listesi",
-    "empty": "Bu filtreyle sürüm yok.",
+    "empty": "Henüz sürüm yok.",
     "all": "Tümü",
     "open": "Aç",
     "cardMeta": "{{team}} · {{count}} değişiklik"

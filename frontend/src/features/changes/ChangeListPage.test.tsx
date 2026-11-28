@@ -45,7 +45,7 @@ describe('ChangeListPage', () => {
     mockApi(changeRoutes(CHANGE, { 'GET /api/v1/changes': { status: 200, body: { items: [], page: 1, pageSize: 20, totalCount: 0 } } }) as never);
     renderRoute('/changes?queue=pending_approval');
 
-    expect(await screen.findByText('Bu filtreyle değişiklik yok.')).toBeInTheDocument();
+    expect(await screen.findByText('Bu filtrelerle kayıt bulunamadı.')).toBeInTheDocument();
   });
 
   it('reads the service filter from the URL, sends it and offers the Hizmet filter', async () => {

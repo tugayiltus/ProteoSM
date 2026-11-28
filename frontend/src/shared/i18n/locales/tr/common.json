@@ -22,7 +22,8 @@
     "loading": "Yükleniyor…",
     "empty": "Kayıt bulunamadı.",
     "error": "Bir hata oluştu.",
-    "noResults": "Bu filtrelerle kayıt bulunamadı."
+    "noResults": "Bu filtrelerle kayıt bulunamadı.",
+    "clearFilters": "Filtreleri temizle"
   },
   "status": {
     "all": "Tümü",

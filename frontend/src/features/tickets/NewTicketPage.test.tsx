@@ -186,7 +186,7 @@ describe('scan route', () => {
     expect(router.state.location.search).toBe('?asset=a-9');
   });
   it('names the primary action after the kind and hints what to write', async () => {
-    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
+    mockApi({ ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
     renderRoute('/tickets/new/incident');
     expect(await screen.findByRole('button', { name: 'Arıza bildir' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Gönder' })).not.toBeInTheDocument();
@@ -194,7 +194,7 @@ describe('scan route', () => {
   });
 
   it('carries subject and description to the other kind and drops kind specific choices', async () => {
-    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
+    mockApi({ ...referenceRoutes, 'GET /api/v1/me/assets': { status: 200, body: [] } });
     const { user, router } = renderRoute('/tickets/new/incident');
     await user.type(await screen.findByLabelText(/^Konu/), 'Ekran kırık');
     await user.type(screen.getByLabelText(/^Açıklama/), 'Siyah ekran.');

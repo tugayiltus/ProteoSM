@@ -27,7 +27,7 @@
     "impactFilter": "Etki",
     "all": "Tümü",
     "new": "Yeni problem",
-    "empty": "Bu filtreyle problem yok.",
+    "empty": "Henüz problem yok.",
     "open": "Aç",
     "incidentCount": "{{count}} arıza",
     "cardCount": "{{count}} problem",

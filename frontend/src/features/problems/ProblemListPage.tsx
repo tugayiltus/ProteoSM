@@ -16,7 +16,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDateTime } from '../../shared/lib/format';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
@@ -159,7 +160,7 @@ export function ProblemListPage() {
       <Card padding={0}>
         {problems.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {problems.isError && <ErrorState error={problems.error} onRetry={() => void problems.refetch()} />}
-        {problems.data && problems.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {problems.data && problems.data.items.length === 0 && <ListEmptyState activeCount={list.activeCount} onClear={list.clear} message={t('list.empty')} action={<Button label={t('list.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setCreating(true)} />} />}
         {problems.data && problems.data.items.length > 0 && (
           <DataList items={problems.data.items} columns={columns} getKey={(x) => x.number} renderCard={renderCard} caption={t('list.caption')} />
         )}

@@ -15,7 +15,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 
-import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
+import { ListEmptyState } from '../../shared/feedback/ListEmptyState';
+import { ErrorState, LoadingState } from '../../shared/feedback/States';
 import { useDebouncedValue } from '../../shared/lib/useDebouncedValue';
 import { DataList, type DataColumn } from '../../shared/list/DataList';
 import { ListToolbar } from '../../shared/list/ListToolbar';
@@ -110,7 +111,7 @@ export function ReleasesPage() {
       <Card padding={0}>
         {releases.isPending && <LoadingState rows={SKELETON_ROWS} />}
         {releases.isError && <ErrorState error={releases.error} onRetry={() => void releases.refetch()} />}
-        {releases.data && releases.data.items.length === 0 && <EmptyState message={t('list.empty')} />}
+        {releases.data && releases.data.items.length === 0 && <ListEmptyState activeCount={list.activeCount} onClear={list.clear} message={t('list.empty')} action={<Button label={t('form.new')} variant="secondary" icon={<Icon icon={Icons.plus} />} onClick={() => setIsCreating(true)} />} />}
         {releases.data && releases.data.items.length > 0 && (
           <DataList items={releases.data.items} columns={columns} getKey={(x) => x.id} renderCard={renderCard} caption={t('list.caption')} />
         )}
