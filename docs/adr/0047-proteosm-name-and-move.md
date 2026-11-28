@@ -52,3 +52,28 @@ The product was TGYSM, then Proteone (ADR-0037). The owner chose ProteoSM as the
 - An old bookmark or script using `proteone.localhost` or old image names. Mitigation: the dev host alias still works; image and volume names are documented in `docs/operations.md`.
 
 Related: ADR-0037 (name and compatibility), ADR-0043 (no upgrade path from TGYSM), ADR-0025 (backup and restore), ADR-0004 (cookies), ADR-0045 (mail settings).
+
+## Amendment 2026-11-28
+
+Old and new identities, as one table (the Decision section above stays as accepted):
+
+| Kind | Proteone (before) | ProteoSM (now) | Note |
+|---|---|---|---|
+| Compose project | `proteone` | `proteosm` | volumes follow it |
+| Volumes | `proteone_pgdata`, `proteone_files`, `proteone_keys`, `proteone_backups` | `proteosm_pgdata`, `proteosm_files`, `proteosm_keys`, `proteosm_backups` | old ones stay for a rollback |
+| Images | `proteone-api`, `proteone-worker` | `proteosm-api`, `proteosm-worker` | |
+| Database and role | `proteone` | `proteosm` | local dev: `proteone_dev` to `proteosm_dev` |
+| Backup archives | `proteone-YYYYMMDD-HHMMSS.tar.gz` | `proteosm-YYYYMMDD-HHMMSS.tar.gz` | both restore; retention deletes only `proteosm-` |
+| Environment prefix | `PROTEONE_` | `PROTEOSM_` | old name read while the new one is unset |
+| Certificate files | `deploy/certs/proteone.crt`, `.key` | `deploy/certs/proteosm.crt`, `.key` | copied by the operator |
+| Session cookies | `__Host-proteone`, `__Host-proteone-af` | `__Host-proteosm`, `__Host-proteosm-af` | everyone signs in once more |
+| Dev host | `proteone.localhost` | `proteosm.localhost` | browser preferences reset with the origin |
+| Solution and namespaces | `Proteone.*` | `ProteoSM.*` | |
+| Kept | Data Protection name and purposes, `X-Proteone-*` webhook headers, migration names, browser storage keys | unchanged | stored data or outside tools depend on them |
+
+Clarifications after the final review:
+
+- The deploy guard (commit `821b250d`, `tools/lib/move-guard.sh`) also refuses when `proteosm_pgdata` exists but its database holds no applied migrations: a refused or failed restore, or a plain `tools/compose.sh up`, creates that volume empty. It reads the project name from the shell and from `deploy/.env`, as Compose does.
+- Backup retention (commit `a6e9d22b`) never deletes `proteone-` archives; they are the rollback copy.
+- The environment fallback also covers `PROTEONE_API_URL` in `frontend/vite.config.ts`.
+- Local development: `tools/db-up.sh` creates an empty `proteosm_dev`; data in `proteone_dev` is not carried over.
