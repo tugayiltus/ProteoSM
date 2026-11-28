@@ -73,7 +73,7 @@ if [[ "$SKIP_RETENTION" == true ]]; then
   echo "Retention skipped (BACKUP_SKIP_RETENTION=true): expired archives are kept."
 else
   # Only proteosm- archives age out: proteone- archives from before the rename are the rollback copy and stay until the
-  # operator deletes them (docs/operations.md, "Proteone to ProteoSM move").
+  # operator deletes them (docs/operations.md, move to ProteoSM).
   find "$BACKUP_DIR" -maxdepth 1 -name "$ARCHIVE_PREFIX*.tar.gz" -mmin "+$((RETENTION_DAYS * MINUTES_PER_DAY))" -print -delete
 fi
 # Leftovers of runs killed before their cleanup (power loss, OOM); a day old, so never a run in progress.

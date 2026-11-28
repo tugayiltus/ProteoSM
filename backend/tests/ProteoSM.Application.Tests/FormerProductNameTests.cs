@@ -73,7 +73,6 @@ public sealed partial class FormerProductNameTests
         "backend/tests/ProteoSM.Api.IntegrationTests/Persistence/ProteoSMEmailDefaultsMigrationTests.cs",
         "backend/tests/ProteoSM.Application.Tests/FormerProductNameTests.cs",
         // Documents that explain the kept literals, and the memory path of this machine (`~/claude/Proteone`).
-        "SECURITY.md",
         "capabilities.md",
         "CLAUDE.md",
         // Fallbacks that read a PROTEONE_ variable or key while the PROTEOSM_ one is missing.
@@ -87,6 +86,7 @@ public sealed partial class FormerProductNameTests
         // Restore of proteone- archives and the move of a Proteone stack: deploy guard, procedure, drill.
         "tools/deploy.sh",
         "tools/tests/deploy-guard-test.sh",
+        "tools/lib/move-guard.sh",
         "tools/restore.sh",
         "tools/proteosm-move-drill.sh",
         "tools/lib/proteosm_move_drill.py",
