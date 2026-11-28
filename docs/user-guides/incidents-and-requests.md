@@ -9,14 +9,16 @@ Bu sayfa herkes içindir. İki tür kayıt vardır:
 
 1. **Ana sayfa** üzerindeki **Bir şey çalışmıyor** kartına basın. Ya da **Kayıtlarım** sayfasında **Arıza bildir** düğmesini kullanın.
 2. **Konu** alanına sorunu kısa bir cümleyle yazın, örneğin "Kat yazıcısı kağıt sıkıştırıyor".
-3. **Açıklama** alanına ayrıntıları yazın: ne oldu, ne zamandan beri, hata mesajı varsa tam metni.
+3. **Açıklama** alanına ayrıntıları yazın: neyi yaparken sorun oldu, ne zamandan beri, hata mesajı varsa tam metni. Alanın altındaki ipucu da bunu söyler.
 4. **Kategori** listesinden sorunun konusunu seçin.
 5. Sorun size zimmetli bir cihazdaysa **İlgili cihaz** listesinden onu seçin. Değilse **Cihaz seçmeyin** olarak bırakın.
 6. **Lokasyon** listesinden bulunduğunuz yeri seçin.
 7. İsterseniz **Dosya ekle (en fazla 5, her biri en fazla 10 MB)** alanından ekran görüntüsü veya belge ekleyin. PDF, PNG, JPEG, TXT veya CSV dosyaları eklenebilir.
-8. **Gönder** düğmesine basın.
+8. **Arıza bildir** düğmesine basın.
 
 ![Arıza bildirme formu](images/tickets-new-incident-desktop.png)
+
+Yanlış türü seçtiyseniz formdaki **Bunun yerine talep oluştur** bağlantısına basın. Konu, açıklama, lokasyon ve yeni türde de bulunan kategori yeni forma taşınır; kategori o türde yoksa "Seçtiğiniz kategori bu türde yok. Yeniden seçin." uyarısı çıkar ve kategoriyi yeniden seçersiniz. Talep tipi ve cihaz taşınmaz, eklediğiniz dosyalar da taşınmaz ("Dosyalar taşınmadı. Gerekirse yeniden ekleyin.").
 
 Kayıt oluşunca kaydın sayfası açılır. Kayıt önce IT'nin kayıt alan ekibine düşer ve "P3 · Normal" öncelikle başlar. IT ekibi önceliği gerekirse değiştirir.
 
@@ -25,7 +27,7 @@ Kayıt oluşunca kaydın sayfası açılır. Kayıt önce IT'nin kayıt alan eki
 1. **Ana sayfa** üzerindeki **Bir şey istiyorum** kartına basın. Ya da **Kayıtlarım** sayfasında **Talep oluştur** düğmesini kullanın.
 2. **Talep tipi** listesinden ne istediğinizi seçin, örneğin "Yeni bilgisayar".
 3. **Konu**, **Açıklama**, **Kategori** ve **Lokasyon** alanlarını doldurun.
-4. Gerekirse dosya ekleyin ve **Gönder** düğmesine basın.
+4. Gerekirse dosya ekleyin ve **Talep oluştur** düğmesine basın. Aslında bir şey bozuksa **Bunun yerine arıza bildir** bağlantısı aynı metni arıza formuna taşır.
 
 ![Onay gerektiren bir talep tipi seçildiğinde (telefon)](images/tickets-new-request-mobile.png)
 

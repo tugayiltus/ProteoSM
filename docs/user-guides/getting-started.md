@@ -102,7 +102,7 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ayrı
 
 ![Arama penceresi](images/search-desktop.png)
 
-Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem, envanter ve hizmet sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
+Her sonucun numarası başlığından ayrı yazılır. Pencereyi kapatınca klavye odağı **Ara** düğmesine döner. Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem, envanter ve hizmet sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
 
@@ -113,6 +113,16 @@ Sağ üstteki adınıza (telefonda baş harflerinize) basınca hesap menüsü a�
 - **Çıkış yap**: Oturumu kapatır.
 
 Adınızın yanındaki **Görünüm** düğmesiyle ekranı **Açık**, **Koyu** veya **Otomatik** (cihazınızın ayarına göre) yapabilirsiniz.
+
+## Boş listeler ve hatalar
+
+Listeler üç durumu ayrı gösterir:
+
+- Henüz … yok (örneğin "Henüz varlık yok."): Liste ilk kez kullanılıyor ve boş. Yöneticiler için ilgili kurulum bağlantısı çıkar (örneğin **Cihaz kataloğunu kur**, **Hizmetleri tanımla**).
+- **Bu filtrelerle kayıt bulunamadı.**: Süzgeçler hiç kayıt bırakmadı. **Filtreleri temizle** ile tüm listeyi açın.
+- **Bir hata oluştu.**: Liste yüklenemedi. **Yeniden dene** ile tekrar deneyin.
+
+Bir sayfa hiç açılmazsa **Sayfa açılamadı** ekranı çıkar. **Yeniden dene** sayfayı tekrar yükler; sürüyorsa **Uygulamaya dön** ile ana sayfaya gidip tekrar girin. **Uygulama güncellenmiş olabilir** yazıyorsa sayfa yeni bir sürüm yayınlandığı için eskimiştir; sayfayı yeniden yükleyin.
 
 ## İpuçları
 

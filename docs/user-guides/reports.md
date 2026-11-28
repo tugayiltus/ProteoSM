@@ -19,6 +19,8 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
 
 ![Olaylar raporu](images/reports-incidents-desktop.png)
 
+Her sekmenin kendi filtreleri vardır. Sekmeler arasında geçerken yalnızca yeni sekmenin tanıdığı filtreler kalır; filtrelerin altındaki not hangilerinin kaldığını ("Başka sekmeye geçince kalanlar: …") ve hangilerinin yalnız bu sekmede geçerli olup geçişte düştüğünü yazar.
+
 Filtrelerin altında **Kapsam: tüm kayıtlar** veya **Kapsam: yalnızca ekiplerinizin kayıtları** yazar. IT personeli yalnızca ekiplerinin kayıtlarını, yöneticiler tüm kayıtları görür.
 
 ## Dönem ve filtreler

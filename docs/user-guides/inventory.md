@@ -57,7 +57,7 @@ Her işlem **Onayla** ile kaydedilir ve **Geçmiş** bölümüne eklenir: ne yap
 
 Teslim edilen cihaz kişinin **Zimmetlerim** sayfasında görünür. Bir talep için teslim yapılıyorsa cihaz yalnızca talep sahibine verilebilir ve onay gereken taleplerde önce onay gelmiş olmalıdır.
 
-**Hizmetler** kartı cihazın bağlı olduğu hizmetleri gösterir. Yöneticiler buradan **Hizmete bağla** ve **Bağı kaldır** ile bağları değiştirir (bkz. [Hizmetler](services.md)).
+**Bağlı hizmetler** kartı cihazın bağlı olduğu hizmetleri gösterir; yoksa "Bağlı hizmet yok." yazar. Yöneticiler buradan **Hizmete bağla** ve **Bağı kaldır** ile bağları değiştirir (bkz. [Hizmetler](services.md)).
 
 ## CSV ile toplu cihaz ekleme
 

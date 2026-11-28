@@ -66,6 +66,12 @@ CSV dosyasını Excel'de "CSV UTF-8 (virgülle ayrılmış)" biçiminde kaydedin
 1. İstenmeyen e-posta (spam) klasörüne bakın.
 2. Yöneticiniz **E-posta teslimatları** sayfasında size giden e-postayı arayabilir; **Başarısız** ise **Yeniden dene** ile tekrar gönderebilir.
 
+## Sayfa açılmıyor
+
+### "Sayfa açılamadı" veya "Uygulama güncellenmiş olabilir"
+
+**Yeniden dene**'ye basın. Yeni bir sürüm yayınlandıysa sayfayı yeniden yüklemek yeterlidir. Sürüyorsa **Uygulamaya dön** ile ana sayfaya gidin; sorun kalıcıysa yöneticinize bildirin.
+
 ## Telefonda kullanım
 
 - Menü sol üstteki **Menüyü aç** düğmesindedir.

@@ -1,46 +1,55 @@
 # IT iş listesi
 
-Bu sayfa IT personeli ve yöneticiler içindir: size ve ekiplerinize düşen kayıtları bulmak, üstlenmek ve çözmek.
+Bu sayfa IT personeli ve yöneticiler içindir: size ve ekiplerinize düşen kayıtları bulmak, üzerinize almak ve çözmek.
 
 ## İş listem
 
-Menüden **İş listem** sayfasını açın. Her kart bir kuyruğu ve içindeki kayıt sayısını gösterir:
+Menüden **İş listem** sayfasını açın. Sayfa en üstte üç sayaçlı görünümle açılır:
 
-| Kuyruk | İçindekiler |
+| Görünüm | İçindekiler |
 |---|---|
-| **Bana atanan** | Size atanmış kayıtlar. |
-| **Ekiplerim** | Üyesi olduğunuz ekiplerin kayıtları. |
-| **Atanmamış** | Ekiplerinizde henüz kimsenin üstlenmediği kayıtlar. |
-| **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
-| **SLA Riski** | SLA hedefi yaklaşan veya geçmiş açık kayıtlar. Önce bunlara bakın. |
-| **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
-| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](problems.md). |
+| **Bana atanan** | Size atanmış arıza, talep, görev ve değişikliklerin tek listesi. Sayfa bununla açılır. |
+| **Atanmamış** | Ekiplerinizde henüz kimsenin üzerine almadığı arıza ve talepler. |
+| **SLA riski** | SLA hedefi yaklaşan veya geçmiş açık arıza ve talepler; hedef zamanı en yakın olan en üstte. Önce bunlara bakın. |
+| **Diğer kuyruklar** | Düğmeye basınca diğer kuyruk kartları açılır (aşağıya bakın). |
+
+Düğmedeki rozet kayıt sayısını gösterir; sayı alınamazsa "sayı alınamadı" yazar. Listenin başlığı hangi görünümde olduğunuzu söyler (örneğin "Atanmamış arıza ve talepler"). Arıza ve talep satırlarında **Bitiş tarihi** sütunu, çalışan SLA sayaçlarından hedefi en yakın olanı gösterir.
 
 ![İş listem](images/workspace-desktop.png)
 
-Bir karta basınca o kuyruk açılır. Ana sayfadaki **İş kuyruklarım** bölümü de aynı kartlardan üçünü gösterir.
+**Diğer kuyruklar** düğmesi şu kartları açar; bir karta basınca o kuyruk açılır:
+
+| Kart | İçindekiler |
+|---|---|
+| **Ekiplerim** | Üyesi olduğunuz ekiplerin kayıtları. |
+| **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
+| **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
+| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](problems.md). |
+| **Görevlerim**, **Ekibimin görevleri**, **Geciken görevler**, **Değişikliklerim** | Görev ve değişiklik kuyrukları. Bkz. [Görevler ve değişiklikler](tasks-and-changes.md). |
+
+Ana sayfadaki **İş kuyruklarım** bölümü de aynı kartlardan üçünü gösterir.
 
 ## Kuyruk
 
-Kuyrukta kayıtlar tablo halinde görünür: numara, konu, durum, öncelik, atanan kişi, SLA ve son işlem zamanı.
+Kuyrukta kayıtlar tablo halinde görünür: numara, konu, tür, durum, öncelik, ekip, atanan kişi ve **Son tarih** (SLA hedef zamanı ya da sonucu). Üstteki üç görünüm düğmesi kuyruk sayfalarında da durur.
 
 - **Numara veya konu ara**, **Durum** ve **Öncelik** ile listeyi daraltın.
 - Kaydı açmak için **Aç** düğmesine basın.
-- Kayıttan sayfa yolundaki **Kuyruk** adımıyla veya **Kayıtlara dön** düğmesiyle aynı filtrelerle listeye dönersiniz.
+- Kayıttan sayfa yolundaki **Kuyruk görünümü** adımıyla veya **Kayıtlara dön** düğmesiyle aynı filtrelerle listeye dönersiniz.
 
 ![Ekiplerim kuyruğu](images/workspace-queue-desktop.png)
 
-SLA sütununda iki ölçü vardır: **İlk yanıt** ve **Çözüm**. "Kalan 4 sa 0 dk" hedefe kalan mesai süresini, "Risk" hedefin yaklaştığını, "İhlal" hedefin geçtiğini, "Duraklatıldı" sürenin beklemede durduğunu gösterir.
+Kayıt sayfasındaki SLA kartında iki ölçü vardır: **İlk yanıt** ve **Çözüm**. "Kalan 4 sa 0 dk" hedefe kalan mesai süresini, "Risk" hedefin yaklaştığını, "İhlal" hedefin geçtiğini, "Duraklatıldı" sürenin beklemede durduğunu gösterir.
 
 ## Kayıt üzerinde çalışma
 
-Kaydı açınca sağda **İşlemler** kartı görünür. Kartta yalnızca kaydın o anki durumunda yapılabilecek işlemler çıkar.
+Kaydı açınca başlıkta kaydın konusu, altında numara, tür, ekip, durum, öncelik ve tek bir SLA satırı (örneğin "İlk yanıt SLA'sı risk altında · Son tarih 26 Kas 2026 13:00") görünür. Başlığın sağındaki ana düğme kayda göre değişir: atanmamış kayıtta **Üzerime al**, atanmış kayıtta **Yanıtla**. **Üzerime al**'a basınca düğme **Yanıtla**'ya döner ve klavye odağı ona geçer; **Yanıtla** yanıt sekmesini açıp imleci mesaj alanına koyar. Sağda **İşlemler** kartı görünür. Kartta yalnızca kaydın o anki durumunda yapılabilecek işlemler çıkar.
 
 ![Bir kaydın işlemleri](images/ticket-work-desktop.png)
 
 | İşlem | Ne yapar |
 |---|---|
-| **Üzerime al** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür. |
+| **Üzerime al** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür; başlıktaki ana düğmeyle aynı işlemdir. |
 | **Başla** | **Açık** kaydı **İşlemde** yapar. |
 | **Beklet** | Kaydı **Beklemede** yapar. **Bekleme nedeni** seçin; **Diğer** seçerseniz **Not** yazmak zorunludur. |
 | **Devam et** | Bekleyen kaydı tekrar çalışmaya alır. Yönetici onayı bekleyen taleplerde görünmez; onları onay açar. |
@@ -75,6 +84,8 @@ Kayıt sayfasındaki **Yazışmalar** bölümünde iki sekme vardır:
 - **Yanıt**: Kullanıcı görür ve e-posta alır. Kayda yazdığınız ilk yanıt **İlk yanıt** SLA süresini durdurur.
 - **İç not**: Yalnızca IT personeli görür. Sarı zeminle gösterilir.
 
+Her sekmenin kendi taslağı vardır: iç not olarak yazdığınız metin sekme değişince kullanıcıya giden yanıta dönüşmez.
+
 Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekleyin ve **Gönder** düğmesine basın. **Makale ekle** ile bilgi bankasından bir makalenin bağlantısını mesaja ekleyebilirsiniz; kullanıcıya giden yanıta yalnızca çalışanlara açık makaleler eklenebilir.
 
 ## Cihaz, ilgili talep ve makale bağlama
@@ -88,10 +99,10 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
-Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. **Kuyruk** listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](services.md)).
+Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. Kuyruk listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](services.md)).
 
 ## İpuçları
 
-- Güne **SLA Riski** kuyruğuyla başlayın.
+- Güne **SLA riski** görünümüyle başlayın.
 - Kullanıcıdan bilgi beklerken kaydı **Beklet** ile **Kullanıcıdan yanıt bekleniyor** nedeniyle bekletin; kullanıcı yanıt yazınca **Devam et** ile sürdürün.
 - Başka biri kaydı siz düzenlerken değiştirdiyse "Bu kayıt siz düzenlerken başka biri tarafından değiştirildi" uyarısı çıkar. Sayfayı yenileyip tekrar deneyin.

@@ -37,7 +37,7 @@ Listede **Kullanıcı ara** alanıyla ada, soyada veya e-postaya göre arayın; 
 
 ### Düzenleme, pasifleştirme, şifre sıfırlama
 
-- **Düzenle**: Ad, e-posta, rol, departman ve lokasyonu değiştirir. Rol değişince kullanıcının oturumu kapanır.
+- **Düzenle**: Ad, e-posta, rol, departman ve lokasyonu değiştirir. Rol değişince kullanıcının oturumu kapanır. Rolü değiştirmeden önce form neyin olacağını yazar: değişiklik denetim kaydına yazılır, ekip üyelikleri otomatik değişmez; **Çalışan** rolündeki kişi yeni bir ekibe eklenemez.
 - **Pasifleştir**: Kullanıcı artık giremez; açık oturumu hemen kapanır ve e-posta almaz. **Aktifleştir** ile geri açılır.
 - **Şifre sıfırla**: Aynı iki iletim yolundan birini seçerek yeni şifre verir. Kullanıcının açık oturumu kapanır.
 
@@ -75,13 +75,19 @@ Lokasyonlar ağaç şeklindedir: örneğin "Merkez Ofis" altında "Zemin Kat", "
 4. **Oluştur** düğmesine basın.
 5. **Üyeleri yönet** ile ekibin üyelerini açın. **Eklenecek kişi** seçip **Üye ekle** ile ekleyin, **Çıkar** ile çıkarın.
 
-Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcılar eklenebilir. Bir kişi birden fazla ekipte olabilir.
+**Üye ekle** ve **Çıkar** işlemleri anında kaydedilir ve denetim kaydına yazılır; sayfa "… ekibe eklendi." veya "… ekipten çıkarıldı." der. Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcılar eklenebilir. Bir kişi birden fazla ekipte olabilir.
+
+## Giriş yöntemi
+
+**Giriş yöntemi** sayfasında kullanıcıların nasıl giriş yapacağını seçersiniz: **Yerel (ProteoSM şifresi)**, **Microsoft (Entra ID)** veya **Active Directory (LDAP)**. Aynı anda tek yöntem açıktır; sayfa **Etkin yöntem**i ve altında **Diğer yöntemler**i gösterir. Her aday için son bağlantı testinin sonucu yazar: "bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir." ya da "henüz test edilmedi". Yöntemi açmak için önce **Bağlantıyı test et**, sonra **Bu yöntemi aç** düğmesine basın.
+
+**Yerel yönetici girişi** notu, yöneticilerin yöntem ne olursa olsun yerel ProteoSM şifresiyle girebildiğini söyler; dizin veya Microsoft hesabı çalışmazsa bu yol açık kalır. Hesabınızın yerel şifresi yoksa sayfa bunu uyarır.
 
 ## Denetim kayıtları
 
 **Denetim kayıtları** sayfası sistemde kimin neyi ne zaman yaptığını gösterir: girişler, kullanıcı değişiklikleri, kayıt işlemleri, cihaz hareketleri ve daha fazlası.
 
-1. **Kayıt türü** listesiyle süzün (örneğin "Kullanıcı" veya "Cihaz").
+1. **Kayıt türü** listesiyle süzün (örneğin "Kullanıcı" veya "Cihaz"). **Kullanıcı** (işlemi yapan kişi; pasif kullanıcılar da listede çıkar), **Eylem**, **Başlangıç günü** ve **Bitiş günü** ile de daraltabilirsiniz.
 2. Bir satırın **Ayrıntılar** bölümünü açarak değişiklikten **Önce** ve **Sonra** değerlerini görün.
 
 ![Denetim kayıtları](images/admin-audit-desktop.png)

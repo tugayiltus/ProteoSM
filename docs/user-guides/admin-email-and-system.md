@@ -15,6 +15,8 @@ Her bildirim türünün bir şablonu vardır: "Kayıt oluşturuldu", "Kamuya aç
 
 Değişiklik bundan sonra gönderilen e-postalarda geçerli olur.
 
+Düzenleme penceresindeki **Önizleme** değişkenleri örnek değerlerle doldurup şablonun nasıl görüneceğini gösterir. Önizleme e-posta göndermez ve şablonu kaydetmez. Bu olayda kullanılamayan bir değişken yazdıysanız önizleme bunları adıyla sayar; kayıt bu durumda reddedilir.
+
 ## Giden posta ayarları
 
 **Giden posta ayarları** sayfası (menüde **Duyuru ve bildirim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
@@ -40,7 +42,7 @@ Notlar:
 
 ## E-posta teslimatları
 
-**E-posta teslimatları** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve tarih.
+**E-posta teslimatları** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve **Son deneme** zamanı. **Son deneme** gönderimin en son denendiği zamandır (başarılı ya da başarısız); henüz hiç denenmemiş teslimatta boştur. Yeniden denenmek üzere sırada bekleyen teslimatta bir de "Sonraki deneme" zamanı yazar.
 
 ![E-posta teslimatları](images/admin-email-deliveries-desktop.png)
 
@@ -60,11 +62,13 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 - **Arka plan işleri** tablosunda her iş için son çalışma zamanı, çalışma aralığı ve durum görünür. **Gecikmiş** veya **Rapor vermiyor** görürseniz e-postalar gitmiyor, SLA uyarıları çıkmıyor veya dışa aktarımlar hazırlanmıyor olabilir. Sistem yöneticisine bildirin.
 - Tablo boşsa (**Henüz çalışan iş kaydı yok.**) arka plan hizmeti hiç çalışmamıştır.
 
+Gönderim veya dışa aktarım işleri sorunluysa kutunun altında **İncelemek için** bağlantıları çıkar: **Başarısız e-posta teslimatları**, **Giden posta ayarlarını kontrol et** ve **Dışa aktarma işleri**.
+
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
 
 ## Duyurular
 
-Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür.
+Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür. Formdaki **Önizleme** duyurunun başlığını, yayın aralığını ve görünümünü gösterir; **Oluştur** veya **Kaydet**'e basana kadar hiçbir şey yayınlanmaz.
 
 ![Duyurular](images/admin-announcements-desktop.png)
 
@@ -83,7 +87,7 @@ Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfası
 - **Lisans bitiş uyarısı**: sahip ekip, lisans bitmeden kaç gün önce uyarılır.
 - **Garanti raporu penceresi**: bitiş tarihi seçilmediğinde garanti raporu kaç gün ileriye bakar.
 
-Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
+Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın. Her ayarın altında **Etkilediği akış** yazar: lisans uyarısı için lisans bitiş uyarısı e-postaları ve **Lisanslar** ekranı, garanti penceresi için **Raporlar** içindeki garanti raporu.
 
 ## İzleme kaynakları
 
@@ -96,7 +100,7 @@ Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 3. **Oluştur** düğmesine basın ve gösterilen anahtarı kopyalayın. Anahtar bir daha gösterilmez.
 4. Adresi ve anahtarı izleme aracına girin. İmza örneğini sistem yöneticinize sorun.
 
-- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur.
+- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur. Onay penceresi bunu işlemden önce söyler ("… kaynağının eski anahtarı hemen geçersiz olur.").
 - Aynı uyarı açık bir arıza varken yeniden gelirse arızaya iç not düşer. Uyarı düzelince de yalnızca iç not düşer; arızayı IT kapatır.
 - Bir kaynak saatte en fazla 30 yeni arıza açar.
 - **Reddedilen istek** sayısı artıyorsa anahtarı, aracın saatini ve kaynağın aktif olduğunu kontrol edin.

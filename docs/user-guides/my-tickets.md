@@ -29,7 +29,7 @@ Liste her sayfada bir bölümü gösterir. Alttaki **Önceki** ve **Sonraki** d�
 
 Kayıt sayfasında şunları görürsünüz:
 
-- Başlıkta numara, tür, durum ve öncelik.
+- Başlıkta konu, altında numara, tür, ekip, durum ve öncelik; bunların altında tek satırlık SLA durumu (örneğin "İlk yanıt SLA'sı karşılandı"). Başlığın sağında **Yanıtla** düğmesi vardır; basınca **Yazışmalar** bölümünde mesaj alanı açılır. Tamamlanmış veya iptal edilmiş kayıtta bu düğme görünmez.
 - **Açıklama** ve kayıt tamamlandıysa **Çözüm**.
 - **SLA**: IT ekibinin size ilk yanıt vermesi ve kaydı çözmesi için hedef zamanlar. "Karşılandı" hedefin tutulduğunu gösterir.
 - Sağdaki bilgi kartı: **Talep sahibi**, **Ekip**, **Atanan kişi**, **Kategori**, **Lokasyon**, **Oluşturulma**.
@@ -50,7 +50,7 @@ Puanınızı süre dolana kadar **Değiştir** ile değiştirebilirsiniz. Yalnı
 
 ## IT ekibine yanıt yazma
 
-1. Kayıt sayfasında **Yazışmalar** bölümüne inin.
+1. Kayıt sayfasında **Yanıtla** düğmesine basın (ya da **Yazışmalar** bölümüne inin).
 2. **Mesajınız** alanına yazın.
 3. Gerekirse **Dosya ekle** ile dosya ekleyin.
 4. **Gönder** düğmesine basın.
@@ -72,5 +72,5 @@ Kayıt açıkken sorunun hangi cihazda olduğunu sonradan da belirtebilirsiniz:
 
 ## İpuçları
 
-- Ana sayfadaki **Son kayıtlarım** listesi son kayıtlarınızı hızlıca gösterir.
+- Ana sayfadaki **Son kayıtlarım** listesi son kayıtlarınızı hızlıca gösterir. IT ekibi sizden yanıt bekliyorsa o kayıt listenin başında turuncu **Yanıtınız bekleniyor** işaretiyle durur; daha eski kayıtlar da olsa gözden kaçmaz.
 - Kaydınız oluştuğunda, IT ekibi size yanıt yazdığında, talebiniz onaylandığında veya reddedildiğinde ve kayıt tamamlandığında e-posta alırsınız.

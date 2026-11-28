@@ -69,7 +69,7 @@ Yönetim ekranında **Hizmet kataloğu** altındaki **Hizmetler** sayfasını a�
 
 ![Hizmetin varlıkları](images/admin-service-assets-desktop.png)
 
-Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cihaz yeni bir hizmete bağlanamaz. Bağlar cihaz sayfasındaki **Hizmetler** kartından da yönetilir (bkz. [Envanter](inventory.md)).
+Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cihaz yeni bir hizmete bağlanamaz. Bağlar cihaz sayfasındaki **Bağlı hizmetler** kartından da yönetilir (bkz. [Envanter](inventory.md)).
 
 ## İpuçları
 

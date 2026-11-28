@@ -37,7 +37,7 @@ Aynı üretici ve adla ikinci yazılım açılmaz. Kullanılmayan yazılımı **
 - Boş hak kalmadıysa veya süre bittiyse yeni atama yapılamaz. Var olan atamalar kalır.
 - Pasif kullanıcıya, kullanım dışı veya kayıp cihaza atama yapılamaz. Sonradan bu duruma düşen atamanın yanında **Kullanılamıyor** yazar; **Atamayı kaldır** ile hakkı boşaltın.
 - **Adet**, kullanılan hak sayısından az olamaz.
-- Cihazın lisansları cihaz sayfasındaki **Lisanslar** kartında da görünür.
+- Varlığa atanmış lisanslar varlık sayfasındaki **Lisans kullanım hakları** kartında da görünür; atanmış lisans yoksa "Bu varlığa atanmış lisans yok." yazar. Listedeki sütun **Kullanım hakkı** adını taşır.
 
 ## Bitiş e-postası
 

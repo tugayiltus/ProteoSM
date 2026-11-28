@@ -1,6 +1,8 @@
 # Yönetim: cihaz ve hizmet kataloğu
 
-Bu sayfa yöneticiler içindir. İki katalog vardır:
+Bu sayfa yöneticiler içindir. Pasifleştirmeden önce her katalogda onay penceresi **Şu an bu kayda bağlı olanlar** başlığıyla bağlı kayıtların sayısını gösterir (örneğin "3 aktif model", "12 varlık", "4 açık kayıt"). Pasifleştirmek bu kayıtları değiştirmez; yalnızca yeni seçimlerde listeden çıkarır. Sayılar alınamazsa pencere bunu söyler ve pasifleştirme yine de yapılabilir.
+
+İki katalog vardır:
 
 - **Cihaz kataloğu**: **Markalar** ve **Modeller**. Envantere cihaz eklerken bu listelerden seçilir.
 - **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**: çalışanlar arıza ve talep açarken bunlardan seçer. **Hizmetler**: yalnızca IT kullanır; tanımlama ve varlık bağlama için bkz. [Hizmetler](services.md).
@@ -13,7 +15,7 @@ Bu sayfa yöneticiler içindir. İki katalog vardır:
 ![Markalar](images/admin-brands-desktop.png)
 
 - **Düzenle** ile adı değiştirin. Ad değişince bu markadaki tüm cihazlarda yeni ad görünür.
-- **Pasifleştir** ile marka yeni cihazlarda seçilemez olur. Mevcut cihazlar etkilenmez. **Aktifleştir** ile geri açılır.
+- **Pasifleştir** ile marka yeni cihazlarda seçilemez olur (pencere markadaki model ve varlık sayısını gösterir). Mevcut cihazlar etkilenmez. **Aktifleştir** ile geri açılır.
 - Aynı ad iki kez eklenemez; büyük-küçük harf ve boşluk farkı aynı ad sayılır.
 
 ## Modeller
@@ -43,7 +45,7 @@ Kategoriler en fazla iki seviyelidir: bir ana kategori ve altında alt kategoril
    - **Arıza ve talep**: İkisinde de çıkar.
 5. **Oluştur** düğmesine basın.
 
-Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar kategorisini korur.
+Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar kategorisini korur. Pencere aktif alt kategori ve açık kayıt sayısını gösterir.
 
 ## Talep tipleri
 
@@ -54,7 +56,7 @@ Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar katego
 3. Bu talepler onaydan geçmeliyse **Yönetici onayı gerekir** kutusunu işaretleyin. Listede **Onay gerekir** veya **Onaysız** yazar.
 4. **Oluştur** düğmesine basın.
 
-Onay gerektiren talepler, talep sahibinin departmanının onaylayıcısına gider (bkz. [Onaylar](approvals.md)).
+Pasifleştirirken pencere o tipteki açık kayıt sayısını gösterir. Onay gerektiren talepler, talep sahibinin departmanının onaylayıcısına gider (bkz. [Onaylar](approvals.md)).
 
 ## İpuçları
 

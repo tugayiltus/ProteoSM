@@ -102,7 +102,7 @@ Yöneticiler üst çubukta **Yönetim** bağlantısını görür. Yönetim ayrı
 
 ![Arama penceresi](images/search-desktop.png)
 
-Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem, envanter ve hizmet sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
+Her sonucun numarası başlığından ayrı yazılır. Pencereyi kapatınca klavye odağı **Ara** düğmesine döner. Arama yalnızca görme yetkiniz olan kayıtları gösterir. Çalışanlar kendi kayıtlarını ve bilgi bankası makalelerini bulur. Değişiklik, görev, problem, envanter ve hizmet sonuçlarını IT personeli ve yöneticiler görür; tam bir `PRB-` numarası problemi doğrudan açar. Envanterde demirbaş etiketi veya seri numarasıyla arayın; marka ve model aramada çıkmaz, bunun için **Envanter** listesini kullanın.
 
 ## Hesap menüsü ve görünüm
 
@@ -113,6 +113,16 @@ Sağ üstteki adınıza (telefonda baş harflerinize) basınca hesap menüsü a�
 - **Çıkış yap**: Oturumu kapatır.
 
 Adınızın yanındaki **Görünüm** düğmesiyle ekranı **Açık**, **Koyu** veya **Otomatik** (cihazınızın ayarına göre) yapabilirsiniz.
+
+## Boş listeler ve hatalar
+
+Listeler üç durumu ayrı gösterir:
+
+- Henüz … yok (örneğin "Henüz varlık yok."): Liste ilk kez kullanılıyor ve boş. Yöneticiler için ilgili kurulum bağlantısı çıkar (örneğin **Cihaz kataloğunu kur**, **Hizmetleri tanımla**).
+- **Bu filtrelerle kayıt bulunamadı.**: Süzgeçler hiç kayıt bırakmadı. **Filtreleri temizle** ile tüm listeyi açın.
+- **Bir hata oluştu.**: Liste yüklenemedi. **Yeniden dene** ile tekrar deneyin.
+
+Bir sayfa hiç açılmazsa **Sayfa açılamadı** ekranı çıkar. **Yeniden dene** sayfayı tekrar yükler; sürüyorsa **Uygulamaya dön** ile ana sayfaya gidip tekrar girin. **Uygulama güncellenmiş olabilir** yazıyorsa sayfa yeni bir sürüm yayınlandığı için eskimiştir; sayfayı yeniden yükleyin.
 
 ## İpuçları
 
@@ -130,14 +140,16 @@ Bu sayfa herkes içindir. İki tür kayıt vardır:
 
 1. **Ana sayfa** üzerindeki **Bir şey çalışmıyor** kartına basın. Ya da **Kayıtlarım** sayfasında **Arıza bildir** düğmesini kullanın.
 2. **Konu** alanına sorunu kısa bir cümleyle yazın, örneğin "Kat yazıcısı kağıt sıkıştırıyor".
-3. **Açıklama** alanına ayrıntıları yazın: ne oldu, ne zamandan beri, hata mesajı varsa tam metni.
+3. **Açıklama** alanına ayrıntıları yazın: neyi yaparken sorun oldu, ne zamandan beri, hata mesajı varsa tam metni. Alanın altındaki ipucu da bunu söyler.
 4. **Kategori** listesinden sorunun konusunu seçin.
 5. Sorun size zimmetli bir cihazdaysa **İlgili cihaz** listesinden onu seçin. Değilse **Cihaz seçmeyin** olarak bırakın.
 6. **Lokasyon** listesinden bulunduğunuz yeri seçin.
 7. İsterseniz **Dosya ekle (en fazla 5, her biri en fazla 10 MB)** alanından ekran görüntüsü veya belge ekleyin. PDF, PNG, JPEG, TXT veya CSV dosyaları eklenebilir.
-8. **Gönder** düğmesine basın.
+8. **Arıza bildir** düğmesine basın.
 
 ![Arıza bildirme formu](images/tickets-new-incident-desktop.png)
+
+Yanlış türü seçtiyseniz formdaki **Bunun yerine talep oluştur** bağlantısına basın. Konu, açıklama, lokasyon ve yeni türde de bulunan kategori yeni forma taşınır; kategori o türde yoksa "Seçtiğiniz kategori bu türde yok. Yeniden seçin." uyarısı çıkar ve kategoriyi yeniden seçersiniz. Talep tipi ve cihaz taşınmaz, eklediğiniz dosyalar da taşınmaz ("Dosyalar taşınmadı. Gerekirse yeniden ekleyin.").
 
 Kayıt oluşunca kaydın sayfası açılır. Kayıt önce IT'nin kayıt alan ekibine düşer ve "P3 · Normal" öncelikle başlar. IT ekibi önceliği gerekirse değiştirir.
 
@@ -146,7 +158,7 @@ Kayıt oluşunca kaydın sayfası açılır. Kayıt önce IT'nin kayıt alan eki
 1. **Ana sayfa** üzerindeki **Bir şey istiyorum** kartına basın. Ya da **Kayıtlarım** sayfasında **Talep oluştur** düğmesini kullanın.
 2. **Talep tipi** listesinden ne istediğinizi seçin, örneğin "Yeni bilgisayar".
 3. **Konu**, **Açıklama**, **Kategori** ve **Lokasyon** alanlarını doldurun.
-4. Gerekirse dosya ekleyin ve **Gönder** düğmesine basın.
+4. Gerekirse dosya ekleyin ve **Talep oluştur** düğmesine basın. Aslında bir şey bozuksa **Bunun yerine arıza bildir** bağlantısı aynı metni arıza formuna taşır.
 
 ![Onay gerektiren bir talep tipi seçildiğinde (telefon)](images/tickets-new-request-mobile.png)
 
@@ -202,7 +214,7 @@ Liste her sayfada bir bölümü gösterir. Alttaki **Önceki** ve **Sonraki** d�
 
 Kayıt sayfasında şunları görürsünüz:
 
-- Başlıkta numara, tür, durum ve öncelik.
+- Başlıkta konu, altında numara, tür, ekip, durum ve öncelik; bunların altında tek satırlık SLA durumu (örneğin "İlk yanıt SLA'sı karşılandı"). Başlığın sağında **Yanıtla** düğmesi vardır; basınca **Yazışmalar** bölümünde mesaj alanı açılır. Tamamlanmış veya iptal edilmiş kayıtta bu düğme görünmez.
 - **Açıklama** ve kayıt tamamlandıysa **Çözüm**.
 - **SLA**: IT ekibinin size ilk yanıt vermesi ve kaydı çözmesi için hedef zamanlar. "Karşılandı" hedefin tutulduğunu gösterir.
 - Sağdaki bilgi kartı: **Talep sahibi**, **Ekip**, **Atanan kişi**, **Kategori**, **Lokasyon**, **Oluşturulma**.
@@ -223,7 +235,7 @@ Puanınızı süre dolana kadar **Değiştir** ile değiştirebilirsiniz. Yalnı
 
 ## IT ekibine yanıt yazma
 
-1. Kayıt sayfasında **Yazışmalar** bölümüne inin.
+1. Kayıt sayfasında **Yanıtla** düğmesine basın (ya da **Yazışmalar** bölümüne inin).
 2. **Mesajınız** alanına yazın.
 3. Gerekirse **Dosya ekle** ile dosya ekleyin.
 4. **Gönder** düğmesine basın.
@@ -245,7 +257,7 @@ Kayıt açıkken sorunun hangi cihazda olduğunu sonradan da belirtebilirsiniz:
 
 ## İpuçları
 
-- Ana sayfadaki **Son kayıtlarım** listesi son kayıtlarınızı hızlıca gösterir.
+- Ana sayfadaki **Son kayıtlarım** listesi son kayıtlarınızı hızlıca gösterir. IT ekibi sizden yanıt bekliyorsa o kayıt listenin başında turuncu **Yanıtınız bekleniyor** işaretiyle durur; daha eski kayıtlar da olsa gözden kaçmaz.
 - Kaydınız oluştuğunda, IT ekibi size yanıt yazdığında, talebiniz onaylandığında veya reddedildiğinde ve kayıt tamamlandığında e-posta alırsınız.
 
 # Zimmetlerim
@@ -396,47 +408,56 @@ Değişikliği oluşturan kişi, sahibi ve planı yazan veya değiştiren herkes
 
 # IT iş listesi
 
-Bu sayfa IT personeli ve yöneticiler içindir: size ve ekiplerinize düşen kayıtları bulmak, üstlenmek ve çözmek.
+Bu sayfa IT personeli ve yöneticiler içindir: size ve ekiplerinize düşen kayıtları bulmak, üzerinize almak ve çözmek.
 
 ## İş listem
 
-Menüden **İş listem** sayfasını açın. Her kart bir kuyruğu ve içindeki kayıt sayısını gösterir:
+Menüden **İş listem** sayfasını açın. Sayfa en üstte üç sayaçlı görünümle açılır:
 
-| Kuyruk | İçindekiler |
+| Görünüm | İçindekiler |
 |---|---|
-| **Bana atanan** | Size atanmış kayıtlar. |
-| **Ekiplerim** | Üyesi olduğunuz ekiplerin kayıtları. |
-| **Atanmamış** | Ekiplerinizde henüz kimsenin üstlenmediği kayıtlar. |
-| **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
-| **SLA Riski** | SLA hedefi yaklaşan veya geçmiş açık kayıtlar. Önce bunlara bakın. |
-| **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
-| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](#problemler). |
+| **Bana atanan** | Size atanmış arıza, talep, görev ve değişikliklerin tek listesi. Sayfa bununla açılır. |
+| **Atanmamış** | Ekiplerinizde henüz kimsenin üzerine almadığı arıza ve talepler. |
+| **SLA riski** | SLA hedefi yaklaşan veya geçmiş açık arıza ve talepler; hedef zamanı en yakın olan en üstte. Önce bunlara bakın. |
+| **Diğer kuyruklar** | Düğmeye basınca diğer kuyruk kartları açılır (aşağıya bakın). |
+
+Düğmedeki rozet kayıt sayısını gösterir; sayı alınamazsa "sayı alınamadı" yazar. Listenin başlığı hangi görünümde olduğunuzu söyler (örneğin "Atanmamış arıza ve talepler"). Arıza ve talep satırlarında **Bitiş tarihi** sütunu, çalışan SLA sayaçlarından hedefi en yakın olanı gösterir.
 
 ![İş listem](images/workspace-desktop.png)
 
-Bir karta basınca o kuyruk açılır. Ana sayfadaki **İş kuyruklarım** bölümü de aynı kartlardan üçünü gösterir.
+**Diğer kuyruklar** düğmesi şu kartları açar; bir karta basınca o kuyruk açılır:
+
+| Kart | İçindekiler |
+|---|---|
+| **Ekiplerim** | Üyesi olduğunuz ekiplerin kayıtları. |
+| **Beklemede** | Ekiplerinizde beklemeye alınmış kayıtlar. |
+| **Bu hafta uygulanacak** | Ekiplerinizin sahip olduğu, **Planlandı** veya **Uygulanıyor** durumundaki ve bakım penceresi bu hafta (pazartesiden pazara) başlayan değişiklikler. |
+| **Ekibimin problemleri** | Ekiplerinizin sahip olduğu açık problemler (**Açık**, **İnceleniyor**, **Bilinen hata**). Bkz. [Problemler](#problemler). |
+| **Görevlerim**, **Ekibimin görevleri**, **Geciken görevler**, **Değişikliklerim** | Görev ve değişiklik kuyrukları. Bkz. [Görevler ve değişiklikler](#görevler-ve-değişiklikler). |
+
+Ana sayfadaki **İş kuyruklarım** bölümü de aynı kartlardan üçünü gösterir.
 
 ## Kuyruk
 
-Kuyrukta kayıtlar tablo halinde görünür: numara, konu, durum, öncelik, atanan kişi, SLA ve son işlem zamanı.
+Kuyrukta kayıtlar tablo halinde görünür: numara, konu, tür, durum, öncelik, ekip, atanan kişi ve **Son tarih** (SLA hedef zamanı ya da sonucu). Üstteki üç görünüm düğmesi kuyruk sayfalarında da durur.
 
 - **Numara veya konu ara**, **Durum** ve **Öncelik** ile listeyi daraltın.
 - Kaydı açmak için **Aç** düğmesine basın.
-- Kayıttan sayfa yolundaki **Kuyruk** adımıyla veya **Kayıtlara dön** düğmesiyle aynı filtrelerle listeye dönersiniz.
+- Kayıttan sayfa yolundaki **Kuyruk görünümü** adımıyla veya **Kayıtlara dön** düğmesiyle aynı filtrelerle listeye dönersiniz.
 
 ![Ekiplerim kuyruğu](images/workspace-queue-desktop.png)
 
-SLA sütununda iki ölçü vardır: **İlk yanıt** ve **Çözüm**. "Kalan 4 sa 0 dk" hedefe kalan mesai süresini, "Risk" hedefin yaklaştığını, "İhlal" hedefin geçtiğini, "Duraklatıldı" sürenin beklemede durduğunu gösterir.
+Kayıt sayfasındaki SLA kartında iki ölçü vardır: **İlk yanıt** ve **Çözüm**. "Kalan 4 sa 0 dk" hedefe kalan mesai süresini, "Risk" hedefin yaklaştığını, "İhlal" hedefin geçtiğini, "Duraklatıldı" sürenin beklemede durduğunu gösterir.
 
 ## Kayıt üzerinde çalışma
 
-Kaydı açınca sağda **İşlemler** kartı görünür. Kartta yalnızca kaydın o anki durumunda yapılabilecek işlemler çıkar.
+Kaydı açınca başlıkta kaydın konusu, altında numara, tür, ekip, durum, öncelik ve tek bir SLA satırı (örneğin "İlk yanıt SLA'sı risk altında · Son tarih 26 Kas 2026 13:00") görünür. Başlığın sağındaki ana düğme kayda göre değişir: atanmamış kayıtta **Üzerime al**, atanmış kayıtta **Yanıtla**. **Üzerime al**'a basınca düğme **Yanıtla**'ya döner ve klavye odağı ona geçer; **Yanıtla** yanıt sekmesini açıp imleci mesaj alanına koyar. Sağda **İşlemler** kartı görünür. Kartta yalnızca kaydın o anki durumunda yapılabilecek işlemler çıkar.
 
 ![Bir kaydın işlemleri](images/ticket-work-desktop.png)
 
 | İşlem | Ne yapar |
 |---|---|
-| **Üstlen** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür. |
+| **Üzerime al** | Kaydı kendinize atar. Atanmamış kayıtlarda görünür; başlıktaki ana düğmeyle aynı işlemdir. |
 | **Başla** | **Açık** kaydı **İşlemde** yapar. |
 | **Beklet** | Kaydı **Beklemede** yapar. **Bekleme nedeni** seçin; **Diğer** seçerseniz **Not** yazmak zorunludur. |
 | **Devam et** | Bekleyen kaydı tekrar çalışmaya alır. Yönetici onayı bekleyen taleplerde görünmez; onları onay açar. |
@@ -471,6 +492,8 @@ Kayıt sayfasındaki **Yazışmalar** bölümünde iki sekme vardır:
 - **Yanıt**: Kullanıcı görür ve e-posta alır. Kayda yazdığınız ilk yanıt **İlk yanıt** SLA süresini durdurur.
 - **İç not**: Yalnızca IT personeli görür. Sarı zeminle gösterilir.
 
+Her sekmenin kendi taslağı vardır: iç not olarak yazdığınız metin sekme değişince kullanıcıya giden yanıta dönüşmez.
+
 Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekleyin ve **Gönder** düğmesine basın. **Makale ekle** ile bilgi bankasından bir makalenin bağlantısını mesaja ekleyebilirsiniz; kullanıcıya giden yanıta yalnızca çalışanlara açık makaleler eklenebilir.
 
 ## Cihaz, ilgili talep ve makale bağlama
@@ -484,11 +507,11 @@ Mesajı **Mesajınız** alanına yazın, gerekirse **Dosya ekle** ile dosya ekle
 
 - **İlgili makaleler** kartında **Makale bağla** ile çözümü anlatan makaleyi kayda bağlayın.
 
-Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. **Kuyruk** listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](#hizmetler)).
+Kaydın bilgilerindeki **Hizmet** alanı, kaydın ilgili olduğu hizmeti gösterir; **Hizmet seç** ile seçin. Kuyruk listesini **Hizmet** filtresiyle daraltabilirsiniz (bkz. [Hizmetler](#hizmetler)).
 
 ## İpuçları
 
-- Güne **SLA Riski** kuyruğuyla başlayın.
+- Güne **SLA riski** görünümüyle başlayın.
 - Kullanıcıdan bilgi beklerken kaydı **Beklet** ile **Kullanıcıdan yanıt bekleniyor** nedeniyle bekletin; kullanıcı yanıt yazınca **Devam et** ile sürdürün.
 - Başka biri kaydı siz düzenlerken değiştirdiyse "Bu kayıt siz düzenlerken başka biri tarafından değiştirildi" uyarısı çıkar. Sayfayı yenileyip tekrar deneyin.
 
@@ -531,7 +554,7 @@ Görevi açınca **İşlemler** kartında yalnızca o anki durumda yapılabilece
 
 | İşlem | Ne yapar |
 |---|---|
-| **Üstlen** | Atanmamış görevi size atar. Aynı anda iki kişi üstlenirse yalnızca biri alır. |
+| **Üzerime al** | Atanmamış görevi size atar. Aynı anda iki kişi üstlenirse yalnızca biri alır. |
 | **Başla** | Görevi **İşlemde** durumuna alır. |
 | **Beklet** / **Devam et** | Görevi bir nedenle bekletir veya yeniden başlatır. |
 | **Tamamla** | **Sonuç notu** ister; görev **Tamamlandı** olur. |
@@ -916,7 +939,7 @@ Yönetim ekranında **Hizmet kataloğu** altındaki **Hizmetler** sayfasını a�
 
 ![Hizmetin varlıkları](images/admin-service-assets-desktop.png)
 
-Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cihaz yeni bir hizmete bağlanamaz. Bağlar cihaz sayfasındaki **Hizmetler** kartından da yönetilir (bkz. [Envanter](#envanter)).
+Bir cihaz birden çok hizmete bağlanabilir. Emekliye ayrılan veya kaybolan cihaz yeni bir hizmete bağlanamaz. Bağlar cihaz sayfasındaki **Bağlı hizmetler** kartından da yönetilir (bkz. [Envanter](#envanter)).
 
 ## İpuçları
 
@@ -962,7 +985,7 @@ Aynı üretici ve adla ikinci yazılım açılmaz. Kullanılmayan yazılımı **
 - Boş hak kalmadıysa veya süre bittiyse yeni atama yapılamaz. Var olan atamalar kalır.
 - Pasif kullanıcıya, kullanım dışı veya kayıp cihaza atama yapılamaz. Sonradan bu duruma düşen atamanın yanında **Kullanılamıyor** yazar; **Atamayı kaldır** ile hakkı boşaltın.
 - **Adet**, kullanılan hak sayısından az olamaz.
-- Cihazın lisansları cihaz sayfasındaki **Lisanslar** kartında da görünür.
+- Varlığa atanmış lisanslar varlık sayfasındaki **Lisans kullanım hakları** kartında da görünür; atanmış lisans yoksa "Bu varlığa atanmış lisans yok." yazar. Listedeki sütun **Kullanım hakkı** adını taşır.
 
 ## Bitiş e-postası
 
@@ -1040,7 +1063,7 @@ Her işlem **Onayla** ile kaydedilir ve **Geçmiş** bölümüne eklenir: ne yap
 
 Teslim edilen cihaz kişinin **Zimmetlerim** sayfasında görünür. Bir talep için teslim yapılıyorsa cihaz yalnızca talep sahibine verilebilir ve onay gereken taleplerde önce onay gelmiş olmalıdır.
 
-**Hizmetler** kartı cihazın bağlı olduğu hizmetleri gösterir. Yöneticiler buradan **Hizmete bağla** ve **Bağı kaldır** ile bağları değiştirir (bkz. [Hizmetler](#hizmetler)).
+**Bağlı hizmetler** kartı cihazın bağlı olduğu hizmetleri gösterir; yoksa "Bağlı hizmet yok." yazar. Yöneticiler buradan **Hizmete bağla** ve **Bağı kaldır** ile bağları değiştirir (bkz. [Hizmetler](#hizmetler)).
 
 ## CSV ile toplu cihaz ekleme
 
@@ -1091,6 +1114,8 @@ Bu sayfa IT personeli ve yöneticiler içindir: arıza, talep, operasyon ve enva
    - **Problemler**: Açık bilinen hatalar, dönemde çözülen problemler, çözüm süresi, etkiye göre problemler ve problem başına arıza sayısı, **Bilinen hata SLA uyumu** (süresi içinde bilinen hataya ulaşan problemlerin oranı).
 
 ![Olaylar raporu](images/reports-incidents-desktop.png)
+
+Her sekmenin kendi filtreleri vardır. Sekmeler arasında geçerken yalnızca yeni sekmenin tanıdığı filtreler kalır; filtrelerin altındaki not hangilerinin kaldığını ("Başka sekmeye geçince kalanlar: …") ve hangilerinin yalnız bu sekmede geçerli olup geçişte düştüğünü yazar.
 
 Filtrelerin altında **Kapsam: tüm kayıtlar** veya **Kapsam: yalnızca ekiplerinizin kayıtları** yazar. IT personeli yalnızca ekiplerinin kayıtlarını, yöneticiler tüm kayıtları görür.
 
@@ -1217,7 +1242,7 @@ Uygulamaya dönüp **Envanter** sayfasında **İçe aktar** ile mevcut cihazlar�
 
 1. **Genel bakış** sayfasında **Kurulum kontrolleri** kartına bakın. **Eksik kurulum tanımı bulunmadı.** yazmalıdır.
 2. **Sistem** sayfasında **Tüm işler zamanında çalışıyor.** yazmalıdır.
-3. Bir çalışan hesabıyla deneme arızası açın; kaydın kayıt alan ekibe düştüğünü ve e-postanın geldiğini kontrol edin. **E-posta gönderimleri** sayfasında gönderimi görebilirsiniz.
+3. Bir çalışan hesabıyla deneme arızası açın; kaydın kayıt alan ekibe düştüğünü ve e-postanın geldiğini kontrol edin. **E-posta teslimatları** sayfasında gönderimi görebilirsiniz.
 
 ![Kurulum kontrolleri](images/admin-overview-desktop.png)
 
@@ -1265,7 +1290,7 @@ Listede **Kullanıcı ara** alanıyla ada, soyada veya e-postaya göre arayın; 
 
 ### Düzenleme, pasifleştirme, şifre sıfırlama
 
-- **Düzenle**: Ad, e-posta, rol, departman ve lokasyonu değiştirir. Rol değişince kullanıcının oturumu kapanır.
+- **Düzenle**: Ad, e-posta, rol, departman ve lokasyonu değiştirir. Rol değişince kullanıcının oturumu kapanır. Rolü değiştirmeden önce form neyin olacağını yazar: değişiklik denetim kaydına yazılır, ekip üyelikleri otomatik değişmez; **Çalışan** rolündeki kişi yeni bir ekibe eklenemez.
 - **Pasifleştir**: Kullanıcı artık giremez; açık oturumu hemen kapanır ve e-posta almaz. **Aktifleştir** ile geri açılır.
 - **Şifre sıfırla**: Aynı iki iletim yolundan birini seçerek yeni şifre verir. Kullanıcının açık oturumu kapanır.
 
@@ -1303,13 +1328,19 @@ Lokasyonlar ağaç şeklindedir: örneğin "Merkez Ofis" altında "Zemin Kat", "
 4. **Oluştur** düğmesine basın.
 5. **Üyeleri yönet** ile ekibin üyelerini açın. **Eklenecek kişi** seçip **Üye ekle** ile ekleyin, **Çıkar** ile çıkarın.
 
-Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcılar eklenebilir. Bir kişi birden fazla ekipte olabilir.
+**Üye ekle** ve **Çıkar** işlemleri anında kaydedilir ve denetim kaydına yazılır; sayfa "… ekibe eklendi." veya "… ekipten çıkarıldı." der. Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcılar eklenebilir. Bir kişi birden fazla ekipte olabilir.
+
+## Giriş yöntemi
+
+**Giriş yöntemi** sayfasında kullanıcıların nasıl giriş yapacağını seçersiniz: **Yerel (ProteoSM şifresi)**, **Microsoft (Entra ID)** veya **Active Directory (LDAP)**. Aynı anda tek yöntem açıktır; sayfa **Etkin yöntem**i ve altında **Diğer yöntemler**i gösterir. Her aday için son bağlantı testinin sonucu yazar: "bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir." ya da "henüz test edilmedi". Yöntemi açmak için önce **Bağlantıyı test et**, sonra **Bu yöntemi aç** düğmesine basın.
+
+**Yerel yönetici girişi** notu, yöneticilerin yöntem ne olursa olsun yerel ProteoSM şifresiyle girebildiğini söyler; dizin veya Microsoft hesabı çalışmazsa bu yol açık kalır. Hesabınızın yerel şifresi yoksa sayfa bunu uyarır.
 
 ## Denetim kayıtları
 
 **Denetim kayıtları** sayfası sistemde kimin neyi ne zaman yaptığını gösterir: girişler, kullanıcı değişiklikleri, kayıt işlemleri, cihaz hareketleri ve daha fazlası.
 
-1. **Kayıt türü** listesiyle süzün (örneğin "Kullanıcı" veya "Cihaz").
+1. **Kayıt türü** listesiyle süzün (örneğin "Kullanıcı" veya "Cihaz"). **Kullanıcı** (işlemi yapan kişi; pasif kullanıcılar da listede çıkar), **Eylem**, **Başlangıç günü** ve **Bitiş günü** ile de daraltabilirsiniz.
 2. Bir satırın **Ayrıntılar** bölümünü açarak değişiklikten **Önce** ve **Sonra** değerlerini görün.
 
 ![Denetim kayıtları](images/admin-audit-desktop.png)
@@ -1321,7 +1352,9 @@ Ekibe yalnızca **IT personeli** ve **Yönetici** rolündeki aktif kullanıcıla
 
 # Yönetim: cihaz ve hizmet kataloğu
 
-Bu sayfa yöneticiler içindir. İki katalog vardır:
+Bu sayfa yöneticiler içindir. Pasifleştirmeden önce her katalogda onay penceresi **Şu an bu kayda bağlı olanlar** başlığıyla bağlı kayıtların sayısını gösterir (örneğin "3 aktif model", "12 varlık", "4 açık kayıt"). Pasifleştirmek bu kayıtları değiştirmez; yalnızca yeni seçimlerde listeden çıkarır. Sayılar alınamazsa pencere bunu söyler ve pasifleştirme yine de yapılabilir.
+
+İki katalog vardır:
 
 - **Cihaz kataloğu**: **Markalar** ve **Modeller**. Envantere cihaz eklerken bu listelerden seçilir.
 - **Hizmet kataloğu**: **Kategoriler** ve **Talep tipleri**: çalışanlar arıza ve talep açarken bunlardan seçer. **Hizmetler**: yalnızca IT kullanır; tanımlama ve varlık bağlama için bkz. [Hizmetler](#hizmetler).
@@ -1334,7 +1367,7 @@ Bu sayfa yöneticiler içindir. İki katalog vardır:
 ![Markalar](images/admin-brands-desktop.png)
 
 - **Düzenle** ile adı değiştirin. Ad değişince bu markadaki tüm cihazlarda yeni ad görünür.
-- **Pasifleştir** ile marka yeni cihazlarda seçilemez olur. Mevcut cihazlar etkilenmez. **Aktifleştir** ile geri açılır.
+- **Pasifleştir** ile marka yeni cihazlarda seçilemez olur (pencere markadaki model ve varlık sayısını gösterir). Mevcut cihazlar etkilenmez. **Aktifleştir** ile geri açılır.
 - Aynı ad iki kez eklenemez; büyük-küçük harf ve boşluk farkı aynı ad sayılır.
 
 ## Modeller
@@ -1364,7 +1397,7 @@ Kategoriler en fazla iki seviyelidir: bir ana kategori ve altında alt kategoril
    - **Arıza ve talep**: İkisinde de çıkar.
 5. **Oluştur** düğmesine basın.
 
-Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar kategorisini korur.
+Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar kategorisini korur. Pencere aktif alt kategori ve açık kayıt sayısını gösterir.
 
 ## Talep tipleri
 
@@ -1375,7 +1408,7 @@ Kullanılmayan kategoriyi **Pasifleştir** ile kaldırın; eski kayıtlar katego
 3. Bu talepler onaydan geçmeliyse **Yönetici onayı gerekir** kutusunu işaretleyin. Listede **Onay gerekir** veya **Onaysız** yazar.
 4. **Oluştur** düğmesine basın.
 
-Onay gerektiren talepler, talep sahibinin departmanının onaylayıcısına gider (bkz. [Onaylar](#onaylar)).
+Pasifleştirirken pencere o tipteki açık kayıt sayısını gösterir. Onay gerektiren talepler, talep sahibinin departmanının onaylayıcısına gider (bkz. [Onaylar](#onaylar)).
 
 ## İpuçları
 
@@ -1397,6 +1430,8 @@ Bu sayfa yöneticiler içindir. SLA, IT ekibinin bir kayda ne kadar sürede ilk 
    - Çalışılmayan günlerde anahtarı kapatın (**Kapalı**).
 4. **Takvimi kaydet** düğmesine basın.
 
+Çalışma saatleri tatil günlerinden ayrı kaydedilir. Kaydedince çalışan sayaçlar yeniden planlanır: o ana kadar geçen iş süresi korunur, kalanı yeni saatlerle sürer.
+
 En az bir çalışma günü olmalıdır. Her gün için tek bir saat aralığı girilir ve başlangıç bitişten önce olmalıdır.
 
 ### Tatil günleri
@@ -1404,7 +1439,7 @@ En az bir çalışma günü olmalıdır. Her gün için tek bir saat aralığı 
 1. **Tatil günleri** bölümünde **Tarih** ve **Ad** girin, örneğin "Cumhuriyet Bayramı".
 2. **Tatil ekle** düğmesine basın.
 
-Tatil günlerinde SLA süresi işlemez. Yanlış eklenen tatili **Kaldır** ile silin. Yılbaşında yeni yılın tatillerini eklemeyi unutmayın.
+Tatil ekleme ve kaldırma çalışma saatlerinden ayrı kaydedilir; çalışan sayaçlar aynı şekilde yeniden planlanır. Tatil günlerinde SLA süresi işlemez. Yanlış eklenen tatili **Kaldır** ile silin. Yılbaşında yeni yılın tatillerini eklemeyi unutmayın.
 
 ## SLA politikası
 
@@ -1412,8 +1447,8 @@ Tatil günlerinde SLA süresi işlemez. Yanlış eklenen tatili **Kaldır** ile 
 
 **Hedefler (iş dakikası)** tablosunda her kayıt türü (arıza, talep) ve öncelik (P1–P4) için iki hedef vardır: ilk yanıt ve çözüm. Her hedefte:
 
-- Dakika kutusu: hedef süre, çalışma dakikası olarak. Örneğin 240 dakika = 4 çalışma saati.
-- Yüzde kutusu: uyarı eşiği. Örneğin 75 yazarsanız sürenin %75'i dolunca kayıt "Risk" olur, **SLA Riski** kuyruğuna düşer ve ilgili kişilere "SLA uyarısı" e-postası gider.
+- Dakika kutusu: hedef süre, çalışma dakikası olarak. Örneğin 240 dakika = 4 çalışma saati. Yanında süre okunur biçimde de yazar (örneğin "4 sa iş süresi").
+- Yüzde kutusu: uyarı eşiği. Örneğin 75 yazarsanız sürenin %75'i dolunca kayıt "Risk" olur, **SLA riski** görünümüne düşer ve ilgili kişilere "SLA uyarısı" e-postası gider.
 
 **Duraklatma kuralları** bölümünde her bekleme nedeni için seçin:
 
@@ -1422,7 +1457,7 @@ Tatil günlerinde SLA süresi işlemez. Yanlış eklenen tatili **Kaldır** ile 
 
 Örneğin **Kullanıcıdan yanıt bekleniyor** için **Çözüm durur** seçilirse, kullanıcıdan cevap beklenen süre çözüm süresine sayılmaz.
 
-Değişiklikleri **Yeni sürüm olarak kaydet** ile kaydedin. Sayfanın üstünde geçerli sürüm numarası yazar.
+Değişiklikleri **Yeni sürüm olarak kaydet** ile kaydedin. Sayfanın üstünde geçerli sürüm numarası yazar. Kaydetmeden önce **Yeni sürümde değişecekler** bölümü hangi hedefin ("Hedef: eski → yeni"), uyarı eşiğinin ("Uyarı: %eski → %yeni") ve duraklatma kuralının değiştiğini listeler; hiçbir şey değişmediyse "Hedeflerde ve duraklatma kurallarında değişiklik yok." yazar. Aynı yerde yeni sürümün yalnızca bundan sonra açılan kayıtlara uygulandığı, açık kayıtların başladıkları sürümün hedefleriyle sürdüğü ve geçmiş sürümlerin değişmediği belirtilir.
 
 Hedefler 1 veya daha büyük, uyarı yüzdesi 1 ile 99 arasında olmalıdır.
 
@@ -1461,11 +1496,13 @@ Her bildirim türünün bir şablonu vardır: "Kayıt oluşturuldu", "Kamuya aç
 
 Değişiklik bundan sonra gönderilen e-postalarda geçerli olur.
 
-## E-posta gönderimi
+Düzenleme penceresindeki **Önizleme** değişkenleri örnek değerlerle doldurup şablonun nasıl görüneceğini gösterir. Önizleme e-posta göndermez ve şablonu kaydetmez. Bu olayda kullanılamayan bir değişken yazdıysanız önizleme bunları adıyla sayar; kayıt bu durumda reddedilir.
 
-**E-posta gönderimi** sayfası (menüde **Sistem ve denetim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
+## Giden posta ayarları
 
-![E-posta gönderimi](images/admin-email-sending-desktop.png)
+**Giden posta ayarları** sayfası (menüde **Duyuru ve bildirim** altında) bildirim e-postalarının hangi sunucudan gideceğini belirler. Üstteki **Gönderim durumu** şu an kullanılan ayarı yazar: **Panel ayarları** veya .env ayarları (kurulumda girilen sunucu).
+
+![Giden posta ayarları](images/admin-email-sending-desktop.png)
 
 Panel ayarlarını kullanıma almak için:
 
@@ -1484,11 +1521,11 @@ Notlar:
 - **.env ayarlarına dön** gönderimi kurulumda girilen sunucuya geri alır. Panel ayarları silinmez.
 - Bazı kurulumlar e-postaları dosyaya yazar (Pickup). Bu durumda sayfada bir uyarı görünür ve panel ayarları kullanılmaz.
 
-## E-posta gönderimleri
+## E-posta teslimatları
 
-**E-posta gönderimleri** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve tarih.
+**E-posta teslimatları** sayfası gönderilen ve gönderilemeyen her e-postayı listeler: alıcı, bildirim, konu, durum, deneme sayısı, son hata ve **Son deneme** zamanı. **Son deneme** gönderimin en son denendiği zamandır (başarılı ya da başarısız); henüz hiç denenmemiş teslimatta boştur. Yeniden denenmek üzere sırada bekleyen teslimatta bir de "Sonraki deneme" zamanı yazar.
 
-![E-posta gönderimleri](images/admin-email-deliveries-desktop.png)
+![E-posta teslimatları](images/admin-email-deliveries-desktop.png)
 
 - **Durum**, **Bildirim** ve **Alıcı** filtreleriyle arayın.
 - Durumlar: **Bekliyor**, **Gönderiliyor**, **Gönderildi**, **Başarısız**.
@@ -1506,11 +1543,13 @@ Kullanıcı pasifleştirildiyse veya e-posta adresi değiştiyse eski e-posta ye
 - **Arka plan işleri** tablosunda her iş için son çalışma zamanı, çalışma aralığı ve durum görünür. **Gecikmiş** veya **Rapor vermiyor** görürseniz e-postalar gitmiyor, SLA uyarıları çıkmıyor veya dışa aktarımlar hazırlanmıyor olabilir. Sistem yöneticisine bildirin.
 - Tablo boşsa (**Henüz çalışan iş kaydı yok.**) arka plan hizmeti hiç çalışmamıştır.
 
+Gönderim veya dışa aktarım işleri sorunluysa kutunun altında **İncelemek için** bağlantıları çıkar: **Başarısız e-posta teslimatları**, **Giden posta ayarlarını kontrol et** ve **Dışa aktarma işleri**.
+
 **Genel bakış** sayfasındaki **Kurulum kontrolleri** de bir iş sorunluysa uyarı verir.
 
 ## Duyurular
 
-Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür.
+Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfasından yayınlayın. Duyuru, başladığında her kullanıcının ana sayfasında görünür. Formdaki **Önizleme** duyurunun başlığını, yayın aralığını ve görünümünü gösterir; **Oluştur** veya **Kaydet**'e basana kadar hiçbir şey yayınlanmaz.
 
 ![Duyurular](images/admin-announcements-desktop.png)
 
@@ -1529,7 +1568,7 @@ Kesinti veya bakım gibi herkesi ilgilendiren bir mesajı **Duyurular** sayfası
 - **Lisans bitiş uyarısı**: sahip ekip, lisans bitmeden kaç gün önce uyarılır.
 - **Garanti raporu penceresi**: bitiş tarihi seçilmediğinde garanti raporu kaç gün ileriye bakar.
 
-Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
+Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın. Her ayarın altında **Etkilediği akış** yazar: lisans uyarısı için lisans bitiş uyarısı e-postaları ve **Lisanslar** ekranı, garanti penceresi için **Raporlar** içindeki garanti raporu.
 
 ## İzleme kaynakları
 
@@ -1542,7 +1581,7 @@ Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 3. **Oluştur** düğmesine basın ve gösterilen anahtarı kopyalayın. Anahtar bir daha gösterilmez.
 4. Adresi ve anahtarı izleme aracına girin. İmza örneğini sistem yöneticinize sorun.
 
-- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur.
+- **Anahtarı yenile** yeni anahtar üretir; eskisi hemen geçersiz olur. Onay penceresi bunu işlemden önce söyler ("… kaynağının eski anahtarı hemen geçersiz olur.").
 - Aynı uyarı açık bir arıza varken yeniden gelirse arızaya iç not düşer. Uyarı düzelince de yalnızca iç not düşer; arızayı IT kapatır.
 - Bir kaynak saatte en fazla 30 yeni arıza açar.
 - **Reddedilen istek** sayısı artıyorsa anahtarı, aracın saatini ve kaynağın aktif olduğunu kontrol edin.
@@ -1551,7 +1590,7 @@ Değerler 1 ile 365 gün arasında olabilir. **Kaydet** düğmesine basın.
 ## İpuçları
 
 - Şablon metinlerini kısa tutun ve kaydı açan bağlantıyı silmeyin; kullanıcılar e-postadan kayda bu bağlantıyla gider.
-- Kullanıcı "e-posta gelmedi" derse önce **E-posta gönderimleri** sayfasında alıcıya göre arayın.
+- Kullanıcı "e-posta gelmedi" derse önce **E-posta teslimatları** sayfasında alıcıya göre arayın.
 
 # Sorun bildirme ve geri bildirim
 
@@ -1657,7 +1696,13 @@ CSV dosyasını Excel'de "CSV UTF-8 (virgülle ayrılmış)" biçiminde kaydedin
 ### E-posta gelmiyor
 
 1. İstenmeyen e-posta (spam) klasörüne bakın.
-2. Yöneticiniz **E-posta gönderimleri** sayfasında size giden e-postayı arayabilir; **Başarısız** ise **Yeniden dene** ile tekrar gönderebilir.
+2. Yöneticiniz **E-posta teslimatları** sayfasında size giden e-postayı arayabilir; **Başarısız** ise **Yeniden dene** ile tekrar gönderebilir.
+
+## Sayfa açılmıyor
+
+### "Sayfa açılamadı" veya "Uygulama güncellenmiş olabilir"
+
+**Yeniden dene**'ye basın. Yeni bir sürüm yayınlandıysa sayfayı yeniden yüklemek yeterlidir. Sürüyorsa **Uygulamaya dön** ile ana sayfaya gidin; sorun kalıcıysa yöneticinize bildirin.
 
 ## Telefonda kullanım
 
