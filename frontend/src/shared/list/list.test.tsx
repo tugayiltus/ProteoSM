@@ -78,6 +78,24 @@ describe('DataList', () => {
     expect(screen.getByRole('cell', { name: 'Şifre sıfırlama' })).toBeInTheDocument();
   });
 
+  it('keeps nine columns narrower than the old 120 px floor and pins the action column at the end', () => {
+    stubPhone(false);
+    const many: DataColumn<Ticket>[] = [
+      ...Array.from({ length: 8 }, (_, index) => ({ key: `c${index}`, header: `Sütun ${index}`, renderCell: (ticket: Ticket) => ticket.title })),
+      { key: 'open', header: '', renderCell: () => <a href="/x">Aç</a> },
+    ];
+    render(
+      <AstryxProvider>
+        <DataList items={TICKETS} columns={many} getKey={(ticket) => ticket.id} renderCard={(ticket) => ticket.title} caption="Talepler" />
+      </AstryxProvider>,
+    );
+    const table = screen.getByRole('table', { name: 'Talepler' });
+    expect(Number.parseFloat(table.style.minWidth || getComputedStyle(table).minWidth)).toBeLessThan(many.length * 120);
+    const action = screen.getAllByRole('link', { name: 'Aç' })[0]?.closest('td');
+    expect(action).toHaveAttribute('data-astryx-table-pinned');
+    expect(screen.getAllByRole('cell', { name: 'Yazıcı arızası' })[0]).not.toHaveAttribute('data-astryx-table-pinned');
+  });
+
   it('shows one list of cards on phones', () => {
     stubPhone(true);
     render(
