@@ -3,11 +3,13 @@
 # runs before api/worker), then waits until the API answers through nginx. The deployed tag (Git short hash) is
 # recorded in deploy/.version, so later tools/compose.sh calls keep using it. Refuses a working tree with uncommitted
 # changes. --skip-gates skips lint and tests (explicit only). --fresh-install starts an empty stack on a host that
-# still holds the data of a Proteone stack (refused otherwise; docs/operations.md, "Proteone to ProteoSM move").
+# still holds the data of a Proteone stack while the ProteoSM database is missing or empty (refused otherwise;
+# tools/lib/move-guard.sh, docs/operations.md, "Proteone to ProteoSM move").
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source tools/lib/product-env.sh
 source tools/lib/env-file.sh
+source tools/lib/move-guard.sh
 
 readonly READY_TIMEOUT_SECONDS=180
 readonly HEALTH_PATH="/api/v1/health"
@@ -17,9 +19,6 @@ readonly DEFAULT_HTTPS_PORT=443
 # Images compose pulls from a registry; proteosm-api and proteosm-worker are built locally.
 readonly THIRD_PARTY_SERVICES=(postgres nginx)
 readonly USAGE="usage: tools/deploy.sh [--skip-gates] [--fresh-install]"
-# A Proteone stack on this host (Compose project "proteone", before the ProteoSM rename) keeps its data in this volume.
-readonly FORMER_DATA_VOLUME="proteone_pgdata"
-readonly DATA_VOLUME="${COMPOSE_PROJECT_NAME:-proteosm}_pgdata"
 readonly FORMER_CERTIFICATE="deploy/certs/proteone.crt"
 skip_gates=false
 fresh_install=false
@@ -31,14 +30,8 @@ for argument in "$@"; do
   esac
 done
 
-volume_exists() { docker volume inspect "$1" >/dev/null 2>&1; }
 # Without this check the new stack would start empty beside the old data and look as if everything were lost.
-if [[ "$fresh_install" == false ]] && volume_exists "$FORMER_DATA_VOLUME" && ! volume_exists "$DATA_VOLUME"; then
-  echo "Refused: this host has Proteone data ($FORMER_DATA_VOLUME) and no ProteoSM data yet ($DATA_VOLUME). Move it first" >&2
-  echo "(docs/operations.md, \"Proteone to ProteoSM move\"), or pass --fresh-install to start empty on purpose; the old" >&2
-  echo "volume is not touched." >&2
-  exit 1
-fi
+if [[ "$fresh_install" == false ]]; then move_guard "$ENV_FILE"; fi
 
 for file in deploy/certs/proteosm.crt deploy/certs/proteosm.key "$ENV_FILE"; do
   if [[ ! -f "$file" ]]; then
