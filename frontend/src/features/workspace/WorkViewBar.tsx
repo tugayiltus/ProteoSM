@@ -39,8 +39,6 @@ interface CountState {
   isError: boolean;
 }
 
-
-
 interface ViewLinkProps {
   to: string;
   label: string;
@@ -70,7 +68,8 @@ export function WorkViewBar({ view }: { view: WorkView }) {
           label={t('workspace.others')}
           variant={view === 'other' ? 'primary' : 'secondary'}
           aria-expanded={othersOpen}
-          aria-controls={OTHERS_PANEL_ID}
+          // The panel exists only while open; aria-controls must not point to a missing element.
+          aria-controls={othersOpen ? OTHERS_PANEL_ID : undefined}
           onClick={() => setOthersOpen((open) => !open)}
         />
       </HStack>

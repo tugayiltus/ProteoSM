@@ -47,7 +47,8 @@ describe('WorkspacePage', () => {
 
     await user.click(within(views).getByRole('link', { name: /Atanmamış/ }));
     await waitFor(() => expect(router.state.location.search).toBe('?queue=unassigned'));
-    expect(await screen.findByRole('heading', { level: 1, name: 'İş listem' })).toBeInTheDocument();
+    // The queue view replaces the page heading once it loads: a found node can be detached right after.
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'İş listem' })).toBeInTheDocument());
     expect((await screen.findAllByRole('heading', { name: 'Atanmamış arıza ve talepler' })).length).toBeGreaterThan(0);
   });
 
