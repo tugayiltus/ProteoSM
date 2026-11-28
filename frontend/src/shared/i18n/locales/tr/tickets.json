@@ -275,7 +275,8 @@
     "allTickets": "Tüm kayıtlarım",
     "queuesTitle": "İş kuyruklarım",
     "moreTitle": "Diğer işlemler",
-    "announcements": "Duyurular"
+    "announcements": "Duyurular",
+    "needsReply": "Yanıtınız bekleniyor"
   },
   "sla": {
     "title": "SLA",

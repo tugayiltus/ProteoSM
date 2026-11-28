@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { pageOf } from '../../test/assetData';
-import { EMPLOYEE_ME, mockApi } from '../../test/mockApi';
+import { EMPLOYEE_ME, IT_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
 import { LIST_ITEM } from '../../test/ticketData';
 
@@ -58,5 +58,31 @@ describe('HomePage', () => {
     await waitFor(() => expect(rateCalls(api)).toHaveLength(1));
     expect(await screen.findByRole('heading', { name: 'Son kayıtlarım' })).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByRole('heading', { name: RATE_TITLE })).not.toBeInTheDocument());
+  });
+  it('gives IT staff an explicit link to the work list, and employees none', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: IT_ME }, 'GET /api/v1/tickets': ticketsFor([]) });
+    renderRoute('/');
+    expect(await within(await screen.findByRole('main')).findByRole('link', { name: /İş listem/ })).toHaveAttribute('href', '/workspace');
+  });
+
+  it('hides the work list link from employees', async () => {
+    mockApi({ 'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME }, 'GET /api/v1/tickets': ticketsFor([]) });
+    renderRoute('/');
+    await screen.findByRole('heading', { name: 'Son kayıtlarım' });
+    expect(within(screen.getByRole('main')).queryByRole('link', { name: /İş listem/ })).not.toBeInTheDocument();
+  });
+
+  it('puts tickets waiting for the requester first in recent records and marks them', async () => {
+    const waiting = { ...LIST_ITEM, number: 'INC-2026-000009', subject: 'Yanıt bekleyen', status: 'on_hold' as const, holdReason: 'user' as const };
+    const plain = { ...LIST_ITEM, number: 'INC-2026-000008', subject: 'Normal kayıt' };
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: EMPLOYEE_ME },
+      'GET /api/v1/tickets': (request: Request) => ({ status: 200, body: pageOf(new URL(request.url).searchParams.get('queue') === 'mine' ? [plain, waiting] : []) }),
+    });
+    renderRoute('/');
+    const list = await screen.findByRole('list', { name: 'Son kayıtlarım' });
+    const links = within(list).getAllByRole('link');
+    expect(links[0]).toHaveTextContent('Yanıt bekleyen');
+    expect(within(list).getAllByText('Yanıtınız bekleniyor')).toHaveLength(1);
   });
 });

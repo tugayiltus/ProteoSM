@@ -9,8 +9,9 @@ import { Grid } from '@astryxdesign/core/Grid';
 import { Heading } from '@astryxdesign/core/Heading';
 import { HStack } from '@astryxdesign/core/HStack';
 import { List, ListItem } from '@astryxdesign/core/List';
+import { Token } from '@astryxdesign/core/Token';
 import { VStack } from '@astryxdesign/core/VStack';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
@@ -22,7 +23,7 @@ import { StateLink } from '../../shared/navigation/StateLink';
 import { ActionCard, type ActionCardProps } from '../../shared/page/ActionCard';
 import { ROUTES, ticketPath, ticketRatePath } from '../../shared/routes';
 import { isItStaffOrAdmin, useSession } from '../auth/session';
-import { useTickets, type WorkQueue, type TicketStatus } from '../tickets/api';
+import { useTickets, type WorkQueue, type TicketStatus, type TicketListItem } from '../tickets/api';
 import { TicketStatusBadge } from '../tickets/TicketBadges';
 import { QueueCard } from '../workspace/QueueCard';
 
@@ -52,7 +53,11 @@ function ReportActions() {
   );
 }
 
-function RecentTicketRow({ number, subject, status, state, href = ticketPath(number) }: { number: string; subject: string; status: TicketStatus; state: ReturnType<typeof linkState>; href?: string }) {
+/** On hold with reason `user`: IT waits for the requester's answer. */
+const isWaitingForRequester = (ticket: TicketListItem) => ticket.status === 'on_hold' && ticket.holdReason === 'user';
+
+function RecentTicketRow({ number, subject, status, state, href = ticketPath(number), needsReply = false }: { number: string; subject: string; status: TicketStatus; state: ReturnType<typeof linkState>; href?: string; needsReply?: boolean }) {
+  const { t } = useTranslation('tickets');
   const link = useRef<HTMLAnchorElement>(null);
   return (
     <ListItem
@@ -63,7 +68,12 @@ function RecentTicketRow({ number, subject, status, state, href = ticketPath(num
       }
       description={number}
       interactiveRef={link}
-      endContent={<TicketStatusBadge status={status} />}
+      endContent={
+        <HStack gap={2} vAlign="center">
+          {needsReply && <Token size="sm" color="orange" label={t('home.needsReply')} />}
+          <TicketStatusBadge status={status} />
+        </HStack>
+      }
     />
   );
 }
@@ -72,6 +82,10 @@ function RecentTickets() {
   const { t } = useTranslation('tickets');
   const location = useLocation();
   const tickets = useTickets({ queue: 'mine', status: undefined, kind: undefined, priority: undefined, search: '', page: FIRST_PAGE, pageSize: RECENT_COUNT });
+  const items = useMemo(() => {
+    const all = tickets.data?.items ?? [];
+    return [...all.filter(isWaitingForRequester), ...all.filter((ticket) => !isWaitingForRequester(ticket))];
+  }, [tickets.data]);
   return (
     <Card padding={0}>
       <VStack gap={0}>
@@ -82,10 +96,10 @@ function RecentTickets() {
         {tickets.isPending && <LoadingState rows={RECENT_COUNT} />}
         {tickets.isError && <ErrorState error={tickets.error} onRetry={() => void tickets.refetch()} />}
         {tickets.data?.items.length === 0 && <EmptyState message={t('home.recentEmpty')} />}
-        {tickets.data !== undefined && tickets.data.items.length > 0 && (
+        {items.length > 0 && (
           <List hasDividers aria-label={t('home.recentTitle')}>
-            {tickets.data.items.map((ticket) => (
-              <RecentTicketRow key={ticket.number} number={ticket.number} subject={ticket.subject} status={ticket.status} state={linkState(location)} />
+            {items.map((ticket) => (
+              <RecentTicketRow key={ticket.number} number={ticket.number} subject={ticket.subject} status={ticket.status} state={linkState(location)} needsReply={isWaitingForRequester(ticket)} />
             ))}
           </List>
         )}
@@ -117,6 +131,11 @@ function TicketsToRate() {
       </VStack>
     </Card>
   );
+}
+
+function WorkListLink() {
+  const { t } = useTranslation('tickets');
+  return <ActionCard to={ROUTES.workspace} title={t('home.workspaceCard')} description={t('home.workspaceCardDescription')} icon="inbox" />;
 }
 
 function MoreLinks() {
@@ -155,6 +174,7 @@ export function HomePage() {
         <VStack gap={3}>
           <Heading level={2}>{tt('home.queuesTitle')}</Heading>
           <Grid columns={CARD_COLUMNS} gap={3}>
+            <WorkListLink />
             {HOME_QUEUES.map((queue) => (
               <QueueCard key={queue} queue={queue} />
             ))}
