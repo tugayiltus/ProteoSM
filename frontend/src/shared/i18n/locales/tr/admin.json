@@ -626,6 +626,7 @@
   "loginMethod": {
     "intro": "Kullanıcıların nasıl giriş yapacağını seçin. Aynı anda tek yöntem açıktır; yöneticiler her yöntemde yerel şifreleriyle de girebilir.",
     "active": "Etkin yöntem",
+    "candidates": "Diğer yöntemler",
     "methods": {
       "local": "Yerel (ProteoSM şifresi)",
       "entra": "Microsoft (Entra ID)",

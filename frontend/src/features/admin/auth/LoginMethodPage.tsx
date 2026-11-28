@@ -230,23 +230,34 @@ function BackToLocal({ settings }: { settings: AuthSettings }) {
 
 const CANDIDATES = ['entra', 'ldap'] as const;
 
-/** The running method, the tested candidates and the local admin path stay apart: switching is a separate action in each card. */
-function MethodStatus({ settings }: { settings: AuthSettings }) {
+/** The local admin path stays visible next to the running method. */
+function LocalAdminNote() {
   const { t } = useTranslation('admin');
   const me = useSession();
   return (
     <VStack gap={2}>
+      <Text type="label">{t('loginMethod.localAdmin.title')}</Text>
+      <Text type="supporting">{t('loginMethod.localAdmin.note')}</Text>
+      {!me.hasLocalPassword && <Banner status="warning" title={t('loginMethod.localAdmin.missing')} />}
+    </VStack>
+  );
+}
+
+/** Methods that are not running, with their test state. The running method is never a candidate; switching is a separate action in each card below. */
+function CandidateMethods({ settings }: { settings: AuthSettings }) {
+  const { t } = useTranslation('admin');
+  const candidates = CANDIDATES.filter((method) => method !== settings.method);
+  if (candidates.length === 0) return null;
+  return (
+    <SectionCard title={t('loginMethod.candidates')}>
       <VStack gap={0}>
-        {CANDIDATES.map((method) => (
+        {candidates.map((method) => (
           <Text key={method} type="supporting">
             {t(`loginMethod.candidate.${settings[method].isTested ? 'tested' : 'untested'}`, { method: t(`loginMethod.methods.${method}`) })}
           </Text>
         ))}
       </VStack>
-      <Text type="label">{t('loginMethod.localAdmin.title')}</Text>
-      <Text type="supporting">{t('loginMethod.localAdmin.note')}</Text>
-      {!me.hasLocalPassword && <Banner status="warning" title={t('loginMethod.localAdmin.missing')} />}
-    </VStack>
+    </SectionCard>
   );
 }
 
@@ -263,8 +274,9 @@ export function LoginMethodPage() {
           <SectionCard title={t('loginMethod.active')}>
             <Text type="label">{t(`loginMethod.methods.${settings.data.method}`)}</Text>
             {settings.data.method !== 'local' && <BackToLocal settings={settings.data} />}
-            <MethodStatus settings={settings.data} />
+            <LocalAdminNote />
           </SectionCard>
+          <CandidateMethods settings={settings.data} />
           {/* Each card remounts after a save or test so its form starts from the stored values and version. */}
           <EntraCard key={`entra-${settings.data.version}`} settings={settings.data} />
           <LdapCard key={`ldap-${settings.data.version}`} settings={settings.data} />

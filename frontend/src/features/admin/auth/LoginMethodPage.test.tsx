@@ -95,10 +95,25 @@ describe('LoginMethodPage', () => {
     renderRoute('/admin/login-method');
 
     const active = await screen.findByRole('region', { name: 'Etkin yöntem' });
-    expect(within(active).getByText('Microsoft (Entra ID): henüz test edilmedi.')).toBeInTheDocument();
-    expect(within(active).getByText('Active Directory (LDAP): bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir.')).toBeInTheDocument();
+    expect(within(active).queryByText(/test edilmedi|açılmaya hazır/)).not.toBeInTheDocument();
     expect(within(active).getByText('Yerel yönetici girişi')).toBeInTheDocument();
     expect(within(active).queryByText(/yerel şifresi yok/)).not.toBeInTheDocument();
+    const others = screen.getByRole('region', { name: 'Diğer yöntemler' });
+    expect(within(others).getByText('Microsoft (Entra ID): henüz test edilmedi.')).toBeInTheDocument();
+    expect(within(others).getByText('Active Directory (LDAP): bağlantı testi başarılı, açılmaya hazır. Açmak ayrı bir işlemdir.')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['ldap', 'Active Directory (LDAP)', 'Microsoft (Entra ID)'],
+    ['entra', 'Microsoft (Entra ID)', 'Active Directory (LDAP)'],
+  ])('never lists the running %s method as a candidate', async (method, running, other) => {
+    mockApi(routes({ 'GET /api/v1/admin/auth-settings': { status: 200, body: { ...SETTINGS, method } } }));
+    renderRoute('/admin/login-method');
+
+    const others = await screen.findByRole('region', { name: 'Diğer yöntemler' });
+    expect(within(others).getByText(new RegExp(`^${other.replace(/[()]/g, '\\$&')}:`))).toBeInTheDocument();
+    expect(within(others).queryByText(new RegExp(`^${running.replace(/[()]/g, '\\$&')}:`))).not.toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Etkin yöntem' })).getByText(running)).toBeInTheDocument();
   });
 
   it('warns an admin who has no local password', async () => {
