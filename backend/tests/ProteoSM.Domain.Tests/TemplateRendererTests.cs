@@ -129,4 +129,12 @@ public sealed class TemplateRendererTests
         Assert.Equal("Link: U", TemplateRenderer.Render("Link: {{ticketUrl}}\n\nLabel: {{ratingUrl}}", values));
         Assert.Equal("Link: U\n\n", TemplateRenderer.Render("Link: {{ticketUrl}}\n\nLabel: {{ratingUrl}}\n", values));
     }
+
+    [Fact]
+    public void Render_leaves_one_blank_line_when_a_dropped_paragraph_sat_between_blank_lines()
+    {
+        var values = new Dictionary<string, string> { ["ticketUrl"] = "U" };
+
+        Assert.Equal("Link: U\n\nFooter", TemplateRenderer.Render("Link: {{ticketUrl}}\n\nLabel: {{ratingUrl}}\n\nFooter", values));
+    }
 }

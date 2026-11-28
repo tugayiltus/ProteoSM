@@ -67,6 +67,11 @@ public static partial class TemplateRenderer
             if (IsEmptyOptionalLine(lines[i], values))
             {
                 droppedLast = i == lines.Length - 1;
+                // A paragraph of its own between blank lines, with text after it, leaves one blank line, not two.
+                if (i + 2 < lines.Length && kept.Count > 0 && string.IsNullOrWhiteSpace(kept[^1]) && string.IsNullOrWhiteSpace(lines[i + 1]))
+                {
+                    kept.RemoveAt(kept.Count - 1);
+                }
             }
             else
             {
