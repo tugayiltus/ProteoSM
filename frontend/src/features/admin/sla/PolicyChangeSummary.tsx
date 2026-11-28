@@ -16,12 +16,15 @@ import type { HoldReason } from './api';
 import type { TargetChange } from './policyChanges';
 
 const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
 
 export function PolicyChangeSummary({ changes, pauseChanges }: { changes: readonly TargetChange[]; pauseChanges: readonly HoldReason[] }) {
   const { t } = useTranslation('admin');
   const { t: tt } = useTranslation('tickets');
   const formatDuration = useFormatBusinessDuration();
-  const minutesText = (minutes: number) => t('slaPolicy.minutesWithDuration', { minutes, duration: formatDuration(minutes * SECONDS_PER_MINUTE) });
+  // Under an hour the duration would only repeat the minutes.
+  const minutesText = (minutes: number) =>
+    minutes < MINUTES_PER_HOUR ? t('slaPolicy.minutesOnly', { minutes }) : t('slaPolicy.minutesWithDuration', { minutes, duration: formatDuration(minutes * SECONDS_PER_MINUTE) });
   const isEmpty = changes.length === 0 && pauseChanges.length === 0;
 
   return (

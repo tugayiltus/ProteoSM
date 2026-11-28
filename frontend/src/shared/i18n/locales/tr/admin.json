@@ -49,7 +49,8 @@
     "firstUse": "Henüz kullanıcı yok. İlk kullanıcıyı ekleyin.",
     "roleChange": {
       "title": "Rol {{from}} yerine {{to}} olarak kaydedilecek.",
-      "effect": "Değişiklik denetim kaydına yazılır. Ekip üyelikleri otomatik değişmez; Çalışan rolündeki kişi yeni bir ekibe eklenemez.",
+      "effect": "Değişiklik denetim kaydına yazılır. Ekip üyelikleri otomatik değişmez.",
+      "toEmployee": "Değişiklik denetim kaydına yazılır. Ekip üyelikleri otomatik değişmez; Çalışan rolündeki kişi yeni bir ekibe eklenemez.",
       "fromAdmin": "Değişiklik denetim kaydına yazılır. Son aktif yönetici başka bir role geçirilemez. Ekip üyelikleri otomatik değişmez."
     }
   },
@@ -759,6 +760,7 @@
       "saved": "Problem hedefleri kaydedildi."
     },
     "readable": "{{duration}} iş süresi",
+    "minutesOnly": "{{minutes}} dk",
     "minutesWithDuration": "{{minutes}} dk ({{duration}})",
     "changesTitle": "Yeni sürümde değişecekler",
     "appliesTo": "Yeni sürüm yalnızca bundan sonra açılan kayıtlara uygulanır.",

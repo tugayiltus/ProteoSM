@@ -140,7 +140,7 @@ describe('SlaPolicyPage', () => {
     await user.type(field, '90');
     await user.click(screen.getByRole('checkbox', { name: 'Kullanıcıdan yanıt bekleniyor: İlk yanıt durur' }));
 
-    expect(await screen.findByText('Hedef: 30 dk (30 dk) → 90 dk (1 sa 30 dk)')).toBeInTheDocument();
+    expect(await screen.findByText('Hedef: 30 dk → 90 dk (1 sa 30 dk)')).toBeInTheDocument();
     expect(screen.getByText('Duraklatma kuralı değişiyor.')).toBeInTheDocument();
     expect(screen.queryByText('Hedeflerde ve duraklatma kurallarında değişiklik yok.')).not.toBeInTheDocument();
   });

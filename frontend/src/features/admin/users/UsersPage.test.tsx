@@ -272,5 +272,6 @@ describe('UsersPage', () => {
 
     expect(await within(dialog).findByText('Rol Çalışan yerine IT personeli olarak kaydedilecek.')).toBeInTheDocument();
     expect(within(dialog).getByText(/Ekip üyelikleri otomatik değişmez/)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/yeni bir ekibe eklenemez/)).not.toBeInTheDocument();
   });
 });

@@ -34,6 +34,11 @@ export interface UserFormDialogProps {
   onCreated: (result: { email: string; temporaryPassword: string | null }) => void;
 }
 
+function roleChangeNote(change: { from: string; to: string }) {
+  if (change.from === 'admin') return 'users.roleChange.fromAdmin';
+  return change.to === 'employee' ? 'users.roleChange.toEmployee' : 'users.roleChange.effect';
+}
+
 export function UserFormDialog({ user, onClose, onCreated }: UserFormDialogProps) {
   const { t } = useTranslation('admin');
   const { t: tc } = useTranslation();
@@ -98,7 +103,7 @@ export function UserFormDialog({ user, onClose, onCreated }: UserFormDialogProps
         <Banner
           status="info"
           title={t('users.roleChange.title', { from: tc(`roles.${roleChange.from}`), to: tc(`roles.${roleChange.to}`) })}
-          description={t(roleChange.from === 'admin' ? 'users.roleChange.fromAdmin' : 'users.roleChange.effect')}
+          description={t(roleChangeNote(roleChange))}
         />
       )}
       <FormSelector control={control} name="departmentId" label={t('users.fields.department')} options={departmentOptions} placeholder={tc('none')} isClearable />

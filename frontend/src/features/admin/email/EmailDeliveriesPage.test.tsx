@@ -1,10 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { formatDateTime } from '../../../shared/lib/format';
 import { findAlert } from '../../../test/alerts';
 import { ADMIN_ME, mockApi, type MockRoutes } from '../../../test/mockApi';
 import { renderRoute } from '../../../test/renderRoute';
-import { formatDateTime } from '../../../shared/lib/format';
 import { chooseOption } from '../../../test/select';
 
 const delivery = (id: string, status: string, recipientEmail: string) => ({
@@ -100,15 +100,15 @@ describe('EmailDeliveriesPage', () => {
     setup({ 'GET /api/v1/admin/email-deliveries': { status: 200, body: pageOf([sent, queued, failed, fresh]) } });
     renderRoute('/admin/email-deliveries');
 
-    const sentRow = (await screen.findAllByText('sent@example.com'))[0].closest('tr') as HTMLElement;
+    const sentRow = (await screen.findAllByText('sent@example.com'))[0]!.closest('tr') as HTMLElement;
     expect(within(sentRow).getByText(formatDateTime('2026-09-27T09:05:00Z'))).toBeInTheDocument();
-    const failedRow = screen.getAllByText('failed@example.com')[0].closest('tr') as HTMLElement;
+    const failedRow = screen.getAllByText('failed@example.com')[0]!.closest('tr') as HTMLElement;
     expect(within(failedRow).getByText(formatDateTime('2026-09-27T09:45:00Z'))).toBeInTheDocument();
     expect(within(failedRow).getByText('Başarısız')).toBeInTheDocument();
     expect(within(failedRow).getByText('SMTP reddetti')).toBeInTheDocument();
-    const queuedRow = screen.getAllByText('queued@example.com')[0].closest('tr') as HTMLElement;
+    const queuedRow = screen.getAllByText('queued@example.com')[0]!.closest('tr') as HTMLElement;
     expect(within(queuedRow).getByText(/Sonraki deneme: /)).toBeInTheDocument();
-    const freshRow = screen.getAllByText('fresh@example.com')[0].closest('tr') as HTMLElement;
+    const freshRow = screen.getAllByText('fresh@example.com')[0]!.closest('tr') as HTMLElement;
     expect(within(freshRow).queryByText(/Sonraki deneme/)).not.toBeInTheDocument();
   });
 
