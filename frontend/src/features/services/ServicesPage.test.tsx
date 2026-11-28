@@ -58,7 +58,7 @@ describe('ServicesPage', () => {
     mockApi(serviceRoutes({ 'GET /api/v1/services': { status: 200, body: { items: [], page: 1, pageSize: 20, totalCount: 0 } } }) as never);
     renderRoute('/services?q=yok');
 
-    expect(await screen.findByText('Bu filtrelerle eşleşen kayıt yok.')).toBeInTheDocument();
+    expect(await screen.findByText('Bu filtrelerle kayıt bulunamadı.')).toBeInTheDocument();
   });
 
   it('is not open to employees', async () => {
