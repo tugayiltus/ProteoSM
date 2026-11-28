@@ -13,6 +13,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
+import { useIsPhone } from '../../shared/list/useIsPhone';
 import { linkState } from '../../shared/navigation/returnTo';
 import { StateLink } from '../../shared/navigation/StateLink';
 import { changePath } from '../../shared/routes';
@@ -29,7 +30,15 @@ export function ChangeApprovalRow({ item, onDecide }: { item: ChangeApprovalItem
   const { t } = useTranslation('changes');
   const location = useLocation();
   const link = useRef<HTMLAnchorElement>(null);
+  const isPhone = useIsPhone();
   const decide = (decision: ApprovalDecision) => () => onDecide({ item, decision });
+  const actions = (
+    <HStack gap={2} wrap="wrap">
+      <Button label={t('approval.approve')} aria-label={recordActionLabel(t('approval.approve'), item.changeNumber)} variant="primary" icon={<Icon icon={Icons.check} />} onClick={decide('approve')} />
+      <Button label={t('approval.reject')} aria-label={recordActionLabel(t('approval.reject'), item.changeNumber)} variant="destructive" icon={<Icon icon={Icons.close} />} onClick={decide('reject')} />
+      <Button label={t('approval.return')} aria-label={recordActionLabel(t('approval.return'), item.changeNumber)} variant="secondary" onClick={decide('return')} />
+    </HStack>
+  );
   return (
     <ListItem
       startContent={<KindToken kind="change" />}
@@ -51,16 +60,11 @@ export function ChangeApprovalRow({ item, onDecide }: { item: ChangeApprovalItem
               {item.implementationPlanExcerpt}
             </Text>
           )}
+          {isPhone && actions}
         </VStack>
       }
       interactiveRef={link}
-      endContent={
-        <HStack gap={2} wrap="wrap">
-          <Button label={t('approval.approve')} aria-label={recordActionLabel(t('approval.approve'), item.changeNumber)} variant="primary" icon={<Icon icon={Icons.check} />} onClick={decide('approve')} />
-          <Button label={t('approval.reject')} aria-label={recordActionLabel(t('approval.reject'), item.changeNumber)} variant="destructive" icon={<Icon icon={Icons.close} />} onClick={decide('reject')} />
-          <Button label={t('approval.return')} aria-label={recordActionLabel(t('approval.return'), item.changeNumber)} variant="secondary" onClick={decide('return')} />
-        </HStack>
-      }
+      endContent={isPhone ? undefined : actions}
     />
   );
 }

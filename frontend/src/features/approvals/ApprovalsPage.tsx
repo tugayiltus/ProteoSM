@@ -22,6 +22,7 @@ import { describeError } from '../../shared/api/errorMessage';
 import { FormAlert } from '../../shared/feedback/FormAlert';
 import { EmptyState, ErrorState, LoadingState } from '../../shared/feedback/States';
 import { formatDateTime } from '../../shared/lib/format';
+import { useIsPhone } from '../../shared/list/useIsPhone';
 import { PageHeader } from '../../shared/navigation/PageHeader';
 import { linkState } from '../../shared/navigation/returnTo';
 import { ROUTE_META } from '../../shared/navigation/routeMeta';
@@ -110,7 +111,20 @@ function ApprovalRow({ item, onDecide }: { item: MyApprovalItem; onDecide: (pend
   const location = useLocation();
   const link = useRef<HTMLAnchorElement>(null);
   const meta = [item.ticketNumber, t('approvals.requestedBy', { name: item.requesterName }), item.requestTypeName, formatDateTime(item.createdAt)].filter(Boolean).join(META_SEPARATOR);
+  const isPhone = useIsPhone();
   const action = (kind: Pending['kind']) => () => onDecide({ item, kind });
+  const actions = (
+      <HStack gap={2} wrap="wrap">
+        {item.approverId === null ? (
+          <Button label={t('approvals.reassign')} aria-label={recordActionLabel(t('approvals.reassign'), item.ticketNumber)} variant="secondary" onClick={action('reassign')} />
+        ) : (
+          <>
+            <Button label={t('approvals.approve')} aria-label={recordActionLabel(t('approvals.approve'), item.ticketNumber)} variant="primary" icon={<Icon icon={Icons.check} />} onClick={action('approve')} />
+            <Button label={t('approvals.reject')} aria-label={recordActionLabel(t('approvals.reject'), item.ticketNumber)} variant="destructive" icon={<Icon icon={Icons.close} />} onClick={action('reject')} />
+          </>
+        )}
+      </HStack>
+  );
   return (
     <ListItem
       startContent={<KindToken kind="ticket" />}
@@ -119,20 +133,18 @@ function ApprovalRow({ item, onDecide }: { item: MyApprovalItem; onDecide: (pend
           {item.subject}
         </StateLink>
       }
-      description={meta}
-      interactiveRef={link}
-      endContent={
-        <HStack gap={2} wrap="wrap">
-          {item.approverId === null ? (
-            <Button label={t('approvals.reassign')} aria-label={recordActionLabel(t('approvals.reassign'), item.ticketNumber)} variant="secondary" onClick={action('reassign')} />
-          ) : (
-            <>
-              <Button label={t('approvals.approve')} aria-label={recordActionLabel(t('approvals.approve'), item.ticketNumber)} variant="primary" icon={<Icon icon={Icons.check} />} onClick={action('approve')} />
-              <Button label={t('approvals.reject')} aria-label={recordActionLabel(t('approvals.reject'), item.ticketNumber)} variant="destructive" icon={<Icon icon={Icons.close} />} onClick={action('reject')} />
-            </>
-          )}
-        </HStack>
+      description={
+        isPhone ? (
+          <VStack gap={1}>
+            <Text type="supporting">{meta}</Text>
+            {actions}
+          </VStack>
+        ) : (
+          meta
+        )
       }
+      interactiveRef={link}
+      endContent={isPhone ? undefined : actions}
     />
   );
 }

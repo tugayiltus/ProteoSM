@@ -1,9 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ADMIN_ME, mockApi } from '../../test/mockApi';
 import { renderRoute } from '../../test/renderRoute';
 import { INCIDENT } from '../../test/ticketData';
+import { stubPhoneViewport } from '../../test/viewport';
 
 const ITEM = { id: 'ap-1', version: 4, ticketNumber: 'REQ-2026-000001', subject: 'Yeni dizüstü', requesterName: 'Ayşe Kaya', requestTypeName: 'Yeni cihaz', approverId: ADMIN_ME.id, createdAt: '2026-09-26T08:00:00Z' };
 const UNASSIGNED = { ...ITEM, id: 'ap-2', ticketNumber: 'REQ-2026-000002', approverId: null };
@@ -121,5 +122,28 @@ describe('ApprovalsPage', () => {
     await user.type(within(dialog).getByLabelText('Gerekçe'), 'Plan eksik');
     await user.click(within(dialog).getByRole('button', { name: 'Onayla' }));
     await waitFor(() => expect(posted.return).toEqual({ approvalVersion: 3, reason: 'Plan eksik' }));
+  });
+});
+
+describe('ApprovalsPage on a phone', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('puts the decision buttons under the row content, not beside it', async () => {
+    stubPhoneViewport();
+    mockApi({
+      'GET /api/v1/auth/me': { status: 200, body: ADMIN_ME },
+      'GET /api/v1/approvals/mine': { status: 200, body: [ITEM] },
+      'GET /api/v1/change-approvals': { status: 200, body: [CHANGE_ITEM] },
+    });
+    renderRoute('/approvals');
+
+    const send = await screen.findByRole('button', { name: 'Düzeltmeye gönder CHG-2026-000007' });
+    const title = screen.getByRole('link', { name: 'Çekirdek anahtar yükseltmesi' });
+    const row = title.closest('li');
+    expect(row).not.toBeNull();
+    expect(within(row as HTMLElement).getByText('Yedeği al, yazılımı yükselt').compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Onayla REQ-2026-000001' })).toBeInTheDocument();
   });
 });
