@@ -71,7 +71,7 @@ Volumes: `pgdata` (database), `files` (attachments, export files, pickup mail; `
    tools/deploy.sh --skip-gates   # or tools/deploy.sh to run tools/lint.sh and tools/test.sh first
    ```
 
-   It refuses when `deploy/certs/proteosm.crt`, `deploy/certs/proteosm.key` or `deploy/.env` is missing, or when the working tree has uncommitted changes (the image tag must name the code it holds). It builds both images on fresh base images (`tools/docker-build.sh`, tags `<git short hash>` and `latest`), records the hash in `deploy/.version` (git-ignored), pulls `postgres` and `nginx`, runs `tools/compose.sh up -d --remove-orphans` and waits up to 180 s for `https://localhost:<HTTPS_PORT>/api/v1/health` through nginx. Exit 0 prints `Proteone is up on …`.
+   It refuses when `deploy/certs/proteosm.crt`, `deploy/certs/proteosm.key` or `deploy/.env` is missing, or when the working tree has uncommitted changes (the image tag must name the code it holds). It builds both images on fresh base images (`tools/docker-build.sh`, tags `<git short hash>` and `latest`), records the hash in `deploy/.version` (git-ignored), pulls `postgres` and `nginx`, runs `tools/compose.sh up -d --remove-orphans` and waits up to 180 s for `https://localhost:<HTTPS_PORT>/api/v1/health` through nginx. Exit 0 prints `ProteoSM is up on …`.
 
    Image tag: every `tools/compose.sh` call (and so `tools/backup.sh`, `tools/restore.sh`) uses the tag in `deploy/.version`; a `PROTEOSM_VERSION` set in the shell overrides it. Without the file the tag is `latest`. Container logs rotate (`json-file`, 5 files of 10 MB per container).
 5. Create the first admin (works once; refused when any user exists, ADR-0007). The temporary password is printed once and must be changed at the first sign-in:

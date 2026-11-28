@@ -80,12 +80,13 @@ Full procedure, backups, restore, rollback and key handling: [`docs/operations.m
 | Task | Command |
 |---|---|
 | Build images `proteosm-api`, `proteosm-worker` (tags: Git short hash, `latest`) | `tools/docker-build.sh` |
-| Deploy: gates, images, `compose up`, wait for health through nginx | `tools/deploy.sh [--skip-gates]` |
+| Deploy: gates, images, `compose up`, wait for health through nginx; refuses a fresh stack beside data of the former name | `tools/deploy.sh [--skip-gates] [--fresh-install]` |
 | Any compose command on the stack (`deploy/compose.yaml` + `deploy/.env`) | `tools/compose.sh <args>` |
 | Self-signed test certificate in `deploy/certs/` | `tools/gen-self-signed-cert.sh [host-name]` |
 | Backup now | `tools/backup.sh` |
 | Restore an archive | `tools/restore.sh <archive.tar.gz> [--force]` |
 | Restore drill on throw-away stacks (writes `docs/release/restore-drill.md`) | `tools/restore-drill.sh` |
+| Move drill: a stack under the former name, with data, moved to ProteoSM by backup and restore (`docs/operations.md`) | `tools/proteosm-move-drill.sh [git ref]` |
 
 On macOS, Docker runs in Colima; Colima shares only the home folder with containers.
 
