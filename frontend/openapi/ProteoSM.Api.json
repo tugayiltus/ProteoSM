@@ -17479,6 +17479,7 @@
           "nextAttemptAt",
           "lastError",
           "sentAt",
+          "lastAttemptAt",
           "eventCreatedAt"
         ],
         "type": "object",
@@ -17528,6 +17529,13 @@
             ]
           },
           "sentAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "lastAttemptAt": {
             "type": [
               "null",
               "string"

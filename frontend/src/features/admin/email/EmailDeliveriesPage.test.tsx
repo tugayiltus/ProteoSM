@@ -1,9 +1,10 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { findAlert } from '../../../test/alerts';
 import { ADMIN_ME, mockApi, type MockRoutes } from '../../../test/mockApi';
 import { renderRoute } from '../../../test/renderRoute';
+import { formatDateTime } from '../../../shared/lib/format';
 import { chooseOption } from '../../../test/select';
 
 const delivery = (id: string, status: string, recipientEmail: string) => ({
@@ -19,6 +20,7 @@ const delivery = (id: string, status: string, recipientEmail: string) => ({
   nextAttemptAt: '2026-09-27T09:00:00Z',
   lastError: status === 'failed' ? 'SMTP reddetti' : null,
   sentAt: null,
+  lastAttemptAt: null,
   eventCreatedAt: '2026-09-27T09:00:00Z',
 });
 
@@ -90,16 +92,24 @@ describe('EmailDeliveriesPage', () => {
     expect(await screen.findByText('Henüz e-posta teslimatı yok.')).toBeInTheDocument();
   });
 
-  it('shows when a mail left, when a queued retry runs next, and the stored safe error', async () => {
-    const sent = { ...delivery('d-1', 'sent', 'sent@example.com'), sentAt: '2026-09-27T09:05:00Z' };
-    const queued = { ...delivery('d-3', 'pending', 'queued@example.com'), attempts: 2, nextAttemptAt: '2026-09-27T10:00:00Z' };
-    const failed = delivery('d-2', 'failed', 'failed@example.com');
-    setup({ 'GET /api/v1/admin/email-deliveries': { status: 200, body: pageOf([sent, queued, failed]) } });
+  it('shows the last attempt time of every attempted row, the next run of a queued retry and the stored safe error', async () => {
+    const sent = { ...delivery('d-1', 'sent', 'sent@example.com'), sentAt: '2026-09-27T09:05:00Z', lastAttemptAt: '2026-09-27T09:05:00Z' };
+    const queued = { ...delivery('d-3', 'pending', 'queued@example.com'), attempts: 2, nextAttemptAt: '2026-09-27T10:00:00Z', lastAttemptAt: '2026-09-27T09:30:00Z' };
+    const failed = { ...delivery('d-2', 'failed', 'failed@example.com'), lastAttemptAt: '2026-09-27T09:45:00Z' };
+    const fresh = delivery('d-4', 'pending', 'fresh@example.com');
+    setup({ 'GET /api/v1/admin/email-deliveries': { status: 200, body: pageOf([sent, queued, failed, fresh]) } });
     renderRoute('/admin/email-deliveries');
 
-    expect((await screen.findAllByText(/^Gönderildi: /)).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/^Sonraki deneme: /).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/SMTP reddetti/).length).toBeGreaterThan(0);
+    const sentRow = (await screen.findAllByText('sent@example.com'))[0].closest('tr') as HTMLElement;
+    expect(within(sentRow).getByText(formatDateTime('2026-09-27T09:05:00Z'))).toBeInTheDocument();
+    const failedRow = screen.getAllByText('failed@example.com')[0].closest('tr') as HTMLElement;
+    expect(within(failedRow).getByText(formatDateTime('2026-09-27T09:45:00Z'))).toBeInTheDocument();
+    expect(within(failedRow).getByText('Başarısız')).toBeInTheDocument();
+    expect(within(failedRow).getByText('SMTP reddetti')).toBeInTheDocument();
+    const queuedRow = screen.getAllByText('queued@example.com')[0].closest('tr') as HTMLElement;
+    expect(within(queuedRow).getByText(/Sonraki deneme: /)).toBeInTheDocument();
+    const freshRow = screen.getAllByText('fresh@example.com')[0].closest('tr') as HTMLElement;
+    expect(within(freshRow).queryByText(/Sonraki deneme/)).not.toBeInTheDocument();
   });
 
   it('opens already filtered to failed deliveries when the link carries the status', async () => {

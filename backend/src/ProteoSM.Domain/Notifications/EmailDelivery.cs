@@ -68,6 +68,9 @@ public sealed class EmailDelivery : Entity
 
     public DateTimeOffset? SentAt { get; private set; }
 
+    /// <summary>When the last send was tried, success or failure; <c>null</c> until the first attempt (an abandoned delivery never had one).</summary>
+    public DateTimeOffset? LastAttemptAt { get; private set; }
+
     public static EmailDelivery Create(Guid outboxId, Recipient recipient, string templateType, string subject, string? body, DateTimeOffset now) =>
         new()
         {
@@ -107,6 +110,7 @@ public sealed class EmailDelivery : Entity
     {
         Status = DeliveryStatus.Sent;
         SentAt = now;
+        LastAttemptAt = now;
         LockedUntil = null;
     }
 
@@ -120,6 +124,7 @@ public sealed class EmailDelivery : Entity
     public void RecordFailure(string error, DateTimeOffset now)
     {
         Attempts++;
+        LastAttemptAt = now;
         LastError = error.Length > LastErrorMaxLength ? error[..LastErrorMaxLength] : error;
         LockedUntil = null;
 

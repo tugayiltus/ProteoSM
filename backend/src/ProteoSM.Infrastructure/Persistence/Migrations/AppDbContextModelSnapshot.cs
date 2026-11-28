@@ -17,7 +17,7 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261127231745_ProteoSMEmailDefaults";
+    public override string LastMigrationId => "20261128032601_EmailDeliveryLastAttemptAt";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1891,6 +1891,10 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                     .HasMaxLength(10000)
                     .HasColumnType("character varying(10000)")
                     .HasColumnName("body");
+
+                b.Property<DateTimeOffset?>("LastAttemptAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("last_attempt_at");
 
                 b.Property<string>("LastError")
                     .HasMaxLength(500)

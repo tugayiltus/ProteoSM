@@ -25,6 +25,7 @@ internal sealed class EmailDeliveryConfiguration : IEntityTypeConfiguration<Emai
         builder.Property(d => d.LockedUntil);
         builder.Property(d => d.LastError).HasMaxLength(EmailDelivery.LastErrorMaxLength);
         builder.Property(d => d.SentAt);
+        builder.Property(d => d.LastAttemptAt);
 
         // At-least-once delivery is accepted (ADR-0015); this is the guard against an application-level duplicate
         // row when two dispatcher runs somehow both resolve the same event for the same recipient.

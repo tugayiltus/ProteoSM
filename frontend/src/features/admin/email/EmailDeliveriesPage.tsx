@@ -70,12 +70,13 @@ export function EmailDeliveriesPage() {
   const retry = useRetryEmailDelivery();
   const eventLabel = (type: string) => (isEmailEventType(type) ? t(`emailEvents.${type}`) : type);
 
-  /** The server keeps no last-attempt time: a sent mail shows when it left, a queued retry shows when it runs next. */
+  /** When the last send was tried (success or failure); a queued retry also shows when it runs next. Nothing before the first attempt. */
   const attemptText = (delivery: EmailDeliveryItem) => {
-    if (delivery.status === 'sent' && delivery.sentAt !== null) {
-      return t('emailDeliveries.sentAt', { date: formatDateTime(delivery.sentAt) });
-    }
-    return delivery.status === 'pending' && delivery.attempts > 0 ? t('emailDeliveries.nextAttempt', { date: formatDateTime(delivery.nextAttemptAt) }) : '';
+    if (delivery.lastAttemptAt === null) return '';
+    const last = formatDateTime(delivery.lastAttemptAt);
+    return delivery.status === 'pending' && delivery.attempts > 0
+      ? `${last}${META_SEPARATOR}${t('emailDeliveries.nextAttempt', { date: formatDateTime(delivery.nextAttemptAt) })}`
+      : last;
   };
 
   const retryButton = (delivery: EmailDeliveryItem) =>

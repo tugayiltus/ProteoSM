@@ -85,6 +85,38 @@ public sealed class EmailSenderTests(ApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task A_failed_then_retried_delivery_records_the_time_of_each_attempt()
+    {
+        var world = await TicketWorld.CreateAsync(factory);
+        await TicketWorld.CreateIncidentAsync(world.Employee);
+        await DispatchOutboxAsync();
+        Assert.Null((await SingleDeliveryAsync()).LastAttemptAt);
+        factory.EmailSender.FailWith = _ => new InvalidOperationException("smtp down");
+
+        var beforeFailure = DateTimeOffset.UtcNow;
+        await SendDueEmailsAsync();
+        var failed = await SingleDeliveryAsync();
+        Assert.NotNull(failed.LastAttemptAt);
+        Assert.True(failed.LastAttemptAt >= beforeFailure);
+        Assert.Null(failed.SentAt);
+
+        await ForceDueNowAsync(factory, failed.Id);
+        factory.EmailSender.FailWith = null;
+        await SendDueEmailsAsync();
+
+        var sent = await SingleDeliveryAsync();
+        Assert.Equal(DeliveryStatus.Sent, sent.Status);
+        Assert.True(sent.LastAttemptAt > failed.LastAttemptAt);
+        Assert.Equal(sent.SentAt, sent.LastAttemptAt);
+
+        using var response = await world.Admin.GetAsync("/api/v1/admin/email-deliveries");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync(Ct));
+        var item = json.RootElement.GetProperty("items")[0];
+        Assert.Equal(sent.LastAttemptAt, item.GetProperty("lastAttemptAt").GetDateTimeOffset());
+    }
+
+    [Fact]
     public async Task Five_failures_move_the_delivery_to_failed()
     {
         var world = await TicketWorld.CreateAsync(factory);

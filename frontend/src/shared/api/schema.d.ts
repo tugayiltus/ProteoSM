@@ -14619,6 +14619,8 @@ export interface components {
             /** Format: date-time */
             sentAt: null | string;
             /** Format: date-time */
+            lastAttemptAt: null | string;
+            /** Format: date-time */
             eventCreatedAt: string;
         };
         /** @enum {unknown} */

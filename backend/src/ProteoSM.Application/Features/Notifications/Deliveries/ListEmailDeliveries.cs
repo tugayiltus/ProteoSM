@@ -25,12 +25,13 @@ public sealed record EmailDeliveryItem(
     DateTimeOffset NextAttemptAt,
     string? LastError,
     DateTimeOffset? SentAt,
+    DateTimeOffset? LastAttemptAt,
     DateTimeOffset EventCreatedAt)
 {
     public static EmailDeliveryItem From(EmailDelivery delivery, DateTimeOffset eventCreatedAt) =>
         new(delivery.Id, delivery.OutboxId, delivery.TemplateType, delivery.RecipientUserId, delivery.RecipientEmail,
             delivery.Subject, delivery.Body, delivery.Status, delivery.Attempts, delivery.NextAttemptAt,
-            delivery.LastError, delivery.SentAt, eventCreatedAt);
+            delivery.LastError, delivery.SentAt, delivery.LastAttemptAt, eventCreatedAt);
 }
 
 public sealed record ListEmailDeliveriesQuery(
@@ -71,7 +72,7 @@ public sealed class ListEmailDeliveriesHandler(IAppDbContext db)
             select new EmailDeliveryItem(
                 delivery.Id, delivery.OutboxId, delivery.TemplateType, delivery.RecipientUserId, delivery.RecipientEmail,
                 delivery.Subject, delivery.Body, delivery.Status, delivery.Attempts, delivery.NextAttemptAt,
-                delivery.LastError, delivery.SentAt, outboxEvent.CreatedAt);
+                delivery.LastError, delivery.SentAt, delivery.LastAttemptAt, outboxEvent.CreatedAt);
 
         return items.ToPagedResultAsync(new PageRequest(query.Page, query.PageSize), cancellationToken);
     }

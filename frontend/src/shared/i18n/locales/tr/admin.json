@@ -574,7 +574,6 @@
       "lastAttempt": "Son deneme"
     },
     "firstUse": "Henüz e-posta teslimatı yok.",
-    "sentAt": "Gönderildi: {{date}}",
     "nextAttempt": "Sonraki deneme: {{date}}"
   },
   "emailSending": {
