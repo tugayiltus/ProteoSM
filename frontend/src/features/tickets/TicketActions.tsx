@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { describeError } from '../../shared/api/errorMessage';
 import { FormAlert } from '../../shared/feedback/FormAlert';
-import { focusMainHeadingIfLost } from '../../shared/navigation/PageHeader';
+import { focusMainHeadingIfLost } from '../../shared/navigation/focusMainHeading';
 import { SectionCard } from '../../shared/page/SectionCard';
 
 import { useTicketAction, type TicketDetail } from './api';

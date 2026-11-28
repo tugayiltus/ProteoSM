@@ -82,7 +82,7 @@ describe('DataList', () => {
     stubPhone(false);
     const many: DataColumn<Ticket>[] = [
       ...Array.from({ length: 8 }, (_, index) => ({ key: `c${index}`, header: `Sütun ${index}`, renderCell: (ticket: Ticket) => ticket.title })),
-      { key: 'open', header: '', renderCell: () => <a href="/x">Aç</a> },
+      { key: 'open', header: '', renderCell: () => 'Aç' },
     ];
     render(
       <AstryxProvider>
@@ -91,7 +91,7 @@ describe('DataList', () => {
     );
     const table = screen.getByRole('table', { name: 'Talepler' });
     expect(Number.parseFloat(table.style.minWidth || getComputedStyle(table).minWidth)).toBeLessThan(many.length * 120);
-    const action = screen.getAllByRole('link', { name: 'Aç' })[0]?.closest('td');
+    const action = screen.getAllByRole('cell', { name: 'Aç' })[0];
     expect(action).toHaveAttribute('data-astryx-table-pinned');
     expect(screen.getAllByRole('cell', { name: 'Yazıcı arızası' })[0]).not.toHaveAttribute('data-astryx-table-pinned');
   });
